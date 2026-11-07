@@ -67,14 +67,15 @@ footer.wrap{color:var(--muted);font-size:13px;padding-top:20px;padding-bottom:40
   function getSaved(){ try{ return localStorage.getItem('classe'); }catch(e){ return null; } }
   function save(c){ try{ localStorage.setItem('classe', c); }catch(e){} }
   function levelOf(c){ for (var l in D.classes) if (D.classes[l].indexOf(c) > -1) return l; }
-  var current = (location.hash.slice(1) || getSaved() || '').toUpperCase();
-  if (!levelOf(current)) current = '';
+  function find(c){ c = (c || '').toLowerCase(); for (var l in D.classes) for (var i = 0; i < D.classes[l].length; i++) if (D.classes[l][i].toLowerCase() === c) return D.classes[l][i]; return ''; }
+  var current = find(decodeURIComponent(location.hash.slice(1))) || find(getSaved());
 
-  Object.keys(D.classes).forEach(function(l, i){
-    if (i) { var s = document.createElement('span'); s.className = 'sep'; picker.appendChild(s); }
+  Object.keys(D.classes).forEach(function(l){
+    if (!D.classes[l].length) return;
+    if (picker.querySelector('.pill')) { var s = document.createElement('span'); s.className = 'sep'; picker.appendChild(s); }
     D.classes[l].forEach(function(c){
       var b = document.createElement('button'); b.className = 'pill'; b.textContent = c;
-      b.onclick = function(){ current = c; save(c); history.replaceState(null, '', '#' + c); render(); };
+      b.onclick = function(){ current = c; save(c); history.replaceState(null, '', '#' + encodeURIComponent(c)); render(); };
       b.dataset.c = c; picker.appendChild(b);
     });
   });
@@ -85,10 +86,9 @@ footer.wrap{color:var(--muted);font-size:13px;padding-top:20px;padding-bottom:40
     [].forEach.call(picker.querySelectorAll('.pill'), function(b){ b.setAttribute('aria-pressed', b.dataset.c === current); });
     main.innerHTML = '';
     if (!current){ main.appendChild(el('div','empty','Choisis ta classe ci-dessus pour voir tes documents.')); return; }
-    var got = {}; (D.distribution[current] || []).forEach(function(id){ got[id] = 1; });
-    var seqs = D.niveaux[levelOf(current)], shown = 0, lastNotion = null, blocks = [];
+    var seqs = D.niveaux[levelOf(current)] || [], shown = 0, lastNotion = null, blocks = [];
     seqs.forEach(function(seq){
-      var notions = seq.notions.filter(function(n){ return n.items.some(function(it){ return got[it.id] && it.type !== 'video'; }); });
+      var notions = seq.notions.filter(function(n){ return n.cls.indexOf(current) > -1; });
       if (!notions.length) return;
       var sec = el('section','seq'), h = el('h2');
       h.appendChild(el('span', null, 'Séquence ' + seq.num)); h.appendChild(document.createTextNode(seq.titre));
@@ -99,7 +99,7 @@ footer.wrap{color:var(--muted);font-size:13px;padding-top:20px;padding-bottom:40
         card.appendChild(h3);
         var docs = el('div','docs');
         n.items.forEach(function(it){
-          if (!(it.type === 'video' || got[it.id]) || !it.href) return;
+          if (it.cls.indexOf(current) < 0) return;
           var a = el('a','doc' + (it.type === 'video' ? ' video' : '')); a.href = it.href; a.target = '_blank'; a.rel = 'noopener';
           var dot = el('i'); dot.style.setProperty('--c', 'var(' + COLORS[it.type] + ')'); a.style.color = 'var(' + COLORS[it.type] + ')';
           a.appendChild(dot); var t = el('span', null, it.label); t.style.color = 'var(--ink)'; a.appendChild(t);
