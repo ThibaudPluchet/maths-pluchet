@@ -88,11 +88,12 @@ footer.wrap{color:var(--muted);font-size:13px;padding-top:20px;padding-bottom:40
     if (!current){ main.appendChild(el('div','empty','Choisis ta classe ci-dessus pour voir tes documents.')); return; }
     var seqs = D.niveaux[levelOf(current)] || [], shown = 0, lastNotion = null, blocks = [];
     seqs.forEach(function(seq){
-      var notions = seq.notions.filter(function(n){ return n.cls.indexOf(current) > -1; });
+      var notions = seq.notions.filter(function(n){ return n.cls.indexOf(current) > -1; }).reverse();
       if (!notions.length) return;
       var sec = el('section','seq'), h = el('h2');
       h.appendChild(el('span', null, 'Séquence ' + seq.num)); h.appendChild(document.createTextNode(seq.titre));
       sec.appendChild(h);
+      var isNewest = true;
       notions.forEach(function(n){
         var card = el('article','notion'), h3 = el('h3');
         h3.appendChild(el('span','code','N' + n.num)); h3.appendChild(document.createTextNode(n.titre));
@@ -105,7 +106,7 @@ footer.wrap{color:var(--muted);font-size:13px;padding-top:20px;padding-bottom:40
           a.appendChild(dot); var t = el('span', null, it.label); t.style.color = 'var(--ink)'; a.appendChild(t);
           docs.appendChild(a);
         });
-        card.appendChild(docs); sec.appendChild(card); lastNotion = h3; shown++;
+        card.appendChild(docs); sec.appendChild(card); if (!lastNotion || isNewest) lastNotion = h3; isNewest = false; shown++;
       });
       blocks.push(sec);
     });
