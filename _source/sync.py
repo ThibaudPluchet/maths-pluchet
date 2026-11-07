@@ -13,7 +13,7 @@ import json, os, re, sys, glob, shutil
 STORE = {"4e": ("suivi", "classes"), "3e": ("suivi3e", "classes3e")}
 TYPES = {"Activité": "activite", "Cours à trous": "cours", "Exercices": "exercices", "Évaluation": "evaluation",
          "Évaluation PAP": "evaluation-pap", "Carte mentale": "carte", "Fiche de révision": "revision"}
-LABELS = {"Évaluation PAP": "Évaluation (aménagée)", "Cours à trous": "Cours (complété)"}
+LABELS = {"Évaluation PAP": "Évaluation (aménagée)", "Cours à trous": "Cours (complété)", "Exercices": "Fiche d'exercices"}
 EVALS = {"evaluation", "evaluation-pap"}
 
 
