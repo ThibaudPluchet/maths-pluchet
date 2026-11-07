@@ -6,14 +6,14 @@ Usage :
 
 <db_dir> contient les exports ArtifactData : suivi/*.json, suivi3e/*.json, config/classes.json, config/classes3e.json.
 Cases de la page enseignant, par notion : d<k> = documents élèves publiés pour la classe k (hors évaluations),
-e<k> = évaluations publiées pour la classe k. Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt.
+e<k> = évaluations publiées pour la classe k. Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours : version PROF (complétée).
 """
 import json, os, re, sys, glob, shutil
 
 STORE = {"4e": ("suivi", "classes"), "3e": ("suivi3e", "classes3e")}
 TYPES = {"Activité": "activite", "Cours à trous": "cours", "Exercices": "exercices", "Évaluation": "evaluation",
          "Évaluation PAP": "evaluation-pap", "Carte mentale": "carte", "Fiche de révision": "revision"}
-LABELS = {"Évaluation PAP": "Évaluation (aménagée)"}
+LABELS = {"Évaluation PAP": "Évaluation (aménagée)", "Cours à trous": "Cours (complété)"}
 EVALS = {"evaluation", "evaluation-pap"}
 
 
@@ -49,7 +49,11 @@ def load(page, dbdir):
                     continue
                 items = []
                 for d in docs["levels"].get(lv, {}).get(str(n["n"]), []):
-                    if d["w"] != "ELEVE" or d["l"] not in TYPES:
+                    # Cours : on publie la version PROF (complétée) à la place du cours à trous de l'élève
+                    if d["l"] == "Cours à trous":
+                        if d["w"] != "PROF":
+                            continue
+                    elif d["w"] != "ELEVE" or d["l"] not in TYPES:
                         continue
                     t = TYPES[d["l"]]
                     cls = show_eval if t in EVALS else show_docs
