@@ -95,6 +95,8 @@ def main():
     for f in glob.glob(os.path.join(repo, "docs", "**", "*.pdf"), recursive=True):
         if os.path.relpath(f, repo).replace(os.sep, "/") not in wanted:
             os.remove(f); removed += 1
+    json.dump(data, open(os.path.join(repo, "data.json"), "w", encoding="utf-8"), ensure_ascii=False)
+    # data.js : gardé pour les navigateurs qui ont encore l'ancienne page en cache
     open(os.path.join(repo, "data.js"), "w", encoding="utf-8").write(
         "window.SITE_DATA = " + json.dumps(data, ensure_ascii=False) + ";\n")
     print(f"{len(wanted)} PDF en ligne, {removed} retiré(s)")
