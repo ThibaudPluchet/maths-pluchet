@@ -58,6 +58,8 @@ def load(page, dbdir):
                     items.append({"type": t, "label": LABELS.get(d["l"], d["l"]), "href": d["p"], "cls": cls})
                     wanted[d["p"]] = d.get("b")
                 items.sort(key=lambda i: list(TYPES.values()).index(i["type"]))
+                if n.get("alea") and show_docs:
+                    items.append({"type": "alea", "label": "Exercices en ligne (MathALÉA)", "href": n["alea"], "cls": show_docs})
                 for v in n.get("vids") or []:
                     items.append({"type": "video", "label": "Vidéo : " + v["l"], "href": v["u"], "cls": sorted(set(show_docs) | set(show_eval))})
                 notions.append({"num": n["n"], "titre": n["t"], "cls": sorted(set(show_docs) | set(show_eval)), "items": items})
