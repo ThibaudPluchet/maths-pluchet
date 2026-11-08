@@ -164,7 +164,12 @@ function start(D){
   function store(k, v){ try{ if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
   function levelOf(c){ for (var l in D.classes) if (D.classes[l].indexOf(c) > -1) return l; }
   function find(c){ c = (c || '').toLowerCase(); for (var l in D.classes) for (var i = 0; i < D.classes[l].length; i++) if (D.classes[l][i].toLowerCase() === c) return D.classes[l][i]; return ''; }
-  var current = find(decodeURIComponent(location.hash.slice(1))) || find(store('classe'));
+  // Adresse de classe (#3eE) : la classe est fixée et le choix des classes est masqué (accès élèves).
+  // Adresse sans # : choix des classes affiché (accès enseignant).
+  var locked = find(decodeURIComponent(location.hash.slice(1)));
+  var current = locked || find(store('classe'));
+  if (locked){ picker.parentNode.hidden = true; document.title = 'Maths ' + locked + ' – M. Pluchet'; }
+  window.addEventListener('hashchange', function(){ location.reload(); });
   var view = 'cours', seen = null, firstVisit = false;
 
   Object.keys(D.classes).forEach(function(l){
@@ -172,7 +177,7 @@ function start(D){
     var g = el('div','lvl'); g.setAttribute('role','group'); g.setAttribute('aria-label','Classes de ' + l);
     D.classes[l].forEach(function(c){
       var b = el('button','pill',c); b.dataset.c = c;
-      b.onclick = function(){ current = c; store('classe', c); history.replaceState(null, '', '#' + encodeURIComponent(c)); view = 'cours'; loadSeen(); render(); };
+      b.onclick = function(){ current = c; store('classe', c); view = 'cours'; loadSeen(); render(); };
       g.appendChild(b);
     });
     picker.appendChild(g);
