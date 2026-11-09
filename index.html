@@ -102,6 +102,23 @@ body{background-image:linear-gradient(var(--gridc) 1px,transparent 1px),linear-g
 details.seq > summary .sn::before{content:"△ ";color:var(--accent)}
 .empty::before{content:"📐";display:block;font-size:40px;margin-bottom:6px}
 footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² = c²";display:block;font:italic 15px "Bricolage Grotesque",Georgia,serif;color:var(--accent);opacity:.6;margin-bottom:8px;letter-spacing:.04em;white-space:pre-wrap}
+.seqnav .kicker{margin-bottom:8px}
+.seqlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.seqbtn{position:relative;text-align:left;display:flex;flex-direction:column;gap:2px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;font:inherit;min-height:56px}
+.seqbtn:hover{border-color:var(--accent)}
+.seqbtn .sn{font-size:13px;color:var(--muted);font-weight:700}
+.seqbtn .st{font:700 16px/1.2 "Bricolage Grotesque",system-ui,sans-serif}
+.seqbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.seqbtn[aria-pressed="true"] .sn{color:var(--accent-ink);opacity:.85}
+.seqbtn .dot{position:absolute;top:8px;right:8px;width:10px;height:10px;border-radius:50%;background:var(--new)}
+.seqview{display:flex;flex-direction:column;gap:14px;scroll-margin-top:84px}
+.seqhead .seqname{color:var(--muted);font-size:15px;margin:0 0 2px;font-weight:700}
+.seqhead h2{font:700 clamp(22px,5vw,28px)/1.2 "Bricolage Grotesque",system-ui,sans-serif;margin:0}
+.seqview .notion{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.seqview .notion.current{border:2px solid var(--accent);box-shadow:0 6px 24px -14px var(--accent);position:relative;overflow:hidden}
+.seqview .notion.current::after{content:"π";position:absolute;right:14px;top:-18px;font:italic 700 120px/1 "Bricolage Grotesque",Georgia,serif;color:var(--accent);opacity:.07;pointer-events:none}
+.seqview .notion h3{font-size:18px;margin:0 0 14px}
+@media (min-width:640px){ .seqview .notion .groups{grid-template-columns:1fr 1fr} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -174,14 +191,14 @@ function start(D){
   var current = locked || find(store('classe'));
   if (locked){ picker.parentNode.hidden = true; document.title = 'Maths ' + locked + ' – M. Pluchet'; }
   window.addEventListener('hashchange', function(){ location.reload(); });
-  var view = 'cours', seen = null, firstVisit = false;
+  var view = 'cours', seen = null, firstVisit = false, seqSel = null;
 
   Object.keys(D.classes).forEach(function(l){
     if (!D.classes[l].length) return;
     var g = el('div','lvl'); g.setAttribute('role','group'); g.setAttribute('aria-label','Classes de ' + l);
     D.classes[l].forEach(function(c){
       var b = el('button','pill',c); b.dataset.c = c;
-      b.onclick = function(){ current = c; store('classe', c); view = 'cours'; loadSeen(); render(); };
+      b.onclick = function(){ current = c; store('classe', c); seqSel = null; view = 'cours'; loadSeen(); render(); };
       g.appendChild(b);
     });
     picker.appendChild(g);
@@ -247,31 +264,38 @@ function start(D){
     saveSeen(all);
   }
 
+  // Menu des séquences (ordre chronologique), puis les notions de la séquence choisie
   function renderCours(seqs){
-    var cur = seqs[0].notions[0];
-    var hero = el('section','hero');
-    hero.appendChild(el('p','kicker','En ce moment'));
-    hero.appendChild(el('p','seqname','Séquence ' + seqs[0].num + ' · ' + seqs[0].titre));
-    var h = el('h2'); h.appendChild(el('span','code','N' + cur.num)); h.appendChild(document.createTextNode(cur.titre));
-    hero.appendChild(h); hero.appendChild(groups(cur.items));
-    main.appendChild(hero);
+    var chrono = seqs.slice().reverse();               // seqs : plus récente d'abord
+    var latest = seqs[0];
+    if (!chrono.some(function(s){ return s.num === seqSel; })) seqSel = latest.num;
+    var nav = el('nav','seqnav'); nav.setAttribute('aria-label','Séquences');
+    nav.appendChild(el('p','kicker','Choisis une séquence'));
+    var list = el('div','seqlist');
+    chrono.forEach(function(s){
+      var b = el('button','seqbtn'); b.type = 'button';
+      b.setAttribute('aria-pressed', s.num === seqSel);
+      b.appendChild(el('span','sn','Séquence ' + s.num + (s === latest ? ' · en cours' : '')));
+      b.appendChild(el('span','st', s.titre));
+      if (s.notions.some(function(n){ return n.items.some(isNew); })) b.appendChild(el('span','dot'));
+      b.onclick = function(){ seqSel = s.num; render(); var t = document.getElementById('seq-notions'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
+      list.appendChild(b);
+    });
+    nav.appendChild(list); main.appendChild(nav);
 
-    var rest = seqs.map(function(s, i){ return {num:s.num, titre:s.titre, notions: i === 0 ? s.notions.slice(1) : s.notions}; })
-      .filter(function(s){ return s.notions.length; });
-    if (!rest.length) return;
-    var sec = el('section'); sec.appendChild(el('p','kicker','Notions précédentes'));
-    rest.forEach(function(s){
-      var d = el('details','seq'), sum = el('summary');
-      sum.appendChild(el('span','sn','Séquence ' + s.num)); sum.appendChild(el('span','st', s.titre));
-      var fresh = s.notions.some(function(n){ return n.items.some(isNew); });
-      if (fresh){ sum.appendChild(el('span','badge','Nouveau')); d.open = true; }
-      d.appendChild(sum);
-      s.notions.forEach(function(n){
-        var box = el('div','notion'), h3 = el('h3');
-        h3.appendChild(el('span','code','N' + n.num)); h3.appendChild(document.createTextNode(n.titre));
-        box.appendChild(h3); box.appendChild(groups(n.items)); d.appendChild(box);
-      });
-      sec.appendChild(d);
+    var s = chrono.filter(function(x){ return x.num === seqSel; })[0];
+    var sec = el('section','seqview'); sec.id = 'seq-notions';
+    var hd = el('div','seqhead');
+    hd.appendChild(el('p','seqname','Séquence ' + s.num));
+    hd.appendChild(el('h2', null, s.titre));
+    sec.appendChild(hd);
+    var cur = latest.notions[0];
+    s.notions.slice().reverse().forEach(function(n){
+      var isCur = s === latest && n === cur;
+      var box = el('article','notion' + (isCur ? ' current' : ''));
+      if (isCur) box.appendChild(el('p','kicker','En ce moment'));
+      var h3 = el('h3'); h3.appendChild(el('span','code','N' + n.num)); h3.appendChild(document.createTextNode(n.titre));
+      box.appendChild(h3); box.appendChild(groups(n.items)); sec.appendChild(box);
     });
     main.appendChild(sec);
   }
