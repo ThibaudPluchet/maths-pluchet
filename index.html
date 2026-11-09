@@ -265,33 +265,44 @@ function start(D){
   }
 
   // Menu des séquences (ordre chronologique), puis les notions de la séquence choisie
+  // Séquences d'un même domaine (« Fonctions (1) », « Fonctions (2) »…) regroupées en une seule entrée du menu,
+  // dans l'ordre de leur première apparition ; dedans, les notions de la plus récente à la plus ancienne.
+  function domainOf(t){ return String(t).replace(/\s*\(\d+\)\s*$/, ''); }
   function renderCours(seqs){
-    var chrono = seqs.slice().reverse();               // seqs : plus récente d'abord
-    var latest = seqs[0];
-    if (!chrono.some(function(s){ return s.num === seqSel; })) seqSel = latest.num;
+    var latest = seqs[0], cur = latest.notions[0];
+    var doms = [], byKey = {};
+    seqs.slice().reverse().forEach(function(s){            // ordre chronologique
+      var k = domainOf(s.titre);
+      if (!byKey[k]){ byKey[k] = {key:k, nums:[], notions:[]}; doms.push(byKey[k]); }
+      byKey[k].nums.push(s.num);
+      byKey[k].notions = s.notions.map(function(n){ return {n:n, seq:s.num}; }).concat(byKey[k].notions);
+    });
+    var curKey = domainOf(latest.titre);
+    if (!byKey[seqSel]) seqSel = curKey;
+    function nums(d){ return (d.nums.length > 1 ? 'Séquences ' : 'Séquence ') + d.nums.join(' et '); }
+
     var nav = el('nav','seqnav'); nav.setAttribute('aria-label','Séquences');
     nav.appendChild(el('p','kicker','Choisis une séquence'));
     var list = el('div','seqlist');
-    chrono.forEach(function(s){
+    doms.forEach(function(d){
       var b = el('button','seqbtn'); b.type = 'button';
-      b.setAttribute('aria-pressed', s.num === seqSel);
-      b.appendChild(el('span','sn','Séquence ' + s.num + (s === latest ? ' · en cours' : '')));
-      b.appendChild(el('span','st', s.titre));
-      if (s.notions.some(function(n){ return n.items.some(isNew); })) b.appendChild(el('span','dot'));
-      b.onclick = function(){ seqSel = s.num; render(); var t = document.getElementById('seq-notions'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
+      b.setAttribute('aria-pressed', d.key === seqSel);
+      b.appendChild(el('span','sn', nums(d) + (d.key === curKey ? ' · en cours' : '')));
+      b.appendChild(el('span','st', d.key));
+      if (d.notions.some(function(x){ return x.n.items.some(isNew); })) b.appendChild(el('span','dot'));
+      b.onclick = function(){ seqSel = d.key; render(); var t = document.getElementById('seq-notions'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
       list.appendChild(b);
     });
     nav.appendChild(list); main.appendChild(nav);
 
-    var s = chrono.filter(function(x){ return x.num === seqSel; })[0];
+    var d = byKey[seqSel];
     var sec = el('section','seqview'); sec.id = 'seq-notions';
     var hd = el('div','seqhead');
-    hd.appendChild(el('p','seqname','Séquence ' + s.num));
-    hd.appendChild(el('h2', null, s.titre));
+    hd.appendChild(el('p','seqname', nums(d)));
+    hd.appendChild(el('h2', null, d.key));
     sec.appendChild(hd);
-    var cur = latest.notions[0];
-    s.notions.forEach(function(n){   // de la plus récente (notion en cours) à la plus ancienne
-      var isCur = s === latest && n === cur;
+    d.notions.forEach(function(x){
+      var n = x.n, isCur = n === cur;
       var box = el('article','notion' + (isCur ? ' current' : ''));
       if (isCur) box.appendChild(el('p','kicker','En ce moment'));
       var h3 = el('h3'); h3.appendChild(el('span','code','N' + n.num)); h3.appendChild(document.createTextNode(n.titre));
