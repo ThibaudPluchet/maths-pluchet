@@ -290,7 +290,7 @@ function start(D){
     hd.appendChild(el('h2', null, s.titre));
     sec.appendChild(hd);
     var cur = latest.notions[0];
-    s.notions.slice().reverse().forEach(function(n){
+    s.notions.forEach(function(n){   // de la plus récente (notion en cours) à la plus ancienne
       var isCur = s === latest && n === cur;
       var box = el('article','notion' + (isCur ? ' current' : ''));
       if (isCur) box.appendChild(el('p','kicker','En ce moment'));
