@@ -7,6 +7,8 @@ Usage :
 <db_dir> contient les exports ArtifactData : suivi/*.json, suivi3e/*.json, config/classes.json, config/classes3e.json.
 Cases de la page enseignant, par notion : d<k> = documents élèves publiés pour la classe k (hors évaluations),
 e<k> = évaluation (sujet élève) et sa correction (version PROF) publiées pour la classe k.
+Si l'évaluation existe en plusieurs sujets (PDF du dossier Evaluation, champs c = classe et s = sujet dans DOCS),
+la classe k ne reçoit que ses propres sujets et leurs corrections.
 Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours (version PROF, complétée) et la correction de l'évaluation.
 L'évaluation aménagée (PAP) n'est jamais publiée.
 """
@@ -64,11 +66,18 @@ def load(page, dbdir):
                         lab = d["l"]
                     t = TYPES[lab]
                     cls = show_eval if t in EVALS else show_docs
+                    label = LABELS.get(lab, lab)
+                    # Évaluation en plusieurs sujets (dossier Evaluation) : chaque PDF porte sa classe (c) et
+                    # son sujet (s) ; il n'est publié que pour cette classe, si sa case « Éval » est cochée.
+                    if d.get("c"):
+                        cls = [c for c in cls if c == d["c"]]
+                        if d.get("s"):
+                            label += " (sujet " + d["s"] + ")"
                     if not cls:
                         continue
-                    items.append({"type": t, "label": LABELS.get(lab, lab), "href": d["p"], "cls": cls})
+                    items.append({"type": t, "label": label, "href": d["p"], "cls": cls, "_s": d.get("s") or ""})
                     wanted[d["p"]] = d.get("b")
-                items.sort(key=lambda i: list(TYPES.values()).index(i["type"]))
+                items.sort(key=lambda i: (list(TYPES.values()).index(i["type"]), i.pop("_s")))
                 if n.get("alea") and show_docs:
                     items.append({"type": "alea", "label": "Exercices en ligne (MathALÉA)", "href": n["alea"], "cls": show_docs})
                 for v in n.get("vids") or []:
