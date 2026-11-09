@@ -15,7 +15,31 @@ c<k> (Fait en classe) + d<k> = correction de la fiche d'exercices (version PROF)
 Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours (version PROF, complétée) et les corrections (évaluation, fiche d'exercices).
 L'évaluation aménagée (PAP) n'est jamais publiée.
 """
-import json, os, re, sys, glob, shutil, base64
+import json, os, re, sys, glob, shutil, base64, hmac, hashlib
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+# Corrections de fiche d'exercices : chiffrées par classe (AES-GCM) dans enc/, jamais en clair dans le dépôt public.
+# Clé d'une classe = HMAC-SHA256(SITE_KEY, "classe:<nom>")[:16] ; elle n'existe que dans l'adresse secrète de la classe
+# (#4e3/<clé>), si bien qu'une autre classe ne peut ni trouver ni lire ces corrections.
+MASTER = os.environ.get("SITE_KEY", "")
+PRIVATE = {"correction-exo"}
+
+
+def classkey(c):
+    return hmac.new(bytes.fromhex(MASTER), ("classe:" + c).encode(), hashlib.sha256).digest()[:16]
+
+
+def b64u(b):
+    return base64.urlsafe_b64encode(b).rstrip(b"=").decode()
+
+
+def encname(key, label):
+    return "enc/" + hmac.new(key, label.encode(), hashlib.sha256).hexdigest()[:20] + ".bin"
+
+
+def encrypt(key, raw):
+    nonce = hmac.new(key, hashlib.sha256(raw).digest(), hashlib.sha256).digest()[:12]   # déterministe : pas de changement inutile
+    return nonce + AESGCM(key).encrypt(nonce, raw, None)
 
 STORE = {"4e": ("suivi", "classes"), "3e": ("suivi3e", "classes3e")}
 TYPES = {"Activité": "activite", "Cours à trous": "cours", "Exercices": "exercices",
@@ -39,6 +63,8 @@ def load(page, dbdir):
     html = open(page, encoding="utf-8").read()
     levels, docs = js_const(html, "LEVELS"), js_const(html, "DOCS")
     classes, data, wanted = {}, {"niveaux": {}}, {}
+    global SECRET
+    SECRET = {}
     global BUNDLE
     BUNDLE = {d["p"]: d["z"] for lv in docs["levels"].values() for L in lv.values() for d in L if d.get("z")}
     for lv, (suivi, cfg) in STORE.items():
@@ -84,6 +110,10 @@ def load(page, dbdir):
                             label += " (sujet " + d["s"] + ")"
                     if not cls:
                         continue
+                    if t in PRIVATE:
+                        for c in cls:
+                            SECRET.setdefault(c, []).append({"lv": lv, "num": n["n"], "type": t, "label": label, "src": d["p"], "b": d.get("b")})
+                        continue
                     items.append({"type": t, "label": label, "href": d["p"], "cls": cls, "_s": d.get("s") or ""})
                     wanted[d["p"]] = d.get("b")
                 items.sort(key=lambda i: (list(TYPES.values()).index(i["type"]), i.pop("_s")))
@@ -100,6 +130,18 @@ def load(page, dbdir):
 
 
 BUNDLE = {}
+SECRET = {}
+
+
+def secret_plan():
+    """{classe: [(élément, chemin chiffré)]}"""
+    if SECRET and not re.fullmatch(r"[0-9a-f]{64}", MASTER):
+        sys.exit("SITE_KEY manquante ou invalide : impossible de publier les corrections chiffrées")
+    out = {}
+    for c, its in SECRET.items():
+        k = classkey(c)
+        out[c] = [(it, encname(k, f"{it['src']}:{it['b']}")) for it in its]
+    return out
 
 
 def main():
@@ -108,6 +150,8 @@ def main():
     if mode == "plan":
         missing = [p for p, b in wanted.items() if not os.path.exists(os.path.join(repo, p)) or (b and os.path.getsize(os.path.join(repo, p)) != b)]
         # PDF rangés dans un paquet evaluations.json : on demande le paquet (une seule fois) plutôt que le PDF
+        for c, lst in secret_plan().items():
+            missing += [it["src"] for it, e in lst if not os.path.exists(os.path.join(repo, e))]
         need = list(dict.fromkeys(BUNDLE.get(p, p) for p in missing))
         print(f"{len(missing)} PDF à mettre à jour")
         json.dump(need, open(f"{dbdir}/need.json", "w"), ensure_ascii=False)
@@ -136,7 +180,36 @@ def main():
             shutil.copyfile(src, dst)
         elif not os.path.exists(dst):
             sys.exit(f"PDF manquant : {p}")
+    keep = set()
+    if MASTER:
+        sp = secret_plan()
+        noms = [c for l in data["classes"].values() for c in l]
+        for c in noms:
+            k = classkey(c)
+            man = []
+            for it, e in sp.get(c, []):
+                dst = os.path.join(repo, e)
+                if not os.path.exists(dst):
+                    src = os.path.join(pdfdir, it["src"])
+                    if not os.path.exists(src):
+                        sys.exit(f"PDF manquant : {it['src']}")
+                    raw = open(src, "rb").read()
+                    if raw[:5] != b"%PDF-":
+                        sys.exit(f"Contenu invalide : {it['src']}")
+                    os.makedirs(os.path.dirname(dst), exist_ok=True)
+                    open(dst, "wb").write(encrypt(k, raw))
+                keep.add(e)
+                man.append({"lv": it["lv"], "num": it["num"], "type": it["type"], "label": it["label"], "e": e})
+            e = encname(k, "manifest")
+            os.makedirs(os.path.join(repo, "enc"), exist_ok=True)
+            open(os.path.join(repo, e), "wb").write(encrypt(k, json.dumps(man, ensure_ascii=False, sort_keys=True).encode()))
+            keep.add(e)
+    elif SECRET:
+        secret_plan()
     removed = 0
+    for f in glob.glob(os.path.join(repo, "enc", "*.bin")):
+        if os.path.relpath(f, repo).replace(os.sep, "/") not in keep:
+            os.remove(f); removed += 1
     for f in glob.glob(os.path.join(repo, "docs", "**", "*.pdf"), recursive=True):
         if os.path.relpath(f, repo).replace(os.sep, "/") not in wanted:
             os.remove(f); removed += 1
@@ -144,7 +217,10 @@ def main():
     # data.js : gardé pour les navigateurs qui ont encore l'ancienne page en cache
     open(os.path.join(repo, "data.js"), "w", encoding="utf-8").write(
         "window.SITE_DATA = " + json.dumps(data, ensure_ascii=False) + ";\n")
-    print(f"{len(wanted)} PDF en ligne, {removed} retiré(s)")
+    print(f"{len(wanted)} PDF en ligne, {sum(len(v) for v in SECRET.values())} correction(s) chiffrée(s), {removed} fichier(s) retiré(s)")
+    if len(sys.argv) > 6 and sys.argv[6] == "--liens":
+        for c in [c for l in data["classes"].values() for c in l]:
+            print(f"{c} : https://thibaudpluchet.github.io/maths-pluchet/#{c}/{b64u(classkey(c))}")
 
 
 if __name__ == "__main__":

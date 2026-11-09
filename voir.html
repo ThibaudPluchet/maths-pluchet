@@ -41,18 +41,34 @@ canvas{background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.25);max-width:none}
 <div id="pages"><p class="msg">Ouverture du document…</p></div>
 <script>
 (function(){
-  var q = new URLSearchParams(location.search), f = q.get('f') || '', t = q.get('t') || 'Document';
+  var q = new URLSearchParams(location.search), f = q.get('f') || '', e = q.get('e') || '', t = q.get('t') || 'Document';
+  var key = (location.hash.match(/k=([A-Za-z0-9_-]+)/) || [])[1] || '';
   var box = document.getElementById('pages');
   function msg(html){ box.innerHTML = '<p class="msg">' + html + '</p>'; }
   // Seuls les PDF du site sont acceptés
-  if (!/^docs\/[a-z0-9\/._-]+\.pdf$/i.test(f) || f.indexOf('..') > -1){ msg('Document introuvable. <a href="./">Retour au site</a>'); return; }
+  // Correction chiffrée (enc/…bin) : déchiffrée dans le navigateur avec la clé de la classe (#k=…)
+  if (e && !(/^enc\/[0-9a-f]{20}\.bin$/.test(e) && key)){ msg('Document introuvable. <a href="./">Retour au site</a>'); return; }
+  if (!e && (!/^docs\/[a-z0-9\/._-]+\.pdf$/i.test(f) || f.indexOf('..') > -1)){ msg('Document introuvable. <a href="./">Retour au site</a>'); return; }
   document.getElementById('title').textContent = t;
   document.title = t + ' – Maths M. Pluchet';
-  var dl = document.getElementById('dl'); dl.href = f; dl.setAttribute('download', f.split('/').pop());
+  var dl = document.getElementById('dl');
+  if (!e){ dl.href = f; dl.setAttribute('download', f.split('/').pop()); }
+  function b64u(s){ s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '='; var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+  function getPdf(){
+    if (!e) return fetch(f).then(function(r){ if (!r.ok) throw new Error('http ' + r.status); return r.arrayBuffer(); });
+    return Promise.all([fetch(e), crypto.subtle.importKey('raw', b64u(key), 'AES-GCM', false, ['decrypt'])])
+      .then(function(r){ if (!r[0].ok) throw new Error('http ' + r[0].status); return r[0].arrayBuffer().then(function(buf){
+        return crypto.subtle.decrypt({name:'AES-GCM', iv:new Uint8Array(buf, 0, 12)}, r[1], new Uint8Array(buf, 12)); }); })
+      .then(function(plain){
+        dl.href = URL.createObjectURL(new Blob([plain], {type:'application/pdf'}));
+        dl.setAttribute('download', t.replace(/[\\/:*?"<>|]/g, '') + '.pdf');
+        return plain;
+      });
+  }
   var PDFJS = 'lib/pdfjs/';  // pdf.js 3.11.174 hébergé sur le site (pas de dépendance externe)
   var doc = null, scale = 0, fit = true, token = 0;
   function load(src){ return new Promise(function(ok, ko){ var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); }); }
-  function fail(){ msg('Le document ne peut pas s’afficher ici. <a href="' + f + '" download>Télécharger le PDF</a>'); }
+  function fail(){ msg(e ? 'Ce document ne peut pas s’ouvrir. Utilise bien le lien ou le QR code de ta classe. <a href="./">Retour au site</a>' : 'Le document ne peut pas s’afficher ici. <a href="' + f + '" download>Télécharger le PDF</a>'); }
   async function draw(){
     var tok = ++token; box.textContent = '';
     var avail = Math.max(280, box.clientWidth - 16), dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -66,11 +82,10 @@ canvas{background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.25);max-width:none}
       await page.render({canvasContext: c.getContext('2d'), viewport: vp}).promise;
     }
   }
-  Promise.all([load(PDFJS + 'pdf.min.js'), fetch(f)])
+  Promise.all([load(PDFJS + 'pdf.min.js'), getPdf()])
     .then(function(r){
-      if (!r[1].ok) throw new Error('http ' + r[1].status);
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.js';
-      return r[1].arrayBuffer();
+      return r[1];
     })
     .then(function(buf){ return window.pdfjsLib.getDocument({data: new Uint8Array(buf), isEvalSupported:false}).promise; })
     .then(function(d){ doc = d; document.getElementById('info').textContent = d.numPages + ' page' + (d.numPages > 1 ? 's' : ''); return draw(); })

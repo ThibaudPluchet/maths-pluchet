@@ -187,7 +187,8 @@ function start(D){
   function find(c){ c = (c || '').toLowerCase(); for (var l in D.classes) for (var i = 0; i < D.classes[l].length; i++) if (D.classes[l][i].toLowerCase() === c) return D.classes[l][i]; return ''; }
   // Adresse de classe (#3eE) : la classe est fixée et le choix des classes est masqué (accès élèves).
   // Adresse sans # : choix des classes affiché (accès enseignant).
-  var locked = find(decodeURIComponent(location.hash.slice(1)));
+  var hashParts = decodeURIComponent(location.hash.slice(1)).split('/');
+  var locked = find(hashParts[0]);
   var current = locked || find(store('classe'));
   if (locked){ picker.parentNode.hidden = true; document.title = 'Maths ' + locked + ' – M. Pluchet'; }
   window.addEventListener('hashchange', function(){ location.reload(); });
@@ -219,7 +220,8 @@ function start(D){
   function link(it){
     var a = el('a','doc'); a.target = '_blank'; a.rel = 'noopener';
     // PDF : ouverts dans la visionneuse du site (certains navigateurs du collège n'affichent pas les PDF)
-    a.href = /\.pdf$/i.test(it.href) ? 'voir.html?f=' + encodeURIComponent(it.href) + '&t=' + encodeURIComponent(it.label) : it.href;
+    if (it.enc) a.href = 'voir.html?e=' + encodeURIComponent(it.enc) + '&t=' + encodeURIComponent(it.label) + '#k=' + KEY;
+    else a.href = /\.pdf$/i.test(it.href) ? 'voir.html?f=' + encodeURIComponent(it.href) + '&t=' + encodeURIComponent(it.label) : it.href;
     a.appendChild(el('span','ic', ICON[it.type] || '•'));
     a.appendChild(el('span','t', it.label));
     if (isNew(it)) a.appendChild(el('span','badge','Nouveau'));
@@ -332,8 +334,39 @@ function start(D){
   render();
 }
 // Les données sont rechargées à chaque visite (pas de cache) pour que les liens correspondent toujours aux fichiers en ligne
+// Adresse secrète de classe (#4e3/<clé>) : la clé déchiffre les corrections réservées à cette classe (enc/*.bin)
+var KEY = (decodeURIComponent(location.hash.slice(1)).split('/')[1] || '').replace(/[^A-Za-z0-9_-]/g, '');
+function b64u(s){ s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '='; var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+function hexOf(buf){ return Array.prototype.map.call(new Uint8Array(buf), function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); }
+function addSecret(D){
+  if (!KEY || !window.crypto || !crypto.subtle) return D;
+  var raw;
+  try { raw = b64u(KEY); } catch(e){ return D; }
+  if (raw.length !== 16) return D;
+  return crypto.subtle.importKey('raw', raw, {name:'HMAC', hash:'SHA-256'}, false, ['sign'])
+    .then(function(hk){ return crypto.subtle.sign('HMAC', hk, new TextEncoder().encode('manifest')); })
+    .then(function(sig){ return fetch('enc/' + hexOf(sig).slice(0, 20) + '.bin?t=' + Date.now(), {cache:'no-store'}); })
+    .then(function(r){ if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+    .then(function(buf){
+      return crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']).then(function(k){
+        return crypto.subtle.decrypt({name:'AES-GCM', iv:new Uint8Array(buf, 0, 12)}, k, new Uint8Array(buf, 12));
+      });
+    })
+    .then(function(plain){
+      var c = find0(D, decodeURIComponent(location.hash.slice(1)).split('/')[0]);
+      JSON.parse(new TextDecoder().decode(plain)).forEach(function(it){
+        (D.niveaux[it.lv] || []).forEach(function(s){ s.notions.forEach(function(n){
+          if (n.num === it.num) n.items.push({type:it.type, label:it.label, href:it.e, enc:it.e, cls:[c]});
+        }); });
+      });
+      return D;
+    })
+    .catch(function(){ return D; });
+}
+function find0(D, c){ c = (c || '').toLowerCase(); for (var l in D.classes) for (var i = 0; i < D.classes[l].length; i++) if (D.classes[l][i].toLowerCase() === c) return D.classes[l][i]; return ''; }
 fetch('data.json?t=' + Date.now(), {cache: 'no-store'})
   .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(addSecret)
   .then(start)
   .catch(function(){ document.getElementById('main').innerHTML = '<div class="empty">Impossible de charger les documents. Vérifie ta connexion puis recharge la page.</div>'; });
 
