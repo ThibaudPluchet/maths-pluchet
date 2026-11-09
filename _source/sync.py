@@ -135,8 +135,10 @@ SECRET = {}
 
 def secret_plan():
     """{classe: [(élément, chemin chiffré)]}"""
-    if SECRET and not re.fullmatch(r"[0-9a-f]{64}", MASTER):
-        sys.exit("SITE_KEY manquante ou invalide : impossible de publier les corrections chiffrées")
+    if not re.fullmatch(r"[0-9a-f]{64}", MASTER):
+        if SECRET:
+            print("ATTENTION : SITE_KEY absente, corrections chiffrées laissées telles quelles (non mises à jour)")
+        return {}
     out = {}
     for c, its in SECRET.items():
         k = classkey(c)
@@ -204,10 +206,10 @@ def main():
             os.makedirs(os.path.join(repo, "enc"), exist_ok=True)
             open(os.path.join(repo, e), "wb").write(encrypt(k, json.dumps(man, ensure_ascii=False, sort_keys=True).encode()))
             keep.add(e)
-    elif SECRET:
+    else:
         secret_plan()
     removed = 0
-    for f in glob.glob(os.path.join(repo, "enc", "*.bin")):
+    for f in (glob.glob(os.path.join(repo, "enc", "*.bin")) if MASTER else []):
         if os.path.relpath(f, repo).replace(os.sep, "/") not in keep:
             os.remove(f); removed += 1
     for f in glob.glob(os.path.join(repo, "docs", "**", "*.pdf"), recursive=True):
