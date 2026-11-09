@@ -11,18 +11,21 @@ Si l'évaluation existe en plusieurs sujets (PDF du dossier Evaluation, champs c
 la classe k ne reçoit que ses propres sujets et leurs corrections.
 Les PDF d'évaluation peuvent être regroupés par la page enseignant dans un paquet docs/<niveau>/nXX/evaluations.json
 (champ z dans DOCS : {chemin du PDF: contenu en base64}) : plan demande alors le paquet, et build en extrait les PDF.
-Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours (version PROF, complétée) et la correction de l'évaluation.
+c<k> (Fait en classe) + d<k> = correction de la fiche d'exercices (version PROF) publiée pour la classe k.
+Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours (version PROF, complétée) et les corrections (évaluation, fiche d'exercices).
 L'évaluation aménagée (PAP) n'est jamais publiée.
 """
 import json, os, re, sys, glob, shutil, base64
 
 STORE = {"4e": ("suivi", "classes"), "3e": ("suivi3e", "classes3e")}
-TYPES = {"Activité": "activite", "Cours à trous": "cours", "Exercices": "exercices", "Évaluation": "evaluation",
+TYPES = {"Activité": "activite", "Cours à trous": "cours", "Exercices": "exercices",
+         "Correction exercices": "correction-exo", "Évaluation": "evaluation",
          "Correction": "correction", "Carte mentale": "carte", "Fiche de révision": "revision"}
-LABELS = {"Cours à trous": "Cours (complété)", "Exercices": "Fiche d'exercices", "Correction": "Correction de l'évaluation"}
+LABELS = {"Cours à trous": "Cours (complété)", "Exercices": "Fiche d'exercices", "Correction": "Correction de l'évaluation",
+          "Correction exercices": "Correction de la fiche d'exercices"}
 EVALS = {"evaluation", "correction"}
-# Versions PROF publiées : cours complété et correction de l'évaluation (sous un autre libellé)
-PROF_OK = {"Cours à trous": "Cours à trous", "Évaluation": "Correction"}
+# Versions PROF publiées : cours complété, correction de l'évaluation et correction de la fiche d'exercices
+PROF_OK = {"Cours à trous": "Cours à trous", "Évaluation": "Correction", "Exercices": "Correction exercices"}
 
 
 def js_const(html, name):
@@ -55,6 +58,8 @@ def load(page, dbdir):
                 s = state.get("n%02d" % n["n"], {})
                 show_docs = [noms[k] for k in range(len(noms)) if s.get(f"d{k+1}")]
                 show_eval = [noms[k] for k in range(len(noms)) if s.get(f"e{k+1}")]
+                # Correction de la fiche d'exercices : quand la notion est « Fait en classe » (et ses documents publiés)
+                show_fait = [noms[k] for k in range(len(noms)) if s.get(f"c{k+1}") and s.get(f"d{k+1}")]
                 if not show_docs and not show_eval:
                     continue
                 items = []
@@ -69,7 +74,7 @@ def load(page, dbdir):
                     else:
                         lab = d["l"]
                     t = TYPES[lab]
-                    cls = show_eval if t in EVALS else show_docs
+                    cls = show_eval if t in EVALS else show_fait if t == "correction-exo" else show_docs
                     label = LABELS.get(lab, lab)
                     # Évaluation en plusieurs sujets (dossier Evaluation) : chaque PDF porte sa classe (c) et
                     # son sujet (s) ; il n'est publié que pour cette classe, si sa case « Éval » est cochée.
