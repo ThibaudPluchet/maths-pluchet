@@ -6,15 +6,19 @@ Usage :
 
 <db_dir> contient les exports ArtifactData : suivi/*.json, suivi3e/*.json, config/classes.json, config/classes3e.json.
 Cases de la page enseignant, par notion : d<k> = documents élèves publiés pour la classe k (hors évaluations),
-e<k> = évaluations publiées pour la classe k. Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours : version PROF (complétée).
+e<k> = évaluation (sujet élève) et sa correction (version PROF) publiées pour la classe k.
+Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours (version PROF, complétée) et la correction de l'évaluation.
+L'évaluation aménagée (PAP) n'est jamais publiée.
 """
 import json, os, re, sys, glob, shutil
 
 STORE = {"4e": ("suivi", "classes"), "3e": ("suivi3e", "classes3e")}
 TYPES = {"Activité": "activite", "Cours à trous": "cours", "Exercices": "exercices", "Évaluation": "evaluation",
-         "Évaluation PAP": "evaluation-pap", "Carte mentale": "carte", "Fiche de révision": "revision"}
-LABELS = {"Évaluation PAP": "Évaluation (aménagée)", "Cours à trous": "Cours (complété)", "Exercices": "Fiche d'exercices"}
-EVALS = {"evaluation", "evaluation-pap"}
+         "Correction": "correction", "Carte mentale": "carte", "Fiche de révision": "revision"}
+LABELS = {"Cours à trous": "Cours (complété)", "Exercices": "Fiche d'exercices", "Correction": "Correction de l'évaluation"}
+EVALS = {"evaluation", "correction"}
+# Versions PROF publiées : cours complété et correction de l'évaluation (sous un autre libellé)
+PROF_OK = {"Cours à trous": "Cours à trous", "Évaluation": "Correction"}
 
 
 def js_const(html, name):
@@ -49,17 +53,20 @@ def load(page, dbdir):
                     continue
                 items = []
                 for d in docs["levels"].get(lv, {}).get(str(n["n"]), []):
-                    # Cours : on publie la version PROF (complétée) à la place du cours à trous de l'élève
-                    if d["l"] == "Cours à trous":
-                        if d["w"] != "PROF":
+                    # Cours : version PROF (complétée) à la place du cours à trous ; évaluation : sujet ÉLÈVE + correction PROF
+                    if d["w"] == "PROF":
+                        if d["l"] not in PROF_OK:
                             continue
-                    elif d["w"] != "ELEVE" or d["l"] not in TYPES:
+                        lab = PROF_OK[d["l"]]
+                    elif d["l"] == "Cours à trous" or d["l"] not in TYPES:
                         continue
-                    t = TYPES[d["l"]]
+                    else:
+                        lab = d["l"]
+                    t = TYPES[lab]
                     cls = show_eval if t in EVALS else show_docs
                     if not cls:
                         continue
-                    items.append({"type": t, "label": LABELS.get(d["l"], d["l"]), "href": d["p"], "cls": cls})
+                    items.append({"type": t, "label": LABELS.get(lab, lab), "href": d["p"], "cls": cls})
                     wanted[d["p"]] = d.get("b")
                 items.sort(key=lambda i: list(TYPES.values()).index(i["type"]))
                 if n.get("alea") and show_docs:
