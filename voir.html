@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document – Maths M. Pluchet</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9e7e1;--bar:#ffffff;--ink:#1b2333;--muted:#596277;--line:#e2ded3;--accent:#2f5bd3;--accent-ink:#fff}
+@media (prefers-color-scheme: dark){:root{--bg:#0d0f14;--bar:#1b1f28;--ink:#eaedf3;--muted:#a3abbc;--line:#2b313e;--accent:#86a4ff;--accent-ink:#0f1320}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 "Atkinson Hyperlegible",system-ui,sans-serif;display:flex;flex-direction:column}
+.bar{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 16px;background:var(--bar);border-bottom:1px solid var(--line)}
+.bar h1{font-size:17px;margin:0;flex:1 1 200px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.info{color:var(--muted);font-size:14px}
+.act{display:flex;gap:6px;flex-wrap:wrap}
+button,.btn{font:700 15px "Atkinson Hyperlegible",system-ui,sans-serif;border:1px solid var(--line);background:var(--bar);color:var(--ink);border-radius:10px;padding:7px 12px;cursor:pointer;text-decoration:none;min-width:40px}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+#pages{flex:1;padding:12px 8px 40px;display:flex;flex-direction:column;align-items:center;gap:12px;overflow:auto}
+canvas{background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.25);max-width:none}
+.msg{color:var(--muted);text-align:center;padding:40px 16px;max-width:520px}
+.msg a{color:var(--accent);font-weight:700}
+@media print{.bar{display:none}#pages{padding:0;gap:0}canvas{box-shadow:none;page-break-after:always}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <h1 id="title">Document</h1>
+  <span class="info" id="info"></span>
+  <div class="act">
+    <button type="button" id="out" aria-label="Dézoomer">−</button>
+    <button type="button" id="in" aria-label="Zoomer">+</button>
+    <a class="btn main" id="dl" download>Télécharger</a>
+  </div>
+</div>
+<div id="pages"><p class="msg">Ouverture du document…</p></div>
+<script>
+(function(){
+  var q = new URLSearchParams(location.search), f = q.get('f') || '', t = q.get('t') || 'Document';
+  var box = document.getElementById('pages');
+  function msg(html){ box.innerHTML = '<p class="msg">' + html + '</p>'; }
+  // Seuls les PDF du site sont acceptés
+  if (!/^docs\/[a-z0-9\/._-]+\.pdf$/i.test(f) || f.indexOf('..') > -1){ msg('Document introuvable. <a href="./">Retour au site</a>'); return; }
+  document.getElementById('title').textContent = t;
+  document.title = t + ' – Maths M. Pluchet';
+  var dl = document.getElementById('dl'); dl.href = f; dl.setAttribute('download', f.split('/').pop());
+  var PDFJS = 'lib/pdfjs/';  // pdf.js 3.11.174 hébergé sur le site (pas de dépendance externe)
+  var doc = null, scale = 0, fit = true, token = 0;
+  function load(src){ return new Promise(function(ok, ko){ var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); }); }
+  function fail(){ msg('Le document ne peut pas s’afficher ici. <a href="' + f + '" download>Télécharger le PDF</a>'); }
+  async function draw(){
+    var tok = ++token; box.textContent = '';
+    var avail = Math.min(Math.max(280, box.clientWidth - 16), 1000), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    for (var i = 1; i <= doc.numPages; i++){
+      var page = await doc.getPage(i); if (tok !== token) return;
+      var base = page.getViewport({scale:1});
+      if (fit) scale = avail / base.width;
+      var vp = page.getViewport({scale: scale * dpr}), c = document.createElement('canvas');
+      c.width = vp.width; c.height = vp.height; c.style.width = (vp.width/dpr) + 'px'; c.style.height = (vp.height/dpr) + 'px';
+      box.appendChild(c);
+      await page.render({canvasContext: c.getContext('2d'), viewport: vp}).promise;
+    }
+  }
+  Promise.all([load(PDFJS + 'pdf.min.js'), fetch(f)])
+    .then(function(r){
+      if (!r[1].ok) throw new Error('http ' + r[1].status);
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.js';
+      return r[1].arrayBuffer();
+    })
+    .then(function(buf){ return window.pdfjsLib.getDocument({data: new Uint8Array(buf), isEvalSupported:false}).promise; })
+    .then(function(d){ doc = d; document.getElementById('info').textContent = d.numPages + ' page' + (d.numPages > 1 ? 's' : ''); return draw(); })
+    .catch(fail);
+  document.getElementById('in').onclick = function(){ if (doc){ fit = false; scale *= 1.25; draw(); } };
+  document.getElementById('out').onclick = function(){ if (doc){ fit = false; scale /= 1.25; draw(); } };
+  var rt = 0; window.addEventListener('resize', function(){ if (doc && fit){ clearTimeout(rt); rt = setTimeout(draw, 200); } });
+})();
+</script>
+</body>
+</html>

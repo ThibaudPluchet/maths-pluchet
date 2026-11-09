@@ -200,7 +200,9 @@ function start(D){
   function saveSeen(all){ var s = {}; all.forEach(function(it){ s[it.href] = 1; }); store('vu:' + current, JSON.stringify(s)); }
 
   function link(it){
-    var a = el('a','doc'); a.href = it.href; a.target = '_blank'; a.rel = 'noopener';
+    var a = el('a','doc'); a.target = '_blank'; a.rel = 'noopener';
+    // PDF : ouverts dans la visionneuse du site (certains navigateurs du collège n'affichent pas les PDF)
+    a.href = /\.pdf$/i.test(it.href) ? 'voir.html?f=' + encodeURIComponent(it.href) + '&t=' + encodeURIComponent(it.label) : it.href;
     a.appendChild(el('span','ic', ICON[it.type] || '•'));
     a.appendChild(el('span','t', it.label));
     if (isNew(it)) a.appendChild(el('span','badge','Nouveau'));
