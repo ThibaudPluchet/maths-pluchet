@@ -55,7 +55,7 @@ canvas{background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.25);max-width:none}
   function fail(){ msg('Le document ne peut pas s’afficher ici. <a href="' + f + '" download>Télécharger le PDF</a>'); }
   async function draw(){
     var tok = ++token; box.textContent = '';
-    var avail = Math.min(Math.max(280, box.clientWidth - 16), 1000), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var avail = Math.max(280, box.clientWidth - 16), dpr = Math.min(window.devicePixelRatio || 1, 2);
     for (var i = 1; i <= doc.numPages; i++){
       var page = await doc.getPage(i); if (tok !== token) return;
       var base = page.getViewport({scale:1});
