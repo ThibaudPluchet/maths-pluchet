@@ -1,0 +1,523 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Pythagore animé</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : figure en grand à gauche (à projeter), panneau de commandes à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --ca:#0a8587; --cb:#c27400; --ab:#c9334d; --tri:#cfd8e6; --free:#f8fafd;
+  --ok:#1b7f45; --ok-soft:#e1f3e8; --no:#b53a2a; --no-soft:#fbe7e3;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --ca:#3cc3c5; --cb:#f0ad35; --ab:#ff6f84; --tri:#34445c; --free:#141b24;
+  --ok:#5fd18f; --ok-soft:#163323; --no:#ff8a78; --no-soft:#3a1d19; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --ca:#3cc3c5; --cb:#f0ad35; --ab:#ff6f84; --tri:#34445c; --free:#141b24;
+  --ok:#5fd18f; --ok-soft:#163323; --no:#ff8a78; --no-soft:#3a1d19; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+h1 .sq2{color:var(--ab)}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background-color:var(--paper);border:1px solid var(--line);border-radius:16px;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;background-position:-1px -1px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 12px;border-radius:9px;cursor:pointer;font-variant-numeric:tabular-nums}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.checks{display:flex;gap:16px;flex-wrap:wrap}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.c-ca{color:var(--ca)} .c-cb{color:var(--cb)} .c-ab{color:var(--ab)}
+.readout{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rd{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.rd span{font:600 13px/1.2 var(--font-d)}
+.rd b{font:700 22px/1.1 var(--font-d);font-variant-numeric:tabular-nums}
+.compare{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center;border-radius:12px;background:var(--bg);padding:12px 8px}
+.compare .side{display:flex;flex-direction:column;gap:2px}
+.compare .expr{font:600 15px/1.2 var(--font-d)}
+.compare .num{font:700 28px/1.1 var(--font-d);font-variant-numeric:tabular-nums}
+.sym{font:700 44px/1 var(--font-d);width:56px;height:56px;display:grid;place-items:center;border-radius:50%;background:var(--paper);border:2px solid var(--line)}
+.sym.eq{color:var(--ok);border-color:var(--ok)}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:grid;grid-template-columns:86px 1fr;gap:8px;align-items:center}
+.bar-lbl{font:600 13px/1.2 var(--font-d);text-align:right}
+.bar-track{height:18px;border-radius:5px;background:var(--bg);display:flex;overflow:hidden}
+.seg{height:100%;transition:width .12s linear}
+.seg-ca{background:var(--ca)} .seg-cb{background:var(--cb)} .seg-ab{background:var(--ab)}
+.verdict{border-radius:12px;padding:12px 14px;font-size:16px;background:var(--bg)}
+.verdict.ok{background:var(--ok-soft);color:var(--ink);box-shadow:inset 4px 0 0 var(--ok)}
+.verdict strong{font-family:var(--font-d)}
+
+.inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.inp{display:flex;flex-direction:column;gap:4px}
+.inp input{font:700 20px/1 var(--font-d);padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 13px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px 10px;border-radius:999px;cursor:pointer;font-variant-numeric:tabular-nums}
+.chip:hover{border-color:var(--accent)}
+.redac{border-radius:12px;padding:14px 16px;background:var(--bg);display:flex;flex-direction:column;gap:6px;font-size:16px}
+.redac.ok{background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok)}
+.redac.no{background:var(--no-soft);box-shadow:inset 4px 0 0 var(--no)}
+.redac .concl{font-weight:700}
+.redac .note{color:var(--muted);font-size:15px}
+.mono{font-variant-numeric:tabular-nums}
+
+.eq{display:flex;flex-direction:column;gap:6px;border-radius:12px;background:var(--bg);padding:12px 14px}
+.eq-row{font:600 17px/1.35 var(--font-d);transition:opacity .3s}
+.eq-row.dim{opacity:.3}
+.eq-final{font:700 22px/1.3 var(--font-d);color:var(--ok);transition:opacity .3s}
+.eq-final.dim{opacity:0}
+.eq-num{color:var(--muted);font-size:15px}
+.caption{font-size:17px;min-height:4.6em}
+.steps{display:flex;gap:6px}
+.dot{width:28px;height:6px;border-radius:3px;background:var(--line)}
+.dot.on{background:var(--accent)}
+
+/* SVG */
+.sq{stroke-width:2}
+.sq-ca{fill:color-mix(in srgb,var(--ca) 15%,transparent);stroke:var(--ca)}
+.sq-cb{fill:color-mix(in srgb,var(--cb) 15%,transparent);stroke:var(--cb)}
+.sq-ab{fill:color-mix(in srgb,var(--ab) 13%,transparent);stroke:var(--ab)}
+.gridl{fill:none;stroke-width:1;opacity:.5}
+.gl-ca{stroke:var(--ca)} .gl-cb{stroke:var(--cb)} .gl-ab{stroke:var(--ab)}
+.tri-fill{fill:color-mix(in srgb,var(--ink) 7%,var(--paper));stroke:none}
+.sline{stroke-width:4;stroke-linecap:round}
+.s-ca{stroke:var(--ca)} .s-cb{stroke:var(--cb)} .s-ab{stroke:var(--ab)}
+.f-ca{fill:var(--ca)} .f-cb{fill:var(--cb)} .f-ab{fill:var(--ab)} .f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
+.area{font-family:var(--font-d);font-weight:700}
+.len{font:700 15px var(--font-d)}
+.vlab{font:700 22px var(--font-d);fill:var(--ink)}
+.vdot{fill:var(--ink)}
+.amark{fill:none;stroke:var(--ink);stroke-width:2.5}
+.atext{font:700 17px var(--font-d);fill:var(--ink)}
+.msg{font:600 18px var(--font-b);fill:var(--muted)}
+.bigsq{fill:var(--free);stroke:var(--ink);stroke-width:3}
+.ptri{fill:var(--tri);stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round}
+.ptri.moving{stroke:var(--accent);stroke-width:3.5}
+.pghost{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:7 6}
+.pfree-ab{fill:color-mix(in srgb,var(--ab) 22%,transparent);stroke:var(--ab);stroke-width:2.5}
+.pfree-ca{fill:color-mix(in srgb,var(--ca) 22%,transparent);stroke:var(--ca);stroke-width:2.5}
+.pfree-cb{fill:color-mix(in srgb,var(--cb) 22%,transparent);stroke:var(--cb);stroke-width:2.5}
+.plab{font-family:var(--font-d);font-weight:700}
+.elab{font:700 18px var(--font-b);fill:var(--ink)}
+.dim{stroke:var(--muted);stroke-width:1.5}
+.dimtxt{font:700 20px var(--font-d)}
+@media (prefers-reduced-motion: reduce){.seg,.eq-row,.eq-final{transition:none}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e · Triangle rectangle</p>
+      <h1>Pythagore animé</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-theoreme" data-view="theoreme" aria-selected="true">1. Le théorème</button>
+      <button class="tab" role="tab" id="tab-reciproque" data-view="reciproque" aria-selected="false">2. La réciproque</button>
+      <button class="tab" role="tab" id="tab-puzzle" data-view="puzzle" aria-selected="false">3. Le puzzle</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. THÉORÈME -->
+  <section class="view" id="v-theoreme" role="tabpanel" aria-labelledby="tab-theoreme">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 560" role="img" aria-label="Triangle ABC avec les carrés construits sur ses côtés"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Quand AB² = CA² + CB² ?</h2>
+        <p class="hint">Fais tourner le côté [CB] autour de C et compare l'aire du grand carré à la somme des deux autres.</p>
+      </div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="angle">Angle AĈB</label><span class="val" id="angleVal">90°</span></div>
+        <input type="range" id="angle" min="30" max="150" step="1" value="90">
+        <div class="row">
+          <button class="btn" id="aMinus" type="button">− 1°</button>
+          <button class="btn primary" id="a90" type="button">90°</button>
+          <button class="btn" id="aPlus" type="button">+ 1°</button>
+        </div>
+      </div>
+      <div class="two">
+        <div class="ctl">
+          <div class="ctl-head"><label for="lenA" class="c-ca">CA</label><span class="val c-ca" id="lenAVal">3 cm</span></div>
+          <input type="range" id="lenA" min="1" max="8" step="0.5" value="3">
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="lenB" class="c-cb">CB</label><span class="val c-cb" id="lenBVal">4 cm</span></div>
+          <input type="range" id="lenB" min="1" max="8" step="0.5" value="4">
+        </div>
+      </div>
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="sq1" checked> Carrés</label>
+        <label class="check"><input type="checkbox" id="grid1" checked> Quadrillage (1 cm²)</label>
+      </div>
+      <div class="readout">
+        <div class="rd"><span class="c-ca">CA²</span><b id="rA">9</b></div>
+        <div class="rd"><span class="c-cb">CB²</span><b id="rB">16</b></div>
+        <div class="rd"><span class="c-ab">AB²</span><b id="rC">25</b></div>
+      </div>
+      <div class="compare">
+        <div class="side"><span class="expr"><span class="c-ca">CA²</span> + <span class="c-cb">CB²</span></span><span class="num" id="cmpL">25</span></div>
+        <div class="sym eq" id="sym">=</div>
+        <div class="side"><span class="expr c-ab">AB²</span><span class="num" id="cmpR">25</span></div>
+      </div>
+      <div class="bars" aria-hidden="true">
+        <div class="bar-row"><span class="bar-lbl">CA² + CB²</span><div class="bar-track"><div class="seg seg-ca" id="barA"></div><div class="seg seg-cb" id="barB"></div></div></div>
+        <div class="bar-row"><span class="bar-lbl">AB²</span><div class="bar-track"><div class="seg seg-ab" id="barC"></div></div></div>
+      </div>
+      <div class="verdict" id="verdict1"></div>
+    </div>
+  </section>
+
+  <!-- 2. RÉCIPROQUE -->
+  <section class="view" id="v-reciproque" role="tabpanel" aria-labelledby="tab-reciproque" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 560" role="img" aria-label="Triangle EFG construit à partir des trois longueurs"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Le triangle EFG est-il rectangle ?</h2>
+        <p class="hint">Entre trois longueurs. Le triangle est tracé en vraie forme : à l'œil, impossible de savoir. Le calcul tranche.</p>
+      </div>
+      <div class="inputs">
+        <div class="inp"><label class="lbl" for="iEF">EF (cm)</label><input id="iEF" inputmode="decimal" value="6" autocomplete="off"></div>
+        <div class="inp"><label class="lbl" for="iFG">FG (cm)</label><input id="iFG" inputmode="decimal" value="8" autocomplete="off"></div>
+        <div class="inp"><label class="lbl" for="iEG">EG (cm)</label><input id="iEG" inputmode="decimal" value="10" autocomplete="off"></div>
+      </div>
+      <div class="ctl">
+        <span class="lbl">Exemples</span>
+        <div class="chips" id="presets"></div>
+      </div>
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="sq2"> Carrés</label>
+        <label class="check"><input type="checkbox" id="grid2"> Quadrillage</label>
+      </div>
+      <button class="btn primary" id="reveal" type="button">Afficher la rédaction</button>
+      <div class="redac" id="redac" hidden></div>
+    </div>
+  </section>
+
+  <!-- 3. PUZZLE -->
+  <section class="view" id="v-puzzle" role="tabpanel" aria-labelledby="tab-puzzle" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 520 545" role="img" aria-label="Puzzle : quatre triangles rectangles dans un carré de côté a + b"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Le puzzle de Pythagore</h2>
+        <p class="hint">Même grand carré, mêmes 4 triangles, rangés autrement. Que devient la partie libre ?</p>
+      </div>
+      <div class="row">
+        <button class="btn" id="pPrev" type="button">◀ Précédent</button>
+        <button class="btn primary" id="pPlay" type="button">▶ Lecture</button>
+        <button class="btn" id="pNext" type="button">Suivant ▶</button>
+        <button class="btn" id="pReset" type="button">↺ Départ</button>
+      </div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="pScrub">Déplacement</label><div class="steps" aria-hidden="true"><span class="dot" id="d1"></span><span class="dot" id="d2"></span><span class="dot" id="d3"></span></div></div>
+        <input type="range" id="pScrub" min="0" max="3" step="0.01" value="0">
+      </div>
+      <p class="caption" id="caption"></p>
+      <div class="eq">
+        <div class="eq-row" id="eqBefore">Avant : partie libre = <span class="c-ab">c²</span></div>
+        <div class="eq-row dim" id="eqAfter">Après : partie libre = <span class="c-ca">a²</span> + <span class="c-cb">b²</span></div>
+        <div class="eq-final dim" id="eqFinal">Donc c² = a² + b²</div>
+        <div class="eq-num" id="eqNum"></div>
+      </div>
+      <div class="two">
+        <div class="ctl">
+          <div class="ctl-head"><label for="pa" class="c-ca">a</label><span class="val c-ca" id="paVal">3</span></div>
+          <input type="range" id="pa" min="1" max="6" step="0.5" value="3">
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="pb" class="c-cb">b</label><span class="val c-cb" id="pbVal">4</span></div>
+          <input type="range" id="pb" min="1" max="6" step="0.5" value="4">
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=v=>Math.round(v*100)/100;
+const P2=p=>r2(p[0])+','+r2(p[1]);
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]], sub=(a,b)=>[a[0]-b[0],a[1]-b[1]], mul=(a,k)=>[a[0]*k,a[1]*k];
+const unit=a=>{const l=Math.hypot(a[0],a[1])||1;return [a[0]/l,a[1]/l];};
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+function fr(x,d=2){const k=Math.pow(10,d);const v=Math.round(x*k)/k;return (Object.is(v,-0)?0:v).toLocaleString('fr-FR',{maximumFractionDigits:d});}
+function parseNum(s){const t=String(s).replace(',','.').trim();if(!/^\d*\.?\d+$/.test(t))return NaN;return parseFloat(t);}
+
+function sqPts(P,Q,R){const dx=Q[0]-P[0],dy=Q[1]-P[1],L=Math.hypot(dx,dy);let nx=-dy/L,ny=dx/L;
+  if(nx*(R[0]-P[0])+ny*(R[1]-P[1])>0){nx=-nx;ny=-ny;}
+  return {pts:[P,Q,[Q[0]+nx*L,Q[1]+ny*L],[P[0]+nx*L,P[1]+ny*L]],u:[dx/L,dy/L],n:[nx,ny],L};}
+function fit(pts,W,H,m){let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  for(const p of pts){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);}
+  const w=Math.max(x1-x0,1e-6),h=Math.max(y1-y0,1e-6);const s=Math.min((W-2*m)/w,(H-2*m)/h);
+  const ox=(W-s*w)/2-s*x0, oy=(H+s*h)/2+s*y0;return {s,f:p=>[ox+s*p[0],oy-s*p[1]]};}
+
+function figureSVG({T,pts,sides,squares,grid,angle}){
+  const names=Object.keys(pts);
+  const third=(p,q)=>names.find(n=>n!==p&&n!==q);
+  const F=n=>T.f(pts[n]);
+  let out='';
+  if(squares){
+    for(const sd of sides){
+      const P=pts[sd.p],Q=pts[sd.q],R=pts[third(sd.p,sd.q)];
+      const S=sqPts(P,Q,R);
+      out+=`<polygon class="sq sq-${sd.col}" points="${S.pts.map(p=>P2(T.f(p))).join(' ')}"/>`;
+      if(grid){let d='';
+        for(let i=1;i<S.L-1e-6;i++){const a1=add(P,mul(S.u,i)),a2=add(a1,mul(S.n,S.L)),b1=add(P,mul(S.n,i)),b2=add(b1,mul(S.u,S.L));
+          d+=`M${P2(T.f(a1))}L${P2(T.f(a2))}M${P2(T.f(b1))}L${P2(T.f(b2))}`;}
+        if(d)out+=`<path class="gridl gl-${sd.col}" d="${d}"/>`;}
+      const side=S.L*T.s;
+      if(side>36&&sd.area){const c=T.f(mul(add(S.pts[0],S.pts[2]),.5));const fs=Math.max(13,Math.min(28,side*.16));
+        out+=`<text class="area f-${sd.col} halo" x="${r2(c[0])}" y="${r2(c[1])}" font-size="${r2(fs)}" text-anchor="middle" dominant-baseline="central">${sd.area}</text>`;}
+    }
+  }
+  out+=`<polygon class="tri-fill" points="${names.map(n=>P2(F(n))).join(' ')}"/>`;
+  for(const sd of sides){const a=F(sd.p),b=F(sd.q);out+=`<line class="sline s-${sd.col}" x1="${r2(a[0])}" y1="${r2(a[1])}" x2="${r2(b[0])}" y2="${r2(b[1])}"/>`;}
+  const G=mul(add(add(F(names[0]),F(names[1])),F(names[2])),1/3);
+  if(angle&&angle.mode!=='none'){
+    const V=F(angle.at),u=unit(sub(F(angle.from),V)),v=unit(sub(F(angle.to),V));
+    if(angle.mode==='right'){const k=17;const p1=add(V,mul(u,k)),p3=add(V,mul(v,k)),p2=add(p1,mul(v,k));
+      out+=`<path class="amark" d="M${P2(p1)}L${P2(p2)}L${P2(p3)}"/>`;}
+    else{const r=30;const p1=add(V,mul(u,r)),p2=add(V,mul(v,r));const cr=u[0]*v[1]-u[1]*v[0];
+      out+=`<path class="amark" d="M${P2(p1)}A${r},${r} 0 0 ${cr>0?1:0} ${P2(p2)}"/>`;}
+    if(angle.text){const bis=unit(add(u,v));const t=add(V,mul(bis,angle.mode==='right'?44:52));
+      out+=`<text class="atext halo" x="${r2(t[0])}" y="${r2(t[1])}" text-anchor="middle" dominant-baseline="central">${angle.text}</text>`;}
+  }
+  for(const sd of sides){if(!sd.len)continue;const a=F(sd.p),b=F(sd.q);const m=mul(add(a,b),.5);
+    const dir=unit(sub(G,m));const p=add(m,mul(dir,17));
+    out+=`<text class="len f-${sd.col} halo" x="${r2(p[0])}" y="${r2(p[1])}" text-anchor="middle" dominant-baseline="central">${sd.len}</text>`;}
+  for(const n of names){const v=F(n);const dir=unit(sub(v,G));const p=add(v,mul(dir,22));
+    out+=`<circle class="vdot" cx="${r2(v[0])}" cy="${r2(v[1])}" r="4"/><text class="vlab halo" x="${r2(p[0])}" y="${r2(p[1])}" text-anchor="middle" dominant-baseline="central">${n}</text>`;}
+  return out;
+}
+
+/* ---------- 1. Théorème ---------- */
+const st1={a:3,b:4,deg:90,squares:true,grid:true};
+function render1(){
+  const {a,b,deg}=st1, th=deg*Math.PI/180;
+  const pts={C:[0,0],A:[a,0],B:[b*Math.cos(th),b*Math.sin(th)]};
+  const fp=[];
+  for(const d of [30,60,90,120,150]){const t=d*Math.PI/180,Bt=[b*Math.cos(t),b*Math.sin(t)];fp.push([0,0],[a,0],Bt);
+    if(st1.squares)fp.push(...sqPts([0,0],[a,0],Bt).pts,...sqPts([0,0],Bt,[a,0]).pts,...sqPts([a,0],Bt,[0,0]).pts);}
+  const T=fit(fp,640,560,st1.squares?28:70);
+  const a2=a*a,b2=b*b,c2=a2+b2-2*a*b*Math.cos(th),c=Math.sqrt(c2),sum=a2+b2;
+  const sides=[
+    {p:'C',q:'A',col:'ca',len:fr(a,1)+' cm',area:'CA² = '+fr(a2,2)},
+    {p:'C',q:'B',col:'cb',len:fr(b,1)+' cm',area:'CB² = '+fr(b2,2)},
+    {p:'A',q:'B',col:'ab',len:(deg===90&&Number.isInteger(r2(c)*1)?'':'≈ ')+fr(c,2)+' cm',area:'AB² ' +(deg===90?'= ':'≈ ')+fr(c2,1)}
+  ];
+  if(deg===90){sides[2].area='AB² = '+fr(c2,2);sides[2].len=(Math.abs(c-Math.round(c))<1e-9?'':'≈ ')+fr(c,2)+' cm';}
+  $('svg1').innerHTML=figureSVG({T,pts,sides,squares:st1.squares,grid:st1.grid,
+    angle:{at:'C',from:'A',to:'B',mode:deg===90?'right':'arc',text:deg===90?'':deg+'°'}});
+  $('angleVal').textContent=deg+'°';
+  $('lenAVal').textContent=fr(a,1)+' cm';$('lenBVal').textContent=fr(b,1)+' cm';
+  $('rA').textContent=fr(a2,2);$('rB').textContent=fr(b2,2);$('rC').textContent=(deg===90?'':'≈ ')+fr(c2,deg===90?2:1);
+  $('cmpL').textContent=fr(sum,2);$('cmpR').textContent=(deg===90?'':'≈ ')+fr(c2,deg===90?2:1);
+  const sym=$('sym');sym.textContent=deg===90?'=':(deg<90?'>':'<');sym.classList.toggle('eq',deg===90);
+  const mx=(a+b)*(a+b);
+  $('barA').style.width=(a2/mx*100)+'%';$('barB').style.width=(b2/mx*100)+'%';$('barC').style.width=(c2/mx*100)+'%';
+  const v=$('verdict1');v.classList.toggle('ok',deg===90);
+  v.innerHTML=deg===90
+    ?'<strong>AĈB = 90° : le triangle ABC est rectangle en C.</strong> Le carré construit sur l\'hypoténuse a exactement la même aire que les deux autres réunis : AB² = CA² + CB².'
+    :deg<90?'<strong>AĈB est aigu ('+deg+'°).</strong> Le carré sur [AB] est trop petit : AB² &lt; CA² + CB². Pas d\'égalité, le triangle n\'est pas rectangle en C.'
+    :'<strong>AĈB est obtus ('+deg+'°).</strong> Le carré sur [AB] est trop grand : AB² &gt; CA² + CB². Pas d\'égalité, le triangle n\'est pas rectangle en C.';
+}
+function setDeg(d){d=Math.round(clamp(d,30,150));if(Math.abs(d-90)<1)d=90;st1.deg=d;$('angle').value=d;render1();}
+$('angle').addEventListener('input',e=>setDeg(+e.target.value));
+$('aMinus').onclick=()=>setDeg(st1.deg-1);$('aPlus').onclick=()=>setDeg(st1.deg+1);$('a90').onclick=()=>setDeg(90);
+$('lenA').addEventListener('input',e=>{st1.a=+e.target.value;render1();});
+$('lenB').addEventListener('input',e=>{st1.b=+e.target.value;render1();});
+$('sq1').addEventListener('change',e=>{st1.squares=e.target.checked;$('grid1').disabled=!st1.squares;render1();});
+$('grid1').addEventListener('change',e=>{st1.grid=e.target.checked;render1();});
+
+/* ---------- 2. Réciproque ---------- */
+const st2={squares:false,grid:false,show:false};
+const presets=[['6','8','10'],['5','12','13'],['4','5','6'],['7','8','11'],['2,8','4,5','5,3'],['6','7','9,2'],['3','4','8']];
+const pc=$('presets');
+presets.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=p.join(' ; ');
+  b.onclick=()=>{$('iEF').value=p[0];$('iFG').value=p[1];$('iEG').value=p[2];st2.show=false;render2();};pc.appendChild(b);});
+const sq6=v=>Math.round(v*v*1e6)/1e6;
+function render2(){
+  const L={EF:parseNum($('iEF').value),FG:parseNum($('iFG').value),EG:parseNum($('iEG').value)};
+  const svg=$('svg2'),red=$('redac'),btn=$('reveal');
+  btn.textContent=st2.show?'Masquer la rédaction':'Afficher la rédaction';
+  if(Object.values(L).some(v=>!(v>0))){svg.innerHTML='<text class="msg" x="320" y="280" text-anchor="middle">Entre trois longueurs positives (ex. 6 ; 8 ; 10).</text>';red.hidden=true;btn.disabled=true;return;}
+  const order=['EF','FG','EG'];const big=order.reduce((m,k)=>L[k]>L[m]?k:m,'EF');const oth=order.filter(k=>k!==big);
+  if(L[big]>=L[oth[0]]+L[oth[1]]-1e-9){
+    svg.innerHTML=`<text class="msg" x="320" y="262" text-anchor="middle">Ce triangle ne peut pas être construit :</text><text class="msg" x="320" y="292" text-anchor="middle">${big} = ${fr(L[big],4)} cm et ${oth[0]} + ${oth[1]} = ${fr(L[oth[0]]+L[oth[1]],4)} cm.</text>`;
+    red.hidden=true;btn.disabled=true;return;}
+  btn.disabled=false;
+  const [P,Q]=big.split('');const opp=['E','F','G'].find(n=>!big.includes(n));
+  const nm=(x,y)=>[x,y].sort().join('');
+  const d1=L[nm(P,opp)],d2=L[nm(Q,opp)],Lb=L[big];
+  const x=(Lb*Lb+d1*d1-d2*d2)/(2*Lb),y=Math.sqrt(Math.max(0,d1*d1-x*x));
+  const pts={};pts[P]=[0,0];pts[Q]=[Lb,0];pts[opp]=[x,y];
+  const cols={};cols[oth[0]]='ca';cols[oth[1]]='cb';cols[big]='ab';
+  const sides=order.map(k=>({p:k[0],q:k[1],col:cols[k],len:fr(L[k],4)+' cm',area:k+'² = '+fr(sq6(L[k]),4)}));
+  const fp=Object.values(pts).slice();
+  if(st2.squares){const nn=Object.keys(pts);for(const sd of sides){const R=pts[nn.find(n=>n!==sd.p&&n!==sd.q)];fp.push(...sqPts(pts[sd.p],pts[sd.q],R).pts);}}
+  const T=fit(fp,640,560,st2.squares?30:70);
+  const s1=sq6(L[oth[0]]),s2=sq6(L[oth[1]]),sb=sq6(Lb),sum=Math.round((s1+s2)*1e6)/1e6;
+  const right=Math.abs(sb-sum)<1e-9;
+  const ang=Math.acos(clamp((d1*d1+d2*d2-Lb*Lb)/(2*d1*d2),-1,1))*180/Math.PI;
+  let mode='arc',text='?';
+  if(st2.show){if(right){mode='right';text='';}else text=fr(ang,1)+'°';}
+  svg.innerHTML=figureSVG({T,pts,sides,squares:st2.squares,grid:st2.grid,angle:{at:opp,from:P,to:Q,mode,text}});
+  red.hidden=!st2.show;
+  if(st2.show){
+    const angName=P+opp+'̂'+Q;
+    let h=`<div>Dans le triangle EFG, le plus grand côté est <b>[${big}]</b>.</div>
+<div class="mono">D'une part : ${big}² = ${fr(Lb,4)}² = <b>${fr(sb,4)}</b></div>
+<div class="mono">D'autre part : ${oth[0]}² + ${oth[1]}² = ${fr(L[oth[0]],4)}² + ${fr(L[oth[1]],4)}² = ${fr(s1,4)} + ${fr(s2,4)} = <b>${fr(sum,4)}</b></div>`;
+    if(right){h+=`<div>On constate que ${big}² = ${oth[0]}² + ${oth[1]}².</div><div class="concl">Donc, d'après la réciproque du théorème de Pythagore, le triangle EFG est rectangle en ${opp}.</div>`;}
+    else{h+=`<div>On constate que ${big}² ≠ ${oth[0]}² + ${oth[1]}².</div><div class="concl">Si EFG était rectangle en ${opp}, on aurait l'égalité d'après le théorème de Pythagore. Ce n'est pas le cas, donc le triangle EFG n'est pas rectangle.</div>`;
+      if(Math.abs(ang-90)<3)h+=`<div class="note">L'angle ${angName} mesure environ ${fr(ang,1)}° : presque droit, mais pas droit. À l'œil ou au rapporteur, on ne peut pas le voir.</div>`;
+      else h+=`<div class="note">L'angle ${angName} mesure environ ${fr(ang,1)}° (${ang<90?'aigu':'obtus'}).</div>`;}
+    red.innerHTML=h;red.className='redac '+(right?'ok':'no');
+  }
+}
+['iEF','iFG','iEG'].forEach(id=>$(id).addEventListener('input',()=>{st2.show=false;render2();}));
+$('reveal').onclick=()=>{st2.show=!st2.show;render2();};
+$('sq2').addEventListener('change',e=>{st2.squares=e.target.checked;$('grid2').disabled=!st2.squares;render2();});
+$('grid2').addEventListener('change',e=>{st2.grid=e.target.checked;render2();});
+$('grid2').disabled=true;
+
+/* ---------- 3. Puzzle ---------- */
+const st3={a:3,b:4,p:0};
+const ease=t=>{t=clamp(t);return t*t*(3-2*t);};
+const captions=[
+  'Dans un carré de côté a + b, on place 4 triangles rectangles identiques, de côtés a, b et d\'hypoténuse c. La partie libre au centre est un carré de côté c : son aire vaut c².',
+  'On fait glisser le triangle du haut à gauche jusqu\'en bas à droite. Il garde sa forme et son aire.',
+  'On fait glisser le triangle du bas à gauche vers le haut.',
+  'On fait glisser le triangle du haut à droite vers la gauche.',
+  'La partie libre est maintenant formée de deux carrés : un de côté a (aire a²) et un de côté b (aire b²). Le grand carré et les 4 triangles n\'ont pas changé, donc la partie libre a gardé la même aire.'
+];
+function render3(){
+  const {a,b,p}=st3,S=a+b,s=440/S,f=q=>[40+s*q[0],40+s*(S-q[1])];
+  const tris=[
+    {v:[[0,0],[a,0],[0,b]],m:[0,a],seg:1},
+    {v:[[S,0],[S,a],[a,0]],m:[0,0],seg:null},
+    {v:[[S,S],[b,S],[S,a]],m:[-b,0],seg:2},
+    {v:[[0,S],[0,b],[b,S]],m:[a,-b],seg:0}
+  ];
+  const lab=[['a',0,1],['b',0,2],['c',1,2]];
+  let out=`<rect class="bigsq" x="40" y="40" width="440" height="440"/>`;
+  const oc=1-clamp(p/0.35),oab=clamp((p-2.65)/0.35);
+  const fsBig=Math.max(18,Math.min(54,s*Math.min(a,b)*0.42));
+  out+=`<polygon class="pfree-ab" style="opacity:${r2(oc)}" points="${[[a,0],[S,a],[b,S],[0,b]].map(q=>P2(f(q))).join(' ')}"/>`;
+  out+=`<rect class="pfree-ca" style="opacity:${r2(oab)}" x="40" y="${r2(40+s*b)}" width="${r2(s*a)}" height="${r2(s*a)}"/>`;
+  out+=`<rect class="pfree-cb" style="opacity:${r2(oab)}" x="${r2(40+s*a)}" y="40" width="${r2(s*b)}" height="${r2(s*b)}"/>`;
+  // triangles
+  let ghosts='',tr='',labs='';
+  for(const t of tris){
+    const k=t.seg===null?0:ease(p-t.seg);const off=mul(t.m,k);
+    const V=t.v.map(q=>f(add(q,off)));
+    const moving=t.seg!==null&&p>t.seg+0.001&&p<t.seg+0.999;
+    if(moving)ghosts+=`<polygon class="pghost" points="${t.v.map(q=>P2(f(add(q,t.m)))).join(' ')}"/>`;
+    tr+=`<polygon class="ptri${moving?' moving':''}" points="${V.map(P2).join(' ')}"/>`;
+    const G=mul(add(add(V[0],V[1]),V[2]),1/3);
+    for(const [txt,i,j] of lab){const m=mul(add(V[i],V[j]),.5);const d=unit(sub(G,m));const q=add(m,mul(d,14));
+      labs+=`<text class="elab" x="${r2(q[0])}" y="${r2(q[1])}" text-anchor="middle" dominant-baseline="central" font-size="${r2(Math.max(12,Math.min(19,s*0.42)))}">${txt}</text>`;}
+  }
+  out+=ghosts+tr+labs;
+  const ctr=f([S/2,S/2]);
+  out+=`<text class="plab f-ab halo" style="opacity:${r2(oc)}" x="${r2(ctr[0])}" y="${r2(ctr[1])}" font-size="${r2(Math.max(24,Math.min(60,s*Math.hypot(a,b)*0.3)))}" text-anchor="middle" dominant-baseline="central">c²</text>`;
+  const ca=f([a/2,a/2]),cb=f([a+b/2,a+b/2]);
+  out+=`<text class="plab f-ca halo" style="opacity:${r2(oab)}" x="${r2(ca[0])}" y="${r2(ca[1])}" font-size="${r2(Math.max(16,Math.min(54,s*a*0.42)))}" text-anchor="middle" dominant-baseline="central">a²</text>`;
+  out+=`<text class="plab f-cb halo" style="opacity:${r2(oab)}" x="${r2(cb[0])}" y="${r2(cb[1])}" font-size="${r2(Math.max(16,Math.min(54,s*b*0.42)))}" text-anchor="middle" dominant-baseline="central">b²</text>`;
+  // cotes en bas
+  const y=505,xa=40+s*a;
+  out+=`<path class="dim" d="M40,${y}H480M40,${y-8}V${y+8}M${r2(xa)},${y-8}V${y+8}M480,${y-8}V${y+8}"/>`;
+  out+=`<text class="dimtxt f-ca" x="${r2((40+xa)/2)}" y="${y+24}" text-anchor="middle">a</text><text class="dimtxt f-cb" x="${r2((xa+480)/2)}" y="${y+24}" text-anchor="middle">b</text>`;
+  $('svg3').innerHTML=out;
+  // panneau
+  const idx=p<=0.001?0:(p>=2.999?4:Math.ceil(p-1e-9));
+  $('caption').textContent=captions[idx];
+  $('pScrub').value=p;
+  ['d1','d2','d3'].forEach((id,i)=>$(id).classList.toggle('on',p>=i+1-0.001));
+  $('eqAfter').classList.toggle('dim',p<2.999);$('eqFinal').classList.toggle('dim',p<2.999);
+  $('paVal').textContent=fr(a,1);$('pbVal').textContent=fr(b,1);
+  const c2=a*a+b*b,c=Math.sqrt(c2);const exact=Math.abs(c-Math.round(c))<1e-9;
+  $('eqNum').textContent=`Avec a = ${fr(a,1)} et b = ${fr(b,1)} : c² = ${fr(a*a,2)} + ${fr(b*b,2)} = ${fr(c2,2)}, donc c ${exact?'=':'≈'} ${fr(c,2)}.`;
+  $('pPrev').disabled=p<=0.001;$('pNext').disabled=p>=2.999;
+}
+let raf=null,timer=null,playing=false;
+function stop(){if(raf)cancelAnimationFrame(raf);raf=null;clearTimeout(timer);playing=false;$('pPlay').textContent='▶ Lecture';}
+function animateTo(target,then){
+  if(raf)cancelAnimationFrame(raf);
+  const start=st3.p;
+  if(reduce||start===target){st3.p=target;render3();then&&then();return;}
+  const dur=Math.abs(target-start)*1400,t0=performance.now();
+  const step=now=>{const k=Math.min(1,(now-t0)/dur);st3.p=start+(target-start)*k;render3();
+    if(k<1)raf=requestAnimationFrame(step);else{raf=null;then&&then();}};
+  raf=requestAnimationFrame(step);
+}
+function playChain(){if(!playing)return;const next=Math.floor(st3.p+1e-6)+1;
+  if(next>3){stop();return;}
+  animateTo(next,()=>{if(next>=3){stop();return;}timer=setTimeout(playChain,reduce?900:500);});}
+$('pPlay').onclick=()=>{if(playing){stop();return;}if(st3.p>=2.999){st3.p=0;render3();}
+  playing=true;$('pPlay').textContent='❚❚ Pause';playChain();};
+$('pNext').onclick=()=>{stop();animateTo(Math.min(3,Math.floor(st3.p+1e-6)+1));};
+$('pPrev').onclick=()=>{stop();animateTo(Math.max(0,Math.ceil(st3.p-1e-6)-1));};
+$('pReset').onclick=()=>{stop();st3.p=0;render3();};
+$('pScrub').addEventListener('input',e=>{stop();st3.p=+e.target.value;render3();});
+$('pa').addEventListener('input',e=>{st3.a=+e.target.value;render3();});
+$('pb').addEventListener('input',e=>{st3.b=+e.target.value;render3();});
+
+/* ---------- Onglets ---------- */
+const views=['theoreme','reciproque','puzzle'];
+function show(v){if(!views.includes(v))v='theoreme';
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});
+  if(v!=='puzzle')stop();}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{$('fs').textContent=document.fullscreenElement?'Quitter le plein écran':'Plein écran';$('app').style.background=document.fullscreenElement?'var(--bg)':'';$('app').style.padding=document.fullscreenElement?'16px':'';$('app').style.overflow=document.fullscreenElement?'auto':'';});
+
+render1();render2();render3();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>

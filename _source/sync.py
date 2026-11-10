@@ -59,9 +59,22 @@ def js_const(html, name):
     return json.loads(m.group(1))
 
 
+def js_const_opt(html, name):
+    m = re.search(r"^const " + name + r" = ", html, re.M)
+    return json.JSONDecoder().raw_decode(html, m.end())[0] if m else {}
+
+
+# Animations : liens LINKS de la page enseignant vers des artifacts claude.ai (privés) ;
+# leur page HTML est recopiée dans anim/<id>.html pour être accessible aux élèves.
+ANIM_RE = re.compile(r"^https://claude\.ai/artifact/([A-Za-z0-9]+)(#.*)?$")
+ANIMS = set()
+
+
 def load(page, dbdir):
     html = open(page, encoding="utf-8").read()
     levels, docs = js_const(html, "LEVELS"), js_const(html, "DOCS")
+    links = js_const_opt(html, "LINKS")
+    ANIMS.clear()
     classes, data, wanted = {}, {"niveaux": {}}, {}
     global SECRET
     SECRET = {}
@@ -119,6 +132,16 @@ def load(page, dbdir):
                 items.sort(key=lambda i: (list(TYPES.values()).index(i["type"]), i.pop("_s")))
                 if n.get("alea") and show_docs:
                     items.append({"type": "alea", "label": "Exercices en ligne (MathALÉA)", "href": n["alea"], "cls": show_docs})
+                for k in (links.get(lv, {}).get(str(n["n"])) or []) if show_docs else []:
+                    m = ANIM_RE.match(k.get("u", ""))
+                    if m:
+                        ANIMS.add(m.group(1))
+                        href = f"anim/{m.group(1)}.html" + (m.group(2) or "")
+                    elif k.get("u", "").startswith("https://"):
+                        href = k["u"]
+                    else:
+                        continue
+                    items.append({"type": "anim", "label": k.get("l") or "Animation", "href": href, "cls": show_docs})
                 for v in n.get("vids") or []:
                     items.append({"type": "video", "label": "Vidéo : " + v["l"], "href": v["u"], "cls": sorted(set(show_docs) | set(show_eval))})
                 notions.append({"num": n["n"], "titre": n["t"], "cls": sorted(set(show_docs) | set(show_eval)), "items": items})
@@ -157,6 +180,9 @@ def main():
         need = list(dict.fromkeys(BUNDLE.get(p, p) for p in missing))
         print(f"{len(missing)} PDF à mettre à jour")
         json.dump(need, open(f"{dbdir}/need.json", "w"), ensure_ascii=False)
+        anim_need = [f"https://claude.ai/artifact/{a}" for a in sorted(ANIMS) if not os.path.exists(os.path.join(repo, "anim", a + ".html"))]
+        json.dump(anim_need, open(f"{dbdir}/need_anim.json", "w"), ensure_ascii=False)
+        print(f"{len(ANIMS)} animation(s) publiée(s), {len(anim_need)} à récupérer (need_anim.json)")
         print(f"{len(wanted)} PDF publiés au total, {len(need)} fichier(s) à récupérer")
         return
     pdfdir = sys.argv[5]
@@ -182,6 +208,21 @@ def main():
             shutil.copyfile(src, dst)
         elif not os.path.exists(dst):
             sys.exit(f"PDF manquant : {p}")
+    # Animations : copie des pages récupérées (W/pdf/anim/<id>/index.html), retrait de celles qui ne sont plus publiées
+    for a in ANIMS:
+        src, dst = os.path.join(pdfdir, "anim", a, "index.html"), os.path.join(repo, "anim", a + ".html")
+        if os.path.exists(src):
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copyfile(src, dst)
+    missing_anim = {a for a in ANIMS if not os.path.exists(os.path.join(repo, "anim", a + ".html"))}
+    if missing_anim:
+        print("ATTENTION : animation(s) non récupérée(s), lien masqué :", ", ".join(sorted(missing_anim)))
+        for s in [s for l in data["niveaux"].values() for s in l]:
+            for n in s["notions"]:
+                n["items"] = [i for i in n["items"] if not (i["type"] == "anim" and i["href"].split("/")[1].split(".")[0] in missing_anim)]
+    for f in glob.glob(os.path.join(repo, "anim", "*.html")):
+        if os.path.basename(f)[:-5] not in ANIMS:
+            os.remove(f)
     keep = set()
     if MASTER:
         sp = secret_plan()

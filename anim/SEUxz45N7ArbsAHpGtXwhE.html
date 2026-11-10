@@ -1,0 +1,338 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Trigonométrie animée</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : triangle en grand à gauche (à projeter), commandes, rapports et rédaction à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --adj:#0a8587; --opp:#c27400; --hyp:#c9334d;
+  --ok:#1b7f45; --ok-soft:#e1f3e8; --no:#b53a2a; --no-soft:#fbe7e3;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --adj:#3cc3c5; --opp:#f0ad35; --hyp:#ff6f84;
+  --ok:#5fd18f; --ok-soft:#163323; --no:#ff8a78; --no-soft:#3a1d19; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --adj:#3cc3c5; --opp:#f0ad35; --hyp:#ff6f84;
+  --ok:#5fd18f; --ok-soft:#163323; --no:#ff8a78; --no-soft:#3a1d19; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background-color:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 12px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.c-adj{color:var(--adj)} .c-opp{color:var(--opp)} .c-hyp{color:var(--hyp)}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.15;margin:0 2px}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 4px 1px}
+.frac>span:last-child{padding:1px 4px 0}
+.ratios{display:flex;flex-direction:column;gap:10px;border-radius:12px;background:var(--bg);padding:12px 14px}
+.ratio{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font:600 17px/1.2 var(--font-d);font-variant-numeric:tabular-nums}
+.ratio .nm{min-width:4.6em}
+.ratio b{font-size:20px}
+.moyen{display:flex;gap:8px;flex-wrap:wrap}
+.mn{font:700 16px/1 var(--font-d);padding:9px 12px;border-radius:10px;background:var(--bg);color:var(--muted);letter-spacing:.06em}
+.mn.on{background:var(--accent);color:var(--accent-ink)}
+.mn i{font-style:normal;font-weight:500;font-size:12px;letter-spacing:0;display:block;margin-top:4px}
+select,.num{font:600 16px/1.2 var(--font-b);padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;min-width:0}
+.num{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 13px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px 10px;border-radius:999px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.redac{border-radius:12px;padding:14px 16px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok);display:flex;flex-direction:column;gap:8px;font-size:16px;font-variant-numeric:tabular-nums}
+.redac.err{background:var(--no-soft);box-shadow:inset 4px 0 0 var(--no)}
+.redac .concl{font-weight:700}
+.redac .note{color:var(--muted);font-size:15px}
+.grid3{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+
+/* SVG */
+.tri{fill:color-mix(in srgb,var(--ink) 5%,transparent)}
+.ghostt{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 5;opacity:.7}
+.s{stroke-width:5;stroke-linecap:round}
+.s.thin{stroke-width:2.5;opacity:.5}
+.s-adj{stroke:var(--adj)} .s-opp{stroke:var(--opp)} .s-hyp{stroke:var(--hyp)}
+.f-adj{fill:var(--adj)} .f-opp{fill:var(--opp)} .f-hyp{fill:var(--hyp)} .f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)}
+.lab{font:700 16px var(--font-d)}
+.vlab{font:700 22px var(--font-d);fill:var(--ink)}
+.vdot{fill:var(--ink)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
+.arc{fill:color-mix(in srgb,var(--accent) 18%,transparent);stroke:var(--accent);stroke-width:2.5}
+.atxt{font:700 18px var(--font-d);fill:var(--accent)}
+.rmark{fill:none;stroke:var(--ink);stroke-width:2}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">3e · Trigonométrie</p>
+      <h1>Trigonométrie animée</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-rapports" data-view="rapports" aria-selected="true">1. Les rapports</button>
+      <button class="tab" role="tab" id="tab-longueur" data-view="longueur" aria-selected="false">2. Calculer une longueur</button>
+      <button class="tab" role="tab" id="tab-angle" data-view="angle" aria-selected="false">3. Calculer un angle</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. RAPPORTS -->
+  <section class="view" id="v-rapports" role="tabpanel" aria-labelledby="tab-rapports">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 520" role="img" aria-label="Triangle ABC rectangle en B et ses rapports trigonométriques"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Le rapport ne dépend que de l'angle</h2>
+        <p class="hint">Agrandis le triangle sans changer l'angle en A : toutes les longueurs changent, les trois rapports restent les mêmes. Change l'angle : les rapports changent.</p>
+      </div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="ang1">Angle BÂC</label><span class="val" id="ang1v">35°</span></div>
+        <input type="range" id="ang1" min="5" max="85" step="1" value="35">
+      </div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="h1" class="c-hyp">Hypoténuse AC</label><span class="val c-hyp" id="h1v">8 cm</span></div>
+        <input type="range" id="h1" min="2" max="10" step="0.1" value="8">
+        <div class="row"><button class="btn primary" id="grow1" type="button">▶ Agrandir et réduire</button><label class="check"><input type="checkbox" id="ghost1" checked> Triangles emboîtés</label></div>
+      </div>
+      <div class="ratios" id="ratios1"></div>
+      <div class="moyen" aria-label="Moyen mnémotechnique">
+        <span class="mn">CAH<i>Cos = Adj / Hyp</i></span><span class="mn">SOH<i>Sin = Opp / Hyp</i></span><span class="mn">TOA<i>Tan = Opp / Adj</i></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. LONGUEUR -->
+  <section class="view" id="v-longueur" role="tabpanel" aria-labelledby="tab-longueur" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 520" role="img" aria-label="Triangle ABC avec le côté connu et le côté cherché"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Calculer une longueur</h2>
+        <p class="hint">On connaît un angle aigu et un côté. On repère le côté connu et le côté cherché par rapport à l'angle : cela donne la formule à utiliser.</p>
+      </div>
+      <div class="ctl"><span class="lbl">Exemples</span><div class="chips" id="ex2"></div></div>
+      <div class="grid3">
+        <div class="ctl"><label for="a2">Angle BÂC (°)</label><input class="num" id="a2" inputmode="decimal" value="35"></div>
+        <div class="ctl"><label for="kv2">Longueur connue</label><input class="num" id="kv2" inputmode="decimal" value="8"></div>
+        <div class="ctl"><label for="ks2">Côté connu</label><select id="ks2"><option value="adj">[AB] adjacent</option><option value="opp">[BC] opposé</option><option value="hyp" selected>[AC] hypoténuse</option></select></div>
+        <div class="ctl"><label for="ws2">Côté cherché</label><select id="ws2"><option value="adj" selected>[AB] adjacent</option><option value="opp">[BC] opposé</option><option value="hyp">[AC] hypoténuse</option></select></div>
+      </div>
+      <div class="moyen" id="mn2"></div>
+      <div class="redac" id="redac2"></div>
+    </div>
+  </section>
+
+  <!-- 3. ANGLE -->
+  <section class="view" id="v-angle" role="tabpanel" aria-labelledby="tab-angle" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 520" role="img" aria-label="Triangle ABC dont on cherche l'angle en A"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Calculer un angle</h2>
+        <p class="hint">On connaît deux côtés. Le rapport de ces deux côtés donne le cosinus, le sinus ou la tangente de l'angle ; la calculatrice donne l'angle.</p>
+      </div>
+      <div class="ctl"><span class="lbl">Exemples</span><div class="chips" id="ex3"></div></div>
+      <div class="grid3">
+        <div class="ctl"><label for="s1" id="s1l">Côté 1</label><select id="s1"><option value="adj" selected>[AB] adjacent</option><option value="opp">[BC] opposé</option><option value="hyp">[AC] hypoténuse</option></select></div>
+        <div class="ctl"><label for="v1">Longueur (cm)</label><input class="num" id="v1" inputmode="decimal" value="5"></div>
+        <div class="ctl"><label for="s2">Côté 2</label><select id="s2"><option value="adj">[AB] adjacent</option><option value="opp">[BC] opposé</option><option value="hyp" selected>[AC] hypoténuse</option></select></div>
+        <div class="ctl"><label for="v2">Longueur (cm)</label><input class="num" id="v2" inputmode="decimal" value="8"></div>
+      </div>
+      <div class="moyen" id="mn3"></div>
+      <div class="redac" id="redac3"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=v=>Math.round(v*100)/100;
+const D=Math.PI/180;
+function fr(x,d=2){const k=Math.pow(10,d);let v=Math.round(x*k)/k;if(Object.is(v,-0))v=0;return v.toLocaleString('fr-FR',{maximumFractionDigits:d});}
+function parseNum(s){const t=String(s).replace(',','.').trim();if(!/^\d*\.?\d+$/.test(t))return NaN;return parseFloat(t);}
+const frac=(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+const NAME={adj:'AB',opp:'BC',hyp:'AC'},WORD={adj:'côté adjacent',opp:'côté opposé',hyp:'hypoténuse'};
+const ANG='BÂC';
+
+/* Dessin du triangle ABC rectangle en B (A à gauche, B en bas à droite, C en haut).
+   opts : alpha (deg), adj, opp en cm ; scale (px/cm) ; ox, oy origine de A ; labels {adj,opp,hyp} : texte ou null ; thin : côtés estompés */
+function triangle(o){
+  const {alpha,adj,opp,s,ox,oy}=o;
+  const A=[ox,oy],B=[ox+adj*s,oy],C=[ox+adj*s,oy-opp*s];
+  let g='';
+  g+=`<polygon class="tri" points="${[A,B,C].map(p=>p.map(r2).join(',')).join(' ')}"/>`;
+  const seg=(p,q,c,thin)=>`<line class="s s-${c}${thin?' thin':''}" x1="${r2(p[0])}" y1="${r2(p[1])}" x2="${r2(q[0])}" y2="${r2(q[1])}"/>`;
+  g+=seg(A,B,'adj',o.thin&&o.thin.adj)+seg(B,C,'opp',o.thin&&o.thin.opp)+seg(A,C,'hyp',o.thin&&o.thin.hyp);
+  // angle droit en B
+  const k=14;g+=`<path class="rmark" d="M${r2(B[0]-k)},${r2(B[1])}V${r2(B[1]-k)}H${r2(B[0])}"/>`;
+  // angle en A
+  const R=Math.min(46,adj*s*0.45);const P1=[ox+R,oy],P2=[ox+R*Math.cos(alpha*D),oy-R*Math.sin(alpha*D)];
+  g+=`<path class="arc" d="M${ox},${oy}L${r2(P1[0])},${r2(P1[1])}A${r2(R)},${r2(R)} 0 0 0 ${r2(P2[0])},${r2(P2[1])}Z"/>`;
+  const am=(alpha/2)*D;g+=`<text class="atxt halo" x="${r2(ox+(R+30)*Math.cos(am))}" y="${r2(oy-(R+30)*Math.sin(am))}" text-anchor="middle" dominant-baseline="central">${o.angTxt??fr(alpha,1)+'°'}</text>`;
+  // étiquettes des côtés
+  const L=o.labels||{};
+  if(L.adj!=null)g+=`<text class="lab f-adj halo" x="${r2((A[0]+B[0])/2)}" y="${r2(oy+26)}" text-anchor="middle">${L.adj}</text>`;
+  if(L.opp!=null)g+=`<text class="lab f-opp halo" x="${r2(B[0]+14)}" y="${r2((B[1]+C[1])/2)}" dominant-baseline="central">${L.opp}</text>`;
+  if(L.hyp!=null){const m=[(A[0]+C[0])/2,(A[1]+C[1])/2];const n=[-Math.sin(alpha*D),-Math.cos(alpha*D)];g+=`<text class="lab f-hyp halo" x="${r2(m[0]+n[0]*22)}" y="${r2(m[1]+n[1]*22)}" text-anchor="middle" dominant-baseline="central">${L.hyp}</text>`;}
+  // sommets
+  const v=(n,p,dx,dy)=>`<circle class="vdot" cx="${r2(p[0])}" cy="${r2(p[1])}" r="4"/><text class="vlab halo" x="${r2(p[0]+dx)}" y="${r2(p[1]+dy)}" text-anchor="middle" dominant-baseline="central">${n}</text>`;
+  g+=v('A',A,-18,8)+v('B',B,18,12)+v('C',C,16,-12);
+  return g;}
+function fitScale(adj,opp,W=520,H=400){return Math.min(W/adj,H/Math.max(opp,0.01));}
+
+/* ---------- 1. Rapports ---------- */
+const S1={a:35,h:8,ghost:true,raf:null};
+function render1(){
+  const a=S1.a,h=S1.h,adj=h*Math.cos(a*D),opp=h*Math.sin(a*D);
+  const s=Math.min(520/(10*Math.cos(a*D)),400/(10*Math.sin(a*D)),52);// échelle fixe pour un angle donné : on voit le triangle grandir
+  const ox=70,oy=460;let o='';
+  if(S1.ghost)for(const hh of [3,5,7,9,10]){if(Math.abs(hh-h)<0.4)continue;const ad=hh*Math.cos(a*D),op=hh*Math.sin(a*D);
+    o+=`<polygon class="ghostt" points="${ox},${oy} ${r2(ox+ad*s)},${oy} ${r2(ox+ad*s)},${r2(oy-op*s)}"/>`;}
+  o+=triangle({alpha:a,adj,opp,s,ox,oy,labels:{adj:fr(adj,2)+' cm',opp:fr(opp,2)+' cm',hyp:fr(h,1)+' cm'}});
+  $('svg1').innerHTML=o;
+  $('ang1v').textContent=a+'°';$('h1v').textContent=fr(h,1)+' cm';
+  const row=(nm,top,bot,tv,bv,cls1,cls2,val)=>`<div class="ratio"><span class="nm">${nm}</span>= ${frac(`<span class="${cls1}">${top}</span>`,`<span class="${cls2}">${bot}</span>`)} = ${frac(`<span class="${cls1}">${fr(tv,2)}</span>`,`<span class="${cls2}">${fr(bv,2)}</span>`)} ≈ <b>${fr(val,3)}</b></div>`;
+  $('ratios1').innerHTML=row(`cos ${a}°`,'AB','AC',adj,h,'c-adj','c-hyp',Math.cos(a*D))+row(`sin ${a}°`,'BC','AC',opp,h,'c-opp','c-hyp',Math.sin(a*D))+row(`tan ${a}°`,'BC','AB',opp,adj,'c-opp','c-adj',Math.tan(a*D))
+    +`<div class="hint" style="font-size:14px">Les longueurs affichées sont arrondies : les rapports, eux, restent exactement les mêmes quand on agrandit le triangle.</div>`;
+}
+function stop1(){if(S1.raf)cancelAnimationFrame(S1.raf);S1.raf=null;$('grow1').textContent='▶ Agrandir et réduire';}
+$('grow1').onclick=()=>{if(S1.raf){stop1();return;}$('grow1').textContent='❚❚ Pause';const t0=performance.now();
+  const st=now=>{const t=Math.max(0,(now-t0)/1000);S1.h=6.5+3.5*Math.sin(t*1.3+Math.asin(Math.max(-1,Math.min(1,(S1.h0-6.5)/3.5))));S1.h=Math.round(Math.max(2,Math.min(10,S1.h))*10)/10;$('h1').value=S1.h;render1();if(reduce){stop1();return;}S1.raf=requestAnimationFrame(st);};
+  S1.h0=S1.h;S1.raf=requestAnimationFrame(st);};
+$('ang1').oninput=e=>{S1.a=+e.target.value;render1();};
+$('h1').oninput=e=>{stop1();S1.h=+e.target.value;render1();};
+$('ghost1').onchange=e=>{S1.ghost=e.target.checked;render1();};
+
+/* ---------- Choix de la formule ---------- */
+function formula(x,y){const k=[x,y].sort().join('-');
+  if(k==='adj-hyp')return {f:'cos',top:'adj',bot:'hyp',mn:'CAH'};
+  if(k==='hyp-opp')return {f:'sin',top:'opp',bot:'hyp',mn:'SOH'};
+  if(k==='adj-opp')return {f:'tan',top:'opp',bot:'adj',mn:'TOA'};
+  return null;}
+const TRIG={cos:Math.cos,sin:Math.sin,tan:Math.tan},ATRIG={cos:Math.acos,sin:Math.asin,tan:Math.atan};
+function mnem(el,on){el.innerHTML=[['CAH','Cos = Adj / Hyp'],['SOH','Sin = Opp / Hyp'],['TOA','Tan = Opp / Adj']].map(([m,t])=>`<span class="mn${m===on?' on':''}">${m}<i>${t}</i></span>`).join('');}
+const cls=k=>'c-'+k;
+const N=k=>`<span class="${cls(k)}">${NAME[k]}</span>`;
+
+/* ---------- 2. Calculer une longueur ---------- */
+const EX2=[
+  {l:'Hypoténuse 8 cm, angle 35° → AB',a:'35',v:'8',k:'hyp',w:'adj'},
+  {l:'Hypoténuse 6 cm, angle 50° → BC',a:'50',v:'6',k:'hyp',w:'opp'},
+  {l:'AB = 5 cm, angle 40° → BC',a:'40',v:'5',k:'adj',w:'opp'},
+  {l:'AB = 7 cm, angle 30° → AC',a:'30',v:'7',k:'adj',w:'hyp'},
+  {l:'Falaise : 100 m de recul, angle 52° → hauteur',a:'52',v:'100',k:'adj',w:'opp',unit:'m'}];
+let unit2='cm';
+function render2(){
+  const a=parseNum($('a2').value),v=parseNum($('kv2').value),k=$('ks2').value,w=$('ws2').value;const red=$('redac2');
+  const err=m=>{red.className='redac err';red.innerHTML=m;mnem($('mn2'),null);};
+  if(!(a>0&&a<90)||!(v>0)){err('Entre un angle strictement compris entre 0° et 90° et une longueur positive.');$('svg2').innerHTML='';return;}
+  if(k===w){err('Choisis deux côtés différents : le côté connu et le côté cherché.');return;}
+  const F=formula(k,w);
+  // longueurs réelles du triangle
+  let adj,opp,hyp;
+  if(k==='hyp'){hyp=v;adj=v*Math.cos(a*D);opp=v*Math.sin(a*D);}else if(k==='adj'){adj=v;hyp=v/Math.cos(a*D);opp=v*Math.tan(a*D);}else{opp=v;hyp=v/Math.sin(a*D);adj=v/Math.tan(a*D);}
+  const L={adj,opp,hyp};const s=fitScale(adj,opp);const res=L[w];const u=unit2;
+  const labels={adj:null,opp:null,hyp:null};labels[k]=fr(v,2)+' '+u;labels[w]='?';
+  const thin={adj:true,opp:true,hyp:true};thin[k]=false;thin[w]=false;
+  $('svg2').innerHTML=triangle({alpha:a,adj,opp,s,ox:70,oy:470,labels,thin});
+  mnem($('mn2'),F.mn);
+  const fn=F.f,top=F.top,bot=F.bot;const t=TRIG[fn](a*D);
+  let h=`<div>Dans le triangle ABC rectangle en B, par rapport à l'angle ${ANG} : ${N(k)} est ${k==='hyp'?"l'":'le '}${WORD[k]}, ${N(w)} est ${w==='hyp'?"l'":'le '}${WORD[w]}. On utilise le <b>${fn==='cos'?'cosinus':fn==='sin'?'sinus':'tangente'}</b>.</div>`;
+  h+=`<div>${fn}(${ANG}) = ${frac(N(top),N(bot))}</div>`;
+  const known=fr(v,2);
+  const eq=w===top?frac(N(top),known):frac(known,N(bot));
+  h+=`<div>${fn}(${fr(a,2)}°) = ${eq}</div>`;
+  if(w===top)h+=`<div class="concl">${N(w)} = ${known} × ${fn}(${fr(a,2)}°) ≈ ${fr(res,2)} ${u}</div>`;
+  else h+=`<div class="concl">${N(w)} = ${frac(known,`${fn}(${fr(a,2)}°)`)} ≈ ${fr(res,2)} ${u}</div>`;
+  h+=`<div class="note">Calculatrice en mode degrés. ${w===top?'Le côté cherché est au numérateur : on multiplie.':'Le côté cherché est au dénominateur : on divise (produit en croix).'}</div>`;
+  red.className='redac';red.innerHTML=h;
+}
+EX2.forEach(e=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=e.l;
+  b.onclick=()=>{unit2='cm';$('a2').value=e.a;$('kv2').value=e.v;$('ks2').value=e.k;$('ws2').value=e.w;unit2=e.unit||'cm';render2();};$('ex2').appendChild(b);});
+['a2','kv2'].forEach(id=>$(id).addEventListener('input',render2));['ks2','ws2'].forEach(id=>$(id).addEventListener('change',()=>{render2();}));
+
+/* ---------- 3. Calculer un angle ---------- */
+const EX3=[
+  {l:'AB = 5, AC = 8',s1:'adj',v1:'5',s2:'hyp',v2:'8'},
+  {l:'BC = 3, AC = 6',s1:'opp',v1:'3',s2:'hyp',v2:'6'},
+  {l:'BC = 4, AB = 4',s1:'opp',v1:'4',s2:'adj',v2:'4'},
+  {l:'BC = 7, AB = 2',s1:'opp',v1:'7',s2:'adj',v2:'2'},
+  {l:'Piège : AB = 9, AC = 6',s1:'adj',v1:'9',s2:'hyp',v2:'6'}];
+function render3(){
+  const k1=$('s1').value,k2=$('s2').value,v1=parseNum($('v1').value),v2=parseNum($('v2').value),red=$('redac3');
+  const err=m=>{red.className='redac err';red.innerHTML=m;mnem($('mn3'),null);};
+  if(!(v1>0&&v2>0)){err('Entre deux longueurs positives.');$('svg3').innerHTML='';return;}
+  if(k1===k2){err('Choisis deux côtés différents.');return;}
+  const F=formula(k1,k2);const L={};L[k1]=v1;L[k2]=v2;
+  if(F.bot==='hyp'&&L[F.top]>=L.hyp){err(`Impossible : l'hypoténuse est le plus long côté d'un triangle rectangle, donc ${NAME[F.top]} doit être plus petit que AC.`);$('svg3').innerHTML='';return;}
+  const ratio=L[F.top]/L[F.bot];const a=ATRIG[F.f](ratio)/D;
+  let adj,opp;if(F.f==='cos'){adj=L.adj;opp=Math.sqrt(L.hyp**2-adj**2);}else if(F.f==='sin'){opp=L.opp;adj=Math.sqrt(L.hyp**2-opp**2);}else{adj=L.adj;opp=L.opp;}
+  const s=fitScale(adj,opp);const labels={adj:null,opp:null,hyp:null};labels[k1]=fr(v1,2)+' cm';labels[k2]=fr(v2,2)+' cm';
+  const thin={adj:true,opp:true,hyp:true};thin[k1]=false;thin[k2]=false;
+  $('svg3').innerHTML=triangle({alpha:a,adj,opp,s,ox:70,oy:470,labels,thin,angTxt:'?'});
+  mnem($('mn3'),F.mn);
+  const fn=F.f,nom=fn==='cos'?'cosinus':fn==='sin'?'sinus':'tangente',inv=fn==='cos'?'arccos':fn==='sin'?'arcsin':'arctan';
+  let h=`<div>Dans le triangle ABC rectangle en B, on connaît ${N(F.top)} (${WORD[F.top]}) et ${N(F.bot)} (${WORD[F.bot]}) : on utilise le <b>${nom}</b>.</div>`;
+  h+=`<div>${fn}(${ANG}) = ${frac(N(F.top),N(F.bot))} = ${frac(fr(L[F.top],2),fr(L[F.bot],2))}${Math.abs(ratio*1e4-Math.round(ratio*1e4))<1e-6?' = '+fr(ratio,4):''}</div>`;
+  h+=`<div class="concl">${ANG} = ${inv}(${frac(fr(L[F.top],2),fr(L[F.bot],2))}) ≈ ${fr(a,1)}°</div>`;
+  h+=`<div class="note">Calculatrice en mode degrés : touche ${fn}⁻¹ (ou Arc${fn} / ${fn==='cos'?'acs':fn==='sin'?'asn':'atn'} selon le modèle).</div>`;
+  red.className='redac';red.innerHTML=h;
+}
+EX3.forEach(e=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=e.l;
+  b.onclick=()=>{$('s1').value=e.s1;$('v1').value=e.v1;$('s2').value=e.s2;$('v2').value=e.v2;render3();};$('ex3').appendChild(b);});
+['v1','v2'].forEach(id=>$(id).addEventListener('input',render3));['s1','s2'].forEach(id=>$(id).addEventListener('change',render3));
+
+/* ---------- Onglets ---------- */
+const views=['rapports','longueur','angle'];
+function show(v){if(!views.includes(v))v='rapports';
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});if(v!=='rapports')stop1();}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+
+render1();render2();render3();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,385 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Pyramides et cônes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : solide en 3D en grand à gauche (à projeter), commandes et vocabulaire à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --face:#8fb0e8; --base:#e7b25a; --hot:#c9334d; --apex:#c9334d; --h:#0a8587;
+  --ok:#1b7f45; --ok-soft:#e1f3e8;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --face:#4c6ea8; --base:#b5853a; --hot:#ff6f84; --apex:#ff6f84; --h:#3cc3c5;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --face:#4c6ea8; --base:#b5853a; --hot:#ff6f84; --apex:#ff6f84; --h:#3cc3c5;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 11px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.eq{border-radius:12px;background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font:600 17px/1.4 var(--font-d);font-variant-numeric:tabular-nums}
+.eq small{font:600 13px/1.2 var(--font-d);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vocab{border-radius:12px;padding:12px 14px;font-size:15px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok);display:flex;flex-direction:column;gap:4px}
+.vocab b{font-family:var(--font-d)}
+.counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cnt{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.cnt span{font:600 13px/1.2 var(--font-d);color:var(--muted)}
+.cnt b{font:700 24px/1 var(--font-d);font-variant-numeric:tabular-nums}
+
+/* SVG */
+.edge{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.hidden-edge{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:6 5}
+.hl-edge{stroke:var(--hot);stroke-width:5;stroke-linecap:round}
+.hgt{stroke:var(--h);stroke-width:3;stroke-dasharray:7 5}
+.apex{fill:var(--apex);stroke:var(--paper);stroke-width:2.5}
+.lab{font:700 16px var(--font-d)}
+.f-hot{fill:var(--hot)} .f-h{fill:var(--h)} .f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.tip{font:600 14px var(--font-b);fill:var(--muted)}
+.tri2d{fill:color-mix(in srgb,var(--base) 40%,transparent);stroke:var(--ink);stroke-width:2}
+.axis{stroke:var(--h);stroke-width:2.5;stroke-dasharray:8 6}
+.sector{fill:color-mix(in srgb,var(--face) 60%,transparent);stroke:var(--ink);stroke-width:2}
+.disk{fill:color-mix(in srgb,var(--base) 60%,transparent);stroke:var(--ink);stroke-width:2}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e · Géométrie dans l'espace</p>
+      <h1>Pyramides et cônes</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-pyramide" data-view="pyramide" aria-selected="true">1. La pyramide</button>
+      <button class="tab" role="tab" id="tab-patron" data-view="patron" aria-selected="false">2. Le patron</button>
+      <button class="tab" role="tab" id="tab-cone" data-view="cone" aria-selected="false">3. Le cône</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. PYRAMIDE -->
+  <section class="view" id="v-pyramide" role="tabpanel" aria-labelledby="tab-pyramide">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 560" role="img" aria-label="Pyramide en 3D qu'on peut faire tourner"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Le vocabulaire de la pyramide</h2>
+        <p class="hint">Fais glisser la pyramide pour la tourner. Choisis un mot : il s'allume sur la figure.</p>
+      </div>
+      <div class="ctl"><div class="ctl-head"><label for="n1">Nombre de côtés de la base</label><span class="val" id="n1v"></span></div><input type="range" id="n1" min="3" max="20" step="1" value="4"></div>
+      <div class="ctl"><span class="lbl">Montrer</span><div class="chips" id="voc1"></div></div>
+      <label class="check"><input type="checkbox" id="auto1" checked> Rotation automatique</label>
+      <div class="counts" id="cnt1"></div>
+      <div class="vocab" id="def1"></div>
+    </div>
+  </section>
+
+  <!-- 2. PATRON -->
+  <section class="view" id="v-patron" role="tabpanel" aria-labelledby="tab-patron" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 560" role="img" aria-label="Pyramide qui se déplie en patron"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Déplier la pyramide</h2>
+        <p class="hint">Les faces latérales tournent autour des arêtes de la base et se couchent à plat : on obtient le patron. Fais glisser pour tourner la vue.</p>
+      </div>
+      <div class="ctl"><div class="ctl-head"><label for="n2">Nombre de côtés de la base</label><span class="val" id="n2v"></span></div><input type="range" id="n2" min="3" max="20" step="1" value="4"></div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="t2">Dépliage</label><span class="val" id="t2v"></span></div>
+        <input type="range" id="t2" min="0" max="1" step="0.01" value="0.35">
+        <div class="row"><button class="btn primary" type="button" id="open2">▶ Déplier</button><button class="btn" type="button" id="close2">Replier</button><button class="btn" type="button" id="top2">Vue de dessus</button></div>
+      </div>
+      <div class="vocab">Le patron d'une pyramide à base de n côtés est formé de la base et de n triangles. Les triangles qui se touchent dans le patron ont des côtés de même longueur : ce sont les arêtes latérales qui se recollent.</div>
+    </div>
+  </section>
+
+  <!-- 3. CÔNE -->
+  <section class="view" id="v-cone" role="tabpanel" aria-labelledby="tab-cone" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 560" role="img" aria-label="Cône engendré par la rotation d'un triangle rectangle"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Le cône de révolution</h2>
+        <p class="hint">Un triangle rectangle qui tourne autour d'un côté de l'angle droit engendre un cône. Fais glisser pour tourner la vue.</p>
+      </div>
+      <div class="row">
+        <button class="btn primary" type="button" id="spin3">▶ Faire tourner le triangle</button>
+        <button class="btn" type="button" id="pat3">Voir le patron</button>
+      </div>
+      <div class="ctl"><div class="ctl-head"><label for="f3">Replier le patron</label><span class="val" id="f3v"></span></div><input type="range" id="f3" min="0" max="1" step="0.01" value="0">
+        <div class="row"><button class="btn primary" type="button" id="fold3">▶ Replier le patron</button><button class="btn" type="button" id="unfold3">Déplier</button></div></div>
+      <div class="ctl"><div class="ctl-head"><label for="r3">Rayon de la base</label><span class="val" id="r3v"></span></div><input type="range" id="r3" min="1" max="5" step="0.5" value="3"></div>
+      <div class="ctl"><div class="ctl-head"><label for="h3">Hauteur</label><span class="val" id="h3v"></span></div><input type="range" id="h3" min="2" max="8" step="0.5" value="5"></div>
+      <div class="ctl"><span class="lbl">Montrer</span><div class="chips" id="voc3"></div></div>
+      <div class="vocab" id="def3"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=v=>Math.round(v*100)/100;
+function fr(x,d=2){const k=Math.pow(10,d);let v=Math.round(x*k)/k;if(Object.is(v,-0))v=0;return v.toLocaleString('fr-FR',{maximumFractionDigits:d});}
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],mul=(a,k)=>[a[0]*k,a[1]*k,a[2]*k];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const norm=a=>{const l=Math.hypot(...a)||1;return mul(a,1/l);};
+const P2=p=>r2(p[0])+','+r2(p[1]);
+// vue : y vers le haut ; yaw autour de y, pitch autour de x
+function view(yaw,pitch,sc,cx,cy){const cyw=Math.cos(yaw),syw=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
+  const rot=p=>{let [x,y,z]=p;[x,z]=[x*cyw+z*syw,-x*syw+z*cyw];[y,z]=[y*cp-z*sp,y*sp+z*cp];return [x,y,z];};
+  return {rot,pj:p=>{const q=rot(p);return [cx+q[0]*sc,cy-q[1]*sc,q[2]];}};}
+function dragRotate(svg,S,onUser){let last=null;
+  svg.addEventListener('pointerdown',e=>{last=[e.clientX,e.clientY];svg.setPointerCapture(e.pointerId);S.auto=false;onUser&&onUser();});
+  svg.addEventListener('pointermove',e=>{if(!last)return;S.yaw+=(e.clientX-last[0])*0.01;S.pitch=Math.max(-0.2,Math.min(1.45,S.pitch+(e.clientY-last[1])*0.01));last=[e.clientX,e.clientY];S.render();});
+  const up=()=>{last=null;};svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);}
+const POLY={3:'triangle',4:'carré',5:'pentagone',6:'hexagone',7:'heptagone',8:'octogone',9:'ennéagone',10:'décagone',11:'hendécagone',12:'dodécagone',13:'tridécagone',14:'tétradécagone',15:'pentadécagone',16:'hexadécagone',17:'heptadécagone',18:'octadécagone',19:'ennéadécagone',20:'icosagone'};
+const baseLab=n=>n+' côtés · '+POLY[n];
+function basePts(n,R){const off=n===4?Math.PI/4:Math.PI/2;return Array.from({length:n},(_,i)=>{const a=off+2*Math.PI*i/n;return [R*Math.cos(a),0,R*Math.sin(a)];});}
+// faces d'un solide convexe : dessin des faces visibles (normale vers l'observateur), arêtes cachées en pointillés
+function drawSolid(V,faces,cen,opt){let front='',dash='';const L=norm([0.3,0.7,1]);
+  // une arête est cachée si toutes les faces qui la contiennent tournent le dos à l'observateur
+  const key=(a,b)=>[a,b].map(p=>p.map(v=>v.toFixed(3)).join(',')).sort().join('|');
+  const E=new Map();
+  const list=faces.map(f=>{const pts=f.v;let n=norm(cross(sub(pts[1],pts[0]),sub(pts[2],pts[0])));const fc=mul(pts.reduce(add,[0,0,0]),1/pts.length);if(dot(n,sub(fc,cen))<0)n=mul(n,-1);const nr=V.rot(n);return {f,nr,vis:nr[2]>1e-6};});
+  for(const F of list){const v=F.f.v;v.forEach((p,i)=>{const q=v[(i+1)%v.length],k=key(p,q);const e=E.get(k)||{p,q,vis:false};e.vis=e.vis||F.vis;E.set(k,e);});}
+  for(const F of list){if(!F.vis)continue;const pp=F.f.v.map(V.pj);const sh=Math.round((0.62+0.38*Math.max(0,dot(F.nr,L)))*100);
+    front+=`<polygon class="edge" style="fill:color-mix(in srgb,var(${F.f.col}) ${sh}%,#000);${F.f.hot?'stroke:var(--hot);stroke-width:4':''}" points="${pp.map(P2).join(' ')}"/>`;}
+  // arêtes cachées : en pointillés, par-dessus les faces
+  for(const e of E.values())if(!e.vis){const a=V.pj(e.p),b=V.pj(e.q);dash+=`<line class="hidden-edge" x1="${r2(a[0])}" y1="${r2(a[1])}" x2="${r2(b[0])}" y2="${r2(b[1])}"/>`;}
+  return front+dash;}
+
+/* ---------- 1. Pyramide ---------- */
+const VOC=[['sommet','Sommet'],['base','Base'],['faces','Faces latérales'],['aretes','Arêtes latérales'],['hauteur','Hauteur']];
+const S1={n:4,yaw:0.5,pitch:0.35,auto:true,hl:'sommet',render:null};
+function render1(){
+  const n=S1.n,R=2.4,h=3.4,V=view(S1.yaw,S1.pitch,62,320,330);
+  const B=basePts(n,R).map(p=>add(p,[0,-h/2,0])),S=[0,h/2,0],O=[0,-h/2,0];
+  const faces=[{v:B.slice().reverse(),col:'--base',hot:S1.hl==='base'}];
+  for(let i=0;i<n;i++)faces.push({v:[B[i],B[(i+1)%n],S],col:'--face',hot:S1.hl==='faces'});
+  let o=drawSolid(V,faces,[0,-h/6,0]);
+  if(S1.hl==='aretes')B.forEach(p=>{const a=V.pj(p),b=V.pj(S);o+=`<line class="hl-edge" x1="${r2(a[0])}" y1="${r2(a[1])}" x2="${r2(b[0])}" y2="${r2(b[1])}"/>`;});
+  if(S1.hl==='hauteur'){const a=V.pj(S),b=V.pj(O);o+=`<line class="hgt" x1="${r2(a[0])}" y1="${r2(a[1])}" x2="${r2(b[0])}" y2="${r2(b[1])}"/><circle cx="${r2(b[0])}" cy="${r2(b[1])}" r="5" style="fill:var(--h)"/>`;
+    // petit angle droit en H
+    const k=0.35,u=norm(sub(B[0],O)),p1=V.pj(add(O,mul(u,k))),p2=V.pj(add(add(O,mul(u,k)),[0,k,0])),p3=V.pj(add(O,[0,k,0]));o+=`<path d="M${P2(p1)}L${P2(p2)}L${P2(p3)}" fill="none" style="stroke:var(--h)" stroke-width="2"/>`;
+    o+=`<text class="lab f-h halo" x="${r2((a[0]+b[0])/2+10)}" y="${r2((a[1]+b[1])/2)}">hauteur</text><text class="lab f-h halo" x="${r2(b[0]+10)}" y="${r2(b[1]+18)}">H</text>`;}
+  const s=V.pj(S);o+=`<circle class="apex" cx="${r2(s[0])}" cy="${r2(s[1])}" r="${S1.hl==='sommet'?10:6}"/>`;
+  if(S1.hl==='sommet')o+=`<text class="lab f-hot halo" x="${r2(s[0]+14)}" y="${r2(s[1]-10)}">sommet S</text>`;
+  if(S1.hl==='base'){const c=V.pj(O);o+=`<text class="lab f-hot halo" x="${r2(c[0])}" y="${r2(c[1]+70)}" text-anchor="middle">base</text>`;}
+  o+=`<text class="tip" x="20" y="545">Fais glisser pour tourner la pyramide. Les arêtes cachées sont en pointillés.</text>`;
+  $('svg1').innerHTML=o;
+  const nom=n===3?'à base triangulaire':n===4?'à base carrée':'à base de '+n+' côtés';
+  $('cnt1').innerHTML=`<div class="cnt"><span>Faces</span><b>${n+1}</b></div><div class="cnt"><span>Arêtes</span><b>${2*n}</b></div><div class="cnt"><span>Sommets</span><b>${n+1}</b></div>`;
+  const D={sommet:'<b>Le sommet</b> de la pyramide est le point commun à toutes les faces latérales.',
+    base:`<b>La base</b> est un polygone : ici un ${POLY[n]} (${n} côtés). C'est la seule face qui ne contient pas le sommet.`,
+    faces:`<b>Les faces latérales</b> sont des triangles qui ont tous le sommet en commun. Il y en a autant que de côtés de la base : ${n}.`,
+    aretes:`<b>Les arêtes latérales</b> relient le sommet aux sommets de la base. Il y en a ${n}.`,
+    hauteur:'<b>La hauteur</b> est le segment [SH] issu du sommet et perpendiculaire à la base. Sa longueur sert à calculer le volume.'};
+  $('def1').innerHTML=`<div>Pyramide ${nom}.</div><div>${D[S1.hl]}</div>`;
+  $('n1v').textContent=baseLab(n);$('n1').value=n;
+  document.querySelectorAll('#voc1 .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.v===S1.hl));
+}
+S1.render=render1;
+$('n1').oninput=e=>{S1.n=+e.target.value;render1();};
+VOC.forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.className='chip';b.dataset.v=k;b.textContent=l;b.onclick=()=>{S1.hl=k;render1();};$('voc1').appendChild(b);});
+$('auto1').onchange=e=>{S1.auto=e.target.checked;};
+dragRotate($('svg1'),S1,()=>{$('auto1').checked=false;});
+
+/* ---------- 2. Patron ---------- */
+const S2={n:4,t:0.35,yaw:0.4,pitch:0.55,stop:null,render:null};
+function render2(){
+  const n=S2.n,R=2,h=3.2,t=S2.t;const ext=R*Math.cos(Math.PI/n)+Math.hypot(R*Math.cos(Math.PI/n),h);const V=view(S2.yaw,S2.pitch,Math.min(58,250/ext),320,290);
+  const B=basePts(n,R),S=[0,h,0];const a=R*Math.cos(Math.PI/n);// apothème de la base
+  const l=Math.hypot(a,h),b0=Math.PI-Math.atan2(h,a);// angle de départ dans le plan (u, y)
+  const faces=[{v:B.slice().reverse(),col:'--base'}];
+  for(let i=0;i<n;i++){const P=B[i],Q=B[(i+1)%n],M=mul(add(P,Q),0.5),u=norm([M[0],0,M[2]]);
+    const beta=b0*(1-t);// 0 = à plat vers l'extérieur
+    const apex=add(M,add(mul(u,l*Math.cos(beta)),[0,l*Math.sin(beta),0]));
+    faces.push({v:[P,Q,apex],col:'--face'});}
+  // dessin : faces triées de l'arrière vers l'avant (les triangles ne sont plus fermés en volume pendant le dépliage)
+  const L=norm([0.3,0.7,1]);const items=faces.map(f=>{let nn=norm(cross(sub(f.v[1],f.v[0]),sub(f.v[2],f.v[0])));if(V.rot(nn)[2]<0)nn=mul(nn,-1);const fc=mul(f.v.reduce(add,[0,0,0]),1/f.v.length);return {f,z:V.rot(fc)[2],nr:V.rot(nn)};});
+  items.sort((p,q)=>p.z-q.z);
+  let o='';for(const it of items){const pp=it.f.v.map(V.pj);const sh=Math.round((0.6+0.4*Math.max(0,dot(it.nr,L)))*100);
+    o+=`<polygon class="edge" style="fill:color-mix(in srgb,var(${it.f.col}) ${sh}%,#000);fill-opacity:.92" points="${pp.map(P2).join(' ')}"/>`;}
+  o+=`<text class="tip" x="20" y="28">${t>0.99?'Patron à plat : la base entourée de ses '+n+' faces triangulaires.':'Fais glisser pour tourner la vue.'}</text>`;
+  $('svg2').innerHTML=o;$('t2v').textContent=Math.round(t*100)+' %';$('t2').value=t;
+  $('n2v').textContent=baseLab(n);$('n2').value=n;
+}
+S2.render=render2;
+function tween(get,set,target,dur,render){if(S2.stop)S2.stop();let raf;const s=get(),t0=performance.now();if(reduce)dur=1;
+  const st=now=>{const k=Math.max(0,Math.min(1,(now-t0)/dur)),e=k*k*(3-2*k);set(s+(target-s)*e);render();if(k<1)raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);return ()=>cancelAnimationFrame(raf);}
+$('n2').oninput=e=>{S2.n=+e.target.value;render2();};
+$('t2').oninput=e=>{if(S2.stop)S2.stop();S2.t=+e.target.value;render2();};
+$('open2').onclick=()=>{S2.stop=tween(()=>S2.t,v=>S2.t=v,1,1800,render2);};
+$('close2').onclick=()=>{S2.stop=tween(()=>S2.t,v=>S2.t=v,0,1800,render2);};
+$('top2').onclick=()=>{const y0=S2.yaw,p0=S2.pitch;S2.stop=tween(()=>0,k=>{S2.pitch=p0+(1.45-p0)*k;S2.yaw=y0*(1-k);},1,900,render2);};
+dragRotate($('svg2'),S2);
+
+/* ---------- 3. Cône ---------- */
+const VOC3=[['sommet','Sommet'],['base','Base (disque)'],['rayon','Rayon'],['hauteur','Hauteur'],['generatrice','Génératrice']];
+const S3={r:3,h:5,a:2*Math.PI,yaw:0.3,pitch:0.32,hl:'generatrice',patron:false,fold:null,stop:null,render:null};
+function render3(){
+  const {r,h}=S3;const svg=$('svg3');
+  $('f3').value=S3.fold===null?0:S3.fold;$('f3v').textContent=S3.fold===null?'—':Math.round(S3.fold*100)+' %';
+  if(S3.fold!==null){renderFold();$('pat3').textContent='Voir le patron';fill3();return;}
+  if(S3.patron){// patron : disque + secteur
+    const g=Math.hypot(r,h),ang=360*r/g,sc=Math.min(46,480/(g+2*r),190/g);let o='';
+    const C=[220,20+(g+2*r)*sc],a0=-90-ang/2,a1=-90+ang/2,rad=d=>d*Math.PI/180;
+    const p=d=>[C[0]+g*sc*Math.cos(rad(d)),C[1]+g*sc*Math.sin(rad(d))];
+    o+=`<path class="sector" d="M${C[0]},${C[1]}L${P2(p(a0))}A${r2(g*sc)},${r2(g*sc)} 0 ${ang>180?1:0} 1 ${P2(p(a1))}Z"/>`;
+    const D=[C[0]+0,C[1]+r*sc+ 4];// disque collé sous l'arc
+    const bottom=[C[0],C[1]-g*sc];
+    o+=`<circle class="disk" cx="${C[0]}" cy="${r2(C[1]-g*sc-r*sc)}" r="${r2(r*sc)}"/>`;
+    o+=`<text class="lab f-ink halo" x="${C[0]}" y="${C[1]+24}" text-anchor="middle">sommet</text>`;
+    o+=`<text class="lab f-ink halo" x="${r2((C[0]+p(a1)[0])/2+14)}" y="${r2((C[1]+p(a1)[1])/2)}">g = ${fr(g,2)}</text>`;
+    o+=`<text class="lab f-muted halo" x="${C[0]}" y="${r2(C[1]-g*sc-r*sc)}" text-anchor="middle" dominant-baseline="central">base r = ${fr(r)}</text>`;
+    o+=`<text class="lab f-hot halo" x="${C[0]}" y="${C[1]-40}" text-anchor="middle">${fr(ang,1)}°</text>`;
+    o+=`<foreignObject x="420" y="150" width="210" height="260"><div xmlns="http://www.w3.org/1999/xhtml" style="font:600 15px/1.45 var(--font-b);color:var(--ink)">Le patron d'un cône : un <b>disque</b> (la base) et un <b>secteur de disque</b> de rayon g, la génératrice.<br/><br/>L'arc du secteur a la même longueur que le périmètre de la base : 2π × ${fr(r)} ≈ ${fr(2*Math.PI*r)}.</div></foreignObject>`;
+    svg.innerHTML=o;$('pat3').textContent='Revenir au cône';fill3();return;}
+  $('pat3').textContent='Voir le patron';
+  const V=view(S3.yaw,S3.pitch,48,300,320);const N=60,a=S3.a;
+  const ring=k=>Array.from({length:N+1},(_,i)=>{const th=a*i/N;return [r*Math.cos(th),-h/2,r*Math.sin(th)];});
+  const S=[0,h/2,0],O=[0,-h/2,0];let o='';
+  // surface balayée : petites faces triangulaires S, Pi, Pi+1
+  const rg=ring();const tris=[];for(let i=0;i<N;i++)tris.push([S,rg[i],rg[i+1]]);
+  const L=norm([0.3,0.7,1]);
+  const items=tris.map(T=>{const fc=mul(T.reduce(add,[0,0,0]),1/3);let nn=norm(sub([fc[0],0,fc[2]],[0,0,0]));nn=norm(add(nn,[0,r/h,0]));return {T,z:V.rot(fc)[2],nr:V.rot(nn)};}).sort((p,q)=>p.z-q.z);
+  // base (disque) si le tour est complet ou partiel : secteur
+  const bpts=[O,...rg].map(V.pj);o+=`<polygon style="fill:color-mix(in srgb,var(--base) ${S3.hl==='base'?90:55}%,transparent);stroke:var(--ink);stroke-width:1.2" points="${bpts.map(P2).join(' ')}"/>`;
+  for(const it of items){if(it.nr[2]<=0)continue;const pp=it.T.map(V.pj);const sh=Math.round((0.6+0.4*Math.abs(dot(it.nr,L)))*100);o+=`<polygon style="fill:color-mix(in srgb,var(--face) ${sh}%,#000);stroke:color-mix(in srgb,var(--face) ${sh}%,#000);stroke-width:.6" points="${pp.map(P2).join(' ')}"/>`;}
+  // contour de la base : trait plein devant, pointillés derrière (caché par la surface latérale quand on regarde d'au-dessus)
+  const above=S3.pitch>0;
+  for(let i=0;i<N;i++){const mid=mul(add(rg[i],rg[i+1]),0.5);const nn=V.rot(norm([mid[0],0,mid[2]]));const hidden=above&&nn[2]<0&&a>=2*Math.PI-0.01;
+    const p=V.pj(rg[i]),q=V.pj(rg[i+1]);o+=`<line x1="${r2(p[0])}" y1="${r2(p[1])}" x2="${r2(q[0])}" y2="${r2(q[1])}" style="stroke:var(${hidden?'--muted':'--ink'})" stroke-width="${hidden?1.5:1.8}" ${hidden?'stroke-dasharray="6 5"':''}/>`;}
+  // triangle générateur (position courante) : S, O, P(a)
+  const Pa=[r*Math.cos(a),-h/2,r*Math.sin(a)];const tri=[S,O,Pa].map(V.pj);
+  o+=`<polygon class="tri2d" points="${tri.map(P2).join(' ')}"/>`;
+  const sp=V.pj(S),op=V.pj(O),pp=V.pj(Pa);
+  o+=`<line class="axis" x1="${r2(sp[0])}" y1="${r2(sp[1]-40)}" x2="${r2(op[0])}" y2="${r2(op[1]+40)}"/>`;
+  const hl=S3.hl;
+  if(hl==='generatrice')o+=`<line class="hl-edge" x1="${r2(sp[0])}" y1="${r2(sp[1])}" x2="${r2(pp[0])}" y2="${r2(pp[1])}"/><text class="lab f-hot halo" x="${r2((sp[0]+pp[0])/2+12)}" y="${r2((sp[1]+pp[1])/2)}">génératrice</text>`;
+  if(hl==='rayon')o+=`<line class="hl-edge" x1="${r2(op[0])}" y1="${r2(op[1])}" x2="${r2(pp[0])}" y2="${r2(pp[1])}"/><text class="lab f-hot halo" x="${r2((op[0]+pp[0])/2)}" y="${r2((op[1]+pp[1])/2+22)}" text-anchor="middle">rayon</text>`;
+  if(hl==='hauteur')o+=`<line class="hgt" x1="${r2(sp[0])}" y1="${r2(sp[1])}" x2="${r2(op[0])}" y2="${r2(op[1])}" style="stroke-width:4"/><text class="lab f-h halo" x="${r2(sp[0]+10)}" y="${r2((sp[1]+op[1])/2)}">hauteur</text>`;
+  if(hl==='base')o+=`<text class="lab f-hot halo" x="${r2(op[0])}" y="${r2(op[1]+60)}" text-anchor="middle">base : un disque</text>`;
+  o+=`<circle class="apex" cx="${r2(sp[0])}" cy="${r2(sp[1])}" r="${hl==='sommet'?10:6}"/>`;if(hl==='sommet')o+=`<text class="lab f-hot halo" x="${r2(sp[0]+14)}" y="${r2(sp[1]-10)}">sommet</text>`;
+  o+=`<circle cx="${r2(op[0])}" cy="${r2(op[1])}" r="4" style="fill:var(--ink)"/>`;
+  o+=`<text class="tip" x="20" y="545">${a<2*Math.PI-0.01?'Le triangle rectangle tourne autour de l\'axe (en pointillés).':'Fais glisser pour tourner la vue.'}</text>`;
+  svg.innerHTML=o;fill3();
+}
+// patron du cône qui se replie en 3D : le secteur s'enroule, puis le disque vient fermer la base
+function renderFold(){
+  const {r,h}=S3,g=Math.hypot(r,h),th0=2*Math.PI*r/g,f=S3.fold;
+  const ez=k=>k*k*(3-2*k),cl=x=>Math.max(0,Math.min(1,x));
+  const fa=ez(cl(f/0.65)),fb=ez(cl((f-0.55)/0.45));
+  const phi=th0+(2*Math.PI-th0)*fa,rho=r*2*Math.PI/phi,eta=Math.sqrt(Math.max(0,g*g-rho*rho));
+  const a0=Math.PI/2,K=60,M=48,y0=-h/2;
+  const P=(sv,psi)=>{const al=a0+psi*g/rho,q=sv*rho/g;return [q*Math.cos(al),y0+eta*(1-sv/g),q*Math.sin(al)];};
+  const A=P(0,0);const ps=Array.from({length:K+1},(_,i)=>-th0/2+th0*i/K);const rim=ps.map(v=>P(g,v));
+  // disque : tourne autour de la tangente au point de contact (en passant par-dessous)
+  const uo=[Math.cos(a0),0,Math.sin(a0)],tg=[-Math.sin(a0),0,Math.cos(a0)],be=Math.PI*fb;
+  const T=[rho*uo[0],y0,rho*uo[2]],e2=add(mul(uo,Math.cos(be)),[0,-Math.sin(be),0]);const Cd=add(T,mul(e2,r));
+  const disk=Array.from({length:M+1},(_,i)=>{const t=2*Math.PI*i/M;return add(Cd,add(mul(tg,r*Math.cos(t)),mul(e2,-r*Math.sin(t))));});
+  // cadrage automatique
+  const V1=view(S3.yaw,S3.pitch,1,0,0);const all=[A,...rim,...disk].map(V1.rot);
+  const xs=all.map(q=>q[0]),ys=all.map(q=>q[1]);const x0=Math.min(...xs),x1=Math.max(...xs),y1=Math.min(...ys),y2=Math.max(...ys);
+  const sc=Math.min(48,540/(x1-x0||1),440/(y2-y1||1));const V=view(S3.yaw,S3.pitch,sc,320-sc*(x0+x1)/2,285+sc*(y1+y2)/2);
+  const L=norm([0.3,0.7,1]);const it=[];
+  for(let i=0;i<K;i++){const am=a0+(ps[i]+ps[i+1])/2*g/rho;const nO=norm([eta*Math.cos(am),rho,eta*Math.sin(am)]);const nr=V.rot(nO);
+    const tri=[A,rim[i],rim[i+1]];const z=V.rot(mul(add(A,add(rim[i],rim[i+1])),1/3))[2];
+    const out=nr[2]>0,sh=Math.round((0.6+0.4*Math.abs(dot(nr,L)))*100);
+    const col=out?`color-mix(in srgb,var(--face) ${sh}%,#000)`:`color-mix(in srgb,var(--face) ${Math.round(sh*0.62)}%,#000)`;
+    it.push({z,s:`<polygon style="fill:${col};stroke:${col};stroke-width:.6" points="${tri.map(V.pj).map(P2).join(' ')}"/>`});}
+  const nD=norm(cross(tg,e2)),nDr=V.rot(nD),shD=Math.round((0.62+0.38*Math.abs(dot(nDr,L)))*100);
+  for(let i=0;i<M;i++){const tri=[Cd,disk[i],disk[i+1]];const z=V.rot(mul(add(Cd,add(disk[i],disk[i+1])),1/3))[2];const col=`color-mix(in srgb,var(--base) ${shD}%,#000)`;
+    it.push({z,s:`<polygon style="fill:${col};stroke:${col};stroke-width:.6" points="${tri.map(V.pj).map(P2).join(' ')}"/>`});}
+  const seg=(p,q,w)=>{const a=V.pj(p),b=V.pj(q);it.push({z:V.rot(mul(add(p,q),0.5))[2]+(eta<0.05?100:0.02),s:`<line x1="${r2(a[0])}" y1="${r2(a[1])}" x2="${r2(b[0])}" y2="${r2(b[1])}" style="stroke:var(--ink)" stroke-width="${w}" stroke-linecap="round"/>`});};
+  for(let i=0;i<K;i++)seg(rim[i],rim[i+1],2);
+  for(let i=0;i<M;i++)seg(disk[i],disk[i+1],2);
+  const faceOut=psi=>{const am=a0+psi*g/rho;return V.rot([eta*Math.cos(am),rho,eta*Math.sin(am)])[2]>0;};
+  for(const [e,psi] of [[rim[0],ps[0]],[rim[K],ps[K]]]){if(fa>0.98&&!faceOut(psi))continue;for(let j=(eta>0.3?1:0);j<6;j++)seg(add(A,mul(sub(e,A),j/6)),add(A,mul(sub(e,A),(j+1)/6)),2);}
+  it.sort((p,q)=>p.z-q.z);let o=it.map(x=>x.s).join('');
+  const ap=V.pj(A);o+=`<circle class="apex" cx="${r2(ap[0])}" cy="${r2(ap[1])}" r="6"/>`;
+  const msg=f<0.01?'Le patron : un secteur de disque (surface latérale) et un disque (la base).':f<0.6?'Le secteur s\'enroule : ses deux bords droits vont se recoller.':f<0.99?'L\'arc est devenu le cercle de base : le disque vient fermer le cône.':'Le patron replié forme le cône. Fais glisser pour tourner la vue.';
+  o+=`<text class="tip" x="20" y="545">${msg}</text>`;
+  $('svg3').innerHTML=o;}
+function fold3(target,dur){if(S3.stop)S3.stop();S3.patron=false;if(S3.fold===null)S3.fold=target>0.5?0:1;const s0=S3.fold,t0=performance.now();if(reduce)dur=1;let raf;
+  const st=now=>{const k=Math.max(0,Math.min(1,(now-t0)/dur));S3.fold=s0+(target-s0)*k;render3();if(k<1)raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);S3.stop=()=>cancelAnimationFrame(raf);}
+function fill3(){const {r,h}=S3;const g=Math.hypot(r,h);
+  $('r3v').textContent=fr(r)+' cm';$('h3v').textContent=fr(h)+' cm';
+  const D={sommet:'<b>Le sommet</b> du cône est la pointe, sur l\'axe de rotation.',base:'<b>La base</b> du cône est un disque.',rayon:`<b>Le rayon</b> de la base : ${fr(r)} cm.`,
+    hauteur:`<b>La hauteur</b> relie le sommet au centre de la base ; elle est perpendiculaire à la base : ${fr(h)} cm.`,
+    generatrice:`<b>Une génératrice</b> relie le sommet à un point du cercle de base. Toutes les génératrices ont la même longueur : g = √(${fr(r)}² + ${fr(h)}²) ≈ ${fr(g)} cm (Pythagore).`};
+  $('def3').innerHTML=`<div>${D[S3.hl]}</div>`;
+  document.querySelectorAll('#voc3 .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.v===S3.hl));}
+S3.render=render3;
+VOC3.forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.className='chip';b.dataset.v=k;b.textContent=l;b.onclick=()=>{if(S3.stop)S3.stop();S3.hl=k;S3.patron=false;S3.fold=null;render3();};$('voc3').appendChild(b);});
+$('spin3').onclick=()=>{S3.patron=false;S3.fold=null;if(S3.stop)S3.stop();S3.a=0.001;let raf;const t0=performance.now(),dur=reduce?1:3000;
+  const st=now=>{const k=Math.max(0,Math.min(1,(now-t0)/dur));S3.a=Math.max(0.001,2*Math.PI*k);render3();if(k<1)raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);S3.stop=()=>cancelAnimationFrame(raf);};
+$('pat3').onclick=()=>{if(S3.stop)S3.stop();S3.patron=S3.fold!==null?true:!S3.patron;S3.fold=null;render3();};
+$('fold3').onclick=()=>{if(S3.fold===null||S3.fold>0.99){S3.fold=0;if(S3.pitch<0.7)S3.pitch=0.75;}fold3(1,4000);};
+$('unfold3').onclick=()=>{if(S3.fold===null)S3.fold=1;fold3(0,3000);};
+$('f3').oninput=e=>{if(S3.stop)S3.stop();S3.patron=false;if(S3.fold===null&&S3.pitch<0.7)S3.pitch=0.75;S3.fold=+e.target.value;render3();};
+$('r3').oninput=e=>{S3.r=+e.target.value;render3();};$('h3').oninput=e=>{S3.h=+e.target.value;render3();};
+dragRotate($('svg3'),S3);
+
+/* ---------- Onglets ---------- */
+let current='pyramide';
+const views=['pyramide','patron','cone'];
+function show(v){if(!views.includes(v))v='pyramide';current=v;
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+(function spin(){if(S1.auto&&!reduce&&current==='pyramide'&&!document.hidden){S1.yaw+=0.005;render1();}requestAnimationFrame(spin);})();
+
+render1();render2();render3();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>

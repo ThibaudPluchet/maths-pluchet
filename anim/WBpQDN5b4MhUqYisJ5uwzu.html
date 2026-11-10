@@ -1,0 +1,416 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Distributivité en aires</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : figure en grand à gauche (à projeter), commandes et calculs à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --k:#0a8587; --a:#c27400; --b:#c9334d; --d:#7a4fc4;
+  --x2:#2350c2; --x1:#0a8587; --u1:#c27400;
+  --ok:#1b7f45; --ok-soft:#e1f3e8;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --k:#3cc3c5; --a:#f0ad35; --b:#ff6f84; --d:#b493ff;
+  --x2:#86a6ff; --x1:#3cc3c5; --u1:#f0ad35;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --k:#3cc3c5; --a:#f0ad35; --b:#ff6f84; --d:#b493ff;
+  --x2:#86a6ff; --x1:#3cc3c5; --u1:#f0ad35;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 12px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:default}
+.seg2{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex-wrap:wrap}
+.seg2 button{font:600 14px/1 var(--font-d);border:0;background:var(--paper);color:var(--muted);padding:10px 12px;cursor:pointer}
+.seg2 button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.eq{border-radius:12px;background:var(--bg);padding:14px 16px;display:flex;flex-direction:column;gap:8px;font:600 20px/1.4 var(--font-d);font-variant-numeric:tabular-nums}
+.eq .step{transition:opacity .3s}
+.eq .step.off{opacity:.18}
+.eq small{font:600 13px/1.2 var(--font-d);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ck{color:var(--k)} .ca{color:var(--a)} .cb{color:var(--b)} .cd{color:var(--d)} .cx2{color:var(--x2)} .cx1{color:var(--x1)} .cu1{color:var(--u1)}
+.verdict{border-radius:12px;padding:12px 14px;font-size:16px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok)}
+.verdict strong{font-family:var(--font-d)}
+
+/* SVG */
+.gl{stroke:var(--muted);stroke-width:.8;stroke-dasharray:3 4;opacity:.45}
+.r-k{fill:color-mix(in srgb,var(--a) 22%,transparent);stroke:var(--a);stroke-width:2.5}
+.r-b{fill:color-mix(in srgb,var(--b) 20%,transparent);stroke:var(--b);stroke-width:2.5}
+.r-cut{fill:url(#hatch);stroke:var(--b);stroke-width:2;stroke-dasharray:6 4}
+.p1{fill:color-mix(in srgb,var(--x2) 22%,transparent);stroke:var(--x2);stroke-width:2.5}
+.p2{fill:color-mix(in srgb,var(--x1) 22%,transparent);stroke:var(--x1);stroke-width:2.5}
+.p3{fill:color-mix(in srgb,var(--x1) 22%,transparent);stroke:var(--x1);stroke-width:2.5}
+.p4{fill:color-mix(in srgb,var(--u1) 25%,transparent);stroke:var(--u1);stroke-width:2.5}
+.ghostr{fill:none;stroke:var(--line);stroke-width:2;stroke-dasharray:6 5}
+.lab{font:700 20px var(--font-d)}
+.inner{font:700 22px var(--font-d);fill:var(--ink)}
+.f-k{fill:var(--k)} .f-a{fill:var(--a)} .f-b{fill:var(--b)} .f-d{fill:var(--d)} .f-muted{fill:var(--muted)} .f-ink{fill:var(--ink)} .f-x2{fill:var(--x2)} .f-x1{fill:var(--x1)} .f-u1{fill:var(--u1)}
+.brace{fill:none;stroke-width:2}
+.s-k{stroke:var(--k)} .s-a{stroke:var(--a)} .s-b{stroke:var(--b)} .s-d{stroke:var(--d)} .s-muted{stroke:var(--muted)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
+.t-x2{fill:color-mix(in srgb,var(--x2) 30%,var(--paper));stroke:var(--x2);stroke-width:2}
+.t-x1{fill:color-mix(in srgb,var(--x1) 30%,var(--paper));stroke:var(--x1);stroke-width:2}
+.t-u1{fill:color-mix(in srgb,var(--u1) 35%,var(--paper));stroke:var(--u1);stroke-width:2}
+.tlab{font:700 13px var(--font-d)}
+.ttl{font:700 16px var(--font-d);fill:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e · 3e · Calcul littéral</p>
+      <h1>Distributivité en aires</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-simple" data-view="simple" aria-selected="true">1. k(a + b)</button>
+      <button class="tab" role="tab" id="tab-double" data-view="double" aria-selected="false">2. (x + p)(x + q)</button>
+      <button class="tab" role="tab" id="tab-identite" data-view="identite" aria-selected="false">3. a² − b² (3e)</button>
+      <button class="tab" role="tab" id="tab-reduire" data-view="reduire" aria-selected="false">4. Réduire</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. SIMPLE -->
+  <section class="view" id="v-simple" role="tabpanel" aria-labelledby="tab-simple">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 520" role="img" aria-label="Rectangle de côtés k et a + b découpé en deux rectangles"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Un rectangle, deux façons de calculer son aire</h2>
+        <p class="hint">L'aire du grand rectangle, c'est k × (a + b). C'est aussi la somme des deux petits : k × a + k × b. Développer, c'est passer de l'un à l'autre ; factoriser, c'est revenir.</p>
+      </div>
+      <div class="row">
+        <div class="seg2" role="group" aria-label="Opération">
+          <button type="button" id="op-plus" aria-pressed="true">k(a + b)</button>
+          <button type="button" id="op-moins" aria-pressed="false">k(a − b)</button>
+        </div>
+        <div class="seg2" role="group" aria-label="Avec des nombres ou une lettre">
+          <button type="button" id="m1-num" aria-pressed="true">Nombres</button>
+          <button type="button" id="m1-lit" aria-pressed="false">Avec x</button>
+        </div>
+      </div>
+      <div class="three">
+        <div class="ctl"><div class="ctl-head"><label for="k1" class="ck">k</label><span class="val ck" id="k1v">3</span></div><input type="range" id="k1" min="1" max="6" value="3"></div>
+        <div class="ctl"><div class="ctl-head"><label for="a1" class="ca" id="a1l">a</label><span class="val ca" id="a1v">5</span></div><input type="range" id="a1" min="2" max="9" value="5"></div>
+        <div class="ctl"><div class="ctl-head"><label for="b1" class="cb">b</label><span class="val cb" id="b1v">2</span></div><input type="range" id="b1" min="1" max="6" value="2"></div>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="dev1" type="button">Développer</button>
+        <button class="btn" id="fac1" type="button">Factoriser</button>
+      </div>
+      <div class="eq" id="eq1"></div>
+    </div>
+  </section>
+
+  <!-- 2. DOUBLE -->
+  <section class="view" id="v-double" role="tabpanel" aria-labelledby="tab-double" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 520" role="img" aria-label="Rectangle de côtés x + p et x + q découpé en quatre"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Double distributivité : 4 morceaux</h2>
+        <p class="hint">Chaque terme de la première parenthèse multiplie chaque terme de la deuxième : on obtient 4 rectangles.</p>
+      </div>
+      <div class="seg2" role="group" aria-label="Avec une lettre ou des nombres">
+        <button type="button" id="m2-lit" aria-pressed="true">Avec x</button>
+        <button type="button" id="m2-num" aria-pressed="false">x = 10 (calcul mental)</button>
+      </div>
+      <div class="two">
+        <div class="ctl"><div class="ctl-head"><label for="p2" class="cb">p</label><span class="val cb" id="p2v">2</span></div><input type="range" id="p2" min="1" max="6" value="2"></div>
+        <div class="ctl"><div class="ctl-head"><label for="q2" class="cd">q</label><span class="val cd" id="q2v">3</span></div><input type="range" id="q2" min="1" max="6" value="3"></div>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="next2" type="button">Morceau suivant</button>
+        <button class="btn" id="all2" type="button">Tout montrer</button>
+        <button class="btn" id="reset2" type="button">↺ Recommencer</button>
+      </div>
+      <div class="eq" id="eq2"></div>
+    </div>
+  </section>
+
+  <!-- 3. IDENTITÉ -->
+  <section class="view" id="v-identite" role="tabpanel" aria-labelledby="tab-identite" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 520" role="img" aria-label="Carré de côté a privé d'un carré de côté b, recollé en rectangle"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>a² − b² = (a + b)(a − b)</h2>
+        <p class="hint">On retire un carré de côté b dans un carré de côté a. On découpe ce qui reste en deux rectangles, puis on déplace l'un d'eux : on obtient un rectangle de côtés a + b et a − b.</p>
+      </div>
+      <div class="seg2" role="group" aria-label="Avec des nombres ou une lettre">
+        <button type="button" id="m3-num" aria-pressed="true">Nombres</button>
+        <button type="button" id="m3-lit" aria-pressed="false">Avec x</button>
+      </div>
+      <div class="two">
+        <div class="ctl"><div class="ctl-head"><label for="a3" class="ca" id="a3l">a</label><span class="val ca" id="a3v">7</span></div><input type="range" id="a3" min="3" max="10" value="7"></div>
+        <div class="ctl"><div class="ctl-head"><label for="b3" class="cb">b</label><span class="val cb" id="b3v">3</span></div><input type="range" id="b3" min="1" max="9" value="3"></div>
+      </div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="t3">Déplacer le morceau</label></div>
+        <input type="range" id="t3" min="0" max="1" step="0.01" value="0">
+        <div class="row"><button class="btn primary" id="go3" type="button">▶ Recoller</button><button class="btn" id="back3" type="button">↺ Revenir</button></div>
+      </div>
+      <div class="eq" id="eq3"></div>
+    </div>
+  </section>
+
+  <!-- 4. RÉDUIRE -->
+  <section class="view" id="v-reduire" role="tabpanel" aria-labelledby="tab-reduire" hidden>
+    <div class="stage"><svg id="svg4" viewBox="0 0 640 520" role="img" aria-label="Tuiles x², x et 1 rangées par type"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Réduire = ranger les tuiles par type</h2>
+        <p class="hint">Une tuile carrée vaut x², une tuile longue vaut x, une petite tuile vaut 1. On ne peut regrouper que des tuiles de même type.</p>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="sort4" type="button">Ranger (réduire)</button>
+        <button class="btn" id="new4" type="button">Nouvelle expression</button>
+        <button class="btn" id="mix4" type="button">↺ Mélanger</button>
+      </div>
+      <div class="eq" id="eq4"></div>
+      <div class="verdict"><strong>Attention :</strong> x² et x ne se regroupent pas. Ce ne sont pas les mêmes tuiles, comme on n'ajoute pas des m² et des m.</div>
+    </div>
+  </section>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" style="stroke:var(--b)" stroke-width="2" opacity=".5"/></pattern>
+</defs></svg>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=v=>Math.round(v*100)/100;
+const ease=t=>t<0?0:t>1?1:t*t*(3-2*t);
+function tween(get,set,target,dur,render,done){let raf;const s=get(),t0=performance.now();if(reduce)dur=1;
+  const st=now=>{const k=Math.min(1,(now-t0)/dur);set(s+(target-s)*k);render();if(k<1)raf=requestAnimationFrame(st);else done&&done();};raf=requestAnimationFrame(st);return ()=>cancelAnimationFrame(raf);}
+const rect=(x,y,w,h,cls,extra='')=>`<rect class="${cls}" x="${r2(x)}" y="${r2(y)}" width="${r2(Math.max(0,w))}" height="${r2(Math.max(0,h))}" ${extra}/>`;
+const txt=(x,y,s,cls,anchor='middle')=>`<text class="${cls}" x="${r2(x)}" y="${r2(y)}" text-anchor="${anchor}" dominant-baseline="central">${s}</text>`;
+function hbrace(x1,x2,y,label,col,up=true){const d=up?-1:1;return `<path class="brace s-${col}" d="M${r2(x1)},${r2(y)}v${6*d}H${r2(x2)}v${-6*d}"/>`+txt((x1+x2)/2,y+(up?-20:20),label,`lab f-${col} halo`);}
+function vbrace(y1,y2,x,label,col){return `<path class="brace s-${col}" d="M${r2(x)},${r2(y1)}h-6V${r2(y2)}h6"/>`+txt(x-24,(y1+y2)/2,label,`lab f-${col} halo`,'end');}
+function grid(x,y,w,h,u){let d='';for(let i=u;i<w-1;i+=u)d+=`M${r2(x+i)},${r2(y)}v${r2(h)}`;for(let j=u;j<h-1;j+=u)d+=`M${r2(x)},${r2(y+j)}h${r2(w)}`;return d?`<path class="gl" d="${d}"/>`:'';}
+const mul=(a,b)=>`${a} × ${b}`;
+
+/* ---------- 1. k(a + b) ---------- */
+const S1={k:3,a:5,b:2,op:'+',lit:false,t:1,stop:null};
+function render1(){
+  const {k,a,b,op,lit}=S1;const t=ease(S1.t);
+  const W=op==='+'?a+b:a;const u=Math.min(48,440/(W+1),300/k);
+  const x0=110,y0=150,gap=t*34;
+  const A=lit?'x':a,Bn=b,K=k;
+  let o='';
+  if(op==='+'){
+    o+=rect(x0,y0,a*u,k*u,'r-k')+rect(x0+a*u+gap,y0,b*u,k*u,'r-b');
+    if(!lit)o+=grid(x0,y0,a*u,k*u,u)+grid(x0+a*u+gap,y0,b*u,k*u,u);
+    o+=hbrace(x0,x0+a*u,y0-10,A,'a')+hbrace(x0+a*u+gap,x0+(a+b)*u+gap,y0-10,b,'b');
+    o+=vbrace(y0,y0+k*u,x0-12,k,'k');
+    if(t<0.5)o+=hbrace(x0,x0+(a+b)*u+gap,y0+k*u+12,lit?'x + '+b:`${a} + ${b} = ${a+b}`,'muted',false);
+    o+=txt(x0+a*u/2,y0+k*u/2,lit?(k===1?'x':k+'x'):`${k} × ${a} = ${k*a}`,'inner halo');
+    o+=txt(x0+a*u+gap+b*u/2,y0+k*u/2,`${k*b}`,'inner halo');
+  }else{
+    const cut=t;// en mode « − », t ouvre la bande retirée
+    o+=rect(x0,y0,(a-b)*u,k*u,'r-k')+rect(x0+(a-b)*u+gap,y0,b*u,k*u,'r-cut');
+    if(!lit)o+=grid(x0,y0,(a-b)*u,k*u,u);
+    o+=hbrace(x0,x0+a*u+gap,y0-46,lit?'x':a,'a')+hbrace(x0+(a-b)*u+gap,x0+a*u+gap,y0-10,b,'b');
+    o+=vbrace(y0,y0+k*u,x0-12,k,'k');
+    o+=hbrace(x0,x0+(a-b)*u,y0+k*u+12,lit?'x − '+b:`${a} − ${b} = ${a-b}`,'muted',false);
+    o+=txt(x0+a*u+gap-b*u/2,y0+k*u/2,`− ${k*b}`,'inner halo');
+    o+=txt(x0+(a-b)*u/2,y0+k*u/2,lit?'reste':`${k*(a-b)}`,'inner halo');
+  }
+  $('svg1').innerHTML=o;
+  // équations
+  const s=op==='+'?'+':'−',kx=k===1?'x':k+'x';
+  const left=lit?`<span class="ck">${k}</span>(<span class="ca">x</span> ${s} <span class="cb">${b}</span>)`:`<span class="ck">${k}</span> × (<span class="ca">${a}</span> ${s} <span class="cb">${b}</span>)`;
+  const mid=lit?`<span class="ck">${k}</span> × <span class="ca">x</span> ${s} <span class="ck">${k}</span> × <span class="cb">${b}</span>`:`<span class="ck">${k}</span> × <span class="ca">${a}</span> ${s} <span class="ck">${k}</span> × <span class="cb">${b}</span>`;
+  const right=lit?`${kx} ${s} ${k*b}`:`${k*a} ${s} ${k*b}${''}`;
+  const val=lit?'':` = ${op==='+'?k*(a+b):k*(a-b)}`;
+  const dev=S1.t>0.5;
+  $('eq1').innerHTML=dev
+    ?`<small>Développer</small><div>${left}</div><div class="step">= ${mid}</div><div class="step">= ${right}${val}</div>`
+    :`<small>Factoriser</small><div>${right}</div><div class="step">= ${mid}</div><div class="step">= ${left}${val}</div>`;
+  $('k1v').textContent=k;$('a1v').textContent=lit?'x':a;$('b1v').textContent=b;$('a1l').textContent=lit?'x (longueur dessinée)':'a';
+  $('op-plus').setAttribute('aria-pressed',op==='+');$('op-moins').setAttribute('aria-pressed',op!=='+');
+  $('m1-num').setAttribute('aria-pressed',!lit);$('m1-lit').setAttribute('aria-pressed',lit);
+}
+function anim1(target){if(S1.stop)S1.stop();S1.stop=tween(()=>S1.t,v=>S1.t=v,target,900,render1);}
+$('dev1').onclick=()=>anim1(1);$('fac1').onclick=()=>anim1(0);
+$('k1').oninput=e=>{S1.k=+e.target.value;render1();};
+$('a1').oninput=e=>{S1.a=+e.target.value;if(S1.op!=='+'&&S1.b>=S1.a){S1.b=S1.a-1;$('b1').value=S1.b;}render1();};
+$('b1').oninput=e=>{S1.b=+e.target.value;if(S1.op!=='+'&&S1.b>=S1.a){S1.a=Math.min(9,S1.b+1);$('a1').value=S1.a;}render1();};
+$('op-plus').onclick=()=>{S1.op='+';render1();};
+$('op-moins').onclick=()=>{S1.op='-';if(S1.b>=S1.a){S1.b=S1.a-1;$('b1').value=S1.b;}render1();};
+$('m1-num').onclick=()=>{S1.lit=false;render1();};$('m1-lit').onclick=()=>{S1.lit=true;render1();};
+
+/* ---------- 2. (x + p)(x + q) ---------- */
+const S2={p:2,q:3,num:false,step:0};
+function render2(){
+  const {p,q,num,step}=S2;const X=num?10:6;const u=Math.min(380/(X+p),380/(X+q));
+  const x0=150,y0=90,W=(X+p)*u,H=(X+q)*u;
+  const xs=num?'10':'x';
+  let o=rect(x0,y0,W,H,'ghostr');
+  const parts=[
+    {x:0,y:0,w:X,h:X,c:'p1',t:num?'10 × 10 = 100':'x × x = x²'},
+    {x:X,y:0,w:p,h:X,c:'p2',t:num?`${10*p}`:`${p}x`},
+    {x:0,y:X,w:X,h:q,c:'p3',t:num?`${10*q}`:`${q}x`},
+    {x:X,y:X,w:p,h:q,c:'p4',t:`${p*q}`}];
+  // ordre de la distributivité : x×x, x×q, p×x, p×q -> ici colonnes = 1re parenthèse (largeur), lignes = 2e (hauteur)
+  const seq=[0,2,1,3];
+  seq.forEach((idx,i)=>{if(i<step){const P=parts[idx];o+=rect(x0+P.x*u,y0+P.y*u,P.w*u,P.h*u,P.c);
+    const fs=Math.min(1,Math.min(P.w,P.h)*u/40);o+=`<text class="inner halo" x="${r2(x0+(P.x+P.w/2)*u)}" y="${r2(y0+(P.y+P.h/2)*u)}" text-anchor="middle" dominant-baseline="central" style="font-size:${r2(14+8*fs)}px">${P.t}</text>`;}});
+  o+=hbrace(x0,x0+X*u,y0-10,xs,'a')+hbrace(x0+X*u,x0+W,y0-10,p,'b');
+  o+=vbrace(y0,y0+X*u,x0-12,xs,'a')+vbrace(y0+X*u,y0+H,x0-12,q,'d');
+  o+=txt(x0+W/2,y0+H+30,num?`(10 + ${p}) × (10 + ${q}) = ${10+p} × ${10+q}`:`(x + ${p})(x + ${q})`,'lab f-muted');
+  $('svg2').innerHTML=o;
+  const T=[num?'10 × 10':'x × x',num?`10 × ${q}`:`x × ${q}`,num?`${p} × 10`:`${p} × x`,`${p} × ${q}`];
+  const V=[num?'100':'x²',num?`${10*q}`:`${q}x`,num?`${10*p}`:`${p}x`,`${p*q}`];
+  const cls=['cx2','cx1','cx1','cu1'];
+  const sh=i=>i<step?'':' style="opacity:.15"';
+  let h=`<small>Développer</small><div>(<span class="ca">${xs}</span> + <span class="cb">${p}</span>)(<span class="ca">${xs}</span> + <span class="cd">${q}</span>)</div>`;
+  h+=`<div>= ${T.map((t,i)=>`<span class="${cls[i]}"${sh(i)}>${t}</span>`).join(' + ')}</div>`;
+  h+=`<div>= ${V.map((t,i)=>`<span class="${cls[i]}"${sh(i)}>${t}</span>`).join(' + ')}</div>`;
+  if(step>=4)h+=num?`<div class="step">= ${100+10*(p+q)+p*q}</div><div class="hint" style="font:400 15px var(--font-b)">Vérification : ${10+p} × ${10+q} = ${(10+p)*(10+q)}</div>`
+    :`<div class="step">= <span class="cx2">x²</span> + <span class="cx1">${p+q}x</span> + <span class="cu1">${p*q}</span></div><div class="hint" style="font:400 15px var(--font-b)">Les deux rectangles verts ont la même largeur x : on les regroupe, ${q}x + ${p}x = ${p+q}x.</div>`;
+  $('eq2').innerHTML=h;
+  $('p2v').textContent=p;$('q2v').textContent=q;
+  $('m2-lit').setAttribute('aria-pressed',!num);$('m2-num').setAttribute('aria-pressed',num);
+  $('next2').disabled=step>=4;
+}
+$('next2').onclick=()=>{S2.step=Math.min(4,S2.step+1);render2();};
+$('all2').onclick=()=>{S2.step=4;render2();};
+$('reset2').onclick=()=>{S2.step=0;render2();};
+$('p2').oninput=e=>{S2.p=+e.target.value;render2();};$('q2').oninput=e=>{S2.q=+e.target.value;render2();};
+$('m2-lit').onclick=()=>{S2.num=false;render2();};$('m2-num').onclick=()=>{S2.num=true;render2();};
+
+/* ---------- 3. a² − b² ---------- */
+const S3={a:7,b:3,lit:false,t:0,stop:null};
+function render3(){
+  const {a,b,lit}=S3,t=ease(S3.t);const u=Math.min(430/(a+b),330/a);
+  const x0=170,yb=440; // repère : y vers le haut depuis yb
+  const P=(x,y)=>[x0+x*u,yb-y*u];
+  const A=lit?'x':a;
+  let o='';
+  // carré retiré (fantôme hachuré qui disparaît)
+  const cutOp=1-t;
+  const [cx,cy]=P(a-b,a);o+=`<g style="opacity:${r2(cutOp)}">`+rect(cx,cy,b*u,b*u,'r-cut')+txt(cx+b*u/2,cy+b*u/2,lit?`${b}²`:`${b}² = ${b*b}`,'inner halo')+`</g>`;
+  // rectangle fixe : [0,a]×[0,a−b]
+  const [ax,ay]=P(0,a-b);o+=rect(ax,ay,a*u,(a-b)*u,'r-k');
+  o+=txt(ax+a*u/2,ay+(a-b)*u/2,lit?`x(x − ${b})`:`${a} × ${a-b}`,'inner halo');
+  // rectangle mobile : départ [0,a−b]×[a−b,a] ; arrivée [a,a+b]×[0,a−b] après rotation de 90°
+  const c0=[(a-b)/2,a-b+b/2],c1=[a+b/2,(a-b)/2];
+  const c=[c0[0]+(c1[0]-c0[0])*t,c0[1]+(c1[1]-c0[1])*t];const [sx,sy]=P(c[0],c[1]);
+  o+=`<g transform="translate(${r2(sx)},${r2(sy)}) rotate(${r2(90*t)})">`+rect(-(a-b)*u/2,-b*u/2,(a-b)*u,b*u,'r-b')+`</g>`;
+  o+=txt(sx,sy,lit?`${b}(x − ${b})`:`${a-b} × ${b}`,'inner halo');
+  // cotes
+  if(t<0.05){o+=hbrace(x0,x0+a*u,P(0,a)[1]-10,A,'a')+vbrace(P(0,a)[1],yb,x0-12,A,'a');
+    o+=hbrace(P(a-b,0)[0],P(a,0)[0],P(0,a)[1]-46,b,'b');}
+  if(t>0.95){o+=hbrace(x0,P(a+b,0)[0],yb+12,lit?`x + ${b}`:`${a} + ${b} = ${a+b}`,'a',false)+vbrace(P(0,a-b)[1],yb,x0-12,lit?`x − ${b}`:`${a} − ${b} = ${a-b}`,'b');}
+  $('svg3').innerHTML=o;
+  const L=lit?`x² − ${b*b}`:`${a}² − ${b}²`;
+  $('eq3').innerHTML=lit
+    ?`<small>Avec x</small><div>x² − ${b*b} = x² − ${b}²</div><div class="step${t<0.95?' off':''}">= (x + ${b})(x − ${b})</div>`
+    :`<small>Avec ${a} et ${b}</small><div>${a}² − ${b}² = ${a*a} − ${b*b} = ${a*a-b*b}</div><div class="step${t<0.95?' off':''}">(${a} + ${b}) × (${a} − ${b}) = ${a+b} × ${a-b} = ${(a+b)*(a-b)}</div>`;
+  $('a3v').textContent=lit?'x':a;$('b3v').textContent=b;$('a3l').textContent=lit?'x (longueur dessinée)':'a';$('t3').value=S3.t;
+  $('m3-num').setAttribute('aria-pressed',!lit);$('m3-lit').setAttribute('aria-pressed',lit);
+}
+function anim3(target){if(S3.stop)S3.stop();S3.stop=tween(()=>S3.t,v=>S3.t=v,target,1400,render3);}
+$('go3').onclick=()=>anim3(1);$('back3').onclick=()=>anim3(0);
+$('t3').oninput=e=>{if(S3.stop)S3.stop();S3.t=+e.target.value;render3();};
+$('a3').oninput=e=>{S3.a=+e.target.value;if(S3.b>=S3.a){S3.b=S3.a-1;$('b3').value=S3.b;}render3();};
+$('b3').oninput=e=>{S3.b=Math.min(+e.target.value,S3.a-1);$('b3').value=S3.b;render3();};
+$('m3-num').onclick=()=>{S3.lit=false;render3();};$('m3-lit').onclick=()=>{S3.lit=true;render3();};
+
+/* ---------- 4. Réduire (tuiles) ---------- */
+const S4={terms:[],tiles:[],t:0,stop:null};
+const XS=64,US=18;
+const DIM={x2:[XS,XS],x:[US,XS],u:[US,US]};
+function newExpr(){ // 4 à 6 termes, au moins deux de même type
+  const types=['x2','x','u'];const terms=[];const n=4+Math.floor(Math.random()*3);
+  for(let i=0;i<n;i++){const ty=types[Math.floor(Math.random()*3)];const c=ty==='x2'?1+Math.floor(Math.random()*2):1+Math.floor(Math.random()*4);terms.push({ty,c});}
+  if(!terms.some(t=>t.ty==='x'))terms[0]={ty:'x',c:3};if(!terms.some(t=>t.ty==='u'))terms[1]={ty:'u',c:2};
+  S4.terms=terms;mix4();}
+function mix4(){ // positions mélangées puis rangées
+  const tiles=[];S4.terms.forEach((tm,i)=>{for(let j=0;j<tm.c;j++)tiles.push({ty:tm.ty,term:i});});
+  // départ : dans l'ordre de l'expression, en ligne avec retour
+  let x=30,y=70,rowH=0;for(const t of tiles){const [w,h]=DIM[t.ty];if(x+w>610){x=30;y+=rowH+16;rowH=0;}t.x0=x;t.y0=y;x+=w+8;rowH=Math.max(rowH,h);}
+  // arrivée : une rangée par type
+  const rows={x2:300,x:390,u:470};const cx={x2:150,x:150,u:150};
+  for(const t of tiles){const [w,h]=DIM[t.ty];t.x1=cx[t.ty];t.y1=rows[t.ty]-h/2;cx[t.ty]+=w+8;}
+  S4.tiles=tiles;S4.t=0;render4();}
+function termStr(t,first){const v=t.ty==='x2'?(t.c===1?'x²':t.c+'x²'):t.ty==='x'?(t.c===1?'x':t.c+'x'):t.c;const cls=t.ty==='x2'?'cx2':t.ty==='x'?'cx1':'cu1';return (first?'':' + ')+`<span class="${cls}">${v}</span>`;}
+function render4(){
+  const t=ease(S4.t);let o='';
+  o+=`<text class="ttl" x="30" y="40" style="opacity:${r2(1-t)}">Expression de départ, tuile par tuile</text>`;
+  const lbl={x2:'x²',x:'x',u:'1'};
+  o+=`<g style="opacity:${r2(t)}">`+['x2','x','u'].map(ty=>{const y={x2:300,x:390,u:470}[ty];return `<text class="ttl" x="30" y="${y}" dominant-baseline="central">${{x2:'les x²',x:'les x',u:'les 1'}[ty]}</text>`;}).join('')+`</g>`;
+  for(const tl of S4.tiles){const [w,h]=DIM[tl.ty];const x=tl.x0+(tl.x1-tl.x0)*t,y=tl.y0+(tl.y1-tl.y0)*t;
+    const cls=tl.ty==='x2'?'t-x2':tl.ty==='x'?'t-x1':'t-u1';o+=`<rect class="${cls}" x="${r2(x)}" y="${r2(y)}" width="${w}" height="${h}" rx="3"/>`;
+    if(tl.ty!=='u')o+=`<text class="tlab ${tl.ty==='x2'?'f-x2':'f-x1'}" x="${r2(x+w/2)}" y="${r2(y+h/2)}" text-anchor="middle" dominant-baseline="central">${lbl[tl.ty]}</text>`;}
+  $('svg4').innerHTML=o;
+  const sum={x2:0,x:0,u:0};S4.terms.forEach(tm=>sum[tm.ty]+=tm.c);
+  const red=[];if(sum.x2)red.push({ty:'x2',c:sum.x2});if(sum.x)red.push({ty:'x',c:sum.x});if(sum.u)red.push({ty:'u',c:sum.u});
+  const grouped=['x2','x','u'].filter(ty=>sum[ty]).map(ty=>{const ts=S4.terms.filter(z=>z.ty===ty);return ts.length>1?'('+ts.map((z,i)=>termStr(z,i===0)).join('')+')':termStr(ts[0],true);});
+  $('eq4').innerHTML=`<small>Réduire</small><div>${S4.terms.map((z,i)=>termStr(z,i===0)).join('')}</div>`+
+    `<div class="step${S4.t<0.5?' off':''}">= ${grouped.join(' + ')}</div><div class="step${S4.t<0.95?' off':''}">= ${red.map((z,i)=>termStr(z,i===0)).join('')}</div>`;
+}
+$('sort4').onclick=()=>{if(S4.stop)S4.stop();S4.stop=tween(()=>S4.t,v=>S4.t=v,1,1500,render4);};
+$('mix4').onclick=()=>{if(S4.stop)S4.stop();S4.stop=tween(()=>S4.t,v=>S4.t=v,0,900,render4);};
+$('new4').onclick=()=>{if(S4.stop)S4.stop();newExpr();};
+
+/* ---------- Onglets ---------- */
+const views=['simple','double','identite','reduire'];
+function show(v){if(!views.includes(v))v='simple';
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+
+S2.step=2;S4.terms=[{ty:'x',c:2},{ty:'u',c:3},{ty:'x2',c:1},{ty:'x',c:4},{ty:'u',c:1}];mix4();
+render1();render2();render3();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>

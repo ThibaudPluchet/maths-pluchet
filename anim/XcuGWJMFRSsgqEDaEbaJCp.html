@@ -1,0 +1,389 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Fonctions animées</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : figure et graphique en grand à gauche (à projeter), commandes et vocabulaire à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --x:#c27400; --y:#0a8587; --curve:#2350c2; --hot:#c9334d;
+  --ok:#1b7f45; --ok-soft:#e1f3e8;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --x:#f0ad35; --y:#3cc3c5; --curve:#86a6ff; --hot:#ff6f84;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --x:#f0ad35; --y:#3cc3c5; --curve:#86a6ff; --hot:#ff6f84;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 12px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:default}
+.seg2{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex-wrap:wrap}
+.seg2 button{font:600 14px/1 var(--font-d);border:0;background:var(--paper);color:var(--muted);padding:10px 12px;cursor:pointer}
+.seg2 button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.eq{border-radius:12px;background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font:600 18px/1.4 var(--font-d);font-variant-numeric:tabular-nums}
+.eq small{font:600 13px/1.2 var(--font-d);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vocab{border-radius:12px;padding:12px 14px;font-size:16px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok)}
+.vocab strong{font-family:var(--font-d)}
+.cx{color:var(--x)} .cy{color:var(--y)} .ch{color:var(--hot)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table.vt{border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:100%}
+.vt th,.vt td{padding:7px 9px;border-right:1px solid var(--line);text-align:center;font-size:15px;white-space:nowrap}
+.vt th{font:600 14px var(--font-d);background:var(--bg);position:sticky;left:0}
+.vt tr:first-child td{color:var(--x);font-weight:700}
+.vt tr:last-child td{color:var(--y);font-weight:700;border-top:1px solid var(--line)}
+.vt tr:last-child th{border-top:1px solid var(--line)}
+.vt td.cur{background:var(--accent-soft)}
+.vt td.unk{color:var(--muted);font-weight:400}
+.num{font:700 20px/1 var(--font-d);padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:7em;font-variant-numeric:tabular-nums}
+
+/* SVG */
+.ax{stroke:var(--muted);stroke-width:1.5}
+.gr{stroke:var(--grid);stroke-width:1}
+.tk{font:500 13px var(--font-b);fill:var(--muted)}
+.axl{font:700 15px var(--font-d)}
+.curve{fill:none;stroke:var(--curve);stroke-width:3;stroke-linejoin:round}
+.curve.faint{opacity:.25}
+.trace{fill:var(--curve)}
+.pt{fill:var(--hot);stroke:var(--paper);stroke-width:2}
+.dash-x{stroke:var(--x);stroke-width:2;stroke-dasharray:6 5}
+.dash-y{stroke:var(--y);stroke-width:2;stroke-dasharray:6 5}
+.hline{stroke:var(--y);stroke-width:2.5}
+.f-x{fill:var(--x)} .f-y{fill:var(--y)} .f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)} .f-hot{fill:var(--hot)}
+.lab{font:700 16px var(--font-d)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
+.shape{fill:color-mix(in srgb,var(--x) 18%,transparent);stroke:var(--x);stroke-width:3}
+.box{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.5}
+.boxt{font:700 24px var(--font-d);fill:var(--accent)}
+.io{fill:var(--paper);stroke:var(--muted);stroke-width:2;stroke-dasharray:5 4}
+.arrow{stroke:var(--muted);stroke-width:2.5;fill:none;marker-end:url(#arr)}
+.tok{fill:var(--hot)}
+.tokt{font:700 18px var(--font-d);fill:#fff}
+.vtxt{font:700 18px var(--font-d)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e · 3e · Fonctions</p>
+      <h1>Fonctions animées</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-dependance" data-view="dependance" aria-selected="true">1. Dépendance</button>
+      <button class="tab" role="tab" id="tab-graphique" data-view="graphique" aria-selected="false">2. Lire un graphique</button>
+      <button class="tab" role="tab" id="tab-machine" data-view="machine" aria-selected="false">3. La machine</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. DÉPENDANCE -->
+  <section class="view" id="v-dependance" role="tabpanel" aria-labelledby="tab-dependance">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 520" role="img" aria-label="Une grandeur qui dépend d'une autre, et sa courbe"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Quand x change, l'autre grandeur change aussi</h2>
+        <p class="hint">Fais varier x : chaque position donne un point (x ; f(x)). Tous ces points dessinent la courbe de la fonction.</p>
+      </div>
+      <div class="chips" id="sit1"></div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="x1" class="cx" id="x1l">x</label><span class="val cx" id="x1v"></span></div>
+        <input type="range" id="x1" min="0" max="10" step="0.05" value="3">
+        <div class="row">
+          <button class="btn primary" id="play1" type="button">▶ Balayer</button>
+          <button class="btn" id="clear1" type="button">↺ Effacer la trace</button>
+          <label class="check"><input type="checkbox" id="full1"> Courbe complète</label>
+        </div>
+      </div>
+      <div class="eq" id="eq1"></div>
+      <div class="tw"><table class="vt" id="tab1"></table></div>
+      <div class="vocab" id="voc1"></div>
+    </div>
+  </section>
+
+  <!-- 2. GRAPHIQUE -->
+  <section class="view" id="v-graphique" role="tabpanel" aria-labelledby="tab-graphique" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 520" role="img" aria-label="Courbe d'une fonction avec lecture d'image ou d'antécédents"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Lire une image, lire des antécédents</h2>
+        <p class="hint">Image : on part de x sur l'axe horizontal, on monte jusqu'à la courbe, on lit f(x) sur l'axe vertical. Antécédents : on part de la valeur sur l'axe vertical et on cherche tous les points de la courbe à cette hauteur.</p>
+      </div>
+      <div class="chips" id="fn2"></div>
+      <div class="seg2" role="group" aria-label="Lecture">
+        <button type="button" id="m-img" aria-pressed="true">Lire une image</button>
+        <button type="button" id="m-ant" aria-pressed="false">Lire des antécédents</button>
+      </div>
+      <div class="ctl" id="cx2">
+        <div class="ctl-head"><label for="x2" class="cx">x</label><span class="val cx" id="x2v"></span></div>
+        <input type="range" id="x2" min="-1" max="5" step="0.1" value="3">
+      </div>
+      <div class="ctl" id="ck2" hidden>
+        <div class="ctl-head"><label for="k2" class="cy">Valeur cherchée</label><span class="val cy" id="k2v"></span></div>
+        <input type="range" id="k2" min="-3" max="6" step="0.1" value="1">
+      </div>
+      <div class="eq" id="eq2"></div>
+      <div class="tw"><table class="vt" id="tab2"></table></div>
+    </div>
+  </section>
+
+  <!-- 3. MACHINE -->
+  <section class="view" id="v-machine" role="tabpanel" aria-labelledby="tab-machine" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 400" role="img" aria-label="Machine à calculer : un nombre entre, son image sort"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Une fonction, c'est une machine</h2>
+        <p class="hint">Un nombre entre, la machine fait les calculs, son image sort. Pour trouver un antécédent, on fait tourner la machine à l'envers.</p>
+      </div>
+      <div class="chips" id="pg3"></div>
+      <div class="ctl">
+        <label class="lbl" for="in3">Calculer l'image de</label>
+        <div class="row"><input class="num" id="in3" inputmode="decimal" value="4" autocomplete="off"><button class="btn primary" id="run3" type="button">▶ Image</button></div>
+      </div>
+      <div class="ctl">
+        <label class="lbl" for="out3">Chercher les antécédents de</label>
+        <div class="row"><input class="num" id="out3" inputmode="decimal" value="10" autocomplete="off"><button class="btn" id="back3" type="button">◀ Antécédents</button></div>
+      </div>
+      <button class="btn primary" id="next3" type="button">Étape suivante ▶</button>
+      <div class="eq" id="eq3"></div>
+    </div>
+  </section>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--muted)"/></marker>
+</defs></svg>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=v=>Math.round(v*100)/100;
+function fr(x,d=2){const k=Math.pow(10,d);let v=Math.round(x*k)/k;if(Object.is(v,-0))v=0;return v.toLocaleString('fr-FR',{maximumFractionDigits:d});}
+function approx(x,d=2){const k=Math.pow(10,d);return Math.abs(x*k-Math.round(x*k))<1e-9?'= '+fr(x,d):'≈ '+fr(x,d);}
+function parseNum(s){const t=String(s).replace(',','.').replace('−','-').trim();if(!/^-?\d*\.?\d+$/.test(t))return NaN;return parseFloat(t);}
+// repère générique
+function frame(X0,X1,Y0,Y1,xmin,xmax,ymin,ymax){const sx=v=>X0+(v-xmin)/(xmax-xmin)*(X1-X0),sy=v=>Y1-(v-ymin)/(ymax-ymin)*(Y1-Y0);return {sx,sy,xmin,xmax,ymin,ymax,X0,X1,Y0,Y1};}
+function axes(F,xstep,ystep,xl,yl){let o='';const {sx,sy}=F;
+  for(let v=Math.ceil(F.xmin/xstep)*xstep;v<=F.xmax+1e-9;v+=xstep){const x=sx(v);o+=`<line class="gr" x1="${r2(x)}" x2="${r2(x)}" y1="${F.Y0}" y2="${F.Y1}"/><text class="tk" x="${r2(x)}" y="${r2(Math.min(F.Y1,Math.max(F.Y0,sy(0)))+18)}" text-anchor="middle">${fr(v)}</text>`;}
+  for(let v=Math.ceil(F.ymin/ystep)*ystep;v<=F.ymax+1e-9;v+=ystep){const y=sy(v);o+=`<line class="gr" x1="${F.X0}" x2="${F.X1}" y1="${r2(y)}" y2="${r2(y)}"/><text class="tk" x="${r2(Math.max(F.X0,Math.min(F.X1,sx(0)))-8)}" y="${r2(y)}" text-anchor="end" dominant-baseline="central">${fr(v)}</text>`;}
+  const y0=Math.min(F.Y1,Math.max(F.Y0,sy(0))),x0=Math.max(F.X0,Math.min(F.X1,sx(0)));
+  o+=`<line class="ax" x1="${F.X0}" x2="${F.X1}" y1="${r2(y0)}" y2="${r2(y0)}"/><line class="ax" x1="${r2(x0)}" x2="${r2(x0)}" y1="${F.Y0}" y2="${F.Y1}"/>`;
+  o+=`<text class="axl f-x halo" x="${F.X1}" y="${r2(y0-10)}" text-anchor="end">${xl}</text><text class="axl f-y halo" x="${r2(x0+8)}" y="${F.Y0+4}" dominant-baseline="hanging">${yl}</text>`;
+  return o;}
+function curvePath(F,f,a,b,n=300){let d='';for(let i=0;i<=n;i++){const x=a+(b-a)*i/n,y=f(x);d+=(i?'L':'M')+r2(F.sx(x))+','+r2(F.sy(y));}return d;}
+
+/* ---------- 1. Dépendance ---------- */
+const SIT={
+  rect:{l:'Rectangle de périmètre 20 cm',x:[0,10],step:0.05,ymax:30,ystep:5,f:x=>x*(10-x),xl:'largeur x (cm)',yl:'aire (cm²)',
+    fx:'f(x) = x × (10 − x)',name:'l\'aire du rectangle',unitx:'cm',unity:'cm²',xs:1},
+  carre:{l:'Carré de côté x',x:[0,6],step:0.05,ymax:36,ystep:6,f:x=>x*x,xl:'côté x (cm)',yl:'aire (cm²)',fx:'f(x) = x²',name:'l\'aire du carré',unitx:'cm',unity:'cm²',xs:1},
+  cercle:{l:'Cercle de rayon x',x:[0,5],step:0.05,ymax:35,ystep:5,f:x=>2*Math.PI*x,xl:'rayon x (cm)',yl:'périmètre (cm)',fx:'f(x) = 2 × π × x',name:'le périmètre du cercle',unitx:'cm',unity:'cm',xs:1}};
+const S1={sit:'rect',x:3,seen:new Set(),full:false,raf:null};
+function render1(){
+  const s=SIT[S1.sit],x=S1.x,y=s.f(x);let o='';
+  // figure à gauche
+  const cx=140,cy=250;
+  if(S1.sit==='rect'){const u=24,w=x*u,h=(10-x)*u;o+=`<rect class="shape" x="${r2(cx-w/2)}" y="${r2(cy-h/2)}" width="${r2(w)}" height="${r2(h)}"/>`;
+    o+=`<text class="lab f-x halo" x="${cx}" y="${r2(cy+h/2+22)}" text-anchor="middle">x = ${fr(x)} cm</text><text class="lab f-muted halo" x="${r2(cx+w/2+8)}" y="${cy}" dominant-baseline="central">${fr(10-x)} cm</text>`;
+    o+=`<text class="lab f-y halo" x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central">${w>60&&h>30?'aire '+fr(y,1):''}</text>`;}
+  if(S1.sit==='carre'){const u=34,w=x*u;o+=`<rect class="shape" x="${r2(cx-w/2)}" y="${r2(cy-w/2)}" width="${r2(w)}" height="${r2(w)}"/><text class="lab f-x halo" x="${cx}" y="${r2(cy+w/2+22)}" text-anchor="middle">x = ${fr(x)} cm</text>`;
+    if(w>70)o+=`<text class="lab f-y halo" x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central">aire ${fr(y,1)}</text>`;}
+  if(S1.sit==='cercle'){const u=22,r=x*u;o+=`<circle class="shape" cx="${cx}" cy="${cy}" r="${r2(r)}"/><line x1="${cx}" y1="${cy}" x2="${r2(cx+r)}" y2="${cy}" style="stroke:var(--x)" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="3" class="trace"/>`;
+    o+=`<text class="lab f-x halo" x="${cx}" y="${r2(cy-12)}" text-anchor="start">x = ${fr(x)}</text>`;}
+  o+=`<text class="lab f-muted" x="${cx}" y="40" text-anchor="middle">${s.l}</text>`;
+  // graphique à droite
+  const F=frame(300,620,60,470,s.x[0],s.x[1],0,s.ymax);
+  o+=axes(F,s.x[1]>6?2:1,s.ystep,'x','f(x)');
+  if(S1.full)o+=`<path class="curve faint" d="${curvePath(F,s.f,s.x[0],s.x[1])}"/>`;
+  for(const k of S1.seen){const xv=k*s.step;o+=`<circle class="trace" cx="${r2(F.sx(xv))}" cy="${r2(F.sy(s.f(xv)))}" r="2.6"/>`;}
+  const px=F.sx(x),py=F.sy(y);
+  o+=`<line class="dash-x" x1="${r2(px)}" x2="${r2(px)}" y1="${r2(F.sy(0))}" y2="${r2(py)}"/><line class="dash-y" x1="${r2(F.sx(0))}" x2="${r2(px)}" y1="${r2(py)}" y2="${r2(py)}"/>`;
+  o+=`<circle class="pt" cx="${r2(px)}" cy="${r2(py)}" r="8"/><text class="lab f-hot halo" x="${r2(Math.min(px+10,560))}" y="${r2(py-14)}">(${fr(x)} ; ${fr(y,1)})</text>`;
+  $('svg1').innerHTML=o;
+  $('x1l').textContent=s.xl;$('x1v').textContent=fr(x)+' '+s.unitx;
+  $('eq1').innerHTML=`<small>Fonction</small><div>${s.fx}</div><div><span class="ch">f(${fr(x)})</span> ${approx(y)} ${s.unity}</div>`;
+  // tableau de valeurs entières
+  let r1='<tr><th>x</th>',r2b='<tr><th>f(x)</th>';
+  for(let v=s.x[0];v<=s.x[1];v++){const k=Math.round(v/s.step),seen=S1.seen.has(k);const cur=Math.abs(v-x)<1e-9;
+    r1+=`<td class="${cur?'cur':''}">${v}</td>`;r2b+=`<td class="${cur?'cur':''} ${seen?'':'unk'}">${seen?fr(s.f(v),2):'?'}</td>`;}
+  $('tab1').innerHTML=r1+'</tr>'+r2b+'</tr>';
+  $('voc1').innerHTML=`<strong>Vocabulaire.</strong> ${s.name.charAt(0).toUpperCase()+s.name.slice(1)} dépend de x : c'est une fonction de x. Pour x = ${fr(x)}, ${s.name} vaut ${fr(y,2)} : <strong>${fr(y,2)} est l'image de ${fr(x)}</strong>, et ${fr(x)} est un antécédent de ${fr(y,2)}. On note f(${fr(x)}) ${approx(y)}.`;
+  document.querySelectorAll('#sit1 .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.k===S1.sit));
+}
+function visit(x){const s=SIT[S1.sit];S1.seen.add(Math.round(x/s.step));}
+Object.entries(SIT).forEach(([k,s])=>{const b=document.createElement('button');b.type='button';b.className='chip';b.dataset.k=k;b.textContent=s.l;
+  b.onclick=()=>{stop1();S1.sit=k;S1.seen=new Set();const sl=$('x1');sl.min=s.x[0];sl.max=s.x[1];S1.x=Math.min(S1.x,s.x[1]);sl.value=S1.x;visit(S1.x);render1();};$('sit1').appendChild(b);});
+function stop1(){if(S1.raf)cancelAnimationFrame(S1.raf);S1.raf=null;$('play1').textContent='▶ Balayer';}
+$('x1').oninput=e=>{stop1();const s=SIT[S1.sit];const nx=+e.target.value;const a=Math.min(S1.x,nx),b=Math.max(S1.x,nx);for(let v=a;v<=b+1e-9;v+=s.step)visit(v);S1.x=nx;render1();};
+$('play1').onclick=()=>{if(S1.raf){stop1();return;}const s=SIT[S1.sit];S1.x=s.x[0];$('play1').textContent='❚❚ Pause';
+  const step=()=>{visit(S1.x);render1();$('x1').value=S1.x;if(S1.x>=s.x[1]-1e-9){stop1();return;}S1.x=Math.min(s.x[1],S1.x+(reduce?s.step*20:s.step));S1.raf=requestAnimationFrame(step);};step();};
+$('clear1').onclick=()=>{stop1();S1.seen=new Set();visit(S1.x);render1();};
+$('full1').onchange=e=>{S1.full=e.target.checked;render1();};
+
+/* ---------- 2. Lire un graphique ---------- */
+const FN={
+  p:{l:'f(x) = x² − 4x + 1',f:x=>x*x-4*x+1,x:[-1,5],y:[-3.5,6.5],aff:null},
+  c:{l:'g(x) = 0,5x³ − 3x² + 4x + 1',f:x=>0.5*x**3-3*x*x+4*x+1,x:[-0.5,4.5],y:[-2,4.5],aff:null},
+  a:{l:'h(x) = 2x − 3',f:x=>2*x-3,x:[-1,5],y:[-5,7],aff:[2,-3]}};
+const S2={fn:'p',mode:'img',x:3,k:1};
+function roots(f,k,a,b){const r=[];const n=2000;let px=a,pv=f(a)-k;if(Math.abs(pv)<1e-9)r.push(a);
+  for(let i=1;i<=n;i++){const x=a+(b-a)*i/n,v=f(x)-k;if(Math.abs(v)<1e-12){r.push(x);}else if(pv*v<0){let lo=px,hi=x;for(let j=0;j<60;j++){const m=(lo+hi)/2;if((f(lo)-k)*(f(m)-k)<=0)hi=m;else lo=m;}r.push((lo+hi)/2);}px=x;pv=v;}
+  return r.filter((x,i)=>i===0||Math.abs(x-r[i-1])>1e-6);}
+function render2(){
+  const g=FN[S2.fn];const F=frame(60,610,30,480,g.x[0],g.x[1],g.y[0],g.y[1]);const nm0=S2.fn==='p'?'f':S2.fn==='c'?'g':'h';let o=axes(F,1,1,'x (antécédent)',nm0+'(x) (image)');
+  o+=`<path class="curve" d="${curvePath(F,g.f,g.x[0],g.x[1])}"/>`;
+  o+=`<text class="lab f-ink halo" x="610" y="40" text-anchor="end">${S2.fn==='p'?'courbe de f':S2.fn==='c'?'courbe de g':'courbe de h'}</text>`;
+  const nm=S2.fn==='p'?'f':S2.fn==='c'?'g':'h';let h='';
+  if(S2.mode==='img'){const x=S2.x,y=g.f(x),px=F.sx(x),py=F.sy(y),y0=F.sy(0),x0=F.sx(0);
+    o+=`<line class="dash-x" x1="${r2(px)}" x2="${r2(px)}" y1="${r2(y0)}" y2="${r2(py)}"/><line class="dash-y" x1="${r2(px)}" x2="${r2(x0)}" y1="${r2(py)}" y2="${r2(py)}"/>`;
+    o+=`<circle class="pt" cx="${r2(px)}" cy="${r2(py)}" r="8"/><circle cx="${r2(px)}" cy="${r2(y0)}" r="6" class="f-x" style="fill:var(--x)"/><circle cx="${r2(x0)}" cy="${r2(py)}" r="6" style="fill:var(--y)"/>`;
+    o+=`<text class="lab f-x halo" x="${r2(px)}" y="${r2(y0+(y>0?24:-14))}" text-anchor="middle">${fr(x,1)}</text><text class="lab f-y halo" x="${r2(x0-10)}" y="${r2(py)}" text-anchor="end" dominant-baseline="central">${fr(y,2)}</text>`;
+    h=`<small>Image</small><div>${nm}(<span class="cx">${fr(x,1)}</span>) ${approx(y)}</div><div style="font:400 16px var(--font-b)">L'image de <span class="cx">${fr(x,1)}</span> par ${nm} est <span class="cy">${fr(y,2)}</span>. Un nombre a toujours une seule image.</div>`;
+  }else{const k=S2.k,R=roots(g.f,k,g.x[0],g.x[1]),ky=F.sy(k),y0=F.sy(0);
+    o+=`<line class="hline" x1="${F.X0}" x2="${F.X1}" y1="${r2(ky)}" y2="${r2(ky)}"/><text class="lab f-y halo" x="${F.X0+6}" y="${r2(ky-12)}">${nm}(x) = ${fr(k,1)}</text>`;
+    for(const x of R){const px=F.sx(x);o+=`<line class="dash-x" x1="${r2(px)}" x2="${r2(px)}" y1="${r2(ky)}" y2="${r2(y0)}"/><circle class="pt" cx="${r2(px)}" cy="${r2(ky)}" r="8"/><circle cx="${r2(px)}" cy="${r2(y0)}" r="6" style="fill:var(--x)"/><text class="lab f-x halo" x="${r2(px)}" y="${r2(y0+(k>0?24:-14))}" text-anchor="middle">${fr(x,1)}</text>`;}
+    const n=R.length;
+    h=`<small>Antécédents de ${fr(k,1)}</small><div>${n===0?'Aucun antécédent':n===1?'1 antécédent : ':n+' antécédents : '}${R.map(x=>`<span class="cx">${fr(x,1)}</span>`).join(' ; ')}</div>`;
+    h+=`<div style="font:400 16px var(--font-b)">${n===0?`La droite horizontale ne coupe pas la courbe : ${fr(k,1)} n'a pas d'antécédent sur ce graphique.`:`On cherche les x tels que ${nm}(x) = ${fr(k,1)}. Lecture graphique : valeurs approchées.`}</div>`;
+    if(g.aff){const [a,b]=g.aff;const sol=(k-b)/a;h+=`<div style="font:600 16px var(--font-d)">Par le calcul : 2x − 3 = ${fr(k,1)} ⇔ 2x = ${fr(k+3,1)} ⇔ x = ${fr(k+3,1)} ÷ 2 ${approx(sol)}</div>`;}
+  }
+  $('svg2').innerHTML=o;$('eq2').innerHTML=h;
+  $('x2v').textContent='x = '+fr(S2.x,1);$('k2v').textContent=fr(S2.k,1);
+  // tableau de valeurs
+  let r1='<tr><th>x</th>',r2b=`<tr><th>${nm}(x)</th>`;
+  for(let v=Math.ceil(g.x[0]);v<=g.x[1];v++){const cur=S2.mode==='img'&&Math.abs(v-S2.x)<1e-9;r1+=`<td class="${cur?'cur':''}">${v}</td>`;r2b+=`<td class="${cur?'cur':''}">${fr(g.f(v),2)}</td>`;}
+  $('tab2').innerHTML=r1+'</tr>'+r2b+'</tr>';
+  document.querySelectorAll('#fn2 .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.k===S2.fn));
+  $('m-img').setAttribute('aria-pressed',S2.mode==='img');$('m-ant').setAttribute('aria-pressed',S2.mode!=='img');
+  $('cx2').hidden=S2.mode!=='img';$('ck2').hidden=S2.mode==='img';
+}
+Object.entries(FN).forEach(([k,g])=>{const b=document.createElement('button');b.type='button';b.className='chip';b.dataset.k=k;b.textContent=g.l;
+  b.onclick=()=>{S2.fn=k;const sx=$('x2'),sk=$('k2');sx.min=g.x[0];sx.max=g.x[1];sk.min=g.y[0];sk.max=g.y[1];
+    S2.x=Math.max(g.x[0],Math.min(g.x[1],S2.x));S2.k=Math.max(g.y[0],Math.min(g.y[1],S2.k));sx.value=S2.x;sk.value=S2.k;render2();};$('fn2').appendChild(b);});
+$('x2').oninput=e=>{S2.x=+e.target.value;render2();};$('k2').oninput=e=>{S2.k=+e.target.value;render2();};
+$('m-img').onclick=()=>{S2.mode='img';render2();};$('m-ant').onclick=()=>{S2.mode='ant';render2();};
+
+/* ---------- 3. La machine ---------- */
+const PROGS=[
+  {l:'× 3 puis − 2',fx:'f(x) = 3x − 2',ops:[{l:'× 3',f:x=>3*x,inv:y=>[y/3],il:'÷ 3'},{l:'− 2',f:x=>x-2,inv:y=>[y+2],il:'+ 2'}]},
+  {l:'+ 4 puis × 2',fx:'f(x) = 2(x + 4)',ops:[{l:'+ 4',f:x=>x+4,inv:y=>[y-4],il:'− 4'},{l:'× 2',f:x=>2*x,inv:y=>[y/2],il:'÷ 2'}]},
+  {l:'× (−2) puis + 5',fx:'f(x) = −2x + 5',ops:[{l:'× (−2)',f:x=>-2*x,inv:y=>[y/-2],il:'÷ (−2)'},{l:'+ 5',f:x=>x+5,inv:y=>[y-5],il:'− 5'}]},
+  {l:'au carré puis − 1',fx:'f(x) = x² − 1',ops:[{l:'²',f:x=>x*x,inv:y=>y<0?[]:y===0?[0]:[Math.sqrt(y),-Math.sqrt(y)],il:'√ (±)'},{l:'− 1',f:x=>x-1,inv:y=>[y+1],il:'+ 1'}]}];
+const S3={p:0,dir:1,tokens:[],t:0,raf:null,stages:null,done:false};
+const NODES=[70,230,410,570],YM=200;
+function fmtv(v){return Math.abs(v*1000-Math.round(v*1000))<1e-6?fr(v,3):'≈ '+fr(v,2);}
+function render3(){
+  const P=PROGS[S3.p];let o='';
+  // entrée / boîtes / sortie
+  o+=`<circle class="io" cx="${NODES[0]}" cy="${YM}" r="44"/><text class="lab f-x" x="${NODES[0]}" y="${YM+70}" text-anchor="middle">x (entrée)</text>`;
+  o+=`<circle class="io" cx="${NODES[3]}" cy="${YM}" r="44"/><text class="lab f-y" x="${NODES[3]}" y="${YM+70}" text-anchor="middle">f(x) (sortie)</text>`;
+  P.ops.forEach((op,i)=>{const cx=NODES[i+1];o+=`<rect class="box" x="${cx-62}" y="${YM-42}" width="124" height="84" rx="14"/><text class="boxt" x="${cx}" y="${YM}" text-anchor="middle" dominant-baseline="central">${S3.dir<0?op.il:op.l}</text>`;});
+  for(let i=0;i<3;i++){const a=NODES[i]+(i===0?46:64),b=NODES[i+1]-(i===2?48:66);o+=S3.dir>0?`<line class="arrow" x1="${a}" x2="${b}" y1="${YM}" y2="${YM}"/>`:`<line class="arrow" x1="${b}" x2="${a}" y1="${YM}" y2="${YM}"/>`;}
+  o+=`<text class="lab f-muted" x="320" y="60" text-anchor="middle">${P.fx}</text>`;
+  o+=`<text class="lab ${S3.dir>0?'f-x':'f-y'}" x="320" y="350" text-anchor="middle">${S3.dir>0?'Sens normal : calcul de l\'image':'À l\'envers : recherche des antécédents'}</text>`;
+  // valeurs intermédiaires déjà calculées
+  if(S3.stages){S3.stages.forEach((vals,i)=>{const node=S3.dir>0?i:3-i;const reached=S3.t>=i-1e-9;if(!reached)return;
+      const x=NODES[node];const txt=vals.length?vals.map(fmtv).join(' ou '):'aucun';
+      if(node===0||node===3){if(!vals.length)o+=`<text class="vtxt f-muted" x="${x}" y="${YM}" text-anchor="middle" dominant-baseline="central">aucun</text>`;
+        vals.forEach((v,j)=>{const yy=YM+(vals.length>1?(j?18:-18):0);o+=`<text class="vtxt ${node===0?'f-x':'f-y'}" x="${x}" y="${yy}" text-anchor="middle" dominant-baseline="central" style="font-size:${vals.length>1?15:18}px">${fmtv(v)}</text>`;});}
+      else o+=`<text class="vtxt f-ink halo" x="${x}" y="${YM-62}" text-anchor="middle">${txt}</text>`;});
+    // jeton(s) en mouvement
+    if(S3.t<3-1e-9){const i=Math.max(0,Math.floor(S3.t+1e-9)),f=Math.max(0,S3.t-i);if(i<3){const vals=S3.stages[i];const from=S3.dir>0?NODES[i]:NODES[3-i],to=S3.dir>0?NODES[i+1]:NODES[2-i];
+      const atBox=f<1e-6&&i>0;// à l'arrêt dans une case : le jeton se pose sous la case pour laisser l'opération lisible
+      vals.forEach((v,j)=>{const two=vals.length>1;const x=from+(to-from)*f+(atBox&&two?(j?28:-28):0);const y=atBox?YM+82:YM+(two?(j?36:-36):0);o+=`<circle class="tok" cx="${r2(x)}" cy="${r2(y)}" r="22"/><text class="tokt" x="${r2(x)}" y="${r2(y)}" text-anchor="middle" dominant-baseline="central" style="font-size:${String(fmtv(v)).length>4?12:16}px">${fmtv(v)}</text>`;});}}
+  }
+  $('svg3').innerHTML=o;
+  document.querySelectorAll('#pg3 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S3.p));
+}
+function run3(dir){const P=PROGS[S3.p];const v=parseNum($(dir>0?'in3':'out3').value);if(isNaN(v)){$('eq3').innerHTML='<div>Entre un nombre.</div>';return;}
+  if(S3.raf)cancelAnimationFrame(S3.raf);S3.dir=dir;
+  const st=[[v]];const ops=dir>0?P.ops:P.ops.slice().reverse();
+  for(const op of ops){const prev=st[st.length-1];st.push(dir>0?prev.map(op.f):prev.flatMap(op.inv));}
+  st.push(st[st.length-1]);S3.stages=st;S3.t=0;S3.raf=null;render3();step3msg();}
+// avance d'une case : le nombre s'arrête dans chaque case, on clique pour continuer
+function next3(){if(S3.raf)return;if(!S3.stages||S3.t>=3-1e-9){run3(S3.dir<0?-1:1);return;}const s=S3.t,target=Math.round(s)+1,t0=performance.now(),dur=reduce?1:900;
+  const step=now=>{const k=Math.max(0,Math.min(1,(now-t0)/dur));S3.t=s+(target-s)*k;try{render3();}catch(e){S3.raf=null;S3.t=target;}if(k<1)S3.raf=requestAnimationFrame(step);else{S3.raf=null;S3.t=target;render3();if(target>=3)explain3();else step3msg();}};
+  S3.raf=requestAnimationFrame(step);}
+function step3msg(){const P=PROGS[S3.p],ops=S3.dir>0?P.ops:P.ops.slice().reverse(),st=S3.stages,i=Math.round(S3.t);
+  const sh=v=>v.length?v.map(fmtv).join(' ou '):'aucun';
+  let h=`<small>${S3.dir>0?'Calcul de l\'image':'Recherche des antécédents'} · étape ${i} / 3</small><div>Départ : ${sh(st[0])}</div>`;
+  for(let j=0;j<i;j++)h+=`<div>${sh(st[j])} → ${S3.dir>0?ops[j].l:ops[j].il} → <span class="ch">${sh(st[j+1])}</span></div>`;
+  h+=`<div style="font:400 15px var(--font-b);color:var(--muted)">${i===0?'Le nombre entre dans la machine.':i<3?'La case a fait son calcul.':''} Clique sur « Étape suivante » ou sur la machine pour continuer.</div>`;
+  $('eq3').innerHTML=h;$('next3').textContent='Étape suivante ▶';}
+function explain3(){$('next3').textContent='↺ Recommencer pas à pas';const P=PROGS[S3.p],st=S3.stages,ops=S3.dir>0?P.ops:P.ops.slice().reverse();
+  let h='';
+  if(S3.dir>0){const x=st[0][0],y=st[3][0];h=`<small>Image</small><div>${fmtv(x)} → ${ops.map((op,i)=>`${op.l} → ${fmtv(st[i+1][0])}`).join(' → ')}</div><div>f(<span class="cx">${fmtv(x)}</span>) = <span class="cy">${fmtv(y)}</span></div><div style="font:400 16px var(--font-b)">L'image de ${fmtv(x)} est ${fmtv(y)}. ${fmtv(x)} est un antécédent de ${fmtv(y)}.</div>`;}
+  else{const y=st[0][0],xs=st[3];h=`<small>Antécédents de ${fmtv(y)}</small><div>${fmtv(y)} → ${ops.map((op,i)=>`${op.il} → ${st[i+1].length?st[i+1].map(fmtv).join(' ou '):'∅'}`).join(' → ')}</div>`;
+    h+=xs.length?`<div>${xs.length>1?'Deux antécédents : ':'Un antécédent : '}${xs.map(v=>`<span class="cx">${fmtv(v)}</span>`).join(' et ')}</div><div style="font:400 16px var(--font-b)">Vérification : ${xs.map(v=>`f(${fmtv(v)}) = ${fmtv(P.ops.reduce((a,op)=>op.f(a),v))}`).join(' ; ')}.</div>`
+      :`<div>Aucun antécédent</div><div style="font:400 16px var(--font-b)">Un carré n'est jamais négatif : aucun nombre n'a ${fmtv(y)} pour image.</div>`;}
+  $('eq3').innerHTML=h;}
+PROGS.forEach((p,i)=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=p.l;
+  b.onclick=()=>{if(S3.raf)cancelAnimationFrame(S3.raf);S3.raf=null;S3.p=i;$('out3').value=i===3?'8':'10';S3.dir=1;run3(1);return;$('eq3').innerHTML=`<small>Programme</small><div>${p.fx}</div>`;};$('pg3').appendChild(b);});
+$('run3').onclick=()=>run3(1);$('back3').onclick=()=>run3(-1);$('next3').onclick=next3;$('svg3').addEventListener('click',next3);$('svg3').style.cursor='pointer';
+
+/* ---------- Onglets ---------- */
+const views=['dependance','graphique','machine'];
+function show(v){if(!views.includes(v))v='dependance';
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});if(v!=='dependance')stop1();}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+
+// état de départ : une partie de la courbe déjà tracée
+for(let v=0;v<=3;v+=0.05)visit(v);[5,7].forEach(visit);
+render1();render2();
+run3(1);
+show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>
