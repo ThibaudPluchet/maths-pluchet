@@ -125,6 +125,16 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 .evcard .evns{display:flex;flex-wrap:wrap;gap:6px;margin:-6px 0 14px}
 .evcard .evns span{font-size:13px;background:var(--soft);color:var(--ink);border-radius:999px;padding:3px 10px}
 .evcard .evns b{color:var(--accent);margin-right:4px}
+/* grand écran : on exploite la largeur */
+@media (min-width:1000px){
+  .wrap{max-width:1200px}
+  .banner{height:300px}
+  .seqview{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .seqview > .seqhead, .seqview > .intro, .seqview > .notion.current{grid-column:1/-1}
+  .seqview .notion.current .groups{grid-template-columns:repeat(4,1fr)}
+  .seqview .notion:not(.current) .groups{grid-template-columns:1fr 1fr}
+  .seqlist{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -132,7 +142,7 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 <header class="wrap">
   <h1>Mathématiques</h1>
   <p class="sub">M. Pluchet · Collège Louis Bouilhet, Cany-Barville · 2026/2027</p>
-  <svg class="banner" viewBox="0 0 800 260" role="img" aria-labelledby="bn-t" xmlns="http://www.w3.org/2000/svg">
+  <svg class="banner" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice" role="img" aria-labelledby="bn-t" xmlns="http://www.w3.org/2000/svg">
 <title id="bn-t">Le château de Cany, dessiné comme une figure de géométrie, avec son axe de symétrie</title>
 <defs>
   <pattern id="grid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" class="gridline"/></pattern>

@@ -98,7 +98,7 @@ details.more{margin-top:6px} details.more summary{cursor:pointer;color:var(--mut
 .fr>span:last-child{padding:.05em .2em 0}
 sup{font-size:.68em;line-height:0}
 .nlist{display:flex;flex-wrap:wrap;gap:10px 14px;margin-top:10px}
-.nlist span{background:var(--soft);border-radius:10px;padding:4px 12px;display:inline-flex;align-items:center;min-height:44px}
+.nlist > span{background:var(--soft);border-radius:10px;padding:4px 12px;display:inline-flex;align-items:center;min-height:44px}
 .blank{color:var(--accent)}
 svg.droite{display:block;width:100%;max-width:560px;height:auto;margin-top:10px;color:var(--ink)}
 svg.droite .dl{font:700 17px "Atkinson Hyperlegible",sans-serif;fill:var(--ink)}
@@ -206,7 +206,7 @@ svg.fig.wide{max-width:560px} svg.fig.small{max-width:300px}
 .pq{font-size:calc(clamp(26px,4.2vw,64px) * var(--ps));line-height:1.45;max-width:1500px}
 .pq svg.droite{max-width:min(92vw,calc(1100px * var(--ps)))}
 .pq svg.droite .dl{font-size:17px}
-.pq .nlist span{min-height:0;padding:.1em .5em}
+.pq .nlist > span{min-height:0;padding:.1em .5em}
 .pans{margin-top:4vh;font-size:calc(clamp(26px,4.2vw,64px) * var(--ps));line-height:1.45;color:var(--ok);font-weight:700}
 .pmeth{margin-top:2vh;font-size:calc(clamp(26px,4.2vw,64px) * var(--ps));color:var(--ink);max-width:1500px;line-height:1.5}
 .preveal{margin-top:1vh}
@@ -225,6 +225,16 @@ svg.fig.wide{max-width:560px} svg.fig.small{max-width:300px}
 .fsz .icon .b{font-size:22px}
 .fsz .pc{font:700 14px "Atkinson Hyperlegible",sans-serif;color:var(--muted);min-width:46px;text-align:center;font-variant-numeric:tabular-nums}
 footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40px;border-top:1px solid var(--line)}
+/* grand écran : on exploite la largeur */
+@media (min-width:1000px){
+  .wrap{max-width:1200px}
+  .skills{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .eqgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .qcard{max-width:900px}
+  .card > .q, .qtop{max-width:900px}
+}
+.eqgrid{display:flex;flex-direction:column;gap:16px}
+@media (min-width:1000px){ .eqgrid{display:grid} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -583,11 +593,12 @@ function examRun(){
   var qs = examSeries().map(make), boxes = [], end = Date.now() + EXAM_MIN * 60000, over = false;
   var bar = el('div','exambar'), br = el('div','row'), tm = el('span','timer'), give = el('button','btn primary','Rendre ma copie');
   br.appendChild(tm); br.appendChild(give); bar.appendChild(br); main.appendChild(bar);
+  var grid = el('div','eqgrid'); main.appendChild(grid);
   qs.forEach(function(q, i){
     var c = el('section','eq'); c.appendChild(el('p','qnum','Question ' + (i + 1)));
     c.appendChild(html('div','q', q.html));
     var ab = answerBox(q, function(){ var nx = boxes[i + 1]; if (nx) nx.el.querySelector('input,button') && nx.el.querySelector('input,button').focus(); });
-    c.appendChild(ab.el); boxes.push(ab); main.appendChild(c);
+    c.appendChild(ab.el); boxes.push(ab); grid.appendChild(c);
   });
   function tick(){
     var s = Math.max(0, Math.round((end - Date.now()) / 1000));
@@ -620,13 +631,14 @@ function examResult(qs, raws, timeUp){
   again.onclick = examRun; home2.onclick = function(){ render(); };
   acts.appendChild(again); acts.appendChild(home2); head.appendChild(acts);
   main.appendChild(head);
+  var grid = el('div','eqgrid'); main.appendChild(grid);
   qs.forEach(function(q, i){
     var r = res[i], c = el('section','eq ' + (r.ok ? 'ok' : 'ko'));
     c.appendChild(html('p','qnum','Question ' + (i + 1) + ' · ' + q.titre));
     c.appendChild(html('div','q', q.html));
     c.appendChild(html('p','mine', 'Ta réponse : <b>' + shown(q, raws[i]) + '</b> ' + (r.ok ? '<span style="color:var(--ok)">✓</span>' : '<span style="color:var(--ko)">✗</span>')));
     var fb = feedback(q, r); fb.firstChild.remove(); c.appendChild(fb);
-    main.appendChild(c);
+    grid.appendChild(c);
   });
   window.scrollTo(0, 0);
 }
