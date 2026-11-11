@@ -148,6 +148,9 @@ svg.droite .dp{fill:var(--accent)}
 .opts{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .opts label{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px}
 .opts select{font:700 16px "Atkinson Hyperlegible",sans-serif;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-height:46px}
+.numrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:400}
+.numrow input{font:700 18px "Atkinson Hyperlegible",sans-serif;width:80px;text-align:center;padding:9px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-height:46px}
+.numrow .icon{height:46px}
 .checks{display:grid;gap:4px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:6px}
 .checks label{display:flex;gap:10px;align-items:center;font-size:15px;padding:6px 4px;cursor:pointer}
 .checks input{width:20px;height:20px;accent-color:var(--accent);flex:none}
@@ -559,7 +562,27 @@ function classeSetup(){
     var s = el('select'); values.forEach(function(v){ var op = el('option', null, v[1]); op.value = v[0]; if (+v[0] === cur) op.selected = true; s.appendChild(op); });
     s.onchange = function(){ onch(+s.value); }; l.appendChild(s); return l;
   }
-  o.appendChild(sel('Nombre de questions', [5,6,7,8,9,10].map(function(n){ return [n, n + ' questions']; }), CL.n, function(v){ CL.n = v; store('auto:cl:n', v); }));
+  // nombre de questions : liste déroulante (5 à 10) ou nombre libre (1 à 40)
+  var PRESETS = [5,6,7,8,9,10];
+  var nl = sel('Nombre de questions', PRESETS.map(function(n){ return [n, n + ' questions']; }).concat([[0,'Autre nombre…']]), PRESETS.indexOf(CL.n) > -1 ? CL.n : 0, function(v){
+    if (v){ setN(v); } else { nIn.focus(); nIn.select(); }
+  });
+  var nSel = nl.querySelector('select');
+  var nBox = el('label'); nBox.appendChild(document.createTextNode('Ou nombre libre'));
+  var nRow = el('span','numrow'), nIn = el('input'); nIn.type = 'number'; nIn.min = 1; nIn.max = 40; nIn.step = 1; nIn.inputMode = 'numeric'; nIn.value = CL.n;
+  nIn.setAttribute('aria-label','Nombre de questions (1 à 40)');
+  var mi = el('button','icon','−'), pl = el('button','icon','+'); mi.type = pl.type = 'button';
+  mi.setAttribute('aria-label','Une question de moins'); pl.setAttribute('aria-label','Une question de plus');
+  nRow.appendChild(mi); nRow.appendChild(nIn); nRow.appendChild(pl); nRow.appendChild(el('span','muted small','question(s), de 1 à 40'));
+  nBox.appendChild(nRow);
+  function setN(v){
+    v = Math.round(+v); if (!(v >= 1)) v = 1; if (v > 40) v = 40;
+    CL.n = v; store('auto:cl:n', v); nIn.value = v; nSel.value = PRESETS.indexOf(v) > -1 ? v : 0;
+  }
+  nIn.onchange = function(){ setN(nIn.value); };
+  nIn.onkeydown = function(ev){ if (ev.key === 'Enter'){ ev.preventDefault(); setN(nIn.value); } };
+  mi.onclick = function(){ setN(CL.n - 1); }; pl.onclick = function(){ setN(CL.n + 1); };
+  o.appendChild(nl); o.appendChild(nBox);
   o.appendChild(sel('Temps par question', [[30,'30 secondes'],[45,'45 secondes'],[60,'1 minute'],[90,'1 min 30'],[0,'Sans limite (je fais défiler)']], CL.t, function(v){ CL.t = v; store('auto:cl:t', v); }));
   c.appendChild(o);
   var r = el('div','row'); r.style.margin = '16px 0 4px'; r.appendChild(seenToggle(render)); c.appendChild(r);
@@ -578,6 +601,7 @@ function classeSetup(){
   go.onclick = function(){
     var gens = av.filter(function(g){ return CL.sel[g.id] !== false; });
     if (!gens.length){ alert('Coche au moins un automatisme.'); return; }
+    setN(nIn.value);
     projStart(pickSeries(gens, CL.n).map(make));
   };
   c.appendChild(go);
