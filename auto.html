@@ -106,6 +106,43 @@ svg.droite .dp{fill:var(--accent)}
 .answer input{font:700 20px "Atkinson Hyperlegible",sans-serif;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:8px 12px;min-height:48px;width:min(260px,100%)}
 .answer input:focus{border-color:var(--accent);outline:none}
 .answer input.sm{width:110px}
+.answer input.wide{width:min(420px,100%)}
+/* figures */
+svg.fig{display:block;width:100%;max-width:440px;height:auto;margin-top:12px;color:var(--ink);overflow:visible}
+svg.fig.wide{max-width:560px} svg.fig.small{max-width:300px}
+.fig .ln{stroke:currentColor;stroke-width:2;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.fig .th{stroke:currentColor;stroke-width:1.4;fill:none}
+.fig .hid{stroke:currentColor;stroke-width:1.6;fill:none;stroke-dasharray:6 5;opacity:.75}
+.fig .grid{stroke:var(--muted);stroke-opacity:.28;stroke-width:1}
+.fig .ax{stroke:currentColor;stroke-width:1.8}
+.fig .acc{stroke:var(--accent);stroke-width:2.4;fill:none}
+.fig .accf{fill:var(--accent)}
+.fig .soft{fill:var(--accent);fill-opacity:.16;stroke:var(--accent);stroke-width:2}
+.fig .gr{fill:var(--muted);fill-opacity:.12;stroke:currentColor;stroke-width:1.8}
+.fig .bar{fill:var(--accent);fill-opacity:.75}
+.fig text{font:700 16px "Atkinson Hyperlegible",sans-serif;fill:currentColor}
+.fig text.lt{font-weight:400;font-size:14px;fill:var(--muted)}
+.fig text.it{font:italic 700 17px Georgia,serif}
+.fig text.big{font-size:20px}
+.fig .pt{fill:currentColor}
+.ang{display:inline-block;position:relative;padding-top:.28em;line-height:1}
+.ang::before{content:"";position:absolute;left:12%;right:12%;top:0;height:.32em;border:1.5px solid currentColor;border-bottom:0;border-radius:50% 50% 0 0/100% 100% 0 0}
+.tbl{border-collapse:collapse;margin-top:12px;font-size:.92em}
+.tbl td,.tbl th{border:1.5px solid var(--ink);padding:4px 12px;text-align:center;min-width:52px}
+.tbl th{font-weight:700;background:var(--soft)}
+.steps{margin:10px 0 0;padding-left:1.4em}
+.steps li{margin:2px 0}
+/* blocs Scratch */
+.scr{display:flex;width:max-content;max-width:100%;flex-direction:column;align-items:flex-start;margin-top:12px;font:700 14px "Atkinson Hyperlegible",sans-serif;line-height:1.2}
+.sb{color:#fff;border-radius:6px;padding:7px 10px;margin:1px 0;border:1px solid rgba(0,0,0,.18);white-space:nowrap}
+.sb.ev{background:#ffbf00;color:#3b2c00;border-radius:16px 16px 6px 6px;padding-top:10px} .sb.mo{background:#4c97ff} .sb.pen{background:#0fbd8c}
+.sb.ctl{background:#ffab19;padding-bottom:6px} .sb.var{background:#ff8c1a} .sb.lk{background:#9966ff}
+.sb .in{display:flex;flex-direction:column;align-items:flex-start;margin:6px 0 4px 14px}
+.sb .v{display:inline-block;background:#fff;color:#222;border-radius:10px;padding:1px 8px;margin:0 3px;min-width:22px;text-align:center}
+.sb .v.r{background:rgba(0,0,0,.18);color:#fff}
+.pq .scr{font-size:.6em}
+.pq .tbl{font-size:.8em}
+.pq svg.fig{max-width:min(80vw,calc(520px * var(--ps)));max-height:62vh}
 .answer input.exp{width:72px;font-size:16px;min-height:38px;align-self:flex-start;margin-top:-10px}
 .answer .ten{font-size:20px;font-weight:700}
 .answer.done input{background:transparent}
@@ -196,6 +233,8 @@ footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40
 <footer class="wrap">Questions tirées au hasard à partir de la liste officielle des automatismes du brevet. Ta progression est enregistrée sur cet appareil uniquement.</footer>
 <div class="proj" id="proj" hidden></div>
 <script src="auto-gen.js"></script>
+<script src="auto-geo.js"></script>
+<script src="auto-data.js"></script>
 <script>
 (function(){
 'use strict';
@@ -278,13 +317,17 @@ function answerBox(q, onEnter){
     var m = textInput('sm','Nombre décimal'), e = textInput('exp','Exposant');
     row.appendChild(m); row.appendChild(el('span','ten','× 10')); row.appendChild(e);
     inputs.push(m, e); get = function(){ return [m.value, e.value]; };
+  } else if (a.k === 'pair'){
+    var cx = textInput('sm','Abscisse'), cy = textInput('sm','Ordonnée');
+    row.appendChild(el('span','lab', (q.pt || '') + '(')); row.appendChild(cx); row.appendChild(el('span','lab',';')); row.appendChild(cy); row.appendChild(el('span','lab',')'));
+    inputs.push(cx, cy); get = function(){ return [cx.value, cy.value]; };
   } else if (a.k === 'pow'){
     var p = textInput('exp','Exposant'); row.appendChild(el('span','ten','10')); row.appendChild(p);
     inputs.push(p); get = function(){ return p.value; };
   } else {
-    var t = textInput(a.k === 'fn' ? 'sm' : ''); row.appendChild(t); inputs.push(t); get = function(){ return t.value; };
+    var t = textInput(a.k === 'fn' || a.k === 'txt' ? 'sm' : a.k === 'words' || a.k === 'pyeq' ? 'wide' : ''); if (a.k === 'ratio' || a.k === 'pyeq' || a.k === 'txt') t.setAttribute('autocapitalize','characters'); row.appendChild(t); inputs.push(t); get = function(){ return t.value; };
     // réponse numérique : saisie possible sous forme de fraction (numérateur au-dessus du trait, dénominateur en dessous)
-    if (a.k === 'num' && a.form !== 'int'){
+    if ((a.k === 'num' && a.form !== 'int') || a.k === 'ratio'){
       var fw = el('span','frin'), fn = textInput('','Numérateur'), fd = textInput('','Dénominateur');
       fw.appendChild(fn); fw.appendChild(el('span','bar')); fw.appendChild(fd); fw.hidden = true;
       row.insertBefore(fw, t.nextSibling); inputs.push(fn, fd);
@@ -305,7 +348,7 @@ function answerBox(q, onEnter){
   }
   if (q.suf) row.appendChild(html('span','lab', q.suf));
   // petit clavier pour les symboles difficiles à taper sur téléphone
-  var keys = a.k === 'expr' ? [q.kb || 'x', '²', '(', ')', '−', '×', ','] : a.k === 'num' ? ['−', ','] : a.k === 'sci' || a.k === 'pow' ? ['−', ','] : [];
+  var keys = a.k === 'expr' ? (a.pi ? ['π', '²', '(', ')', '×', ','] : [q.kb || 'x', '²', '(', ')', '−', '×', ',']) : a.k === 'pyeq' ? ['²', '=', '+'] : a.k === 'num' ? ['−', ','] : a.k === 'sci' || a.k === 'pow' ? ['−', ','] : [];
   if (keys.length){
     var kb = el('div','keys'), last = inputs[0];
     inputs.forEach(function(i){ i.addEventListener('focus', function(){ last = i; }); });
@@ -327,7 +370,7 @@ function answerBox(q, onEnter){
     box.appendChild(kb);
   }
   inputs.forEach(function(i){ if (i.tagName === 'INPUT') i.addEventListener('keydown', function(ev){ if (ev.key === 'Enter'){ ev.preventDefault(); ev.stopPropagation(); onEnter && onEnter(); } }); });
-  if (a.form === 'frac' && fracOK) setTimeout(function(){ setFrac(true); if (matchMedia('(pointer:coarse)').matches) document.activeElement.blur(); }, 0);
+  if ((a.form === 'frac' || a.k === 'ratio') && fracOK) setTimeout(function(){ setFrac(true); if (matchMedia('(pointer:coarse)').matches) document.activeElement.blur(); }, 0);
   var err = el('p','err'); err.setAttribute('role','alert'); box.appendChild(err);
   return {el: box, get: get, err: err,
     focus: function(){ var i = inputs.filter(function(x){ return x.tagName === 'INPUT' && !x.hidden && !(x.parentNode && x.parentNode.hidden); })[0]; if (i && !matchMedia('(pointer:coarse)').matches) i.focus(); },
@@ -337,6 +380,7 @@ function shown(q, raw){
   if (raw == null || raw === '') return '<span class="muted">(pas de réponse)</span>';
   if (q.ans.k === 'sci') return raw[0] || raw[1] ? esc(raw[0]) + ' × 10<sup>' + esc(raw[1]) + '</sup>' : '<span class="muted">(pas de réponse)</span>';
   if (q.ans.k === 'pow') return '10<sup>' + esc(raw) + '</sup>';
+  if (q.ans.k === 'pair') return raw[0] || raw[1] ? (q.pt || '') + '(' + esc(raw[0]) + ' ; ' + esc(raw[1]) + ')' : '<span class="muted">(pas de réponse)</span>';
   if (q.ans.k === 'sym') return esc(raw);
   var m = /^\s*([^/]*)\/([^/]*)\s*$/.exec(raw), v = m ? '<span class="fr"><span>' + esc(m[1]) + '</span><span>' + esc(m[2]) + '</span></span>' : esc(raw);
   return (q.pre ? q.pre + ' ' : '') + v + (q.suf ? ' ' + q.suf : '');
@@ -486,12 +530,27 @@ function pickSeries(gens, n){
   }
   return out;
 }
+// répartition inspirée des sujets de référence : 4 Nombres et calculs, 2 géométrie, 1 données, 1 fonctions, 1 algorithmique
+var EXAM_QUOTA = {nc:4, geo:2, data:1, fct:1, algo:1};
+function examSeries(){
+  var out = [], rest = [];
+  A.THEMES.forEach(function(t){
+    var gs = A.shuffle(t.gens.filter(available)), n = EXAM_QUOTA[t.id] || 0;
+    out = out.concat(gs.slice(0, n)); rest = rest.concat(gs.slice(n));
+  });
+  rest = A.shuffle(rest);
+  while (out.length < EXAM_N && rest.length) out.push(rest.pop());
+  if (out.length < EXAM_N) out = out.concat(pickSeries(availGens(), EXAM_N - out.length));
+  var order = A.THEMES.map(function(t){ return t.id; });
+  var themeOf = function(g){ for (var i = 0; i < A.THEMES.length; i++) if (A.THEMES[i].gens.indexOf(g) > -1) return i; return 9; };
+  return out.slice(0, EXAM_N).sort(function(a, b){ return themeOf(a) - themeOf(b); });
+}
 function examIntro(){
   var c = el('section','card');
   c.appendChild(el('p','kicker','Épreuve blanche'));
   c.appendChild(el('h2', null, EXAM_N + ' questions · ' + EXAM_MIN + ' minutes'));
   c.appendChild(html('p', null, 'Comme le jour du brevet : sans calculatrice, sans justification. Tu réponds dans l’ordre que tu veux, la correction et la note arrivent à la fin.'));
-  c.appendChild(html('p','muted small', 'Pour l’instant, seules les questions de <b>Nombres et calculs</b> sont disponibles ; le vrai sujet mélange tous les thèmes.'));
+  c.appendChild(html('p','muted small', 'Les questions mélangent les cinq thèmes, avec une majorité de « Nombres et calculs » comme dans les sujets de référence.'));
   var r = el('div','row'); r.style.margin = '12px 0'; r.appendChild(seenToggle(render)); c.appendChild(r);
   var go = el('button','btn primary','Commencer l’épreuve'); go.disabled = !availGens().length;
   go.onclick = examRun; c.appendChild(go);
@@ -499,7 +558,7 @@ function examIntro(){
 }
 function examRun(){
   stopAll(); main.innerHTML = '';
-  var qs = pickSeries(availGens(), EXAM_N).map(make), boxes = [], end = Date.now() + EXAM_MIN * 60000, over = false;
+  var qs = examSeries().map(make), boxes = [], end = Date.now() + EXAM_MIN * 60000, over = false;
   var bar = el('div','exambar'), br = el('div','row'), tm = el('span','timer'), give = el('button','btn primary','Rendre ma copie');
   br.appendChild(tm); br.appendChild(give); bar.appendChild(br); main.appendChild(bar);
   qs.forEach(function(q, i){

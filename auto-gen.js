@@ -94,11 +94,12 @@ function parseNumber(s) {
   }
   return null;
 }
+function plain(s) { return String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/œ/g, 'oe').replace(/[^a-z0-9]+/g, ' ').trim(); }
 function parseInteger(s) { var p = parseNumber(s); return p && p.q.d === 1 && p.form !== 'frac' ? p.q.n : null; }
 
 /* Expressions littérales : 3x² − 2(x + 1), x(x + 5), (3x − 5)(3x + 5)… */
 function tokenize(s) {
-  s = norm(s).replace(/,/g, '.');
+  s = norm(s).replace(/,/g, '.').replace(/pi/gi, 'π');
   var t = [], i = 0;
   while (i < s.length) {
     var c = s[i];
@@ -108,6 +109,7 @@ function tokenize(s) {
       t.push({ k: 'n', v: D(str[0] === '.' ? '0' + str : str) }); i = j; continue;
     }
     if (/[a-zA-Z]/.test(c)) { t.push({ k: 'v', v: c.toLowerCase() }); i++; continue; }
+    if (c === 'π') { t.push({ k: 'pi' }); i++; continue; }
     if (c === '²' || c === '³') { t.push({ k: 'sq', v: c === '²' ? 2 : 3 }); i++; continue; }
     if ('+-*/^()'.indexOf(c) > -1) { t.push({ k: c }); i++; continue; }
     throw new Error('caractère');
@@ -121,7 +123,7 @@ function parseExpr(s) {
     while (p < t.length && (t[p].k === '+' || t[p].k === '-')) { var sg = t[p++].k === '-' ? -1 : 1; terms.push({ s: sg, e: term() }); }
     return terms.length === 1 ? terms[0].e : { t: 'add', terms: terms };
   }
-  function startsAtom(k) { return k && (k.k === 'n' || k.k === 'v' || k.k === '('); }
+  function startsAtom(k) { return k && (k.k === 'n' || k.k === 'v' || k.k === '(' || k.k === 'pi'); }
   function term() {
     var fs = [unary()], ops = [];
     while (p < t.length) {
@@ -151,6 +153,7 @@ function parseExpr(s) {
     var k = t[p++]; if (!k) throw new Error('fin');
     if (k.k === 'n') return { t: 'num', q: k.v };
     if (k.k === 'v') return { t: 'var', v: k.v };
+    if (k.k === 'pi') return { t: 'pi' };
     if (k.k === '(') { var e = expr(); if (!t[p] || t[p].k !== ')') throw new Error('parenthèse'); p++; return { t: 'par', e: e }; }
     throw new Error('symbole');
   }
@@ -160,6 +163,7 @@ function evalE(n, env) {
   switch (n.t) {
     case 'num': return qv(n.q);
     case 'var': return env[n.v] === undefined ? NaN : env[n.v];
+    case 'pi': return Math.PI;
     case 'par': return evalE(n.e, env);
     case 'neg': return -evalE(n.e, env);
     case 'pow': return Math.pow(evalE(n.b, env), evalE(n.e, env));
@@ -201,6 +205,7 @@ function hasPar(n) {
 function mono(n) { // monôme : {deg, nums, vars} ou null
   switch (n.t) {
     case 'num': return { deg: 0, nums: 1, vars: 0 };
+    case 'pi': return { deg: 0, nums: 0, vars: 0 };
     case 'var': return { deg: 1, nums: 0, vars: 1 };
     case 'neg': return mono(n.e);
     case 'par': return n.e.t === 'num' || (n.e.t === 'neg' && n.e.e.t === 'num') ? { deg: 0, nums: 1, vars: 0 } : null;
@@ -250,11 +255,13 @@ function check(ans, raw) {
   var s, p;
   switch (ans.k) {
     case 'num':
-      s = String(raw == null ? '' : raw).replace(/%|cm²|cm|€|m²|m\b/g, '').trim();
+      var pct = /%/.test(String(raw));
+      s = String(raw == null ? '' : raw).replace(/%|[kcdm]?m[²³]|[kcdm]?m\b|[mcd]?L\b|kg|g\b|€|°|min|h\b|s\b/g, '').trim();
       if (!s) return { invalid: true, msg: 'Écris ta réponse.' };
       if (/^[^/]*\/\s*$|^\s*\//.test(s)) return { invalid: true, msg: 'Complète le numérateur et le dénominateur de ta fraction.' };
       p = parseNumber(s);
       if (!p) return { invalid: true, msg: 'Je n’arrive pas à lire ce nombre. Exemples d’écriture : 2,5 · −3 · 3/4' };
+      if (pct && ans.pct) p.q = qdiv(p.q, Q(100));
       if (!qeq(p.q, ans.q)) return { ok: false };
       if (ans.form === 'dec' && p.form === 'frac') return { ok: false, msg: 'La valeur est juste, mais on attendait l’écriture décimale.' };
       if (ans.form === 'frac' && p.form === 'dec') return { ok: false, msg: 'La valeur est juste, mais on demandait une fraction.' };
@@ -281,17 +288,58 @@ function check(ans, raw) {
       return { ok: true };
     case 'expr':
       s = String(raw == null ? '' : raw).trim().replace(/^[A-Z]\s*=\s*/, '');
+      if (ans.pi) s = s.replace(/\s*(mm|cm|dm|km|m)[²³]?\s*$/, '');
       if (!s) return { invalid: true, msg: 'Écris ta réponse.' };
       var ast, ref;
       try { ast = parseExpr(s); } catch (err) { return { invalid: true, msg: 'Je n’arrive pas à lire cette expression. Exemples : 3x + 2 · x² − 4 · 2(x + 1)' }; }
       ref = parseExpr(ans.ref);
       var vs = Object.keys(varsOf(ast));
-      if (vs.some(function (v) { return v !== ans.v; })) return { ok: false, msg: 'Utilise la lettre ' + ans.v + '.' };
-      if (!sameValue(ast, ref)) return { ok: false };
+      if (vs.some(function (v) { return v !== ans.v; })) return { ok: false, msg: ans.v ? 'Utilise la lettre ' + ans.v + '.' : 'Ta réponse ne doit pas contenir de lettre' + (ans.pi ? ' (à part π).' : '.') };
+      if (!sameValue(ast, ref)) {
+        if (ans.pi && !vs.length) { var sv = evalE(ast, {}), rv = evalE(ref, {}); if (isFinite(sv) && Math.abs(sv - rv) <= 0.02 * Math.abs(rv)) return { ok: false, msg: 'C’est une valeur approchée : on demande la valeur exacte, écrite avec π.' }; }
+        return { ok: false };
+      }
       if (ans.form === 'red' && hasPar(ast)) return { ok: false, msg: 'L’expression est bien égale, mais elle n’est pas développée : il reste des parenthèses.' };
       if (ans.form === 'red' && !isReduced(ast)) return { ok: false, msg: 'L’expression est bien égale, mais elle n’est pas réduite.' };
       if (ans.form === 'fact' && !isFactored(ast)) return { ok: false, msg: 'L’expression est bien égale, mais elle n’est pas factorisée : on attend un produit.' };
       return { ok: true };
+    case 'pair':
+      raw = raw || ['', ''];
+      if (!String(raw[0]).trim() || !String(raw[1]).trim()) return { invalid: true, msg: 'Complète l’abscisse et l’ordonnée.' };
+      var px = parseNumber(raw[0]), py = parseNumber(raw[1]);
+      if (!px || !py) return { invalid: true, msg: 'Écris un nombre dans chaque case.' };
+      if (qeq(px.q, ans.x) && qeq(py.q, ans.y)) return { ok: true };
+      if (qeq(px.q, ans.y) && qeq(py.q, ans.x)) return { ok: false, msg: 'Tu as inversé l’abscisse et l’ordonnée : on écrit d’abord l’abscisse (axe horizontal).' };
+      return { ok: false };
+    case 'txt':
+      s = plain(raw); if (!s) return { invalid: true, msg: 'Écris ta réponse.' };
+      return { ok: ans.v.some(function (v) { return plain(v) === s.replace(/^(le |la |point |figure |triangle )+/, ''); }) };
+    case 'words':
+      s = ' ' + plain(raw); if (s === ' ') return { invalid: true, msg: 'Écris ta réponse.' };
+      var hasW = function (w) { return s.indexOf(' ' + w) > -1; };
+      if ((ans.forbid || []).some(hasW)) return { ok: false };
+      if (ans.need.every(function (g) { return g.some(hasW); })) return { ok: true };
+      var nr = (ans.near || []).filter(function (n) { return hasW(n.has); })[0];
+      return nr ? { ok: false, msg: nr.msg } : { ok: false };
+    case 'ratio':
+      s = norm(raw).toUpperCase().replace(/[:÷]/g, '/');
+      var mr = /^\(?([A-Z]{2})\)?\/\(?([A-Z]{2})\)?$/.exec(s);
+      if (!mr) return { invalid: true, msg: 'Écris un quotient de deux longueurs, par exemple AB/BC.' };
+      var sg = function (a, b) { return a.split('').sort().join('') === b.split('').sort().join(''); };
+      if (sg(mr[1], ans.n) && sg(mr[2], ans.d)) return { ok: true };
+      if (sg(mr[1], ans.d) && sg(mr[2], ans.n)) return { ok: false, msg: 'C’est l’inverse : le cosinus est inférieur à 1, l’hypoténuse va au dénominateur.' };
+      return { ok: false };
+    case 'pyeq':
+      s = norm(raw).toUpperCase().replace(/\^2/g, '²').replace(/\*/g, '');
+      var sides = s.split('=');
+      var terms = function (x) { var t = x.split('+'); return t.every(function (y) { return /^[A-Z]{2}²$/.test(y); }) ? t.map(function (y) { return y.slice(0, 2).split('').sort().join(''); }) : null; };
+      if (sides.length !== 2 || !terms(sides[0]) || !terms(sides[1])) return { invalid: true, msg: 'Écris une égalité de la forme BC² = AB² + AC².' };
+      var L1 = terms(sides[0]), L2 = terms(sides[1]), one = L1.length === 1 ? L1 : L2, two = L1.length === 1 ? L2 : L1;
+      if (one.length !== 1 || two.length !== 2) return { ok: false, msg: 'Il faut un carré d’un côté de l’égalité et une somme de deux carrés de l’autre.' };
+      var hy = ans.h.split('').sort().join(''), legs = ans.l.map(function (x) { return x.split('').sort().join(''); }).sort();
+      if (one[0] === hy && two.slice().sort().join() === legs.join()) return { ok: true };
+      if (two.indexOf(hy) > -1) return { ok: false, msg: 'Le carré de l’hypoténuse ' + ans.h + ' (le côté opposé à l’angle droit) doit être seul de son côté.' };
+      return { ok: false };
     case 'fn':
       s = String(raw == null ? '' : raw).trim();
       if (!s) return { invalid: true, msg: 'Écris ta réponse.' };
@@ -835,9 +883,11 @@ var TAGS = {
   relx: /multipli\w* des (nombres )?relatifs|diviser des (nombres )?relatifs|opérations sur les (nombres )?relatifs/i,
   frac: /fraction/i, pui: /puissance/i, sci: /scientifique/i, rac: /racine|carrés parfaits/i,
   red: /réduire/i, dev: /développer|distributivité/i, dev2: /double distributivit/i,
-  fact: /factoris/i, id: /identit|remarquable|différence de deux carrés/i, eq: /équation/i
+  fact: /factoris/i, id: /identit|remarquable|différence de deux carrés/i, eq: /équation/i,
+  pyth: /pythagore/i, thales: /thal[eè]s/i, cos: /cosinus|trigonom/i, transl: /translation/i, med: /médiane/i,
+  pyr: /pyramide|cône/i, pct: /pourcentage/i, fct: /fonction/i
 };
-var ACQUIS = { '4e': [], '3e': ['relx', 'frac', 'pui', 'sci', 'rac', 'red', 'dev', 'fact', 'eq'] };
+var ACQUIS = { '4e': [], '3e': ['relx', 'frac', 'pui', 'sci', 'rac', 'red', 'dev', 'fact', 'eq', 'pyth', 'thales', 'cos', 'transl', 'med', 'pyr', 'pct'] };
 function tagsFrom(lv, titles) {
   var t = {}; (ACQUIS[lv] || []).forEach(function (k) { t[k] = 1; });
   titles.forEach(function (ti) { for (var k in TAGS) if (TAGS[k].test(ti)) t[k] = 1; });
@@ -853,10 +903,15 @@ function sampleAnswer(q) {
     case 'pow': return String(a.e);
     case 'sci': return [decStr(a.m), String(a.e)];
     case 'expr': return a.ref;
-    case 'fn': return q.sample;
+    case 'fn': case 'words': case 'pyeq': return q.sample;
+    case 'pair': return [decStr(a.x).replace(MINUS, '-'), decStr(a.y).replace(MINUS, '-')];
+    case 'txt': return a.v[0];
+    case 'ratio': return a.n + '/' + a.d;
   }
 }
 
-var API = { THEMES: THEMES, TAGS: TAGS, tagsFrom: tagsFrom, check: check, parseExpr: parseExpr, parseNumber: parseNumber, sampleAnswer: sampleAnswer, shuffle: shuffle, pick: pick };
+var H = { ri: ri, pick: pick, chance: chance, nz: nz, sgn: sgn, shuffle: shuffle, gcd: gcd, lcm: lcm, Q: Q, qadd: qadd, qsub: qsub, qmul: qmul, qdiv: qdiv, qeq: qeq, qcmp: qcmp, D: D, isDec: isDec, qv: qv,
+  MINUS: MINUS, NB: NB, grp: grp, decStr: decStr, fr: fr, frs: frs, frq: frq, nq: nq, f: f, fp: fp, V: V, sup: sup, pw: pw, eqs: eqs, strong: strong, X: X, P: P, M: M, plus: plus, poly: poly, polyTxt: polyTxt, lin: lin, plain: plain };
+var API = { H: H, THEMES: THEMES, TAGS: TAGS, tagsFrom: tagsFrom, check: check, parseExpr: parseExpr, parseNumber: parseNumber, sampleAnswer: sampleAnswer, shuffle: shuffle, pick: pick };
 if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.AUTO = API;
 })(this);
