@@ -38,7 +38,7 @@ h1{font:700 clamp(30px,7vw,42px)/1.05 "Bricolage Grotesque",system-ui,sans-serif
 .pill[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 main.wrap{padding-top:22px;padding-bottom:56px;display:flex;flex-direction:column;gap:26px}
-.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;width:max-content;max-width:100%}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;width:max-content;max-width:100%}
 .tabs button{border:0;background:transparent;color:var(--muted);font:700 15px "Atkinson Hyperlegible",sans-serif;padding:9px 14px;border-radius:9px;cursor:pointer;min-height:42px}
 .tabs button[aria-pressed="true"]{background:var(--soft);color:var(--accent)}
 .kicker{font:700 13px "Atkinson Hyperlegible",sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px}
@@ -272,12 +272,12 @@ function start(D){
     if (!full.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
 
     var tabs = el('div','tabs'); tabs.setAttribute('role','group');
-    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(lv === '3e' ? [['brevet','Réviser le brevet']] : []);
+    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(lv === '3e' ? [['brevet','Réviser le brevet']] : []).concat([['auto','Automatismes']]);
     if (!tlist.some(function(t){ return t[0] === view; })) view = 'cours';
     tlist.forEach(function(t){
       var b = el('button', null, t[1]); b.setAttribute('aria-pressed', view === t[0]);
       if (t[0] === 'evals' && evals.some(function(e){ return e.items.some(isNew); })) b.appendChild(el('span','tdot'));
-      b.onclick = function(){ view = t[0]; render(); }; tabs.appendChild(b);
+      b.onclick = t[0] === 'auto' ? function(){ location.href = 'auto.html' + location.hash; } : function(){ view = t[0]; render(); }; tabs.appendChild(b);
     });
     main.appendChild(tabs);
     if (view === 'brevet') renderBrevet(seqs);
