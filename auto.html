@@ -188,7 +188,7 @@ footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40
 <body>
 <header class="wrap">
   <a class="back" id="back" href="index.html">← Mes documents</a>
-  <h1>Automatismes</h1>
+  <h1 id="ttl">Automatismes</h1>
   <p class="sub">Brevet, partie 1 · 20 minutes · sans calculatrice · réponses courtes, sans justification</p>
 </header>
 <nav class="picker" id="pickwrap" aria-label="Classe"><div class="wrap picker-row" id="picker"></div></nav>
@@ -357,6 +357,7 @@ function stopAll(){ timers.forEach(clearInterval); timers = []; }
 function render(){
   stopAll();
   [].forEach.call(picker.querySelectorAll('.pill'), function(b){ b.setAttribute('aria-pressed', b.dataset.c === cls); });
+  document.getElementById('ttl').textContent = levelOf(cls) === '3e' ? 'Automatismes DNB' : 'Automatismes';
   main.innerHTML = '';
   if (!cls){ main.appendChild(el('div','empty','Choisis une classe ci-dessus.')); return; }
   var tabs = el('div','tabs'); tabs.setAttribute('role','group'); tabs.setAttribute('aria-label','Modes');

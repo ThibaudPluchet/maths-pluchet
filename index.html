@@ -272,7 +272,7 @@ function start(D){
     if (!full.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
 
     var tabs = el('div','tabs'); tabs.setAttribute('role','group');
-    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(lv === '3e' ? [['brevet','Réviser le brevet']] : []).concat([['auto','Automatismes']]);
+    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(lv === '3e' ? [['brevet','Réviser le brevet']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes']]);
     if (!tlist.some(function(t){ return t[0] === view; })) view = 'cours';
     tlist.forEach(function(t){
       var b = el('button', null, t[1]); b.setAttribute('aria-pressed', view === t[0]);
