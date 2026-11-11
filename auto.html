@@ -255,6 +255,16 @@ function levelOf(c){ for (var l in D.classes) if (D.classes[l].indexOf(c) > -1) 
 function find(c){ c = (c || '').toLowerCase(); for (var l in D.classes) for (var i = 0; i < D.classes[l].length; i++) if (D.classes[l][i].toLowerCase() === c) return D.classes[l][i]; return ''; }
 
 var hashCls = decodeURIComponent(location.hash.slice(1)).split('/')[0];
+// Mode classe réservé à l'enseignant : lien personnel auto.html#prof=<code>, mémorisé ensuite dans ce navigateur
+var PROF_HASH = '353a56adff881038051f6980cb81d693d04e206dc2009df612da227e7d5c8352', prof = false;
+function checkProf(){
+  var m = location.hash.match(/prof=([A-Za-z0-9_-]+)/), t = m ? m[1] : store('prof');
+  if (!t || !window.crypto || !crypto.subtle) return Promise.resolve();
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function(b){
+    var h = Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join('');
+    if (h === PROF_HASH){ prof = true; if (m){ store('prof', t); history.replaceState(null, '', location.pathname); } }
+  }).catch(function(){});
+}
 var locked = '', cls = '', view = 'train', seenOnly = store('auto:vu') !== '0', tags = {};
 document.getElementById('back').href = 'index.html' + location.hash;
 window.addEventListener('hashchange', function(){ location.reload(); });
@@ -411,7 +421,7 @@ function render(){
   main.innerHTML = '';
   if (!cls){ main.appendChild(el('div','empty','Choisis une classe ci-dessus.')); return; }
   var tabs = el('div','tabs'); tabs.setAttribute('role','group'); tabs.setAttribute('aria-label','Modes');
-  var tl = [['train','S’entraîner'],['exam','Épreuve blanche']]; if (!locked) tl.push(['classe','Mode classe']);
+  var tl = [['train','S’entraîner'],['exam','Épreuve blanche']]; if (prof) tl.push(['classe','Mode classe']);
   tl.forEach(function(t){
     var b = el('button', null, t[1]); b.setAttribute('aria-pressed', view === t[0]);
     b.onclick = function(){ view = t[0]; render(); }; tabs.appendChild(b);
@@ -802,6 +812,7 @@ function start(){
 fetch('data.json?t=' + Date.now(), {cache:'no-store'})
   .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(function(d){ D = d; }).catch(function(){})
+  .then(checkProf)
   .then(start);
 })();
 </script>
