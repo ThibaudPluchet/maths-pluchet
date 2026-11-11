@@ -187,7 +187,7 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 </header>
 <nav class="picker" aria-label="Ma classe"><div class="wrap picker-row" id="picker"></div></nav>
 <main class="wrap" id="main"></main>
-<footer class="wrap">Les documents apparaissent ici au fur et à mesure qu'ils sont distribués en classe. Vidéos : Yvan Monka · Exercices en ligne : MathALÉA (Coopmaths).</footer>
+<footer class="wrap">Les documents apparaissent ici au fur et à mesure qu'ils sont distribués en classe. Vidéos : Yvan Monka · Exercices en ligne : MathALÉA (Coopmaths). · Mesure d’audience anonyme, sans cookie (GoatCounter).</footer>
 <script>
 function start(D){
   var picker = document.getElementById('picker'), main = document.getElementById('main');
@@ -257,7 +257,16 @@ function start(D){
     return box;
   }
 
+  // Statistiques : une visite par classe affichée, un événement par document ouvert
+  var counted = null;
+  main.addEventListener('click', function(ev){
+    var a = ev.target.closest && ev.target.closest('a.doc'); if (!a || !window.stat) return;
+    var art = a.closest('article'), code = art && art.querySelector('.code');
+    var lab = (a.querySelector('.t') || a).textContent.trim();
+    stat((levelOf(current) || '') + ' ' + (code ? code.textContent : '') + ' · ' + lab, lab + ' (' + current + ')', true);
+  });
   function render(){
+    if (window.stat && counted !== current){ counted = current; stat(current ? '/' + current : '/', current ? 'Classe ' + current : 'Accueil sans classe'); }
     [].forEach.call(picker.querySelectorAll('.pill'), function(b){ b.setAttribute('aria-pressed', b.dataset.c === current); });
     main.innerHTML = '';
     if (!current){ main.appendChild(el('div','empty','Choisis ta classe ci-dessus pour voir tes documents.')); return; }
@@ -434,5 +443,6 @@ fetch('data.json?t=' + Date.now(), {cache: 'no-store'})
   .catch(function(){ document.getElementById('main').innerHTML = '<div class="empty">Impossible de charger les documents. Vérifie ta connexion puis recharge la page.</div>'; });
 
 </script>
+<script src="stats.js"></script>
 </body>
 </html>

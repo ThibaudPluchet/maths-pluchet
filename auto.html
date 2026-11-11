@@ -426,8 +426,10 @@ function feedback(q, res){
 /* ---------- rendu général ---------- */
 var timers = [];
 function stopAll(){ timers.forEach(clearInterval); timers = []; }
+var counted = null;
 function render(){
   stopAll();
+  if (window.stat && cls && counted !== cls + view){ counted = cls + view; stat('/automatismes/' + cls + (view === 'train' ? '' : '/' + view), 'Automatismes ' + cls + (view === 'exam' ? ' · épreuve blanche' : view === 'classe' ? ' · mode classe' : '')); }
   [].forEach.call(picker.querySelectorAll('.pill'), function(b){ b.setAttribute('aria-pressed', b.dataset.c === cls); });
   document.getElementById('ttl').textContent = levelOf(cls) === '3e' ? 'Automatismes DNB' : 'Automatismes';
   main.innerHTML = '';
@@ -830,5 +832,6 @@ fetch('data.json?t=' + Date.now(), {cache:'no-store'})
   .then(start);
 })();
 </script>
+<script src="stats.js"></script>
 </body>
 </html>
