@@ -272,7 +272,9 @@ function checkProf(){
   if (!t || !window.crypto || !crypto.subtle) return Promise.resolve();
   return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function(b){
     var h = Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join('');
-    if (h === PROF_HASH){ prof = true; if (m){ store('prof', t); history.replaceState(null, '', location.pathname); } }
+    // le code du lien est gardé même si la page en cache n'est pas encore à jour : il servira au prochain chargement
+    if (m){ store('prof', t); try { history.replaceState(null, '', location.pathname); } catch(e){} }
+    if (h === PROF_HASH) prof = true;
   }).catch(function(){});
 }
 var locked = '', cls = '', view = 'train', seenOnly = store('auto:vu') !== '0', tags = {};
