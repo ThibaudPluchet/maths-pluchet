@@ -159,19 +159,25 @@ svg.droite .dp{fill:var(--accent)}
 .ptop .pt{font:700 clamp(24px,3.2vw,44px) "Bricolage Grotesque",system-ui,sans-serif;font-variant-numeric:tabular-nums}
 .pbar{height:8px;background:var(--line)} .pbar i{display:block;height:100%;background:var(--accent);width:0}
 .pbody{flex:1;display:flex;flex-direction:column;justify-content:center;padding:2vh 6vw;overflow:auto}
-.pq{font-size:clamp(26px,4.2vw,64px);line-height:1.45;max-width:1500px}
-.pq svg.droite{max-width:min(90vw,1100px)}
+.proj{--ps:1}
+.pq{font-size:calc(clamp(26px,4.2vw,64px) * var(--ps));line-height:1.45;max-width:1500px}
+.pq svg.droite{max-width:min(92vw,calc(1100px * var(--ps)))}
 .pq svg.droite .dl{font-size:17px}
 .pq .nlist span{min-height:0;padding:.1em .5em}
-.pans{margin-top:4vh;font-size:clamp(24px,3.6vw,54px);color:var(--ok);font-weight:700}
-.pmeth{margin-top:2vh;font-size:clamp(17px,2vw,30px);color:var(--muted);max-width:1500px;line-height:1.5}
+.pans{margin-top:4vh;font-size:calc(clamp(24px,3.6vw,54px) * var(--ps));color:var(--ok);font-weight:700}
+.pmeth{margin-top:2vh;font-size:calc(clamp(17px,2vw,30px) * var(--ps));color:var(--muted);max-width:1500px;line-height:1.5}
 .pend{text-align:center}
 .pend h2{font-size:clamp(34px,5vw,72px)}
-.pall{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));font-size:clamp(16px,1.5vw,24px)}
+.pall{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(calc(420px * var(--ps)),1fr));font-size:calc(clamp(16px,1.5vw,24px) * var(--ps))}
 .pall .eq .q{font-size:inherit}
 .pall .corr{color:var(--ok);font-weight:700}
 .icon{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;min-width:48px;height:48px;font:700 18px "Atkinson Hyperlegible",sans-serif;cursor:pointer;padding:0 14px}
 .icon:hover{border-color:var(--accent)}
+.fsz{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:3px}
+.fsz .icon{border:0;height:40px;min-width:44px;padding:0 8px}
+.fsz .icon .s{font-size:14px}
+.fsz .icon .b{font-size:22px}
+.fsz .pc{font:700 14px "Atkinson Hyperlegible",sans-serif;color:var(--muted);min-width:46px;text-align:center;font-variant-numeric:tabular-nums}
 footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40px;border-top:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -580,6 +586,9 @@ function classeSetup(){
 function projStart(qs){
   var i = 0, phase = 'q', paused = false, end = 0, left = 0;
   proj.hidden = false; document.body.style.overflow = 'hidden';
+  var ps = Math.min(2, Math.max(0.6, +(store('auto:cl:ps') || 1)));
+  function setPs(v){ ps = Math.round(Math.min(2, Math.max(0.6, v)) * 10) / 10; store('auto:cl:ps', ps); proj.style.setProperty('--ps', ps); [].forEach.call(proj.querySelectorAll('.fsz .pc'), function(x){ x.textContent = Math.round(ps * 100) + ' %'; }); }
+  setPs(ps);
   try { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){}); } catch(e){}
   function quit(){
     stopAll(); proj.hidden = true; proj.innerHTML = ''; document.body.style.overflow = '';
@@ -589,6 +598,11 @@ function projStart(qs){
   function topbar(label, withTimer){
     var t = el('div','ptop'); t.appendChild(el('span','pn', label));
     var tm = el('span','pt'); if (withTimer) t.appendChild(tm);
+    var fz = el('span','fsz'); fz.setAttribute('role','group'); fz.setAttribute('aria-label','Taille du texte');
+    var dn = btn('', function(){ setPs(ps - 0.1); }, 'Texte plus petit (touche −)'); dn.innerHTML = '<span class="s">A</span>−';
+    var up = btn('', function(){ setPs(ps + 0.1); }, 'Texte plus grand (touche +)'); up.innerHTML = '<span class="b">A</span>+';
+    var pc = el('span','pc', Math.round(ps * 100) + ' %'); pc.title = 'Double-clic : taille normale'; pc.ondblclick = function(){ setPs(1); };
+    fz.appendChild(dn); fz.appendChild(pc); fz.appendChild(up); t.appendChild(fz);
     return {el: t, tm: tm};
   }
   function btn(txt, f, title){ var b = el('button','icon', txt); b.type = 'button'; if (title){ b.title = title; b.setAttribute('aria-label', title); } b.onclick = f; return b; }
@@ -646,6 +660,9 @@ function projStart(qs){
   }
   function key(ev){
     if (ev.key === 'Escape'){ quit(); return; }
+    if (ev.key === '+' || ev.key === '='){ ev.preventDefault(); setPs(ps + 0.1); return; }
+    if (ev.key === '-' || ev.key === '_'){ ev.preventDefault(); setPs(ps - 0.1); return; }
+    if (ev.key === '0'){ setPs(1); return; }
     if (phase === 'q' && (ev.key === 'ArrowRight' || ev.key === ' ' || ev.key === 'PageDown')){ ev.preventDefault(); next(); }
     else if (phase === 'c' && (ev.key === 'ArrowRight' || ev.key === ' ' || ev.key === 'PageDown')){ ev.preventDefault(); if (i < qs.length - 1){ i++; showC(); } else showAll(); }
     else if (phase === 'c' && (ev.key === 'ArrowLeft' || ev.key === 'PageUp')){ ev.preventDefault(); if (i > 0){ i--; showC(); } }
