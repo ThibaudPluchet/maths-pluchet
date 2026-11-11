@@ -60,7 +60,10 @@ h2{font:700 clamp(21px,5vw,26px)/1.2 "Bricolage Grotesque",system-ui,sans-serif;
 .toggle input{width:22px;height:22px;accent-color:var(--accent)}
 /* thèmes */
 .themes{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-.theme{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;text-align:left;font:inherit;color:var(--ink);min-height:62px}
+.theme{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px 12px;text-align:left;font:inherit;color:var(--ink);min-height:72px;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.theme:hover{border-color:var(--accent)}
+.theme .tbar{display:block;height:5px;border-radius:3px;background:var(--line);margin-top:auto;overflow:hidden}
+.theme .tbar i{display:block;height:100%;background:var(--ok)}
 .theme b{display:block;font:700 15px/1.2 "Bricolage Grotesque",system-ui,sans-serif}
 .theme span{font-size:13px;color:var(--muted)}
 .theme.on{border:2px solid var(--accent);background:var(--soft)}
@@ -422,45 +425,50 @@ function seenToggle(after){
 }
 
 /* ---------- S'entraîner : accueil ---------- */
+var curTheme = store('auto:theme') || 'nc';
 function home(){
+  var p = loadProg();
+  if (!A.THEMES.some(function(t){ return t.id === curTheme; })) curTheme = 'nc';
   var top = el('section','card');
-  top.appendChild(el('p','kicker','S’entraîner'));
-  var th = el('div','themes');
+  top.appendChild(el('p','kicker','Choisis un thème'));
+  var th = el('div','themes'); th.setAttribute('role','group'); th.setAttribute('aria-label','Thèmes');
   A.THEMES.forEach(function(t){
-    var b = el('div','theme ' + (t.gens.length ? 'on' : 'off'));
+    var av = t.gens.filter(available), acq = av.filter(function(g){ return status(g.id, p).k === 'ok'; }).length;
+    var b = el('button','theme' + (t.id === curTheme ? ' on' : '')); b.type = 'button'; b.setAttribute('aria-pressed', t.id === curTheme);
     b.appendChild(el('b', null, t.titre));
-    b.appendChild(el('span', null, t.gens.length ? t.gens.length + ' automatismes' : 'Bientôt'));
+    b.appendChild(el('span', null, av.length + ' automatisme' + (av.length > 1 ? 's' : '') + (acq ? ' · ' + acq + ' acquis' : '')));
+    var bar = el('i','tbar'), fill = el('i'); fill.style.width = (av.length ? Math.round(100 * acq / av.length) : 0) + '%'; bar.appendChild(fill); b.appendChild(bar);
+    b.onclick = function(){ curTheme = t.id; store('auto:theme', t.id); render(); };
     th.appendChild(b);
   });
   top.appendChild(th);
   var tg = el('div','row'); tg.style.marginTop = '14px'; tg.appendChild(seenToggle(render)); top.appendChild(tg);
-  var av = availGens(), p = loadProg();
-  var acts = el('div','actions');
-  var mix = el('button','btn primary','▶ Tout mélanger'); mix.disabled = !av.length;
-  mix.onclick = function(){ practice({mode:'mix'}); };
-  var weakIds = av.filter(function(g){ var s = status(g.id, p).k; return s === 'weak' || s === 'prog'; });
-  var wk = el('button','btn','🎯 Mes points faibles'); wk.disabled = !weakIds.length;
-  wk.title = weakIds.length ? '' : 'Entraîne-toi d’abord un peu : cette option pioche dans ce que tu rates le plus.';
-  wk.onclick = function(){ practice({mode:'weak'}); };
-  acts.appendChild(mix); acts.appendChild(wk); top.appendChild(acts);
   main.appendChild(top);
 
-  A.THEMES.forEach(function(t){
-    if (!t.gens.length) return;
-    var sec = el('section'); sec.appendChild(el('p','kicker', t.titre));
-    var list = el('div','skills'), lockedList = [];
-    t.gens.forEach(function(g){
-      if (!available(g)){ lockedList.push(g); return; }
-      list.appendChild(skillRow(g, p));
-    });
-    sec.appendChild(list);
-    if (lockedList.length){
-      var d = el('details','more'); d.appendChild(el('summary', null, 'Pas encore vus en classe (' + lockedList.length + ')'));
-      var l2 = el('div','skills'); lockedList.forEach(function(g){ var r = skillRow(g, p, true); l2.appendChild(r); });
-      d.appendChild(l2); sec.appendChild(d);
-    }
-    main.appendChild(sec);
-  });
+  var t = A.THEMES.filter(function(x){ return x.id === curTheme; })[0];
+  var sec = el('section','card');
+  sec.appendChild(el('p','kicker', t.titre));
+  var av2 = t.gens.filter(available);
+  var acts = el('div','actions'); acts.style.marginTop = '0';
+  var mix = el('button','btn primary','▶ Mélanger ce thème'); mix.disabled = !av2.length;
+  mix.onclick = function(){ practice({mode:'mix', theme:t.id}); };
+  var weak = av2.filter(function(g){ var k = status(g.id, p).k; return k === 'weak' || k === 'prog'; });
+  var wk = el('button','btn','🎯 Mes points faibles'); wk.disabled = !weak.length;
+  wk.title = weak.length ? '' : 'Entraîne-toi d’abord un peu : cette option pioche dans ce que tu rates le plus.';
+  wk.onclick = function(){ practice({mode:'weak', theme:t.id}); };
+  var all = el('button','btn','🔀 Mélanger les 5 thèmes'); all.disabled = !availGens().length;
+  all.onclick = function(){ practice({mode:'mix'}); };
+  acts.appendChild(mix); acts.appendChild(wk); acts.appendChild(all); sec.appendChild(acts);
+  var list = el('div','skills'), lockedList = []; list.style.marginTop = '16px';
+  t.gens.forEach(function(g){ if (!available(g)){ lockedList.push(g); return; } list.appendChild(skillRow(g, p)); });
+  if (!av2.length) list.appendChild(el('p','muted','Aucun automatisme de ce thème n’a encore été vu en classe. Décoche la case ci-dessus pour tout voir.'));
+  sec.appendChild(list);
+  if (lockedList.length){
+    var d = el('details','more'); d.appendChild(el('summary', null, 'Pas encore vus en classe (' + lockedList.length + ')'));
+    var l2 = el('div','skills'); lockedList.forEach(function(g){ l2.appendChild(skillRow(g, p, true)); });
+    d.appendChild(l2); sec.appendChild(d);
+  }
+  main.appendChild(sec);
 }
 function skillRow(g, p, isLocked){
   var b = el('button','skill' + (isLocked ? ' locked' : '')); b.type = 'button';
@@ -477,6 +485,7 @@ function practice(opt){
   var done = 0, good = 0, lastId = null;
   function nextGen(){
     var av = availGens();
+    if (opt.theme){ var tg2 = A.THEMES.filter(function(x){ return x.id === opt.theme; })[0].gens; av = av.filter(function(g){ return tg2.indexOf(g) > -1; }); }
     if (opt.mode === 'one') return genById(opt.id);
     var p = loadProg(), pool = [];
     av.forEach(function(g){
