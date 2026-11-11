@@ -1,0 +1,316 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Proportionnalité animée</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : graphique en grand à gauche (à projeter), commandes et calculs à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --c1:#2f6fd6; --c2:#e08a1e; --c3:#1f9e74; --c4:#b9459c; --mean:#c46a00; --med:#0a8587; --tok:#2f6fd6; --far:#c9334d; --plank:#b98a54;
+  --ok:#1b7f45; --ok-soft:#e1f3e8;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh;touch-action:none;user-select:none;-webkit-user-select:none;}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 11px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.eq{border-radius:12px;background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font:600 17px/1.4 var(--font-d);font-variant-numeric:tabular-nums}
+.eq small{font:600 13px/1.2 var(--font-d);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vocab{border-radius:12px;padding:12px 14px;font-size:15px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok);display:flex;flex-direction:column;gap:4px}
+.vocab b{font-family:var(--font-d)}
+.counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cnt{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.cnt span{font:600 13px/1.2 var(--font-d);color:var(--muted)}
+.cnt b{font:700 24px/1 var(--font-d);font-variant-numeric:tabular-nums}
+
+.btn:disabled{opacity:.45;cursor:default}
+.tb{width:100%;border-collapse:collapse;font:600 15px/1.3 var(--font-d);font-variant-numeric:tabular-nums;text-align:center}
+.tb td,.tb th{padding:5px 4px;border:1px solid var(--line)}
+.tb th{font-size:13px;color:var(--muted);font-weight:600}
+.tb td.on{background:var(--accent-soft);color:var(--accent)}
+.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:5px;font-size:15px}
+.steps li.off{color:var(--muted);opacity:.45}
+.steps b{font-family:var(--font-d)}
+
+/* SVG */
+.lab{font:700 16px var(--font-d)}
+.sm{font:600 13px var(--font-d)}
+.f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)} .f-ok{fill:var(--ok)} .f-far{fill:var(--far)} .f-acc{fill:var(--accent)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.tip{font:600 14px var(--font-b);fill:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e et 3e · Proportionnalité</p>
+      <h1>La proportionnalité en action</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-graphique" data-view="graphique" aria-selected="true">1. Graphique</button>
+      <button class="tab" role="tab" id="tab-vitesse" data-view="vitesse" aria-selected="false">2. Vitesse</button>
+      <button class="tab" role="tab" id="tab-pourcentages" data-view="pourcentages" aria-selected="false">3. Pourcentages</button>
+      <button class="tab" role="tab" id="tab-ratio" data-view="ratio" aria-selected="false">4. Ratio (3e)</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. GRAPHIQUE -->
+  <section class="view" id="v-graphique" role="tabpanel" aria-labelledby="tab-graphique">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 560" role="img" aria-label="Points d'un tableau placés dans un repère"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Proportionnel ou pas ?</h2>
+        <p class="hint">On place les points du tableau. Situation de proportionnalité ⇔ points alignés <b>avec l'origine</b>.</p>
+      </div>
+      <div class="chips" id="pre1"></div>
+      <table class="tb" id="tb1"></table>
+      <div class="row"><button class="btn primary" type="button" id="next1">Point suivant ▶</button><button class="btn" type="button" id="reset1">Recommencer</button></div>
+      <div class="ctl" id="read1" hidden><div class="ctl-head"><label for="x1">Lire une valeur (quatrième proportionnelle)</label><span class="val" id="x1v"></span></div><input type="range" id="x1" min="0" max="8" step="0.1" value="3.2"></div>
+      <div class="vocab" id="def1"></div>
+    </div>
+  </section>
+
+  <!-- 2. VITESSE -->
+  <section class="view" id="v-vitesse" role="tabpanel" aria-labelledby="tab-vitesse" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 560" role="img" aria-label="Un cycliste avance et sa courbe distance-temps se trace"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Distance, durée, vitesse</h2>
+        <p class="hint">Un cycliste va de Cany-Barville à Veulettes-sur-Mer (trajet fictif de 8 km). La courbe montre la distance parcourue en fonction du temps.</p>
+      </div>
+      <div class="chips" id="pre2"></div>
+      <div class="ctl"><div class="ctl-head"><label for="t2">Temps écoulé</label><span class="val" id="t2v"></span></div><input type="range" id="t2" min="0" max="60" step="0.5" value="0"></div>
+      <div class="row"><button class="btn primary" type="button" id="play2">▶ Lancer</button></div>
+      <div class="eq" id="eq2"></div>
+      <div class="vocab" id="def2"></div>
+    </div>
+  </section>
+
+  <!-- 3. POURCENTAGES -->
+  <section class="view" id="v-pourcentages" role="tabpanel" aria-labelledby="tab-pourcentages" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 560" role="img" aria-label="Barre de 100 % augmentée ou réduite"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Augmenter, réduire</h2>
+        <p class="hint">Augmenter de t %, c'est multiplier par (1 + t/100). Réduire de t %, c'est multiplier par (1 − t/100).</p>
+      </div>
+      <div class="chips" id="mode3"></div>
+      <div id="free3">
+        <div class="ctl"><div class="ctl-head"><label for="p3">Prix de départ</label><span class="val" id="p3v"></span></div><input type="range" id="p3" min="10" max="200" step="5" value="80"></div>
+        <div class="ctl"><div class="ctl-head"><label for="t3">Évolution</label><span class="val" id="t3v"></span></div><input type="range" id="t3" min="-60" max="60" step="5" value="20"></div>
+      </div>
+      <div class="row" id="seq3" hidden><button class="btn primary" type="button" id="next3">Étape suivante ▶</button><button class="btn" type="button" id="reset3">Recommencer</button></div>
+      <div class="eq" id="eq3"></div>
+      <div class="vocab" id="def3"></div>
+    </div>
+  </section>
+
+  <!-- 4. RATIO -->
+  <section class="view" id="v-ratio" role="tabpanel" aria-labelledby="tab-ratio" hidden>
+    <div class="stage"><svg id="svg4" viewBox="0 0 640 560" role="img" aria-label="Partage d'une quantité selon un ratio"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Partager selon un ratio</h2>
+        <p class="hint">Partager dans le ratio 2 : 3, c'est faire 2 + 3 = 5 parts égales, et en donner 2 à l'un et 3 à l'autre.</p>
+      </div>
+      <div class="chips" id="pre4"></div>
+      <div class="row"><button class="btn primary" type="button" id="next4">Étape suivante ▶</button><button class="btn" type="button" id="reset4">Recommencer</button></div>
+      <ol class="steps" id="st4"></ol>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=x=>Math.round(x*100)/100;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const fr=(x,d=2)=>{let v=Math.round(x*Math.pow(10,d))/Math.pow(10,d);if(Object.is(v,-0))v=0;return v.toLocaleString('fr-FR');};
+function grid(X,Y,xmax,ymax,sx,sy,lx,ly){let o='';
+  for(let x=0;x<=xmax+1e-9;x+=sx)o+=`<line x1="${r2(X(x))}" y1="${Y(0)}" x2="${r2(X(x))}" y2="${Y(ymax)}" style="stroke:var(--grid)"/><text class="sm f-muted" x="${r2(X(x))}" y="${Y(0)+18}" text-anchor="middle">${fr(x)}</text>`;
+  for(let y=0;y<=ymax+1e-9;y+=sy)o+=`<line x1="${X(0)}" y1="${r2(Y(y))}" x2="${X(xmax)}" y2="${r2(Y(y))}" style="stroke:var(--grid)"/><text class="sm f-muted" x="${X(0)-8}" y="${r2(Y(y)+4)}" text-anchor="end">${fr(y)}</text>`;
+  o+=`<line x1="${X(0)}" y1="${Y(0)}" x2="${X(xmax)+10}" y2="${Y(0)}" style="stroke:var(--ink);stroke-width:2"/><line x1="${X(0)}" y1="${Y(0)}" x2="${X(0)}" y2="${Y(ymax)-10}" style="stroke:var(--ink);stroke-width:2"/>`;
+  o+=`<text class="sm f-ink" x="${X(xmax)+10}" y="${Y(0)-8}" text-anchor="end">${lx}</text><text class="sm f-ink" x="${X(0)+8}" y="${Y(ymax)-4}">${ly}</text>`;return o;}
+
+/* ---------- 1. Graphique ---------- */
+const PB1=[
+  {nom:'Pommes au kilo',lx:'masse (kg)',ly:'prix (€)',xs:[1,2,3,4,6],f:x=>2.5*x,xmax:8,ymax:20,sy:2,kind:'prop',txt:'Prix des pommes : 2,50 € le kilo (prix fictif).'},
+  {nom:'Location de vélo',lx:'durée (h)',ly:'prix (€)',xs:[1,2,3,4,6],f:x=>4+1.5*x,xmax:8,ymax:20,sy:2,kind:'aff',txt:'Location de vélo : 4 € de caution puis 1,50 € par heure (tarif fictif).'},
+  {nom:'Taille d\'un enfant',lx:'âge (ans)',ly:'taille (cm)',xs:[1,2,4,6,8],f:x=>[0,75,87,0,103,0,115,0,128][x],xmax:8,ymax:140,sy:20,kind:'non',txt:'Taille moyenne approximative d\'un enfant selon son âge.'}];
+const S1={p:0,k:0,x:3.2};
+function render1(){const P=PB1[S1.p],k=S1.k,n=P.xs.length;let o='';
+  const X=x=>80+x/P.xmax*500,Y=y=>470-y/P.ymax*390;
+  o+=grid(X,Y,P.xmax,P.ymax,1,P.sy,P.lx,P.ly);
+  const pts=P.xs.map(x=>[x,P.f(x)]);
+  if(k>n){// tracé
+    if(P.kind==='non'){let d='';pts.forEach((q,i)=>d+=(i?'L':'M')+r2(X(q[0]))+','+r2(Y(q[1])));o+=`<path d="${d}" style="fill:none;stroke:var(--far);stroke-width:2.5;stroke-dasharray:7 5"/>`;}
+    else{const x0=P.kind==='prop'?0:0;o+=`<line x1="${X(x0)}" y1="${r2(Y(P.f(x0)))}" x2="${X(P.xmax)}" y2="${r2(Y(P.f(P.xmax)))}" style="stroke:${P.kind==='prop'?'var(--ok)':'var(--c2)'};stroke-width:3"/>`;}
+    o+=`<circle cx="${X(0)}" cy="${Y(0)}" r="8" style="fill:none;stroke:var(--ink);stroke-width:2.5"/><text class="sm f-ink" x="${X(0)-10}" y="${Y(0)+20}" text-anchor="end">O</text>`;
+    if(P.kind==='aff')o+=`<circle cx="${X(0)}" cy="${r2(Y(P.f(0)))}" r="7" style="fill:var(--c2)"/><text class="sm halo" x="${X(0)+12}" y="${r2(Y(P.f(0))+4)}" style="fill:var(--c2)">ne passe pas par O</text>`;}
+  pts.slice(0,Math.min(k,n)).forEach((q,i)=>{o+=`<circle cx="${r2(X(q[0]))}" cy="${r2(Y(q[1]))}" r="7" style="fill:var(--accent);stroke:var(--paper);stroke-width:2"/>`;if(i===k-1&&k<=n)o+=`<text class="sm halo f-acc" x="${r2(X(q[0])+10)}" y="${r2(Y(q[1])-10)}">(${fr(q[0])} ; ${fr(q[1])})</text>`;});
+  // lecture
+  if(k>n&&P.kind==='prop'){const x=S1.x,y=P.f(x);o+=`<line x1="${r2(X(x))}" y1="${Y(0)}" x2="${r2(X(x))}" y2="${r2(Y(y))}" style="stroke:var(--accent);stroke-width:2;stroke-dasharray:5 4"/><line x1="${r2(X(x))}" y1="${r2(Y(y))}" x2="${X(0)}" y2="${r2(Y(y))}" style="stroke:var(--accent);stroke-width:2;stroke-dasharray:5 4"/><circle cx="${r2(X(x))}" cy="${r2(Y(y))}" r="7" style="fill:var(--accent)"/><text class="lab halo f-acc" x="${X(0)+8}" y="${r2(Y(y)-8)}">${fr(y)} €</text>`;}
+  const msg=k<=n?(k===0?'Clique pour placer les points du tableau.':''):P.kind==='prop'?'Points alignés avec l\'origine : situation de proportionnalité.':P.kind==='aff'?'Points alignés, mais la droite ne passe pas par l\'origine : pas proportionnel.':'Points non alignés : pas proportionnel.';
+  o+=`<text class="lab ${k>n?(P.kind==='prop'?'f-ok':'f-far'):'f-ink'}" x="330" y="40" text-anchor="middle">${msg}</text>`;
+  o+=`<text class="tip" x="20" y="545">${P.txt}</text>`;
+  $('svg1').innerHTML=o;
+  $('tb1').innerHTML=`<tr><th>${P.lx}</th>${pts.map((q,i)=>`<td class="${i<k?'on':''}">${fr(q[0])}</td>`).join('')}</tr><tr><th>${P.ly}</th>${pts.map((q,i)=>`<td class="${i<k?'on':''}">${fr(q[1])}</td>`).join('')}</tr><tr><th>quotient</th>${pts.map(q=>`<td style="font-size:13px">${k>n?fr(q[1]/q[0]):''}</td>`).join('')}</tr>`;
+  $('read1').hidden=!(k>n&&P.kind==='prop');$('x1').value=S1.x;$('x1v').textContent=fr(S1.x)+' kg → '+fr(P.f(S1.x))+' €';
+  $('def1').innerHTML=k>n?(P.kind==='prop'?`<div><b>Coefficient :</b> le prix est toujours 2,5 fois la masse (quotients tous égaux à 2,5).</div><div>Quatrième proportionnelle : ${fr(S1.x)} kg coûtent ${fr(S1.x)} × 2,5 = ${fr(P.f(S1.x))} €.</div>`:`<div>Les quotients ne sont pas tous égaux : le tableau n'est pas un tableau de proportionnalité.</div>`):'<div>Pour 0, une situation proportionnelle donne toujours 0 : la droite passe par l\'origine.</div>';
+  $('next1').textContent=k<n?'Point suivant ▶':'Tracer ▶';$('next1').disabled=k>n;
+  document.querySelectorAll('#pre1 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S1.p));}
+const next1=()=>{if(S1.k<=PB1[S1.p].xs.length){S1.k++;render1();}};
+$('next1').onclick=next1;$('svg1').addEventListener('click',next1);$('reset1').onclick=()=>{S1.k=0;render1();};
+$('x1').oninput=e=>{S1.x=+e.target.value;render1();};
+PB1.forEach((P,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=P.nom;c.onclick=()=>{S1.p=i;S1.k=0;render1();};$('pre1').appendChild(c);});
+
+/* ---------- 2. Vitesse ---------- */
+// segments : [durée (min), vitesse (km/h)]
+const PB2=[{nom:'Vitesse constante',seg:[[30,16]]},{nom:'Avec une pause',seg:[[15,16],[10,0],[15,16]]},{nom:'Plus vite à la fin',seg:[[20,12],[10,24]]}];
+const S2={p:0,t:0,anim:null};
+const T2=()=>PB2[S2.p].seg.reduce((s,q)=>s+q[0],0);
+function dist(t){let d=0,tt=t;for(const [m,v] of PB2[S2.p].seg){const u=Math.min(tt,m);d+=v*u/60;tt-=u;if(tt<=0)break;}return d;}
+function render2(){const P=PB2[S2.p],t=S2.t,T=T2(),d=dist(t);let o='';
+  // route
+  const R=x=>80+x/8*480;o+=`<line x1="${R(0)}" y1="70" x2="${R(8)}" y2="70" style="stroke:var(--muted);stroke-width:8;stroke-linecap:round"/>`;
+  o+=`<text class="sm f-ink" x="${R(0)}" y="100" text-anchor="middle">Cany-Barville</text><text class="sm f-ink" x="${R(8)}" y="100" text-anchor="middle">Veulettes-sur-Mer</text>`;
+  for(let k=0;k<=8;k++)o+=`<line x1="${R(k)}" y1="62" x2="${R(k)}" y2="78" style="stroke:var(--paper);stroke-width:2"/>`;
+  const bx=R(d);o+=`<g transform="translate(${r2(bx)},52)"><circle cx="-9" cy="10" r="7" style="fill:none;stroke:var(--accent);stroke-width:2.5"/><circle cx="9" cy="10" r="7" style="fill:none;stroke:var(--accent);stroke-width:2.5"/><path d="M-9,10L-2,-2H7L9,10M-2,-2L0,10" style="fill:none;stroke:var(--accent);stroke-width:2.5"/><circle cx="2" cy="-12" r="4" style="fill:var(--accent)"/></g>`;
+  o+=`<text class="lab f-acc" x="${r2(bx)}" y="34" text-anchor="middle">${fr(d,2)} km</text>`;
+  // graphique
+  const X=m=>80+m/T*500,Y=k=>480-k/8*320;o+=grid(X,Y,T,8,5,1,'temps (min)','distance (km)');
+  let dd='';for(let i=0;i<=200;i++){const m=t*i/200;dd+=(i?'L':'M')+r2(X(m))+','+r2(Y(dist(m)));}o+=`<path d="${dd}" style="fill:none;stroke:var(--accent);stroke-width:3.5"/>`;
+  o+=`<circle cx="${r2(X(t))}" cy="${r2(Y(d))}" r="7" style="fill:var(--accent)"/>`;
+  // annotation des segments terminés
+  let t0=0,d0=0;P.seg.forEach(([m,v])=>{const t1=t0+m,d1=d0+v*m/60;if(t>=t1-1e-9){const mx=X((t0+t1)/2),my=Y((d0+d1)/2);o+=`<text class="sm halo" x="${r2(mx-6)}" y="${r2(my-10)}" text-anchor="end" style="fill:${v?'var(--ok)':'var(--far)'}">${v?v+' km/h':'arrêt'}</text>`;}t0=t1;d0=d1;});
+  $('svg2').innerHTML=o;$('t2').max=T;$('t2').value=t;$('t2v').textContent=fr(t,1)+' min';
+  const vm=t>0?d/(t/60):0;
+  $('eq2').innerHTML=`<small>À ${fr(t,1)} min</small><div>Distance parcourue : ${fr(d)} km</div>${t>0?`<div>Vitesse moyenne : ${fr(d)} km ÷ ${fr(t/60,3)} h ≈ ${fr(vm,1)} km/h</div>`:''}`;
+  $('def2').innerHTML=`<div><b>d = v × t</b>, <b>v = d ÷ t</b>, <b>t = d ÷ v</b> (avec des heures pour des km/h).</div><div>Sur le graphique, plus la ligne monte vite, plus le cycliste va vite. Une partie horizontale : il est arrêté.</div>${S2.p===0?'<div>À vitesse constante, la distance est proportionnelle au temps : droite passant par l\'origine.</div>':''}`;
+  document.querySelectorAll('#pre2 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S2.p));}
+function stop2(){if(S2.anim){S2.anim();}}
+$('play2').onclick=()=>{if(S2.anim){stop2();return;}if(S2.t>=T2())S2.t=0;const t0=performance.now(),s0=S2.t,dur=reduce?1:(T2()-s0)*200;let raf;
+  const st=now=>{S2.t=Math.min(T2(),s0+(now-t0)/(dur||1)*(T2()-s0));render2();if(S2.t<T2())raf=requestAnimationFrame(st);else stop2();};raf=requestAnimationFrame(st);$('play2').textContent='■ Arrêter';S2.anim=()=>{cancelAnimationFrame(raf);S2.anim=null;$('play2').textContent='▶ Lancer';};};
+$('t2').oninput=e=>{stop2();S2.t=+e.target.value;render2();};
+PB2.forEach((P,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=P.nom;c.onclick=()=>{stop2();S2.p=i;S2.t=0;render2();};$('pre2').appendChild(c);});
+
+/* ---------- 3. Pourcentages ---------- */
+const S3={mode:0,p:80,t:20,st:0};
+function bar(y,val,ref,col,lab,valtxt){const W=v=>v/ref*300;return `<rect x="60" y="${y}" width="${r2(W(val))}" height="56" rx="6" style="fill:${col};opacity:.85"/><text class="lab f-ink" x="60" y="${y-10}">${lab}</text><text class="lab halo" x="${r2(70+W(val))}" y="${y+36}" style="fill:var(--ink)">${valtxt}</text>`;}
+function render3(){let o='';
+  if(S3.mode===0){const {p,t}=S3,c=1+t/100,np=p*c;
+    o+=bar(110,p,p,'var(--c1)','Prix de départ : 100 %',fr(p)+' €');
+    o+=`<line x1="${60+300}" y1="90" x2="${60+300}" y2="380" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4"/><text class="sm f-muted" x="360" y="84" text-anchor="middle">100 %</text>`;
+    o+=bar(250,np,p,t>=0?'var(--ok)':'var(--far)',`Après ${t>=0?'une hausse':'une baisse'} de ${Math.abs(t)} % : ${fr(100+t)} %`,fr(np)+' €');
+    o+=`<text class="lab f-acc" x="320" y="430" text-anchor="middle">${fr(p)} × ${fr(c)} = ${fr(np)} €</text>`;
+    $('eq3').innerHTML=`<small>Calcul</small><div>${t>=0?'Augmenter':'Réduire'} de ${Math.abs(t)} % : multiplier par ${fr(c)}</div><div>${fr(p)} × ${fr(c)} = ${fr(np)} €</div><div style="font-size:15px;color:var(--muted)">Variation : ${fr(p)} × ${Math.abs(t)} ÷ 100 = ${fr(Math.abs(np-p))} €</div>`;
+    $('def3').innerHTML=`<div>${Math.abs(t)} % de ${fr(p)} €, c'est ${fr(p)} × ${Math.abs(t)}/100 = ${fr(Math.abs(np-p))} €.</div>`;}
+  else{const p=100,st=S3.st,v1=p*1.2,v2=v1*0.8;
+    o+=bar(90,p,p,'var(--c1)','Prix de départ',fr(p)+' €');
+    if(st>=1)o+=bar(220,v1,p,'var(--ok)','Hausse de 20 % : × 1,2',fr(v1)+' €');
+    if(st>=2)o+=bar(350,v2,p,'var(--far)','Puis baisse de 20 % : × 0,8',fr(v2)+' €');
+    o+=`<line x1="360" y1="70" x2="360" y2="420" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4"/>`;
+    if(st>=3)o+=`<text class="lab f-far" x="320" y="470" text-anchor="middle">On ne revient pas à 100 € : 1,2 × 0,8 = 0,96, soit une baisse de 4 %.</text>`;
+    o+=`<text class="tip" x="20" y="545">${st<3?'Clique pour passer à l\'étape suivante.':'Les 20 % de la baisse portent sur 120 €, pas sur 100 €.'}</text>`;
+    $('eq3').innerHTML=`<small>Calcul</small><div>100 × 1,2 = 120 €</div>${st>=2?'<div>120 × 0,8 = 96 €</div>':''}${st>=3?'<div>100 × 1,2 × 0,8 = 100 × 0,96 = 96 €</div>':''}`;
+    $('def3').innerHTML=`<div>Une hausse puis une baisse du même pourcentage ne se compensent pas.</div>`;
+    $('next3').disabled=st>=3;}
+  $('svg3').innerHTML=o;$('p3v').textContent=fr(S3.p)+' €';$('t3v').textContent=(S3.t>0?'+':'')+S3.t+' %';
+  $('free3').hidden=S3.mode!==0;$('seq3').hidden=S3.mode!==1;
+  document.querySelectorAll('#mode3 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S3.mode));}
+const next3=()=>{if(S3.mode===1&&S3.st<3){S3.st++;render3();}};
+$('next3').onclick=next3;$('svg3').addEventListener('click',next3);$('reset3').onclick=()=>{S3.st=0;render3();};
+$('p3').oninput=e=>{S3.p=+e.target.value;render3();};$('t3').oninput=e=>{S3.t=+e.target.value;render3();};
+['Appliquer un pourcentage','+20 % puis −20 %'].forEach((t,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=t;c.onclick=()=>{S3.mode=i;S3.st=0;render3();};$('mode3').appendChild(c);});
+
+/* ---------- 4. Ratio ---------- */
+const PB4=[{nom:'45 € en 2 : 3',tot:45,r:[2,3],who:['Léa','Tom'],u:'€'},{nom:'84 bonbons en 3 : 4',tot:84,r:[3,4],who:['Inès','Sami'],u:'bonbons'},{nom:'600 g en 1 : 2 : 3',tot:600,r:[1,2,3],who:['sucre','beurre','farine'],u:'g'}];
+const S4={p:0,st:0};
+function render4(){const P=PB4[S4.p],st=S4.st,n=P.r.reduce((a,b)=>a+b,0),part=P.tot/n;let o='';const cols=['--c1','--c2','--c3'];
+  o+=`<text x="320" y="56" text-anchor="middle" style="font:700 26px var(--font-d);fill:var(--ink)">Partager ${fr(P.tot)} ${P.u} dans le ratio ${P.r.join(' : ')}</text>`;
+  const W=540/n,x0=50,y0=150;
+  // barre totale
+  o+=`<rect x="${x0}" y="${y0}" width="540" height="60" rx="6" style="fill:${st>=1?'var(--paper)':'var(--muted)'};stroke:var(--ink);stroke-width:2;opacity:${st>=1?1:.4}"/>`;
+  if(st===0)o+=`<text class="lab f-ink" x="320" y="${y0+37}" text-anchor="middle">${fr(P.tot)} ${P.u}</text>`;
+  if(st>=1){let k=0;P.r.forEach((r,j)=>{for(let i=0;i<r;i++){o+=`<rect x="${r2(x0+k*W+2)}" y="${y0+2}" width="${r2(W-4)}" height="56" rx="5" style="fill:var(${cols[j]});opacity:${st>=2?.85:.45}"/>`;if(st>=2)o+=`<text class="lab" x="${r2(x0+k*W+W/2)}" y="${y0+37}" text-anchor="middle" style="fill:#fff">${fr(part)}</text>`;k++;}});
+    o+=`<text class="lab f-muted" x="320" y="${y0+90}" text-anchor="middle">${P.r.join(' + ')} = ${n} parts égales</text>`;}
+  if(st>=2)o+=`<text class="lab f-acc" x="320" y="${y0+120}" text-anchor="middle">une part = ${fr(P.tot)} ÷ ${n} = ${fr(part)} ${P.u}</text>`;
+  if(st>=3){let k=0;P.r.forEach((r,j)=>{const xs=x0+k*W,w=r*W;o+=`<path d="M${r2(xs+4)},${y0-10}v-8h${r2(w-8)}v8" style="fill:none;stroke:var(${cols[j]});stroke-width:2.5"/><text class="lab" x="${r2(xs+w/2)}" y="${y0-26}" text-anchor="middle" style="fill:var(${cols[j]})">${P.who[j]}</text>`;
+      o+=`<text class="lab" x="320" y="${y0+180+j*34}" text-anchor="middle" style="fill:var(${cols[j]})">${P.who[j]} : ${r} × ${fr(part)} = ${fr(r*part)} ${P.u}</text>`;k+=r;});
+    o+=`<text class="sm f-muted" x="320" y="${y0+190+P.r.length*34}" text-anchor="middle">Vérification : ${P.r.map(r=>fr(r*part)).join(' + ')} = ${fr(P.tot)} ${P.u}</text>`;}
+  o+=`<text class="tip" x="20" y="545">${st<3?'Clique pour passer à l\'étape suivante.':'Les quantités obtenues sont proportionnelles à '+P.r.join(', ')+'.'}</text>`;
+  $('svg4').innerHTML=o;
+  $('st4').innerHTML=[`On veut partager ${fr(P.tot)} ${P.u} dans le ratio ${P.r.join(' : ')}.`,`On compte les parts : ${P.r.join(' + ')} = ${n}.`,`Une part vaut ${fr(P.tot)} ÷ ${n} = ${fr(part)} ${P.u}.`,`On multiplie : ${P.r.map((r,j)=>`${P.who[j]} ${fr(r*part)} ${P.u}`).join(', ')}.`].map((t,i)=>`<li class="${i<=st?'':'off'}">${t}</li>`).join('');
+  $('next4').disabled=st>=3;document.querySelectorAll('#pre4 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S4.p));}
+const next4=()=>{if(S4.st<3){S4.st++;render4();}};
+$('next4').onclick=next4;$('svg4').addEventListener('click',next4);$('reset4').onclick=()=>{S4.st=0;render4();};
+PB4.forEach((P,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=P.nom;c.onclick=()=>{S4.p=i;S4.st=0;render4();};$('pre4').appendChild(c);});
+
+/* ---------- Onglets ---------- */
+let current='graphique';
+const views=['graphique','vitesse','pourcentages','ratio'];
+function show(v){if(!views.includes(v))v='graphique';current=v;
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+
+render1();render2();render3();render4();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>

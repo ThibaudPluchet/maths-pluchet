@@ -1,0 +1,260 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Racine carrée animée</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : graphique en grand à gauche (à projeter), commandes et calculs à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --c1:#2f6fd6; --c2:#e08a1e; --c3:#1f9e74; --c4:#b9459c; --mean:#c46a00; --med:#0a8587; --tok:#2f6fd6; --far:#c9334d; --plank:#b98a54;
+  --ok:#1b7f45; --ok-soft:#e1f3e8;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh;touch-action:none;user-select:none;-webkit-user-select:none;}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 11px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.eq{border-radius:12px;background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font:600 17px/1.4 var(--font-d);font-variant-numeric:tabular-nums}
+.eq small{font:600 13px/1.2 var(--font-d);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vocab{border-radius:12px;padding:12px 14px;font-size:15px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok);display:flex;flex-direction:column;gap:4px}
+.vocab b{font-family:var(--font-d)}
+.counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cnt{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.cnt span{font:600 13px/1.2 var(--font-d);color:var(--muted)}
+.cnt b{font:700 24px/1 var(--font-d);font-variant-numeric:tabular-nums}
+
+.numin{font:700 18px/1 var(--font-d);width:96px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);text-align:center}
+.pill{display:inline-block;font:700 14px/1 var(--font-d);padding:6px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);margin:0 4px 4px 0;font-variant-numeric:tabular-nums}
+.pill.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.tb{width:100%;border-collapse:collapse;font:600 15px/1.3 var(--font-d);font-variant-numeric:tabular-nums}
+.tb td{padding:5px 6px;border-top:1px solid var(--line)}
+.lo{color:var(--ok)}.hi{color:var(--far)}
+
+/* SVG */
+.lab{font:700 16px var(--font-d)}
+.sm{font:600 13px var(--font-d)}
+.f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)} .f-ok{fill:var(--ok)} .f-far{fill:var(--far)} .f-acc{fill:var(--accent)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.tip{font:600 14px var(--font-b);fill:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e · Carrés et racines</p>
+      <h1>Carrés parfaits et racine carrée</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-carres" data-view="carres" aria-selected="true">1. Carrés parfaits</button>
+      <button class="tab" role="tab" id="tab-racine" data-view="racine" aria-selected="false">2. Racine carrée</button>
+      <button class="tab" role="tab" id="tab-encadrer" data-view="encadrer" aria-selected="false">3. Encadrer</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. CARRÉS PARFAITS -->
+  <section class="view" id="v-carres" role="tabpanel" aria-labelledby="tab-carres">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 560" role="img" aria-label="Carré de n sur n construit en ajoutant des bandes en L"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Les carrés parfaits</h2>
+        <p class="hint">Un carré parfait est le carré d'un nombre entier : 1, 4, 9, 16… On passe d'un carré au suivant en ajoutant une bande en L.</p>
+      </div>
+      <div class="ctl"><div class="ctl-head"><label for="n1">Côté n</label><span class="val" id="n1v"></span></div><input type="range" id="n1" min="1" max="15" step="1" value="5"></div>
+      <div class="row"><button class="btn primary" type="button" id="step1">▶ Construire pas à pas</button><button class="btn" type="button" id="all1">Tout afficher</button></div>
+      <div class="eq"><small>Carrés parfaits jusqu'à 15²</small><div id="list1"></div></div>
+      <div class="vocab" id="def1"></div>
+    </div>
+  </section>
+
+  <!-- 2. RACINE CARRÉE -->
+  <section class="view" id="v-racine" role="tabpanel" aria-labelledby="tab-racine" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 560" role="img" aria-label="Carré d'aire donnée et son côté, la racine carrée"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Le côté d'un carré d'aire donnée</h2>
+        <p class="hint">√a est le nombre positif dont le carré vaut a : c'est le côté d'un carré d'aire a.</p>
+      </div>
+      <div class="ctl"><div class="ctl-head"><label for="a2">Aire a</label><input class="numin" type="number" id="a2v" min="0" max="200" step="any" value="60" aria-label="Aire"></div><input type="range" id="a2" min="1" max="150" step="1" value="60"></div>
+      <div class="chips" id="pre2"></div>
+      <div class="eq" id="eq2"></div>
+      <div class="vocab" id="def2"></div>
+    </div>
+  </section>
+
+  <!-- 3. ENCADRER -->
+  <section class="view" id="v-encadrer" role="tabpanel" aria-labelledby="tab-encadrer" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 560" role="img" aria-label="Encadrement d'une racine carrée de plus en plus précis"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Encadrer une racine carrée</h2>
+        <p class="hint">On cherche entre quels nombres se trouve √a en comparant leurs carrés à a, puis on zoome au dixième, au centième…</p>
+      </div>
+      <div class="ctl"><div class="ctl-head"><label for="a3">Nombre a</label><input class="numin" type="number" id="a3" min="2" max="999" step="1" value="60" aria-label="Nombre a"></div><div class="chips" id="pre3"></div></div>
+      <div class="row"><button class="btn primary" type="button" id="next3">Zoomer ▶</button><button class="btn" type="button" id="reset3">Recommencer</button></div>
+      <div class="eq" id="eq3"></div>
+      <div class="vocab" id="def3"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=x=>Math.round(x*100)/100;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const fr=(x,d=2)=>{const k=Math.pow(10,d);let v=Math.round(x*k)/k;return v.toLocaleString('fr-FR',{maximumFractionDigits:d});};
+const COLS=['--c1','--c2','--c3','--c4'];
+
+/* ---------- 1. Carrés parfaits ---------- */
+const S1={n:5,k:null,t0:0};
+function render1(){const n=S1.n,k=S1.k===null?n:S1.k,s=Math.min(64,340/n),x0=60,y0=110;let o='';
+  const now=performance.now(),kk=S1.t0?clamp((now-S1.t0)/(reduce?1:500),0,1):1;
+  o+=`<text x="320" y="56" text-anchor="middle" style="font:700 30px var(--font-d);fill:var(--ink)">${k}² = ${k} × ${k} = ${k*k}</text>`;
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){const g=Math.max(i,j);const on=g<k;const al=on?(g===k-1&&S1.k!==null?kk:1):0;
+    o+=`<rect x="${r2(x0+j*s)}" y="${r2(y0+(n-1-i)*s)}" width="${r2(s)}" height="${r2(s)}" style="fill:${on?`var(${COLS[g%4]})`:'transparent'};opacity:${on?r2(0.25+0.6*al):1};stroke:var(--line);stroke-width:1"/>`;}
+  o+=`<rect x="${x0}" y="${y0}" width="${r2(n*s)}" height="${r2(n*s)}" style="fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:5 4"/>`;
+  o+=`<rect x="${x0}" y="${r2(y0+(n-k)*s)}" width="${r2(k*s)}" height="${r2(k*s)}" style="fill:none;stroke:var(--ink);stroke-width:3"/>`;
+  o+=`<text class="lab f-ink" x="${r2(x0+k*s/2)}" y="${r2(y0+n*s+24)}" text-anchor="middle">${k}</text><text class="lab f-ink" x="${x0-10}" y="${r2(y0+(n-k/2)*s+6)}" text-anchor="end">${k}</text>`;
+  // somme des impairs
+  const lx=x0+n*s+40;let sum=0;const lh=Math.min(26,340/Math.max(k,1));
+  for(let g=0;g<k;g++){sum+=2*g+1;const y=y0+10+g*lh;o+=`<rect x="${lx}" y="${r2(y-lh*0.55)}" width="12" height="12" rx="3" style="fill:var(${COLS[g%4]});opacity:.8"/><text x="${lx+20}" y="${r2(y+4)}" style="font:600 ${r2(Math.min(15,lh*0.62))}px var(--font-d);fill:var(--ink)">+ ${2*g+1} → ${sum} = ${g+1}²</text>`;}
+  o+=`<text class="tip" x="20" y="545">${S1.k!==null&&k<n?'Clique pour ajouter la bande suivante.':'Chaque bande en L contient un nombre impair de carreaux : 1, 3, 5, 7…'}</text>`;
+  $('svg1').innerHTML=o;$('n1v').textContent='n = '+n;$('n1').value=n;
+  $('list1').innerHTML=Array.from({length:15},(_,i)=>`<span class="pill ${i+1===k?'on':''}">${(i+1)*(i+1)}</span>`).join('');
+  $('def1').innerHTML=`<div><b>À connaître :</b> les carrés parfaits jusqu'à 15² = 225 (ou au moins 12² = 144).</div><div>${k}² = ${k*k}, donc √${k*k} = ${k}.</div>`;
+  $('step1').textContent=S1.k===null||S1.k>=n?'▶ Construire pas à pas':`Bande suivante ▶ (${S1.k+1}/${n})`;
+  if(S1.t0&&kk<1)requestAnimationFrame(render1);}
+function step1(){if(S1.k===null||S1.k>=S1.n)S1.k=1;else S1.k++;S1.t0=performance.now();render1();}
+$('step1').onclick=step1;$('all1').onclick=()=>{S1.k=null;S1.t0=0;render1();};$('svg1').addEventListener('click',()=>{if(S1.k!==null&&S1.k<S1.n)step1();});
+$('n1').oninput=e=>{S1.n=+e.target.value;S1.k=null;S1.t0=0;render1();};
+
+/* ---------- 2. Racine carrée ---------- */
+const S2={a:60};
+function render2(){const a=S2.a,r=Math.sqrt(a),lo=Math.floor(r+1e-9),hi=Math.ceil(r-1e-9),perfect=lo===hi;let o='';
+  const m=Math.max(hi,1),u=Math.min(60,340/m),x0=60,y0=120,B=y0+m*u;
+  // quadrillage d'unités
+  for(let i=0;i<=m;i++){o+=`<line x1="${r2(x0+i*u)}" y1="${r2(B)}" x2="${r2(x0+i*u)}" y2="${r2(B-m*u)}" style="stroke:var(--grid);stroke-width:1.2"/><line x1="${x0}" y1="${r2(B-i*u)}" x2="${r2(x0+m*u)}" y2="${r2(B-i*u)}" style="stroke:var(--grid);stroke-width:1.2"/>`;}
+  // carrés entiers encadrants
+  if(!perfect){o+=`<rect x="${x0}" y="${r2(B-hi*u)}" width="${r2(hi*u)}" height="${r2(hi*u)}" style="fill:none;stroke:var(--far);stroke-width:2;stroke-dasharray:7 5"/>`;
+    o+=`<rect x="${x0}" y="${r2(B-lo*u)}" width="${r2(lo*u)}" height="${r2(lo*u)}" style="fill:color-mix(in srgb,var(--ok) 14%,transparent);stroke:var(--ok);stroke-width:2;stroke-dasharray:7 5"/>`;}
+  // le carré d'aire a
+  o+=`<rect x="${x0}" y="${r2(B-r*u)}" width="${r2(r*u)}" height="${r2(r*u)}" style="fill:color-mix(in srgb,var(--c1) 35%,transparent);stroke:var(--c1);stroke-width:3.5"/>`;
+  o+=`<text x="${r2(x0+r*u/2)}" y="${r2(B-r*u/2+8)}" text-anchor="middle" style="font:700 24px var(--font-d);fill:var(--c1)" class="halo">aire ${fr(a)}</text>`;
+  o+=`<text x="${r2(x0+r*u/2)}" y="${r2(B+28)}" text-anchor="middle" class="lab halo" style="fill:var(--c1)">côté = √${fr(a)} ${perfect?'= '+lo:'≈ '+fr(r)}</text>`;
+  if(!perfect){o+=`<text class="sm f-ok" x="${r2(x0+lo*u+6)}" y="${r2(B-lo*u+16)}">${lo}² = ${lo*lo}</text><text class="sm f-far" x="${r2(x0+hi*u+6)}" y="${r2(B-hi*u+14)}">${hi}² = ${hi*hi}</text>`;}
+  // droite graduée
+  const yL=505,XL=v=>40+v/(m+1)*560;o+=`<line x1="${XL(0)}" y1="${yL}" x2="${XL(m+1)}" y2="${yL}" style="stroke:var(--ink);stroke-width:2"/>`;
+  for(let v=0;v<=m+1;v++)o+=`<line x1="${r2(XL(v))}" y1="${yL-6}" x2="${r2(XL(v))}" y2="${yL+6}" style="stroke:var(--ink);stroke-width:2"/><text class="sm f-muted" x="${r2(XL(v))}" y="${yL+22}" text-anchor="middle">${v}</text>`;
+  o+=`<circle cx="${r2(XL(r))}" cy="${yL}" r="7" style="fill:var(--c1)"/><text class="lab halo" x="${r2(XL(r))}" y="${yL-14}" text-anchor="middle" style="fill:var(--c1)">√${fr(a)}</text>`;
+  $('svg2').innerHTML=o;
+  $('a2').value=Math.min(150,a);if(document.activeElement!==$('a2v'))$('a2v').value=a;
+  $('eq2').innerHTML=perfect?`<small>Carré parfait</small><div>${lo}² = ${lo*lo}, donc √${fr(a)} = ${lo}</div><div>Vérification : ${lo} × ${lo} = ${fr(a)}</div>`:`<small>Encadrement</small><div><span class="lo">${lo}² = ${lo*lo}</span> &lt; ${fr(a)} &lt; <span class="hi">${hi}² = ${hi*hi}</span></div><div>donc ${lo} &lt; √${fr(a)} &lt; ${hi}</div><div>À la calculatrice : √${fr(a)} ≈ ${fr(r)}</div>`;
+  $('def2').innerHTML=`<div><b>√a × √a = a</b> : ${perfect?`${lo} × ${lo} = ${lo*lo}`:`√${fr(a)} × √${fr(a)} = ${fr(a)}`}.</div>`;
+  document.querySelectorAll('#pre2 .chip').forEach(c=>c.setAttribute('aria-pressed',+c.dataset.a===a));}
+$('a2').oninput=e=>{S2.a=+e.target.value;render2();};
+const in2=()=>{const v=+String($('a2v').value).replace(',','.');if($('a2v').value!==''&&v>0&&v<=200){S2.a=v;render2();}};
+$('a2v').addEventListener('input',in2);$('a2v').addEventListener('change',()=>{in2();$('a2v').value=S2.a;});
+[[2,'2'],[16,'16'],[49,'49'],[60,'60'],[90,'90'],[144,'144']].forEach(([v,t])=>{const c=document.createElement('button');c.type='button';c.className='chip';c.dataset.a=v;c.textContent=t;c.onclick=()=>{S2.a=v;render2();};$('pre2').appendChild(c);});
+
+/* ---------- 3. Encadrer ---------- */
+const S3={a:60,k:0};
+function levels(){const a=S3.a,out=[];let lo=Math.floor(Math.sqrt(a)+1e-12);out.push({lo,hi:lo+1,step:1,from:0,to:Math.ceil(Math.sqrt(a))+1});
+  for(let d=1;d<=3;d++){const st=Math.pow(10,-d),prev=out[d-1];let l=prev.lo;const p=Math.pow(10,d);for(let j=0;j<10;j++){const x=Math.round((prev.lo+j*st)*p)/p;if(x*x<=a+1e-12)l=x;}
+    out.push({lo:l,hi:Math.round((l+st)*p)/p,step:st,from:prev.lo,to:prev.hi});}return out;}
+function render3(){const a=S3.a,L=levels(),k=S3.k,lv=L[k],d=k;let o='';const exact=Math.abs(Math.sqrt(a)-Math.round(Math.sqrt(a)))<1e-12;
+  o+=`<text x="320" y="56" text-anchor="middle" style="font:700 30px var(--font-d);fill:var(--ink)">${fr(lv.lo,d)} &lt; √${a} &lt; ${fr(lv.hi,d)}</text>`;
+  o+=`<text class="lab f-muted" x="320" y="88" text-anchor="middle">${['encadrement par deux entiers consécutifs','au dixième près','au centième près','au millième près'][k]}</text>`;
+  // droite zoomée
+  const from=k===0?Math.max(0,lv.lo-3):lv.from,to=k===0?lv.lo+4:lv.to,n=Math.round((to-from)/lv.step),X=v=>100+(v-from)/(to-from)*500,y=250;
+  o+=`<line x1="${X(from)}" y1="${y}" x2="${X(to)}" y2="${y}" style="stroke:var(--ink);stroke-width:2"/>`;
+  for(let j=0;j<=n;j++){const v=Math.round((from+j*lv.step)*1e6)/1e6,sq=v*v,below=sq<a-1e-12,eq=Math.abs(sq-a)<1e-9;const col=eq?'var(--accent)':below?'var(--ok)':'var(--far)';
+    o+=`<line x1="${r2(X(v))}" y1="${y-10}" x2="${r2(X(v))}" y2="${y+10}" style="stroke:${col};stroke-width:2.5"/>`;
+    const lbl=fr(v,d);o+=`<text x="${r2(X(v))}" y="${y+32}" text-anchor="middle" style="font:700 ${n>8?13:16}px var(--font-d);fill:${col}">${lbl}</text>`;
+    o+=`<text x="${r2(X(v))}" y="${y+(j%2?72:54)}" text-anchor="middle" style="font:600 ${n>8?11:13}px var(--font-d);fill:${col}">${fr(sq,2*d)}</text>`;}
+  o+=`<text class="sm f-muted" x="${X(from)-22}" y="${y+54}" text-anchor="end">carrés :</text>`;
+  // intervalle trouvé
+  o+=`<rect x="${r2(X(lv.lo))}" y="${y-30}" width="${r2(X(lv.hi)-X(lv.lo))}" height="18" rx="5" style="fill:color-mix(in srgb,var(--accent) 30%,transparent);stroke:var(--accent);stroke-width:2"/>`;
+  const sx=X(Math.sqrt(a));o+=`<path d="M${r2(sx)},${y-36}l-7,-12h14z" style="fill:var(--accent)"/><text class="lab f-acc" x="${r2(sx)}" y="${y-54}" text-anchor="middle">√${a}</text>`;
+  // conclusion
+  o+=`<text x="320" y="${y+150}" text-anchor="middle" style="font:700 22px var(--font-d)"><tspan style="fill:var(--ok)">${fr(lv.lo,d)}² = ${fr(lv.lo*lv.lo,2*d)}</tspan><tspan style="fill:var(--ink)"> &lt; ${a} &lt; </tspan><tspan style="fill:var(--far)">${fr(lv.hi*lv.hi,2*d)} = ${fr(lv.hi,d)}²</tspan></text>`;
+  o+=`<text class="lab f-ink" x="320" y="${y+186}" text-anchor="middle">${exact?`${a} est un carré parfait : √${a} = ${Math.round(Math.sqrt(a))}`:k<3?'Clique pour zoomer sur cet intervalle.':`√${a} ≈ ${fr(Math.sqrt(a),3)} au millième près (par défaut ${fr(lv.lo,3)})`}</text>`;
+  o+=`<text class="tip" x="20" y="545">En vert : carré plus petit que ${a}. En rouge : carré plus grand.</text>`;
+  $('svg3').innerHTML=o;
+  $('eq3').innerHTML=`<small>Encadrements trouvés</small>`+L.slice(0,k+1).map((l,i)=>`<div>${fr(l.lo,i)} &lt; √${a} &lt; ${fr(l.hi,i)}</div>`).join('');
+  $('def3').innerHTML=`<div><b>Méthode :</b> on teste les nombres un par un. Si leur carré dépasse ${a}, √${a} est plus petit.</div><div>Valeur approchée à la calculatrice : √${a} ≈ ${fr(Math.sqrt(a),4)}.</div>`;
+  $('next3').disabled=k>=3||exact;$('a3').value=a;
+  document.querySelectorAll('#pre3 .chip').forEach(c=>c.setAttribute('aria-pressed',+c.dataset.a===a));}
+const next3=()=>{if(S3.k<3&&!Number.isInteger(Math.sqrt(S3.a))){S3.k++;render3();}};
+$('next3').onclick=next3;$('svg3').addEventListener('click',next3);$('reset3').onclick=()=>{S3.k=0;render3();};
+$('a3').addEventListener('change',()=>{const v=Math.round(+$('a3').value);if(v>=2&&v<=999){S3.a=v;S3.k=0;}render3();});
+[2,10,60,90,200].forEach(v=>{const c=document.createElement('button');c.type='button';c.className='chip';c.dataset.a=v;c.textContent=String(v);c.onclick=()=>{S3.a=v;S3.k=0;render3();};$('pre3').appendChild(c);});
+
+/* ---------- Onglets ---------- */
+let current='carres';
+const views=['carres','racine','encadrer'];
+function show(v){if(!views.includes(v))v='carres';current=v;
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+
+render1();render2();render3();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>

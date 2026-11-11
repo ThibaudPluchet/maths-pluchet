@@ -1,0 +1,375 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Fractions animées</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : graphique en grand à gauche (à projeter), commandes et calculs à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --c1:#2f6fd6; --c2:#e08a1e; --c3:#1f9e74; --c4:#b9459c; --mean:#c46a00; --med:#0a8587; --tok:#2f6fd6; --far:#c9334d; --plank:#b98a54;
+  --ok:#1b7f45; --ok-soft:#e1f3e8;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh;touch-action:none;user-select:none;-webkit-user-select:none;}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 11px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.eq{border-radius:12px;background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font:600 17px/1.4 var(--font-d);font-variant-numeric:tabular-nums}
+.eq small{font:600 13px/1.2 var(--font-d);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vocab{border-radius:12px;padding:12px 14px;font-size:15px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok);display:flex;flex-direction:column;gap:4px}
+.vocab b{font-family:var(--font-d)}
+.counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cnt{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.cnt span{font:600 13px/1.2 var(--font-d);color:var(--muted)}
+.cnt b{font:700 24px/1 var(--font-d);font-variant-numeric:tabular-nums}
+
+.fin{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+.fin input{font:700 18px/1 var(--font-d);width:58px;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);text-align:center}
+.fin i{display:block;width:62px;height:3px;background:var(--ink);border-radius:2px}
+.frow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.frow .opx{font:700 26px/1 var(--font-d)}
+.btn:disabled{opacity:.45;cursor:default}
+.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:5px;font-size:15px}
+.steps li.off{color:var(--muted);opacity:.45}
+.steps b{font-family:var(--font-d)}
+
+/* SVG */
+.lab{font:700 16px var(--font-d)}
+.sm{font:600 13px var(--font-d)}
+.f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)} .f-ok{fill:var(--ok)} .f-acc{fill:var(--accent)} .f-c2{fill:var(--c2)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.tip{font:600 14px var(--font-b);fill:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e et 3e · Fractions</p>
+      <h1>Calculer avec des fractions</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-egales" data-view="egales" aria-selected="true">1. Égales</button>
+      <button class="tab" role="tab" id="tab-comparer" data-view="comparer" aria-selected="false">2. Comparer</button>
+      <button class="tab" role="tab" id="tab-additionner" data-view="additionner" aria-selected="false">3. Additionner</button>
+      <button class="tab" role="tab" id="tab-multiplier" data-view="multiplier" aria-selected="false">4. Multiplier</button>
+      <button class="tab" role="tab" id="tab-diviser" data-view="diviser" aria-selected="false">5. Diviser</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- ÉGALES -->
+  <section class="view" id="v-egales" role="tabpanel" aria-labelledby="tab-egales" hidden>
+    <div class="stage"><svg id="svg4" viewBox="0 0 640 560" role="img" aria-label="La même quantité découpée en parts plus petites ou plus grandes"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Des fractions égales</h2>
+        <p class="hint">Couper chaque part en k morceaux multiplie le numérateur et le dénominateur par k : la quantité coloriée ne change pas. Regrouper les parts, c'est simplifier.</p>
+      </div>
+      <div class="frow" id="in4"></div>
+      <div class="chips" id="pre4"></div>
+      <div class="ctl"><span class="lbl">Découper ou regrouper</span><div class="chips" id="op4"></div></div>
+      <div class="eq" id="eq4"></div>
+      <div class="vocab" id="def4"></div>
+    </div>
+  </section>
+
+  <!-- COMPARER -->
+  <section class="view" id="v-comparer" role="tabpanel" aria-labelledby="tab-comparer" hidden>
+    <div class="stage"><svg id="svg5" viewBox="0 0 640 560" role="img" aria-label="Deux fractions comparées sur une droite graduée"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Comparer deux fractions</h2>
+        <p class="hint">On les écrit avec le même dénominateur : il suffit alors de comparer les numérateurs.</p>
+      </div>
+      <div class="frow" id="in5"></div>
+      <div class="chips" id="pre5"></div>
+      <div class="row"><button class="btn primary" type="button" id="next5">Étape suivante ▶</button><button class="btn" type="button" id="reset5">Recommencer</button></div>
+      <ol class="steps" id="st5"></ol>
+    </div>
+  </section>
+
+  <!-- 1. MULTIPLIER -->
+  <section class="view" id="v-multiplier" role="tabpanel" aria-labelledby="tab-multiplier">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 560" role="img" aria-label="Produit de deux fractions vu comme une partie d'un carré quadrillé"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Prendre une fraction d'une fraction</h2>
+        <p class="hint">a/b × c/d, c'est prendre les a/b de c/d. Dans un carré unité, on découpe dans un sens puis dans l'autre.</p>
+      </div>
+      <div class="frow" id="in1"></div>
+      <div class="chips" id="pre1"></div>
+      <div class="row"><button class="btn primary" type="button" id="next1">Étape suivante ▶</button><button class="btn" type="button" id="reset1">Recommencer</button></div>
+      <ol class="steps" id="st1"></ol>
+    </div>
+  </section>
+
+  <!-- 2. DIVISER -->
+  <section class="view" id="v-diviser" role="tabpanel" aria-labelledby="tab-diviser" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 560" role="img" aria-label="Combien de fois une fraction dans une autre"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Diviser : combien de fois ?</h2>
+        <p class="hint">a/b ÷ c/d, c'est chercher combien de fois c/d « rentre » dans a/b. On pose les morceaux un par un.</p>
+      </div>
+      <div class="frow" id="in2"></div>
+      <div class="chips" id="pre2"></div>
+      <div class="row"><button class="btn primary" type="button" id="next2">Étape suivante ▶</button><button class="btn" type="button" id="all2">Tout poser</button><button class="btn" type="button" id="reset2">Recommencer</button></div>
+      <ol class="steps" id="st2"></ol>
+    </div>
+  </section>
+
+  <!-- 3. ADDITIONNER -->
+  <section class="view" id="v-additionner" role="tabpanel" aria-labelledby="tab-additionner" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 560" role="img" aria-label="Somme de fractions avec un dénominateur commun"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Additionner, soustraire</h2>
+        <p class="hint">On ne peut ajouter que des parts de même taille : on découpe les deux bandes avec le même dénominateur.</p>
+      </div>
+      <div class="frow" id="in3"></div>
+      <div class="chips" id="pre3"></div>
+      <div class="row"><button class="btn primary" type="button" id="next3">Étape suivante ▶</button><button class="btn" type="button" id="reset3">Recommencer</button></div>
+      <ol class="steps" id="st3"></ol>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=x=>Math.round(x*100)/100;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const lcm=(a,b)=>a/gcd(a,b)*b;
+const fr=x=>(Math.round(x*1000)/1000).toLocaleString('fr-FR');
+// fraction en SVG (numérateur au-dessus du dénominateur)
+function F(x,y,n,d,col='var(--ink)',fs=28){const w=Math.max(String(n).length,String(d).length)*fs*0.62+10;
+  return `<text x="${x}" y="${r2(y-fs*0.22)}" text-anchor="middle" style="font:700 ${fs}px var(--font-d);fill:${col}">${n}</text><line x1="${r2(x-w/2)}" y1="${y}" x2="${r2(x+w/2)}" y2="${y}" style="stroke:${col};stroke-width:3"/><text x="${x}" y="${r2(y+fs*0.98)}" text-anchor="middle" style="font:700 ${fs}px var(--font-d);fill:${col}">${d}</text>`;}
+const Tx=(x,y,s,col='var(--ink)',fs=28,anchor='middle')=>`<text x="${x}" y="${r2(y+fs*0.36)}" text-anchor="${anchor}" style="font:700 ${fs}px var(--font-d);fill:${col}">${s}</text>`;
+const fw=(n,d,fs=28)=>Math.max(String(n).length,String(d).length)*fs*0.62+10;
+// suite d'éléments alignés : [{f:[n,d,col]} | {t:'×',col}]
+function row(items,cx,y,fs=28){const ws=items.map(it=>it.f?fw(it.f[0],it.f[1],fs):String(it.t).length*fs*0.55+14);const W=ws.reduce((a,b)=>a+b,0)+(items.length-1)*10;let x=cx-W/2,o='';
+  items.forEach((it,i)=>{const c=x+ws[i]/2;o+=it.f?F(c,y,it.f[0],it.f[1],it.f[2]||'var(--ink)',fs):Tx(c,y,it.t,it.col||'var(--ink)',fs);x+=ws[i]+10;});return o;}
+// saisie d'une fraction
+function fracInputs(host,vals,onChange,ops){host.innerHTML='';vals.forEach((v,i)=>{if(i>0){const s=document.createElement('span');s.className='opx';s.id=host.id+'op';s.textContent=ops;host.appendChild(s);}
+  const w=document.createElement('span');w.className='fin';w.innerHTML=`<input type="number" min="1" max="24" value="${v[0]}" aria-label="numérateur ${i+1}"><i></i><input type="number" min="1" max="24" value="${v[1]}" aria-label="dénominateur ${i+1}">`;host.appendChild(w);});
+  host.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{const v=[...host.querySelectorAll('input')].map(x=>Math.round(+x.value));onChange(v);}));}
+function setInputs(host,v){[...host.querySelectorAll('input')].forEach((x,i)=>{x.value=v[i];});}
+function steps(host,list,k){host.innerHTML=list.map((t,i)=>`<li class="${i<k?'':'off'}">${t}</li>`).join('');}
+const anim=(S,render)=>{S.t0=performance.now();const go=()=>{render();if(performance.now()-S.t0<(reduce?0:700))requestAnimationFrame(go);};requestAnimationFrame(go);};
+const kOf=S=>S.t0?clamp((performance.now()-S.t0)/(reduce?1:700),0,1):1;
+
+/* ---------- 1. Multiplier ---------- */
+const S1={a:2,b:3,c:3,d:4,st:0,t0:0};
+function render1(){const {a,b,c,d,st}=S1,k=kOf(S1),N=a*c,D=b*d,g=gcd(N,D);let o='';
+  const L=300,x0=50,y0=130,cw=L/d,rh=L/b;
+  o+=row([{f:[a,b,'var(--c2)']},{t:'×'},{f:[c,d,'var(--c1)']},...(st>=3?[{t:'='},{f:[`${a} × ${c}`,`${b} × ${d}`,'var(--ink)']},{t:'='},{f:[N,D,'var(--ok)']}]:[]),...(st>=4&&g>1?[{t:'='},{f:[N/g,D/g,'var(--ok)']}]:[])],320,58,st>=3?26:30);
+  // carré unité
+  o+=`<rect x="${x0}" y="${y0}" width="${L}" height="${L}" style="fill:var(--paper);stroke:var(--ink);stroke-width:2.5"/>`;
+  if(st>=1){const kk=st===1?k:1;// colonnes c/d
+    o+=`<rect x="${x0}" y="${y0}" width="${r2(c*cw)}" height="${L}" style="fill:var(--c1);opacity:${r2(0.35*kk)}"/>`;
+    for(let j=1;j<d;j++)o+=`<line x1="${r2(x0+j*cw)}" y1="${y0}" x2="${r2(x0+j*cw)}" y2="${r2(y0+L*kk)}" style="stroke:var(--c1);stroke-width:2"/>`;
+    o+=`<path d="M${x0},${y0+L+12}v8h${r2(c*cw)}v-8" style="fill:none;stroke:var(--c1);stroke-width:2"/>`+F(x0+c*cw/2,y0+L+50,c,d,'var(--c1)',22);}
+  if(st>=2){const kk=st===2?k:1;
+    for(let i=1;i<b;i++)o+=`<line x1="${x0}" y1="${r2(y0+i*rh)}" x2="${r2(x0+L*kk)}" y2="${r2(y0+i*rh)}" style="stroke:var(--c2);stroke-width:2;stroke-dasharray:7 5"/>`;
+    o+=`<rect x="${x0}" y="${y0}" width="${r2(c*cw)}" height="${r2(a*rh)}" style="fill:var(--c2);opacity:${r2(0.75*kk)}"/>`;
+    o+=`<path d="M${x0-10},${y0}h-6v${r2(a*rh)}h6" style="fill:none;stroke:var(--c2);stroke-width:2"/>`;
+    o+=F(x0-36,r2(y0+a*rh/2),a,b,'var(--c2)',18);}
+  if(st>=3){let n=0;for(let i=0;i<a;i++)for(let j=0;j<c;j++){n++;const cx=x0+(j+0.5)*cw,cy=y0+(i+0.5)*rh;if(cw>22&&rh>22)o+=`<text x="${r2(cx)}" y="${r2(cy+6)}" text-anchor="middle" style="font:700 ${r2(Math.min(18,cw*0.45,rh*0.45))}px var(--font-d);fill:#fff">${n}</text>`;}}
+  // légende à droite
+  const lx=405;
+  if(st>=1)o+=`<text class="lab f-ink" x="${lx}" y="${y0+20}">Colonnes : ${c}/${d}</text><text class="sm f-muted" x="${lx}" y="${y0+42}">${d} colonnes, on en colorie ${c}</text>`;
+  if(st>=2)o+=`<text class="lab f-ink" x="${lx}" y="${y0+86}">Lignes : ${a}/${b} de ${c}/${d}</text><text class="sm f-muted" x="${lx}" y="${y0+108}">${b} lignes, on en garde ${a}</text>`;
+  if(st>=3)o+=`<text class="lab f-ok" x="${lx}" y="${y0+152}">${N} cases sur ${D}</text><text class="sm f-muted" x="${lx}" y="${y0+174}">${a} × ${c} = ${N} cases orange</text><text class="sm f-muted" x="${lx}" y="${y0+194}">${b} × ${d} = ${D} cases en tout</text>`;
+  if(st>=4)o+=`<text class="lab f-ok" x="${lx}" y="${y0+238}">${g>1?`On simplifie par ${g}`:'Déjà irréductible'}</text>`;
+  o+=`<text class="tip" x="20" y="545">${st<4?'Clique pour passer à l\'étape suivante.':'On multiplie les numérateurs entre eux et les dénominateurs entre eux.'}</text>`;
+  $('svg1').innerHTML=o;
+  steps($('st1'),[`On part d'un carré qui vaut 1.`,`On le coupe en ${d} colonnes et on en colorie ${c} : c'est ${c}/${d}.`,`On coupe en ${b} lignes et on garde ${a} lignes de la partie bleue : ${a}/${b} de ${c}/${d}.`,`On compte : ${a} × ${c} = ${N} petites cases sur ${b} × ${d} = ${D}. Donc ${a}/${b} × ${c}/${d} = ${N}/${D}.`,g>1?`On simplifie : ${N}/${D} = ${N/g}/${D/g}.`:`${N}/${D} est irréductible.`],st+1);
+  $('next1').disabled=st>=4;}
+const next1=()=>{if(S1.st<4){S1.st++;anim(S1,render1);}};
+$('next1').onclick=next1;$('svg1').addEventListener('click',next1);$('reset1').onclick=()=>{S1.st=0;S1.t0=0;render1();};
+fracInputs($('in1'),[[2,3],[3,4]],v=>{let [a,b,c,d]=v;if([a,b,c,d].every(x=>x>=1&&x<=12)&&a<=b&&c<=d){Object.assign(S1,{a,b,c,d,st:0,t0:0});}setInputs($('in1'),[S1.a,S1.b,S1.c,S1.d]);render1();},'×');
+[[2,3,3,4],[3,5,1,2],[3,4,5,6],[1,2,1,2],[4,5,5,8]].forEach(v=>{const ch=document.createElement('button');ch.type='button';ch.className='chip';ch.textContent=`${v[0]}/${v[1]} × ${v[2]}/${v[3]}`;ch.onclick=()=>{const [a,b,c,d]=v;Object.assign(S1,{a,b,c,d,st:0,t0:0});setInputs($('in1'),v);render1();};$('pre1').appendChild(ch);});
+
+/* ---------- 2. Diviser ---------- */
+const S2={a:3,b:4,c:1,d:8,st:0,t0:0};
+function info2(){const {a,b,c,d}=S2,m=lcm(b,d),A=a*m/b,C=c*m/d,q=A/C,full=Math.floor(q+1e-9),rest=A-full*C;return {m,A,C,q,full,rest,pieces:full+(rest>0?1:0)};}
+function render2(){const {a,b,c,d,st}=S2,k=kOf(S2),I=info2();let o='';
+  const maxU=Math.max(1,Math.ceil(a/b)),U=560/maxU,x0=40,yA=200,yP=290,X=v=>x0+v*U;
+  o+=row([{f:[a,b,'var(--c1)']},{t:'÷'},{f:[c,d,'var(--c2)']},...(st>=2+I.pieces?[{t:'='},{f:[a,b,'var(--c1)']},{t:'×'},{f:[d,c,'var(--c2)']},{t:'='},{f:[a*d,b*c,'var(--ok)']},...((a*d)%(b*c)===0?[{t:'='},{t:String((a*d)/(b*c)),col:'var(--ok)'}]:gcd(a*d,b*c)>1?[{t:'='},{f:[a*d/gcd(a*d,b*c),b*c/gcd(a*d,b*c),'var(--ok)']}]:[])]:[])],320,58,st>=2+I.pieces?24:28);
+  // axe gradué
+  o+=`<line x1="${x0}" y1="${yP+80}" x2="${X(maxU)}" y2="${yP+80}" style="stroke:var(--ink);stroke-width:2"/>`;
+  for(let u=0;u<=maxU;u++)o+=`<line x1="${X(u)}" y1="${yP+72}" x2="${X(u)}" y2="${yP+88}" style="stroke:var(--ink);stroke-width:2.5"/><text class="lab f-ink" x="${X(u)}" y="${yP+110}" text-anchor="middle">${u}</text>`;
+  if(st>=1){const kk=st===1?k:1;for(let j=1;j<I.m*maxU;j++){if(j%I.m===0)continue;o+=`<line x1="${r2(X(j/I.m))}" y1="${yP+76}" x2="${r2(X(j/I.m))}" y2="${r2(yP+76+8*kk)}" style="stroke:var(--muted);stroke-width:1.5"/>`;}
+    o+=`<text class="sm f-muted" x="${X(maxU)}" y="${yP+132}" text-anchor="end">graduations en ${I.m}e${I.m>1?'s':''}</text>`;}
+  // barre a/b
+  o+=`<rect x="${x0}" y="${yA}" width="${r2(X(a/b)-x0)}" height="56" rx="6" style="fill:var(--c1);opacity:.85"/>`+F(x0+(X(a/b)-x0)/2,yA-46,a,b,'var(--c1)',22);
+  if(st>=1)for(let j=1;j<I.A;j++)o+=`<line x1="${r2(X(j/I.m))}" y1="${yA}" x2="${r2(X(j/I.m))}" y2="${yA+56}" style="stroke:var(--paper);stroke-width:1.5;opacity:.7"/>`;
+  // morceaux c/d posés
+  const n=Math.max(0,Math.min(st-1,I.pieces));
+  for(let p=0;p<n;p++){const last=p===n-1&&st-1<=I.pieces,kk=last&&S2.t0?k:1;const x=X(p*c/d),w=c/d*U,inside=Math.min(w,X(a/b)-x);const drop=(1-kk)*-60;
+    o+=`<g transform="translate(0,${r2(drop)})" style="opacity:${r2(0.3+0.7*kk)}"><rect x="${r2(x+1)}" y="${yP}" width="${r2(w-2)}" height="44" rx="6" style="fill:none;stroke:var(--c2);stroke-width:2.5;stroke-dasharray:${inside<w-1?'6 4':'0'}"/><rect x="${r2(x+1)}" y="${yP}" width="${r2(Math.max(0,inside-2))}" height="44" rx="6" style="fill:var(--c2);opacity:.8"/>`;
+    o+=`<text x="${r2(x+w/2)}" y="${yP+29}" text-anchor="middle" style="font:700 ${r2(Math.min(18,w*0.4))}px var(--font-d);fill:#fff">${p+1}</text></g>`;}
+  if(n>0)o+=F(X(c/d/2),yP+168,c,d,'var(--c2)',18);
+  // conclusion
+  if(st>=2+I.pieces-1&&n===I.pieces){const msg=I.rest>0?`${I.full} morceau${I.full>1?'x':''} entier${I.full>1?'s':''} + ${I.rest}/${I.C} de morceau`:`exactement ${I.full} morceaux`;
+    o+=`<text class="lab f-ok" x="320" y="${yA-90}" text-anchor="middle">${c}/${d} rentre ${I.rest>0?fr(I.q)+' fois : '+msg:I.full+' fois'}</text>`;}
+  o+=`<text class="tip" x="20" y="545">${st<2+I.pieces?'Clique pour poser le morceau suivant.':'Diviser par une fraction, c\'est multiplier par son inverse.'}</text>`;
+  $('svg2').innerHTML=o;
+  steps($('st2'),[`On place ${a}/${b} sur une droite graduée.`,`On gradue en ${I.m}e${I.m>1?'s':''} : ${a}/${b} = ${I.A}/${I.m} et ${c}/${d} = ${I.C}/${I.m}.`,`On pose des morceaux de ${c}/${d} (${I.C} graduation${I.C>1?'s':''}) bout à bout.`,`${I.A} ÷ ${I.C} : il en rentre ${fr(I.q)}${I.rest>0?` (${I.A}/${I.C})`:''}.`,`Règle : ${a}/${b} ÷ ${c}/${d} = ${a}/${b} × ${d}/${c} = ${a*d}/${b*c}${gcd(a*d,b*c)>1?' = '+(a*d/gcd(a*d,b*c))+'/'+(b*c/gcd(a*d,b*c)):''}.`],st>=2+I.pieces?5:st>=2?3:st+1);
+  $('next2').disabled=st>=2+I.pieces;}
+const next2=()=>{const I=info2();if(S2.st<2+I.pieces){S2.st++;anim(S2,render2);}};
+$('next2').onclick=next2;$('svg2').addEventListener('click',next2);$('reset2').onclick=()=>{S2.st=0;S2.t0=0;render2();};$('all2').onclick=()=>{S2.st=2+info2().pieces;S2.t0=0;render2();};
+fracInputs($('in2'),[[3,4],[1,8]],v=>{let [a,b,c,d]=v;const ok=[a,b,c,d].every(x=>x>=1&&x<=24)&&a/b<=3&&(a/b)/(c/d)<=12;if(ok)Object.assign(S2,{a,b,c,d,st:0,t0:0});setInputs($('in2'),[S2.a,S2.b,S2.c,S2.d]);render2();},'÷');
+[[3,4,1,8],[2,3,1,6],[3,4,3,8],[5,6,1,3],[3,2,1,4]].forEach(v=>{const ch=document.createElement('button');ch.type='button';ch.className='chip';ch.textContent=`${v[0]}/${v[1]} ÷ ${v[2]}/${v[3]}`;ch.onclick=()=>{const [a,b,c,d]=v;Object.assign(S2,{a,b,c,d,st:0,t0:0});setInputs($('in2'),v);render2();};$('pre2').appendChild(ch);});
+
+/* ---------- 3. Additionner / soustraire ---------- */
+const S3={a:1,b:2,c:1,d:3,op:'+',st:0,t0:0};
+function render3(){const {a,b,c,d,op,st}=S3,k=kOf(S3),m=lcm(b,d),A=a*m/b,C=c*m/d,R=op==='+'?A+C:A-C,g=gcd(R,m)||1;let o='';
+  const maxU=Math.max(1,Math.ceil(Math.max(a/b,c/d,R/m)-1e-9)),U=Math.min(260,520/maxU),x0=60;
+  o+=row([{f:[a,b,'var(--c1)']},{t:op==='+'?'+':'−'},{f:[c,d,'var(--c2)']},...(st>=2?[{t:'='},{f:[A,m,'var(--c1)']},{t:op==='+'?'+':'−'},{f:[C,m,'var(--c2)']}]:[]),...(st>=3?[{t:'='},{f:[R,m,'var(--ok)']}]:[]),...(st>=4&&g>1&&R>0?[{t:'='},{f:[R/g,m/g,'var(--ok)']}]:[])],320,58,26);
+  const bar=(y,num,den,col,parts,label,kk=1,fade=0)=>{let s='';for(let u=0;u<maxU;u++)s+=`<rect x="${x0+u*U}" y="${y}" width="${U}" height="50" style="fill:var(--paper);stroke:var(--ink);stroke-width:2"/>`;
+    s+=`<rect x="${x0}" y="${y}" width="${r2(num/den*U)}" height="50" style="fill:var(${col});opacity:${r2(0.8*(1-fade))}"/>`;
+    for(let j=1;j<den*maxU;j++){if(j%den===0)continue;s+=`<line x1="${r2(x0+j*U/den)}" y1="${y}" x2="${r2(x0+j*U/den)}" y2="${y+50}" style="stroke:var(--ink);stroke-width:1.5"/>`;}
+    if(parts&&parts!==den)for(let j=1;j<parts*maxU;j++){if((j*den)%parts===0)continue;s+=`<line x1="${r2(x0+j*U/parts)}" y1="${y}" x2="${r2(x0+j*U/parts)}" y2="${r2(y+50*kk)}" style="stroke:var(--ink);stroke-width:1.2;stroke-dasharray:4 3"/>`;}
+    s+=`<text class="lab f-ink" x="${x0-12}" y="${y+31}" text-anchor="end">${label}</text>`;return s;};
+  const y1=130,y2=230,y3=360;
+  const kk=st===2?k:1;
+  o+=bar(y1,a,b,'--c1',st>=2?m:0,'',kk)+F(x0+maxU*U+40,y1+20,st>=2?A:a,st>=2?m:b,'var(--c1)',20);
+  o+=bar(y2,c,d,'--c2',st>=2?m:0,'',kk)+F(x0+maxU*U+40,y2+20,st>=2?C:c,st>=2?m:d,'var(--c2)',20);
+  if(st>=1&&st<2)o+=`<text class="lab f-muted" x="320" y="${y2+90}" text-anchor="middle">Les parts n'ont pas la même taille : on ne peut pas les ajouter directement.</text>`;
+  if(st>=3){const kk3=st===3?k:1;let s='';for(let u=0;u<maxU;u++)s+=`<rect x="${x0+u*U}" y="${y3}" width="${U}" height="50" style="fill:var(--paper);stroke:var(--ink);stroke-width:2"/>`;
+    if(op==='+'){s+=`<rect x="${x0}" y="${y3}" width="${r2(A/m*U)}" height="50" style="fill:var(--c1);opacity:.8"/>`;const tx=x0+A/m*U,fromY=y2;const yy=fromY+(y3-fromY)*kk3,xx=x0+(tx-x0)*kk3;s+=`<rect x="${r2(xx)}" y="${r2(yy)}" width="${r2(C/m*U)}" height="50" style="fill:var(--c2);opacity:.8"/>`;}
+    else{s+=`<rect x="${x0}" y="${y3}" width="${r2(R/m*U)}" height="50" style="fill:var(--c1);opacity:.8"/><rect x="${r2(x0+R/m*U)}" y="${y3}" width="${r2(C/m*U)}" height="50" style="fill:var(--c1);opacity:${r2(0.8*(1-kk3))}"/><rect x="${r2(x0+R/m*U)}" y="${y3}" width="${r2(C/m*U)}" height="50" style="fill:none;stroke:var(--c2);stroke-width:2.5;stroke-dasharray:6 4"/>`;}
+    for(let j=1;j<m*maxU;j++)s+=`<line x1="${r2(x0+j*U/m)}" y1="${y3}" x2="${r2(x0+j*U/m)}" y2="${y3+50}" style="stroke:var(--ink);stroke-width:${j%m?1.2:2}"/>`;
+    o+=s+`<text class="lab f-ok" x="${x0-12}" y="${y3+31}" text-anchor="end"></text>`+F(x0+maxU*U+40,y3+20,R,m,'var(--ok)',20);
+    o+=`<text class="lab f-ok" x="${x0}" y="${y3-16}">${op==='+'?`${A} + ${C} = ${R} parts de 1/${m}`:`${A} − ${C} = ${R} parts de 1/${m}`}</text>`;}
+  o+=`<text class="tip" x="20" y="545">${st<4?'Clique pour passer à l\'étape suivante.':'On réduit au même dénominateur, puis on ajoute (ou on soustrait) les numérateurs.'}</text>`;
+  $('svg3').innerHTML=o;
+  steps($('st3'),[`On représente ${a}/${b} et ${c}/${d} avec des bandes unité.`,`Les parts (des ${b}e${b>1?'s':''} et des ${d}e${d>1?'s':''}) n'ont pas la même taille.`,`On redécoupe en ${m}e${m>1?'s':''} (multiple commun de ${b} et ${d}) : ${a}/${b} = ${A}/${m} et ${c}/${d} = ${C}/${m}.`,`On ${op==='+'?'met bout à bout':'retire'} : ${A} ${op==='+'?'+':'−'} ${C} = ${R} parts, donc ${R}/${m}.`,g>1&&R>0?`On simplifie : ${R}/${m} = ${R/g}/${m/g}.`:`${R}/${m} est irréductible.`],st+1);
+  $('next3').disabled=st>=4;}
+const next3=()=>{if(S3.st<4){S3.st++;anim(S3,render3);}};
+$('next3').onclick=next3;$('svg3').addEventListener('click',next3);$('reset3').onclick=()=>{S3.st=0;S3.t0=0;render3();};
+fracInputs($('in3'),[[1,2],[1,3]],v=>{let [a,b,c,d]=v;const ok=[a,b,c,d].every(x=>x>=1&&x<=12)&&a/b<=2&&c/d<=2&&(S3.op==='+'||a/b>=c/d);if(ok)Object.assign(S3,{a,b,c,d,st:0,t0:0});setInputs($('in3'),[S3.a,S3.b,S3.c,S3.d]);render3();},'+');
+[[1,2,1,3,'+'],[2,3,1,4,'+'],[3,4,1,6,'+'],[1,2,3,4,'+'],[5,6,1,4,'−'],[3,4,2,3,'−']].forEach(v=>{const ch=document.createElement('button');ch.type='button';ch.className='chip';ch.textContent=`${v[0]}/${v[1]} ${v[4]} ${v[2]}/${v[3]}`;ch.onclick=()=>{const [a,b,c,d,op]=v;Object.assign(S3,{a,b,c,d,op,st:0,t0:0});setInputs($('in3'),v.slice(0,4));$('in3op').textContent=op;render3();};$('pre3').appendChild(ch);});
+
+/* ---------- 4. Fractions égales ---------- */
+const S4={a:2,b:3,f:2,t0:0};// f > 0 : chaque part coupée en f ; f < 0 : parts regroupées par |f|
+function render4(){const {a,b,f}=S4,k=kOf(S4);let o='';const A=f>0?a*f:a/(-f),B=f>0?b*f:b/(-f);
+  const x0=60,W=520,y1=130,y2=280;
+  o+=row([{f:[a,b,'var(--c1)']},{t:'='},{f:[`${a} ${f>0?'×':'÷'} ${Math.abs(f)}`,`${b} ${f>0?'×':'÷'} ${Math.abs(f)}`,'var(--ink)']},{t:'='},{f:[A,B,'var(--ok)']}],320,52,26);
+  const bar=(y,num,den,label)=>{let s=`<rect x="${x0}" y="${y}" width="${W}" height="70" style="fill:var(--paper);stroke:var(--ink);stroke-width:2.5"/><rect x="${x0}" y="${y}" width="${r2(num/den*W)}" height="70" style="fill:var(--c1);opacity:.8"/>`;
+    for(let j=1;j<den;j++)s+=`<line x1="${r2(x0+j*W/den)}" y1="${y}" x2="${r2(x0+j*W/den)}" y2="${y+70}" style="stroke:var(--ink);stroke-width:2"/>`;
+    return s+F(x0+W+34,y+30,num,den,'var(--c1)',20);};
+  o+=bar(y1,a,b);
+  // barre transformée : découpage animé
+  o+=`<rect x="${x0}" y="${y2}" width="${W}" height="70" style="fill:var(--paper);stroke:var(--ink);stroke-width:2.5"/><rect x="${x0}" y="${y2}" width="${r2(a/b*W)}" height="70" style="fill:var(--ok);opacity:.75"/>`;
+  const fine=Math.max(b,B);for(let j=1;j<fine;j++){const x=x0+j*W/fine;const isCoarse=(j*Math.min(b,B))%fine===0;const keep=f>0?isCoarse:isCoarse;// lignes communes
+    if(f>0){o+=`<line x1="${r2(x)}" y1="${y2}" x2="${r2(x)}" y2="${r2(y2+70*(isCoarse?1:k))}" style="stroke:var(--ink);stroke-width:${isCoarse?2:1.4};${isCoarse?'':'stroke-dasharray:5 3'}"/>`;}
+    else{o+=`<line x1="${r2(x)}" y1="${y2}" x2="${r2(x)}" y2="${y2+70}" style="stroke:var(--ink);stroke-width:${isCoarse?2:1.4};opacity:${isCoarse?1:r2(1-k)}"/>`;}}
+  o+=F(x0+W+34,y2+30,A,B,'var(--ok)',20);
+  o+=`<text class="lab f-muted" x="${x0}" y="${y2-16}">${f===1?'(même découpage)':f>0?`chaque part est coupée en ${f}`:`les parts sont regroupées par ${-f}`}</text>`;
+  o+=`<line x1="${r2(x0+a/b*W)}" y1="${y1-14}" x2="${r2(x0+a/b*W)}" y2="${y2+84}" style="stroke:var(--accent);stroke-width:2;stroke-dasharray:6 4"/><text class="sm f-acc" x="${r2(x0+a/b*W)}" y="${y2+102}" text-anchor="middle">même longueur coloriée</text>`;
+  o+=`<text class="tip" x="20" y="545">${a}/${b} = ${A}/${B} : ce sont deux écritures du même nombre.</text>`;
+  $('svg4').innerHTML=o;
+  const g=gcd(a,b);
+  $('eq4').innerHTML=`<small>Égalité</small><div>${a}/${b} = ${A}/${B}</div><div style="font-size:15px;color:var(--muted)">Produits en croix : ${a} × ${B} = ${a*B} et ${b} × ${A} = ${b*A}</div>`;
+  $('def4').innerHTML=g>1?`<div><b>Simplifier ${a}/${b}</b> : on divise en haut et en bas par un diviseur commun. Avec ${g}, on obtient la fraction irréductible ${a/g}/${b/g}.</div>`:`<div>${a}/${b} est irréductible : on ne peut que découper (multiplier en haut et en bas).</div>`;
+  // options
+  const opts=[];divs(g).filter(d=>d>1).reverse().forEach(d=>opts.push(-d));[1,2,3,4,5].forEach(m=>{if(b*m<=30)opts.push(m);});
+  $('op4').innerHTML='';opts.forEach(v=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=v===1?'tel quel':v>0?'× '+v:'÷ '+(-v);c.setAttribute('aria-pressed',v===f);c.onclick=()=>{S4.f=v;anim(S4,render4);};$('op4').appendChild(c);});
+  if(S4.t0&&k<1){}}
+const divs=n=>{const d=[];for(let i=1;i<=n;i++)if(n%i===0)d.push(i);return d;};
+fracInputs($('in4'),[[2,3]],v=>{let [a,b]=v;if(a>=1&&b>=1&&b<=24&&a<=b){Object.assign(S4,{a,b,f:1,t0:0});}setInputs($('in4'),[S4.a,S4.b]);render4();},'');
+[[2,3],[3,4],[6,8],[12,18],[5,10]].forEach(v=>{const ch=document.createElement('button');ch.type='button';ch.className='chip';ch.textContent=v[0]+'/'+v[1];ch.onclick=()=>{Object.assign(S4,{a:v[0],b:v[1],f:1,t0:0});setInputs($('in4'),v);render4();};$('pre4').appendChild(ch);});
+
+/* ---------- 5. Comparer ---------- */
+const S5={a:2,b:3,c:3,d:4,st:0,t0:0};
+function render5(){const {a,b,c,d,st}=S5,k=kOf(S5),m=lcm(b,d),A=a*m/b,C=c*m/d;let o='';
+  const cmp=A===C?'=':A<C?'<':'>';
+  o+=row([{f:[a,b,'var(--c1)']},{t:st>=3?cmp:'?'},{f:[c,d,'var(--c2)']}],320,52,30);
+  const maxU=Math.max(1,Math.ceil(Math.max(a/b,c/d)-1e-9)),x0=60,W=520,X=v=>x0+v/maxU*W,yL=200;
+  o+=`<line x1="${X(0)}" y1="${yL}" x2="${X(maxU)+10}" y2="${yL}" style="stroke:var(--ink);stroke-width:2"/>`;
+  for(let u=0;u<=maxU;u++)o+=`<line x1="${X(u)}" y1="${yL-10}" x2="${X(u)}" y2="${yL+10}" style="stroke:var(--ink);stroke-width:2.5"/><text class="lab f-ink" x="${X(u)}" y="${yL+32}" text-anchor="middle">${u}</text>`;
+  if(st>=2)for(let j=1;j<m*maxU;j++)if(j%m)o+=`<line x1="${r2(X(j/m))}" y1="${yL-6}" x2="${r2(X(j/m))}" y2="${yL+6}" style="stroke:var(--muted);stroke-width:1.4"/>`;
+  if(st>=1){const kk=st===1?k:1;[[a/b,'var(--c1)',st>=2?[A,m]:[a,b],-1],[c/d,'var(--c2)',st>=2?[C,m]:[c,d],1]].forEach(([v,col,fr_,side])=>{const x=X(v*kk);o+=`<circle cx="${r2(x)}" cy="${yL}" r="8" style="fill:${col}"/>`;o+=F(r2(x),side<0?yL-62:yL+64,fr_[0],fr_[1],col,20);});}
+  // barres
+  const yb=330,bh=50,bar=(y,num,den,col,parts)=>{let s='';for(let u=0;u<maxU;u++)s+=`<rect x="${X(u)}" y="${y}" width="${r2(W/maxU)}" height="${bh}" style="fill:var(--paper);stroke:var(--ink);stroke-width:2"/>`;s+=`<rect x="${x0}" y="${y}" width="${r2(num/den*W/maxU)}" height="${bh}" style="fill:${col};opacity:.8"/>`;for(let j=1;j<parts*maxU;j++)if(j%parts)s+=`<line x1="${r2(X(j/parts))}" y1="${y}" x2="${r2(X(j/parts))}" y2="${y+bh}" style="stroke:var(--ink);stroke-width:1.3"/>`;return s;};
+  if(st>=2){o+=bar(yb,A,m,'var(--c1)',m)+bar(yb+70,C,m,'var(--c2)',m);o+=`<text class="lab f-ink" x="${x0-10}" y="${yb+32}" text-anchor="end"></text>`;}
+  if(st>=3)o+=`<text class="lab ${'f-ok'}" x="320" y="${yb+160}" text-anchor="middle">${A} ${cmp} ${C}, donc ${a}/${b} ${cmp} ${c}/${d}</text>`;
+  o+=`<text class="tip" x="20" y="545">${st<3?'Clique pour passer à l\'étape suivante.':'Avec le même dénominateur, on compare les numérateurs.'}</text>`;
+  $('svg5').innerHTML=o;
+  $('st5').innerHTML=[`Quelle fraction est la plus grande : ${a}/${b} ou ${c}/${d} ?`,`On les place sur une droite graduée.`,`On les écrit avec le même dénominateur ${m} : ${a}/${b} = ${A}/${m} et ${c}/${d} = ${C}/${m}.`,`On compare les numérateurs : ${A} ${cmp} ${C}, donc ${a}/${b} ${cmp} ${c}/${d}.`].map((t,i)=>`<li class="${i<=st?'':'off'}">${t}</li>`).join('');
+  $('next5').disabled=st>=3;}
+const next5=()=>{if(S5.st<3){S5.st++;anim(S5,render5);}};
+$('next5').onclick=next5;$('svg5').addEventListener('click',next5);$('reset5').onclick=()=>{S5.st=0;S5.t0=0;render5();};
+fracInputs($('in5'),[[2,3],[3,4]],v=>{let [a,b,c,d]=v;if([a,b,c,d].every(x=>x>=1&&x<=24)&&a/b<=3&&c/d<=3)Object.assign(S5,{a,b,c,d,st:0,t0:0});setInputs($('in5'),[S5.a,S5.b,S5.c,S5.d]);render5();},'?');
+[[2,3,3,4],[5,6,7,9],[3,8,1,3],[4,6,6,9],[7,5,4,3]].forEach(v=>{const ch=document.createElement('button');ch.type='button';ch.className='chip';ch.textContent=`${v[0]}/${v[1]} et ${v[2]}/${v[3]}`;ch.onclick=()=>{const [a,b,c,d]=v;Object.assign(S5,{a,b,c,d,st:0,t0:0});setInputs($('in5'),v);render5();};$('pre5').appendChild(ch);});
+
+/* ---------- Onglets ---------- */
+let current='egales';
+const views=['egales','comparer','additionner','multiplier','diviser'];
+function show(v){if(!views.includes(v))v='egales';current=v;
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+
+render1();render2();render3();render4();render5();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>

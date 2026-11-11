@@ -1,0 +1,309 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Équations et balance</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : graphique en grand à gauche (à projeter), commandes et calculs à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --c1:#2f6fd6; --c2:#e08a1e; --c3:#1f9e74; --c4:#b9459c; --mean:#c46a00; --med:#0a8587; --tok:#2f6fd6; --far:#c9334d; --plank:#b98a54;
+  --ok:#1b7f45; --ok-soft:#e1f3e8;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh;touch-action:none;user-select:none;-webkit-user-select:none;}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 11px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.eq{border-radius:12px;background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font:600 17px/1.4 var(--font-d);font-variant-numeric:tabular-nums}
+.eq small{font:600 13px/1.2 var(--font-d);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vocab{border-radius:12px;padding:12px 14px;font-size:15px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok);display:flex;flex-direction:column;gap:4px}
+.vocab b{font-family:var(--font-d)}
+.counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cnt{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.cnt span{font:600 13px/1.2 var(--font-d);color:var(--muted)}
+.cnt b{font:700 24px/1 var(--font-d);font-variant-numeric:tabular-nums}
+
+.numin{font:700 18px/1 var(--font-d);width:96px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);text-align:center}
+.hist{display:flex;flex-direction:column;gap:2px;font:600 17px/1.45 var(--font-d);font-variant-numeric:tabular-nums}
+.hist .op{font:600 13px/1.3 var(--font-d);color:var(--accent)}
+.hist .cur{color:var(--ok)}
+.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.steps li.off{color:var(--muted);opacity:.45}
+.steps b{font-family:var(--font-d)}
+.yes{color:var(--ok);font-weight:700}.no{color:var(--far);font-weight:700}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* SVG */
+.lab{font:700 16px var(--font-d)}
+.sm{font:600 13px var(--font-d)}
+.f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)} .f-ok{fill:var(--ok)} .f-far{fill:var(--far)} .f-acc{fill:var(--accent)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.tip{font:600 14px var(--font-b);fill:var(--muted)}
+.big{font:700 30px var(--font-d)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e et 3e · Équations</p>
+      <h1>La balance des équations</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-tester" data-view="tester" aria-selected="true">1. Tester un nombre</button>
+      <button class="tab" role="tab" id="tab-resoudre" data-view="resoudre" aria-selected="false">2. Résoudre</button>
+      <button class="tab" role="tab" id="tab-probleme" data-view="probleme" aria-selected="false">3. Mettre en équation</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. TESTER -->
+  <section class="view" id="v-tester" role="tabpanel" aria-labelledby="tab-tester">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 560" role="img" aria-label="Balance : chaque membre de l'équation calculé pour le nombre testé"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Ce nombre est-il solution ?</h2>
+        <p class="hint">On remplace x par le nombre testé dans chaque membre. La balance n'est en équilibre que si les deux membres sont égaux.</p>
+      </div>
+      <div class="ctl"><span class="lbl">Équation</span><div class="chips" id="pre1"></div></div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="x1">Nombre testé x</label><input class="numin" type="number" id="x1v" step="0.5" value="5" aria-label="Nombre testé"></div>
+        <input type="range" id="x1" min="-6" max="10" step="0.5" value="5">
+      </div>
+      <div class="eq" id="eq1"></div>
+      <div class="vocab" id="def1"></div>
+    </div>
+  </section>
+
+  <!-- 2. RÉSOUDRE -->
+  <section class="view" id="v-resoudre" role="tabpanel" aria-labelledby="tab-resoudre" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 560" role="img" aria-label="Balance en équilibre avec des boîtes x et des cubes"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Résoudre en gardant l'équilibre</h2>
+        <p class="hint">Chaque boîte contient x cubes. Pour garder l'équilibre, on fait toujours la même chose des deux côtés.</p>
+      </div>
+      <div class="ctl"><span class="lbl">Équation</span><div class="chips" id="pre2"></div></div>
+      <div class="row"><button class="btn primary" type="button" id="next2">Étape suivante ▶</button><button class="btn" type="button" id="reset2">Recommencer</button></div>
+      <div class="row"><button class="btn" type="button" id="opx2">− x des deux côtés</button><button class="btn" type="button" id="opu2">− 1 des deux côtés</button><button class="btn" type="button" id="opd2">÷ des deux côtés</button></div>
+      <div class="eq"><small>Les étapes</small><div class="hist" id="hist2"></div></div>
+    </div>
+  </section>
+
+  <!-- 3. PROBLÈME -->
+  <section class="view" id="v-probleme" role="tabpanel" aria-labelledby="tab-probleme" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 560" role="img" aria-label="Un problème traduit par une balance puis une équation"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Mettre un problème en équation</h2>
+        <p class="hint" id="txt3"></p>
+      </div>
+      <div class="chips" id="pre3"></div>
+      <div class="row"><button class="btn primary" type="button" id="next3">Étape suivante ▶</button><button class="btn" type="button" id="reset3">Recommencer</button></div>
+      <ol class="steps" id="steps3"></ol>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=x=>Math.round(x*100)/100;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const fr=(x,d=2)=>{const k=Math.pow(10,d);let v=Math.round(x*k)/k;if(Object.is(v,-0))v=0;return v.toLocaleString('fr-FR',{maximumFractionDigits:d});};
+const par=x=>x<0?'('+fr(x)+')':fr(x);
+// écriture « ax + b »
+const ex=(a,b)=>{let s='';if(a)s=(a===1?'':a)+'x';if(b)s+=(s?' + ':'')+b;return s||'0';};
+
+/* ---------- Dessin de la balance ---------- */
+// L, R : {x, u} ; tilt en radians ; leave : {L:{x,u},R:{x,u}} éléments qui partent (k de 0 à 1)
+function balance(o){const P=[320,150],H=192,c=Math.cos(o.tilt||0),s=Math.sin(o.tilt||0);let g='';
+  const end=d=>[P[0]+d*c,P[1]+d*s];const El=end(-H),Er=end(H);const drop=150;
+  // pied
+  g+=`<path d="M${P[0]},${P[1]}L${P[0]-16},${P[1]+330}L${P[0]+16},${P[1]+330}Z" style="fill:var(--muted)"/><rect x="${P[0]-90}" y="${P[1]+330}" width="180" height="14" rx="6" style="fill:var(--muted)"/>`;
+  const pans=[[El,'L'],[Er,'R']];let out='';
+  for(const [E,side] of pans){const py=E[1]+drop,px=E[0];
+    g+=`<line x1="${r2(E[0])}" y1="${r2(E[1])}" x2="${r2(px-102)}" y2="${r2(py)}" style="stroke:var(--muted);stroke-width:1.6"/><line x1="${r2(E[0])}" y1="${r2(E[1])}" x2="${r2(px+102)}" y2="${r2(py)}" style="stroke:var(--muted);stroke-width:1.6"/>`;
+    out+=`<path d="M${r2(px-112)},${r2(py)}L${r2(px+112)},${r2(py)}L${r2(px+94)},${r2(py+16)}L${r2(px-94)},${r2(py+16)}Z" style="fill:var(--plank)"/>`;
+    out+=o.content(side,px,py);}
+  // fléau par-dessus les fils
+  g+=`<rect x="${-H-12}" y="-7" width="${2*H+24}" height="14" rx="7" transform="translate(${P[0]},${P[1]}) rotate(${r2((o.tilt||0)*180/Math.PI)})" style="fill:var(--ink)"/><circle cx="${P[0]}" cy="${P[1]}" r="9" style="fill:var(--paper);stroke:var(--ink);stroke-width:3"/>`;
+  return g+out;}
+// contenu d'un plateau : boîtes x et cubes
+function items(px,py,n,leave,kL,opt){let o='';const nx=n.x+leave.x,nu=n.u+leave.u;const bw=44,gb=6,per=4,cw=22,gc=3,perc=8;
+  let y=py-4;const rowsX=Math.ceil(nx/per);
+  for(let i=0;i<nx;i++){const r=Math.floor(i/per),c=i%per,inRow=Math.min(per,nx-r*per);const x=px-(inRow*(bw+gb)-gb)/2+c*(bw+gb),yy=y-(r+1)*(bw+gb)+gb;
+    const gone=i>=n.x,al=gone?1-kL:1,dy=gone?-40*kL:0;
+    o+=`<g style="opacity:${r2(al)}" transform="translate(0,${r2(dy)})"><rect x="${r2(x)}" y="${r2(yy)}" width="${bw}" height="${bw}" rx="7" style="fill:var(--c1);stroke:var(--paper);stroke-width:2"/><text x="${r2(x+bw/2)}" y="${r2(yy+bw/2+8)}" text-anchor="middle" style="font:700 ${opt.xTxt&&String(opt.xTxt).length>2?15:22}px var(--font-d);fill:#fff">${opt.xTxt??'x'}</text></g>`;}
+  y-=rowsX*(bw+gb);
+  for(let i=0;i<nu;i++){const r=Math.floor(i/perc),c=i%perc,inRow=Math.min(perc,nu-r*perc);const x=px-(inRow*(cw+gc)-gc)/2+c*(cw+gc),yy=y-(r+1)*(cw+gc)+gc;
+    const gone=i>=n.u,al=gone?1-kL:1,dy=gone?-40*kL:0;
+    o+=`<g style="opacity:${r2(al)}" transform="translate(0,${r2(dy)})"><rect x="${r2(x)}" y="${r2(yy)}" width="${cw}" height="${cw}" rx="4" style="fill:var(--c2);stroke:var(--paper);stroke-width:1.5"/><text x="${r2(x+cw/2)}" y="${r2(yy+cw/2+4.5)}" text-anchor="middle" style="font:700 12px var(--font-d);fill:#fff">1</text></g>`;}
+  return o;}
+function legend(xName,uName){return `<rect x="24" y="512" width="22" height="22" rx="5" style="fill:var(--c1)"/><text x="35" y="528" text-anchor="middle" style="font:700 13px var(--font-d);fill:#fff">x</text><text class="sm f-ink" x="54" y="528">${xName}</text><rect x="${xName.length>12?250:180}" y="514" width="18" height="18" rx="4" style="fill:var(--c2)"/><text x="${(xName.length>12?250:180)+9}" y="527" text-anchor="middle" style="font:700 11px var(--font-d);fill:#fff">1</text><text class="sm f-ink" x="${(xName.length>12?250:180)+26}" y="528">${uName}</text>`;}
+
+/* ---------- 1. Tester ---------- */
+const EQ1=[
+  {t:'3x + 2 = 5x − 4',L:x=>3*x+2,R:x=>5*x-4,Ls:v=>`3 × ${par(v)} + 2`,Rs:v=>`5 × ${par(v)} − 4`,sol:'une seule solution : 3'},
+  {t:'4x − 7 = 2x + 1',L:x=>4*x-7,R:x=>2*x+1,Ls:v=>`4 × ${par(v)} − 7`,Rs:v=>`2 × ${par(v)} + 1`,sol:'une seule solution : 4'},
+  {t:'2(x + 4) = 3x + 5',L:x=>2*(x+4),R:x=>3*x+5,Ls:v=>`2 × (${fr(v)} + 4)`,Rs:v=>`3 × ${par(v)} + 5`,sol:'une seule solution : 3'},
+  {t:'x² + 1 = 2x + 4',L:x=>x*x+1,R:x=>2*x+4,Ls:v=>`${par(v)}² + 1`,Rs:v=>`2 × ${par(v)} + 4`,sol:'deux solutions : −1 et 3'}];
+const S1={e:0,x:5,tilt:0};
+function tgt1(){const E=EQ1[S1.e],d=E.R(S1.x)-E.L(S1.x);return Math.abs(d)<1e-9?0:clamp(d*0.03,-0.22,0.22)+Math.sign(d)*0.02;}
+function render1(){const E=EQ1[S1.e],v=S1.x,a=E.L(v),b=E.R(v),ok=Math.abs(a-b)<1e-9;let o='';
+  o+=`<text class="big f-ink" x="320" y="48" text-anchor="middle">${E.t}</text>`;
+  o+=balance({tilt:S1.tilt,content:(side,px,py)=>{const val=side==='L'?a:b,str=side==='L'?E.Ls(v):E.Rs(v);
+    const w=Math.max(96,String(fr(val)).length*20+40);return `<path d="M${r2(px-w/2+10)},${r2(py-70)}L${r2(px+w/2-10)},${r2(py-70)}L${r2(px+w/2)},${r2(py-2)}L${r2(px-w/2)},${r2(py-2)}Z" style="fill:${side==='L'?'var(--c1)':'var(--c2)'}"/><circle cx="${r2(px)}" cy="${r2(py-80)}" r="9" style="fill:none;stroke:${side==='L'?'var(--c1)':'var(--c2)'};stroke-width:4"/><text x="${r2(px)}" y="${r2(py-28)}" text-anchor="middle" style="font:700 26px var(--font-d);fill:#fff">${fr(val)}</text><text class="lab halo f-ink" x="${r2(px)}" y="${r2(py+44)}" text-anchor="middle">${str}</text>`;}});
+  o+=`<text class="lab ${ok?'f-ok':'f-far'}" x="320" y="92" text-anchor="middle">${ok?`Équilibre : ${fr(v)} est solution !`:`Déséquilibre : ${fr(v)} n'est pas solution.`}</text>`;
+  o+=`<text class="tip" x="20" y="545">Membre de gauche (bleu) et membre de droite (orange), calculés pour x = ${fr(v)}.</text>`;
+  $('svg1').innerHTML=o;
+  $('eq1').innerHTML=`<small>Pour x = ${fr(v)}</small><div>${E.Ls(v)} = ${fr(a)}</div><div>${E.Rs(v)} = ${fr(b)}</div><div class="${ok?'yes':'no'}">${fr(a)} ${ok?'=':'≠'} ${fr(b)} donc ${fr(v)} ${ok?'est':'n\'est pas'} solution de l'équation.</div>`;
+  $('def1').innerHTML=`<div><b>Tester un nombre</b>, c'est calculer séparément les deux membres, puis comparer les résultats.</div><div>Cette équation a ${E.sol}.</div>`;
+  if(document.activeElement!==$('x1v'))$('x1v').value=v;$('x1').value=v;
+  document.querySelectorAll('#pre1 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S1.e));}
+function step1(){const t=tgt1();if(Math.abs(t-S1.tilt)>0.0008){S1.tilt=reduce?t:S1.tilt+(t-S1.tilt)*0.12;render1();}else if(S1.tilt!==t){S1.tilt=t;render1();}}
+EQ1.forEach((E,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=E.t;c.onclick=()=>{S1.e=i;render1();};$('pre1').appendChild(c);});
+$('x1').oninput=e=>{S1.x=+e.target.value;render1();};
+const in1=()=>{const v=+String($('x1v').value).replace(',','.');if(isFinite(v)&&$('x1v').value!==''){S1.x=v;render1();}};
+$('x1v').addEventListener('input',in1);$('x1v').addEventListener('change',()=>{in1();$('x1v').value=S1.x;});
+
+/* ---------- 2. Résoudre ---------- */
+const EQ2=[[3,2,1,8],[4,1,2,7],[2,9,5,0],[5,3,2,12],[2,11,4,3]];// ax + b = cx + d
+const S2={e:0,L:null,R:null,hist:[],anim:null,msg:''};
+function sol2(){const [a,b,c,d]=EQ2[S2.e];return (d-b)/(a-c);}
+function reset2(){const [a,b,c,d]=EQ2[S2.e];S2.L={x:a,u:b};S2.R={x:c,u:d};S2.hist=[{eq:`${ex(a,b)} = ${ex(c,d)}`}];S2.anim=null;S2.msg='';render2();}
+const solved2=()=>(S2.L.x===1&&S2.L.u===0&&S2.R.x===0)||(S2.R.x===1&&S2.R.u===0&&S2.L.x===0);
+// une opération sur les deux plateaux, animée : type 'x' | 'u' | 'd', n = quantité ou diviseur
+function op2(type,n,label){if(S2.anim)return;const L=S2.L,R=S2.R;let nl,nr,lv;
+  if(type==='x'){if(L.x<n||R.x<n){S2.msg='Impossible : il faut une boîte x de chaque côté.';render2();return;}nl={x:L.x-n,u:L.u};nr={x:R.x-n,u:R.u};lv={L:{x:n,u:0},R:{x:n,u:0}};}
+  else if(type==='u'){if(L.u<n||R.u<n){S2.msg='Impossible : il faut des cubes de chaque côté.';render2();return;}nl={x:L.x,u:L.u-n};nr={x:R.x,u:R.u-n};lv={L:{x:0,u:n},R:{x:0,u:n}};}
+  else{const k=n;if(k<2||L.x%k||L.u%k||R.x%k||R.u%k){S2.msg='Impossible : on ne peut pas partager chaque plateau en parts égales.';render2();return;}
+    nl={x:L.x/k,u:L.u/k};nr={x:R.x/k,u:R.u/k};lv={L:{x:L.x-nl.x,u:L.u-nl.u},R:{x:R.x-nr.x,u:R.u-nr.u}};}
+  const eqBefore=`${ex(L.x,L.u)} = ${ex(R.x,R.u)}`;
+  const wr=type==='x'?`${ex(L.x,L.u)} − ${n===1?'':n}x = ${ex(R.x,R.u)} − ${n===1?'':n}x`:type==='u'?`${ex(L.x,L.u)} − ${n} = ${ex(R.x,R.u)} − ${n}`:`(${ex(L.x,L.u)}) ÷ ${n} = (${ex(R.x,R.u)}) ÷ ${n}`;
+  S2.msg='';S2.L=nl;S2.R=nr;S2.anim={lv,t0:performance.now()};
+  S2.hist.push({op:label,detail:wr.replace(/^\((\d*x)\) ÷/,'$1 ÷').replace(/= \((\d+)\) ÷/,'= $1 ÷'),eq:`${ex(nl.x,nl.u)} = ${ex(nr.x,nr.u)}`});
+  anim2();}
+function next2(){const L=S2.L,R=S2.R;if(solved2()||S2.anim)return;
+  if(L.x&&R.x){const m=Math.min(L.x,R.x);op2('x',m,`On enlève ${m===1?'une boîte x':m+' boîtes x'} de chaque côté`);return;}
+  const xs=L.x?L:R,os=L.x?R:L;
+  if(xs.u){const m=Math.min(xs.u,os.u);op2('u',m,`On enlève ${m} cube${m>1?'s':''} de chaque côté`);return;}
+  if(xs.x>1){op2('d',xs.x,`On partage chaque plateau en ${xs.x} parts égales`);}}
+function anim2(){const go=()=>{render2();if(S2.anim&&performance.now()-S2.anim.t0<(reduce?0:900))requestAnimationFrame(go);else{S2.anim=null;render2();}};requestAnimationFrame(go);}
+function render2(){const k=S2.anim?clamp((performance.now()-S2.anim.t0)/(reduce?1:900),0,1):1;const lv=S2.anim&&k<1?S2.anim.lv:{L:{x:0,u:0},R:{x:0,u:0}};
+  const done=solved2()&&!S2.anim,x=sol2();let o='';
+  o+=`<text class="big ${done?'f-ok':'f-ink'}" x="320" y="48" text-anchor="middle">${ex(S2.L.x,S2.L.u)} = ${ex(S2.R.x,S2.R.u)}</text>`;
+  o+=balance({tilt:0,content:(side,px,py)=>items(px,py,side==='L'?S2.L:S2.R,lv[side],k,{xTxt:done?fr(x):'x'})});
+  if(S2.msg)o+=`<text class="lab f-far" x="320" y="88" text-anchor="middle">${S2.msg}</text>`;
+  else if(done)o+=`<text class="lab f-ok" x="320" y="88" text-anchor="middle">Une boîte contient ${fr(x)} cubes : la solution est x = ${fr(x)}.</text>`;
+  else if(S2.anim)o+=`<text class="lab f-acc" x="320" y="88" text-anchor="middle">${S2.hist[S2.hist.length-1].op}</text>`;
+  o+=legend('une boîte = x cubes','un cube = 1');
+  $('svg2').innerHTML=o;
+  const [a,b,c,d]=EQ2[S2.e];
+  $('hist2').innerHTML=S2.hist.map((h,i)=>`${h.op?`<div class="op">${h.op} :</div><div style="font-size:15px;color:var(--muted)">${h.detail}</div>`:''}<div class="${i===S2.hist.length-1&&done?'cur':''}">${h.eq}</div>`).join('')+(done?`<div class="op" style="color:var(--ok)">Vérification : ${a} × ${fr(x)} + ${b} = ${fr(a*x+b)} et ${c} × ${fr(x)} + ${d} = ${fr(c*x+d)}</div>`:'');
+  $('next2').disabled=done;
+  const L=S2.L,R=S2.R,xs=L.x?L:R;$('opd2').textContent=`÷ ${xs.x>1?xs.x:''} des deux côtés`.replace('÷  ','÷ ');
+  document.querySelectorAll('#pre2 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S2.e));}
+EQ2.forEach((E,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=`${ex(E[0],E[1])} = ${ex(E[2],E[3])}`;c.onclick=()=>{S2.e=i;reset2();};$('pre2').appendChild(c);});
+$('next2').onclick=next2;$('reset2').onclick=reset2;$('svg2').addEventListener('click',next2);
+$('opx2').onclick=()=>op2('x',1,'On enlève une boîte x de chaque côté');
+$('opu2').onclick=()=>op2('u',1,'On enlève un cube de chaque côté');
+$('opd2').onclick=()=>{const xs=S2.L.x?S2.L:S2.R;op2('d',xs.x,`On partage chaque plateau en ${xs.x} parts égales`);};
+
+/* ---------- 3. Mettre en équation ---------- */
+const PB3=[
+  {nom:'Cartes',txt:'Léa a 3 paquets de cartes identiques et 5 cartes en vrac. Tom a 1 paquet du même type et 17 cartes en vrac. Ils ont autant de cartes l\'un que l\'autre. Combien y a-t-il de cartes dans un paquet ?',
+   A:'Léa',B:'Tom',inc:'le nombre de cartes dans un paquet',a:3,b:5,c:1,d:17,xn:'un paquet = x cartes',un:'une carte = 1',unit:'cartes'},
+  {nom:'Cahiers',txt:'Au magasin, 5 cahiers et un stylo à 2 € coûtent autant que 3 cahiers et une trousse à 6 €. Tous les cahiers ont le même prix. Combien coûte un cahier ?',
+   A:'5 cahiers + stylo',B:'3 cahiers + trousse',inc:'le prix d\'un cahier, en euros',a:5,b:2,c:3,d:6,xn:'un cahier = x €',un:'une pièce = 1 €',unit:'€'},
+  {nom:'Billes',txt:'Sami a 4 sachets de billes et 3 billes. Inès a 2 sachets identiques et 15 billes. Ils ont le même nombre de billes. Combien y a-t-il de billes dans un sachet ?',
+   A:'Sami',B:'Inès',inc:'le nombre de billes dans un sachet',a:4,b:3,c:2,d:15,xn:'un sachet = x billes',un:'une bille = 1',unit:'billes'}];
+const S3={p:0,step:0};
+function render3(){const P=PB3[S3.p],st=S3.step,x=(P.d-P.b)/(P.a-P.c);let o='';
+  const eq=`${ex(P.a,P.b)} = ${ex(P.c,P.d)}`;
+  o+=`<text class="big f-ink" x="320" y="48" text-anchor="middle">${st>=3?eq:st>=1?'x = '+P.inc:'Que cherche-t-on ?'}</text>`;
+  if(st===1||st===2)o+=`<text class="lab f-muted" x="320" y="48" text-anchor="middle"></text>`;
+  o+=balance({tilt:0,content:(side,px,py)=>{const n=side==='L'?{x:P.a,u:P.b}:{x:P.c,u:P.d};
+    let s=items(px,py,n,{x:0,u:0},1,{xTxt:st>=4?fr(x):(st>=1?'x':'?')});
+    s+=`<text class="lab f-ink" x="${r2(px)}" y="${r2(py+42)}" text-anchor="middle">${side==='L'?P.A:P.B}</text>`;
+    const show=side==='L'?st>=2:st>=3;if(show)s+=`<text class="lab halo f-acc" x="${r2(px)}" y="${r2(py+66)}" text-anchor="middle">${side==='L'?ex(P.a,P.b):ex(P.c,P.d)}${st>=5?' = '+fr(side==='L'?P.a*x+P.b:P.c*x+P.d):''}</text>`;return s;}});
+  o+=`<text class="lab ${st>=4?'f-ok':'f-ink'}" x="320" y="88" text-anchor="middle">${['Les deux côtés sont égaux : la balance est en équilibre.','On choisit l\'inconnue : x.','On écrit le côté gauche en fonction de x.','On écrit le côté droit : on obtient une équation.',`On résout : x = ${fr(x)}.`,'On vérifie : les deux côtés sont bien égaux.'][st]}</text>`;
+  o+=legend(P.xn,P.un);
+  $('svg3').innerHTML=o;$('txt3').textContent=P.txt;
+  const L=[`<b>Choisir l'inconnue :</b> x = ${P.inc}.`,`<b>Côté ${P.A} :</b> ${P.a} × x + ${P.b} = ${ex(P.a,P.b)}`,`<b>Côté ${P.B} :</b> ${ex(P.c,P.d)}, d'où l'équation <b>${eq}</b>`,
+    `<b>Résoudre :</b> ${ex(P.a,P.b)} − ${P.c===1?'':P.c}x = ${ex(P.c,P.d)} − ${P.c===1?'':P.c}x, donc ${ex(P.a-P.c,P.b)} = ${P.d}, puis ${ex(P.a-P.c,0)} = ${P.d-P.b}, et x = ${P.d-P.b} ÷ ${P.a-P.c} = ${fr(x)}.`,
+    `<b>Vérifier et conclure :</b> ${P.a} × ${fr(x)} + ${P.b} = ${fr(P.a*x+P.b)} et ${P.c} × ${fr(x)} + ${P.d} = ${fr(P.c*x+P.d)}. Réponse : ${fr(x)} ${P.unit}.`];
+  $('steps3').innerHTML=L.map((t,i)=>`<li class="${i<st?'':'off'}">${t}</li>`).join('');
+  $('next3').disabled=st>=5;
+  document.querySelectorAll('#pre3 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S3.p));}
+const next3=()=>{if(S3.step<5){S3.step++;render3();}};
+$('next3').onclick=next3;$('svg3').addEventListener('click',next3);$('reset3').onclick=()=>{S3.step=0;render3();};
+PB3.forEach((P,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=P.nom;c.onclick=()=>{S3.p=i;S3.step=0;render3();};$('pre3').appendChild(c);});
+
+/* ---------- Onglets ---------- */
+let current='tester';
+const views=['tester','resoudre','probleme'];
+function show(v){if(!views.includes(v))v='tester';current=v;
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+(function loop(){try{if(!document.hidden&&current==='tester')step1();}catch(e){console.error(e);}requestAnimationFrame(loop);})();
+
+render1();reset2();render3();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,271 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Nombres relatifs animés</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : graphique en grand à gauche (à projeter), commandes et calculs à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --c1:#2f6fd6; --c2:#e08a1e; --c3:#1f9e74; --c4:#b9459c; --mean:#c46a00; --med:#0a8587; --tok:#2f6fd6; --far:#c9334d; --plank:#b98a54;
+  --ok:#1b7f45; --ok-soft:#e1f3e8;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh;touch-action:none;user-select:none;-webkit-user-select:none;}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 11px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.eq{border-radius:12px;background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font:600 17px/1.4 var(--font-d);font-variant-numeric:tabular-nums}
+.eq small{font:600 13px/1.2 var(--font-d);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vocab{border-radius:12px;padding:12px 14px;font-size:15px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok);display:flex;flex-direction:column;gap:4px}
+.vocab b{font-family:var(--font-d)}
+.counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cnt{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.cnt span{font:600 13px/1.2 var(--font-d);color:var(--muted)}
+.cnt b{font:700 24px/1 var(--font-d);font-variant-numeric:tabular-nums}
+
+.btn:disabled{opacity:.45;cursor:default}
+.tb{width:100%;border-collapse:collapse;font:600 15px/1.3 var(--font-d)}
+.tb td{padding:5px 6px;border-top:1px solid var(--line)}
+.pos{color:var(--c1)}.neg{color:var(--far)}
+
+/* SVG */
+.lab{font:700 16px var(--font-d)}
+.sm{font:600 13px var(--font-d)}
+.f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)} .f-ok{fill:var(--ok)} .f-far{fill:var(--far)} .f-acc{fill:var(--accent)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.tip{font:600 14px var(--font-b);fill:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e (et 3e) · Nombres relatifs</p>
+      <h1>Calculer avec les nombres relatifs</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-droite" data-view="droite" aria-selected="true">1. Droite graduée</button>
+      <button class="tab" role="tab" id="tab-jetons" data-view="jetons" aria-selected="false">2. Jetons</button>
+      <button class="tab" role="tab" id="tab-signes" data-view="signes" aria-selected="false">3. Règle des signes</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. DROITE -->
+  <section class="view" id="v-droite" role="tabpanel" aria-labelledby="tab-droite">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 560" role="img" aria-label="Addition de relatifs vue comme des déplacements sur une droite graduée"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Additionner = se déplacer</h2>
+        <p class="hint">Un nombre positif fait avancer vers la droite, un nombre négatif vers la gauche. Soustraire, c'est ajouter l'opposé.</p>
+      </div>
+      <div class="chips" id="pre1"></div>
+      <div class="ctl"><div class="ctl-head"><label for="a1">Premier nombre</label><span class="val" id="a1v"></span></div><input type="range" id="a1" min="-10" max="10" step="1" value="3"></div>
+      <div class="ctl"><div class="ctl-head"><label for="b1">Deuxième nombre</label><span class="val" id="b1v"></span></div><input type="range" id="b1" min="-10" max="10" step="1" value="-5"></div>
+      <div class="chips" id="op1"></div>
+      <div class="row"><button class="btn primary" type="button" id="next1">Étape suivante ▶</button><button class="btn" type="button" id="reset1">Recommencer</button></div>
+      <div class="eq" id="eq1"></div>
+    </div>
+  </section>
+
+  <!-- 2. JETONS -->
+  <section class="view" id="v-jetons" role="tabpanel" aria-labelledby="tab-jetons" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 560" role="img" aria-label="Jetons positifs et négatifs qui s'annulent par paires"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Les jetons + et −</h2>
+        <p class="hint">Un jeton + vaut 1, un jeton − vaut −1. Une paire (+, −) vaut 0 : on peut l'enlever ou l'ajouter sans changer la valeur.</p>
+      </div>
+      <div class="chips" id="pre2"></div>
+      <div class="row"><button class="btn primary" type="button" id="next2">Étape suivante ▶</button><button class="btn" type="button" id="reset2">Recommencer</button></div>
+      <div class="eq" id="eq2"></div>
+    </div>
+  </section>
+
+  <!-- 3. SIGNES -->
+  <section class="view" id="v-signes" role="tabpanel" aria-labelledby="tab-signes" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 560" role="img" aria-label="Suite de produits qui fait apparaître la règle des signes"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>D'où vient la règle des signes ?</h2>
+        <p class="hint">On multiplie par des nombres de plus en plus petits : le résultat change toujours de la même quantité, même quand on passe sous zéro.</p>
+      </div>
+      <div class="row"><button class="btn primary" type="button" id="next3">Ligne suivante ▶</button><button class="btn" type="button" id="reset3">Recommencer</button></div>
+      <table class="tb" id="rules3"></table>
+      <div class="vocab" id="def3"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=x=>Math.round(x*100)/100;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const n=v=>v<0?'−'+(-v):String(v);// écriture d'un relatif
+const p=v=>v<0?'('+n(v)+')':n(v);// entre parenthèses si négatif
+const kOf=S=>S.t0?clamp((performance.now()-S.t0)/(reduce?1:650),0,1):1;
+const loop=(S,render)=>{S.t0=performance.now();const go=()=>{render();if(kOf(S)<1)requestAnimationFrame(go);};requestAnimationFrame(go);};
+
+/* ---------- 1. Droite graduée ---------- */
+const S1={a:3,b:-5,op:'+',st:0,t0:0};
+const X=v=>320+v*25;
+function arrow(x1,x2,y,col,lab,k){const xe=x1+(x2-x1)*k;let o=`<line x1="${r2(x1)}" y1="${y}" x2="${r2(xe)}" y2="${y}" style="stroke:${col};stroke-width:5;stroke-linecap:round"/>`;
+  if(Math.abs(x2-x1)>1){const d=Math.sign(x2-x1);o+=`<path d="M${r2(xe)},${y}l${-d*14},-9v18z" style="fill:${col}"/>`;}
+  if(k>=1)o+=`<text class="lab halo" x="${r2((x1+x2)/2)}" y="${y-14}" text-anchor="middle" style="fill:${col}">${lab}</text>`;return o;}
+function render1(){const {a,b,op,st}=S1,k=kOf(S1),bb=op==='+'?b:-b,res=a+bb;let o='';
+  const expr=`${p(a)} ${op} ${p(b)}`;
+  o+=`<text x="320" y="56" text-anchor="middle" style="font:700 32px var(--font-d);fill:var(--ink)">${expr}${op==='−'&&st>=1?` = ${p(a)} + ${p(bb)}`:''}${st>=3?` = ${n(res)}`:''}</text>`;
+  if(op==='−'&&st>=1)o+=`<text class="lab f-acc" x="320" y="92" text-anchor="middle">Soustraire ${p(b)}, c'est ajouter son opposé ${p(bb)}.</text>`;
+  // droite
+  const yL=380;o+=`<line x1="${X(-11.5)}" y1="${yL}" x2="${X(11.5)}" y2="${yL}" style="stroke:var(--ink);stroke-width:2"/><path d="M${X(11.5)},${yL}l-10,-6v12z" style="fill:var(--ink)"/>`;
+  for(let v=-11;v<=11;v++)o+=`<line x1="${X(v)}" y1="${yL-(v%5?6:10)}" x2="${X(v)}" y2="${yL+(v%5?6:10)}" style="stroke:var(--ink);stroke-width:${v===0?3:1.5}"/>${v%5===0||v===a||v===res?`<text class="sm" x="${X(v)}" y="${yL+28}" text-anchor="middle" style="fill:${v===0?'var(--ink)':'var(--muted)'}">${n(v)}</text>`:''}`;
+  o+=`<circle cx="${X(0)}" cy="${yL}" r="6" style="fill:var(--ink)"/>`;
+  const ok1=st>=1?1:0;
+  if(st>=1||op==='+'){const k1=st===1?k:1;if(st>=1)o+=arrow(X(0),X(a),300,'var(--c1)',`${n(a)}`,k1)+`<line x1="${X(a)}" y1="300" x2="${X(a)}" y2="${yL}" style="stroke:var(--c1);stroke-width:1.5;stroke-dasharray:4 4;opacity:${k1}"/>`;}
+  if(st>=2){const k2=st===2?k:1;o+=arrow(X(a),X(a+bb),240,'var(--c2)',`${op==='−'?'+ ':''}${p(bb)}`.replace('+ (','+ ('),k2)+`<line x1="${X(a+bb)}" y1="240" x2="${X(a+bb)}" y2="${yL}" style="stroke:var(--c2);stroke-width:1.5;stroke-dasharray:4 4;opacity:${k2}"/>`;}
+  if(st>=3)o+=`<circle cx="${X(res)}" cy="${yL}" r="10" style="fill:var(--ok);stroke:var(--paper);stroke-width:3"/><text class="lab f-ok halo" x="${X(res)}" y="${yL+54}" text-anchor="middle">${n(res)}</text>`;
+  o+=`<text class="tip" x="20" y="545">${st<3?'Clique pour passer à l\'étape suivante.':'On part de 0, on fait le premier déplacement, puis le second.'}</text>`;
+  $('svg1').innerHTML=o;
+  $('a1').value=a;$('b1').value=b;$('a1v').textContent=n(a);$('b1v').textContent=n(b);
+  const same=a*bb>0;
+  $('eq1').innerHTML=st>=3?`<small>Résultat</small><div>${expr} = ${n(res)}</div><div style="font-size:15px;color:var(--muted)">${a===0||bb===0?'':same?`Même signe : on ajoute les distances à zéro (${Math.abs(a)} + ${Math.abs(bb)}) et on garde le signe.`:`Signes contraires : on soustrait les distances à zéro (${Math.max(Math.abs(a),Math.abs(bb))} − ${Math.min(Math.abs(a),Math.abs(bb))}) et on prend le signe du nombre le plus éloigné de zéro.`}</div>`:`<small>Calcul</small><div>${expr} = ?</div>`;
+  $('next1').disabled=st>=3;document.querySelectorAll('#op1 .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.op===op));}
+const next1=()=>{if(S1.st<3){S1.st++;loop(S1,render1);}};
+$('next1').onclick=next1;$('svg1').addEventListener('click',next1);$('reset1').onclick=()=>{S1.st=0;S1.t0=0;render1();};
+$('a1').oninput=e=>{S1.a=+e.target.value;S1.st=0;render1();};$('b1').oninput=e=>{S1.b=+e.target.value;S1.st=0;render1();};
+['+','−'].forEach(op=>{const c=document.createElement('button');c.type='button';c.className='chip';c.dataset.op=op;c.textContent=op==='+'?'Addition':'Soustraction';c.onclick=()=>{S1.op=op;S1.st=0;render1();};$('op1').appendChild(c);});
+[[3,5,'+'],[3,-5,'+'],[-4,-3,'+'],[-2,7,'+'],[3,5,'−'],[-2,-6,'−']].forEach(([a,b,op])=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=`${p(a)} ${op} ${p(b)}`;c.onclick=()=>{Object.assign(S1,{a,b,op,st:0,t0:0});render1();};$('pre1').appendChild(c);});
+
+/* ---------- 2. Jetons ---------- */
+// une étape = {P:[marques], N:[marques], msg, eq} ; marques : '' | 'new' | 'pair' | 'gone'
+function framesAdd(a,b){const F=[];const P0=Math.max(a,0),N0=Math.max(-a,0),Pb=Math.max(b,0),Nb=Math.max(-b,0);
+  const arr=(c,m)=>Array(c).fill(m);
+  F.push({P:arr(P0,''),N:arr(N0,''),msg:`On pose ${n(a)} : ${a>=0?a+' jeton'+(a>1?'s':'')+' +':(-a)+' jeton'+(-a>1?'s':'')+' −'}.`});
+  const P1=arr(P0,'').concat(arr(Pb,'new')),N1=arr(N0,'').concat(arr(Nb,'new'));F.push({P:P1,N:N1,msg:`On ajoute ${p(b)}.`});
+  const m=Math.min(P1.length,N1.length);
+  if(m>0){F.push({P:P1.map((x,i)=>i<m?'pair':''),N:N1.map((x,i)=>i<m?'pair':''),msg:`${m} paire${m>1?'s':''} (+, −) : chacune vaut 0.`,keep:1});
+    F.push({P:P1.map((x,i)=>i<m?'gone':''),N:N1.map((x,i)=>i<m?'gone':''),msg:`On enlève les paires nulles.`,keep:1});}
+  const r=a+b;F.push({P:arr(Math.max(r,0),''),N:arr(Math.max(-r,0),''),msg:`Il reste ${r===0?'aucun jeton : 0':Math.abs(r)+' jeton'+(Math.abs(r)>1?'s':'')+(r>0?' + : ':' − : ')+n(r)}.`,res:r});return F;}
+function framesSub(a,b){const F=[];let P=Math.max(a,0),N=Math.max(-a,0);const arr=(c,m)=>Array(c).fill(m);
+  F.push({P:arr(P,''),N:arr(N,''),msg:`On pose ${n(a)}.`});
+  const sb=b>0?1:-1,m=Math.abs(b),have=sb>0?P:N;let Pm=arr(P,''),Nm=arr(N,'');
+  if(have<m){const k=m-have;Pm=Pm.concat(arr(k,'new'));Nm=Nm.concat(arr(k,'new'));F.push({P:Pm.slice(),N:Nm.slice(),msg:`Il faut enlever ${m} jeton${m>1?'s':''} ${sb>0?'+':'−'}, mais il n'y en a que ${have}. On ajoute ${k} paire${k>1?'s':''} nulle${k>1?'s':''} : la valeur ne change pas.`,keep:1});}
+  else F.push({P:Pm.slice(),N:Nm.slice(),msg:`Il faut enlever ${m} jeton${m>1?'s':''} ${sb>0?'+':'−'}.`});
+  // on enlève les m jetons du bon signe (les derniers)
+  const tgt=sb>0?Pm:Nm,L=tgt.length;const marked=tgt.map((x,i)=>i>=L-m?'gone':x==='new'?'':x);
+  const other=(sb>0?Nm:Pm).map(x=>x==='new'?'':x);
+  F.push(sb>0?{P:marked,N:other,msg:`On enlève ${m} jeton${m>1?'s':''} +.`}:{P:other,N:marked,msg:`On enlève ${m} jeton${m>1?'s':''} −.`});
+  let P2=(sb>0?L-m:Pm.length),N2=(sb>0?Nm.length:L-m);
+  const q=Math.min(P2,N2);
+  if(q>0){F.push({P:arr(P2,'').map((x,i)=>i<q?'gone':''),N:arr(N2,'').map((x,i)=>i<q?'gone':''),msg:`Les paires (+, −) qui restent valent 0 : on les enlève.`,keep:1});P2-=q;N2-=q;}
+  const r=a-b;F.push({P:arr(Math.max(r,0),''),N:arr(Math.max(-r,0),''),msg:`Il reste ${r===0?'0':n(r)}. Enlever ${p(b)} revient à ajouter ${p(-b)}.`,res:r});return F;}
+function framesOpp(a,b){const arr=(c,m)=>Array(c).fill(m);const F=[];const P=Math.max(a,0)+Math.max(b,0),N=Math.max(-a,0)+Math.max(-b,0);
+  F.push({P:arr(P,''),N:arr(N,''),msg:`On pose ${p(a)} + ${p(b)}.`});
+  F.push({P:arr(N,'new'),N:arr(P,'new'),msg:`Prendre l'opposé, c'est retourner chaque jeton : les + deviennent −, les − deviennent +.`});
+  F.push({P:arr(N,''),N:arr(P,''),msg:`−(${n(a)} + ${p(b)}) = ${n(-a)} + ${p(-b)} : on change le signe de chaque terme.`,res:-(a+b)});return F;}
+const PB2=[{t:'5 + (−3)',f:()=>framesAdd(5,-3)},{t:'(−2) + (−4)',f:()=>framesAdd(-2,-4)},{t:'(−6) + 4',f:()=>framesAdd(-6,4)},{t:'3 − 5',f:()=>framesSub(3,5)},{t:'(−2) − (−5)',f:()=>framesSub(-2,-5)},{t:'2 − (−3)',f:()=>framesSub(2,-3)},{t:'−(4 + (−6))  (3e)',f:()=>framesOpp(4,-6)}];
+const S2={p:0,st:0,t0:0};
+function tok(x,y,s,m,k){const c=s>0?'var(--c1)':'var(--far)';const gone=m==='gone',al=gone?1-0.85*k:1,dy=gone?-30*k:0;
+  return `<g style="opacity:${r2(al)}" transform="translate(0,${r2(dy)})"><circle cx="${x}" cy="${y}" r="21" style="fill:${c};stroke:${m==='new'?'var(--accent)':m==='pair'?'var(--ok)':'var(--paper)'};stroke-width:${m==='new'||m==='pair'?4:2}"/><text x="${x}" y="${y+9}" text-anchor="middle" style="font:700 26px var(--font-d);fill:#fff">${s>0?'+':'−'}</text></g>`;}
+function render2(){const P=PB2[S2.p],F=P.f(),st=Math.min(S2.st,F.length-1),fr=F[st],k=kOf(S2);let o='';
+  o+=`<text x="320" y="52" text-anchor="middle" style="font:700 30px var(--font-d);fill:var(--ink)">${P.t.replace('  (3e)','')}${fr.res!==undefined?' = '+n(fr.res):''}</text>`;
+  const cols=Math.max(fr.P.length,fr.N.length,1),gap=Math.min(52,560/cols),x0=320-(cols-1)*gap/2;
+  o+=`<text class="sm f-muted" x="20" y="206">jetons +</text><text class="sm f-muted" x="20" y="306">jetons −</text>`;
+  fr.P.forEach((m,i)=>o+=tok(r2(x0+i*gap),200,1,m,k));fr.N.forEach((m,i)=>o+=tok(r2(x0+i*gap),300,-1,m,k));
+  fr.P.forEach((m,i)=>{if(m==='pair'&&fr.N[i]==='pair')o+=`<rect x="${r2(x0+i*gap-25)}" y="174" width="50" height="152" rx="14" style="fill:none;stroke:var(--ok);stroke-width:2;stroke-dasharray:6 4"/><text class="sm f-ok" x="${r2(x0+i*gap)}" y="346" text-anchor="middle">0</text>`;});
+  o+=`<foreignObject x="40" y="380" width="560" height="120"><div xmlns="http://www.w3.org/1999/xhtml" style="font:600 19px/1.4 var(--font-d);color:var(--ink);text-align:center">${fr.msg}</div></foreignObject>`;
+  o+=`<text class="tip" x="20" y="545">${st<F.length-1?'Clique pour passer à l\'étape suivante.':'Une paire (+, −) vaut zéro.'}</text>`;
+  $('svg2').innerHTML=o;
+  $('eq2').innerHTML=`<small>Étape ${st+1} / ${F.length}</small><div>Valeur : ${n(fr.P.filter(m=>m!=='gone').length-fr.N.filter(m=>m!=='gone').length)}${fr.keep?' (inchangée par les paires nulles)':''}</div>`;
+  $('next2').disabled=st>=F.length-1;document.querySelectorAll('#pre2 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S2.p));}
+const next2=()=>{if(S2.st<PB2[S2.p].f().length-1){S2.st++;loop(S2,render2);}};
+$('next2').onclick=next2;$('svg2').addEventListener('click',next2);$('reset2').onclick=()=>{S2.st=0;S2.t0=0;render2();};
+PB2.forEach((P,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=P.t;c.onclick=()=>{S2.p=i;S2.st=0;S2.t0=0;render2();};$('pre2').appendChild(c);});
+
+/* ---------- 3. Règle des signes ---------- */
+const S3={st:1,t0:0};// st = nombre de lignes affichées (sur 14)
+function render3(){const st=S3.st,blk=st<=7?0:1,f=blk?-3:3,shown=blk?st-7:st;let o='';
+  o+=`<text x="320" y="44" text-anchor="middle" style="font:700 24px var(--font-d);fill:var(--ink)">${blk?'On multiplie −3 par 3, 2, 1, 0, −1…':'On multiplie 3 par 3, 2, 1, 0, −1…'}</text>`;
+  const Xb=v=>420+v*11,y0=90,lh=54;
+  o+=`<line x1="${Xb(0)}" y1="${y0-14}" x2="${Xb(0)}" y2="${y0+7*lh-24}" style="stroke:var(--ink);stroke-width:2"/><text class="sm f-muted" x="${Xb(0)}" y="${y0-22}" text-anchor="middle">0</text>`;
+  for(let i=0;i<shown;i++){const kk=3-i,v=f*kk,y=y0+i*lh,last=i===shown-1,al=last?kOf(S3):1;const neg=kk<0,col=v<0?'var(--far)':v>0?'var(--c1)':'var(--muted)';
+    o+=`<g style="opacity:${r2(al)}"><text x="60" y="${y+12}" style="font:700 24px var(--font-d);fill:var(--ink)">${p(f)} × ${p(kk)} = <tspan style="fill:${col}">${n(v)}</tspan></text>`;
+    o+=`<rect x="${r2(Math.min(Xb(0),Xb(v)))}" y="${y-10}" width="${r2(Math.abs(Xb(v)-Xb(0)))}" height="22" rx="4" style="fill:${col};opacity:.8"/>`;
+    if(i>0)o+=`<text class="sm f-acc" x="320" y="${y-16}" text-anchor="middle">${f>0?'− 3':'+ 3'}</text>`;
+    if(neg)o+=`<text class="sm" x="40" y="${y+10}" text-anchor="end" style="fill:var(--accent)">★</text>`;o+=`</g>`;}
+  if(shown===7)o+=`<text class="lab ${blk?'f-ok':'f-far'}" x="320" y="${y0+7*lh+4}" text-anchor="middle">${blk?'Le résultat augmente de 3 à chaque ligne : (−) × (−) donne (+).':'Le résultat baisse de 3 à chaque ligne : (+) × (−) donne (−).'}</text>`;
+  o+=`<text class="tip" x="20" y="545">${st<14?'Clique pour afficher la ligne suivante.':'★ : lignes où le deuxième facteur est négatif.'}</text>`;
+  $('svg3').innerHTML=o;
+  $('rules3').innerHTML=`<tr><td colspan="3" style="border:0;color:var(--muted);font-size:13px">RÈGLE DES SIGNES (multiplication et division)</td></tr><tr><td class="pos">(+) × (+)</td><td>→</td><td class="pos">(+)</td></tr><tr><td class="neg">(−) × (−)</td><td>→</td><td class="${st>=14?'pos':''}">${st>=14?'(+)':'?'}</td></tr><tr><td>(+) × (−)</td><td>→</td><td class="${st>=7?'neg':''}">${st>=7?'(−)':'?'}</td></tr><tr><td>(−) × (+)</td><td>→</td><td class="${st>=14?'neg':''}">${st>=14?'(−)':'?'}</td></tr>`;
+  $('def3').innerHTML=`<div><b>Pour la division</b>, c'est la même règle : (−12) ÷ (−3) = 4 car (−3) × 4 = −12.</div><div>Un produit de plusieurs facteurs est négatif s'il contient un nombre impair de facteurs négatifs.</div>`;
+  $('next3').disabled=st>=14;$('next3').textContent=st===7?'Deuxième série ▶':'Ligne suivante ▶';}
+const next3=()=>{if(S3.st<14){S3.st++;loop(S3,render3);}};
+$('next3').onclick=next3;$('svg3').addEventListener('click',next3);$('reset3').onclick=()=>{S3.st=1;S3.t0=0;render3();};
+
+/* ---------- Onglets ---------- */
+let current='droite';
+const views=['droite','jetons','signes'];
+function show(v){if(!views.includes(v))v='droite';current=v;
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+
+render1();render2();render3();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>
