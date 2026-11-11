@@ -269,9 +269,11 @@ function start(D){
   // Menu des séquences (ordre chronologique), puis les notions de la séquence choisie
   // Séquences d'un même domaine (« Fonctions (1) », « Fonctions (2) »…) regroupées en une seule entrée du menu,
   // dans l'ordre de leur première apparition ; dedans, les notions de la plus récente à la plus ancienne.
+  // code affiché : N15 pour une notion, E01 pour une évaluation commune
+  function codeOf(num){ return typeof num === 'string' ? num : 'N' + num; }
   function domainOf(t){ return String(t).replace(/\s*\(\d+\)\s*$/, ''); }
   function renderCours(seqs){
-    var latest = seqs[0], cur = latest.notions[0];
+    var latest = seqs[0], cur = latest.notions.filter(function(n){ return typeof n.num === 'number'; })[0] || latest.notions[0];
     var doms = [], byKey = {};
     seqs.slice().reverse().forEach(function(s){            // ordre chronologique
       var k = domainOf(s.titre);
@@ -307,7 +309,7 @@ function start(D){
       var n = x.n, isCur = n === cur;
       var box = el('article','notion' + (isCur ? ' current' : ''));
       if (isCur) box.appendChild(el('p','kicker','En ce moment'));
-      var h3 = el('h3'); h3.appendChild(el('span','code','N' + n.num)); h3.appendChild(document.createTextNode(n.titre));
+      var h3 = el('h3'); h3.appendChild(el('span','code', codeOf(n.num))); h3.appendChild(document.createTextNode(n.titre));
       box.appendChild(h3); box.appendChild(groups(n.items)); sec.appendChild(box);
     });
     main.appendChild(sec);
@@ -322,7 +324,7 @@ function start(D){
           .sort(function(a){ return a.type === 'revision' ? -1 : 1; });
         if (!list.length) return; any = true;
         var box = el('div','rev-n g3'), h3 = el('h3');
-        h3.appendChild(el('span','code','N' + n.num)); h3.appendChild(document.createTextNode(n.titre));
+        h3.appendChild(el('span','code', codeOf(n.num))); h3.appendChild(document.createTextNode(n.titre));
         box.appendChild(h3); var ls = el('div','links'); list.forEach(function(it){ ls.appendChild(link(it)); });
         box.appendChild(ls); main.appendChild(box);
       });

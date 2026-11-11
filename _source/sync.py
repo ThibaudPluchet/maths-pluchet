@@ -14,6 +14,9 @@ Les PDF d'évaluation peuvent être regroupés par la page enseignant dans un pa
 c<k> (Fait en classe) + d<k> = correction de la fiche d'exercices (version PROF) publiée pour la classe k.
 Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours (version PROF, complétée) et les corrections (évaluation, fiche d'exercices).
 L'évaluation aménagée (PAP) n'est jamais publiée.
+Évaluations communes à plusieurs notions (constante EVALS de la page : {niveau: [{id: "E01", ns: [15, 16, 17], docs}]},
+cases c<k> « Faite en » dans <db_dir>/evals/*.json et <db_dir>/evals3e/*.json) : sujet ÉLÈVE et correction PROF publiés
+pour la classe k quand c<k> est cochée, comme une évaluation de notion ; affichées après la dernière notion évaluée.
 """
 import json, os, re, sys, glob, shutil, base64, hmac, hashlib
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -42,6 +45,7 @@ def encrypt(key, raw):
     return nonce + AESGCM(key).encrypt(nonce, raw, None)
 
 STORE = {"4e": ("suivi", "classes"), "3e": ("suivi3e", "classes3e")}
+EVSTORE = {"4e": "evals", "3e": "evals3e"}
 TYPES = {"Activité": "activite", "Cours à trous": "cours", "Exercices": "exercices",
          "Correction exercices": "correction-exo", "Évaluation": "evaluation",
          "Correction": "correction", "Carte mentale": "carte", "Fiche de révision": "revision"}
@@ -74,12 +78,14 @@ def load(page, dbdir):
     html = open(page, encoding="utf-8").read()
     levels, docs = js_const(html, "LEVELS"), js_const(html, "DOCS")
     links = js_const_opt(html, "LINKS")
+    evals = js_const_opt(html, "EVALS")
     ANIMS.clear()
     classes, data, wanted = {}, {"niveaux": {}}, {}
     global SECRET
     SECRET = {}
     global BUNDLE
     BUNDLE = {d["p"]: d["z"] for lv in docs["levels"].values() for L in lv.values() for d in L if d.get("z")}
+    BUNDLE.update({d["p"]: d["z"] for L in evals.values() for e in L for d in e.get("docs", []) if d.get("z")})
     for lv, (suivi, cfg) in STORE.items():
         try:
             noms = json.load(open(f"{dbdir}/config/{cfg}.json")).get("noms") or []
@@ -90,9 +96,26 @@ def load(page, dbdir):
         state = {}
         for f in glob.glob(f"{dbdir}/{suivi}/*.json"):
             state[os.path.basename(f)[:-5]] = json.load(open(f))
+        evstate = {}
+        for f in glob.glob(f"{dbdir}/{EVSTORE[lv]}/*.json"):
+            evstate[os.path.basename(f)[:-5]] = json.load(open(f))
         seqs = []
         for seq in levels[lv]["seqs"]:
             notions = []
+            # évaluations communes dont la dernière notion est dans cette séquence
+            seq_nums = [n["n"] for n in seq["notions"]]
+            for e in evals.get(lv, []):
+                last = max(e["ns"])
+                if last not in seq_nums:
+                    continue
+                st = evstate.get(e["id"], {})
+                show = [noms[k] for k in range(len(noms)) if st.get(f"c{k+1}")]
+                if not show:
+                    continue
+                items = eval_items(e["docs"], show, lv, e["id"], wanted)
+                if items:
+                    seq.setdefault("_ev", []).append((last, {"num": e["id"], "titre": "Évaluation commune · " + ", ".join("N%02d" % x for x in e["ns"]),
+                                                             "cls": show, "items": items}))
             for n in seq["notions"]:
                 s = state.get("n%02d" % n["n"], {})
                 show_docs = [noms[k] for k in range(len(noms)) if s.get(f"d{k+1}")]
@@ -145,6 +168,12 @@ def load(page, dbdir):
                 for v in n.get("vids") or []:
                     items.append({"type": "video", "label": "Vidéo : " + v["l"], "href": v["u"], "cls": sorted(set(show_docs) | set(show_eval))})
                 notions.append({"num": n["n"], "titre": n["t"], "cls": sorted(set(show_docs) | set(show_eval)), "items": items})
+            for last, ev in seq.pop("_ev", []):
+                i = 0                                   # juste après la dernière notion évaluée (et les évaluations déjà placées)
+                for j, x in enumerate(notions):
+                    if isinstance(x["num"], int) and x["num"] <= last or isinstance(x["num"], str) and j <= i:
+                        i = j + 1
+                notions.insert(i, ev)
             if notions:
                 seqs.append({"num": seq["n"], "titre": seq["t"], "notions": notions})
         data["niveaux"][lv] = seqs
@@ -154,6 +183,28 @@ def load(page, dbdir):
 
 BUNDLE = {}
 SECRET = {}
+
+
+def eval_items(docs, show_eval, lv, num, wanted):
+    """Sujets ÉLÈVE et corrections PROF d'une évaluation commune, chacun pour sa classe (jamais les PAP ni le préambule)."""
+    items = []
+    for d in docs:
+        if d["w"] == "PROF":
+            if d["l"] != "Évaluation":
+                continue
+            lab = "Correction"
+        elif d["l"] != "Évaluation":
+            continue
+        else:
+            lab = "Évaluation"
+        cls = [c for c in show_eval if not d.get("c") or c == d["c"]]
+        if not cls:
+            continue
+        label = LABELS.get(lab, lab) + (" (sujet " + d["s"] + ")" if d.get("s") else "")
+        items.append({"type": TYPES[lab], "label": label, "href": d["p"], "cls": cls, "_s": d.get("s") or ""})
+        wanted[d["p"]] = d.get("b")
+    items.sort(key=lambda i: (list(TYPES.values()).index(i["type"]), i.pop("_s")))
+    return items
 
 
 def secret_plan():
