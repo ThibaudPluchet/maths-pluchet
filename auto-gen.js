@@ -252,6 +252,7 @@ function check(ans, raw) {
     case 'num':
       s = String(raw == null ? '' : raw).replace(/%|cm²|cm|€|m²|m\b/g, '').trim();
       if (!s) return { invalid: true, msg: 'Écris ta réponse.' };
+      if (/^[^/]*\/\s*$|^\s*\//.test(s)) return { invalid: true, msg: 'Complète le numérateur et le dénominateur de ta fraction.' };
       p = parseNumber(s);
       if (!p) return { invalid: true, msg: 'Je n’arrive pas à lire ce nombre. Exemples d’écriture : 2,5 · −3 · 3/4' };
       if (!qeq(p.q, ans.q)) return { ok: false };

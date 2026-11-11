@@ -109,6 +109,14 @@ svg.droite .dp{fill:var(--accent)}
 .answer input.exp{width:72px;font-size:16px;min-height:38px;align-self:flex-start;margin-top:-10px}
 .answer .ten{font-size:20px;font-weight:700}
 .answer.done input{background:transparent}
+.frin{display:inline-flex;flex-direction:column;align-items:center;gap:5px}
+.frin[hidden]{display:none}
+.frin input{width:120px;text-align:center;min-height:44px;padding:6px 10px}
+.frin .bar{display:block;width:136px;height:3px;border-radius:2px;background:var(--ink)}
+.answer input[hidden]{display:none}
+.keys .fbtn{display:inline-flex;align-items:center;gap:6px;font-size:15px;padding:0 12px}
+.keys .fbtn .fr{font-size:11px;line-height:1}
+.keys .fbtn[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);color:var(--accent)}
 .syms{display:flex;gap:8px}
 .syms button{width:58px;height:52px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font:700 24px "Atkinson Hyperlegible",sans-serif;cursor:pointer}
 .syms button[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);color:var(--accent)}
@@ -246,7 +254,7 @@ function insertAt(inp, txt){
 }
 function textInput(cls2, label){ var i = el('input', cls2 || ''); i.type = 'text'; i.autocomplete = 'off'; i.spellcheck = false; i.setAttribute('autocapitalize','off'); i.setAttribute('autocorrect','off'); i.setAttribute('aria-label', label || 'Ta réponse'); return i; }
 function answerBox(q, onEnter){
-  var box = el('div'), row = el('div','answer'), a = q.ans, get, inputs = [], symVal = '';
+  var box = el('div'), row = el('div','answer'), a = q.ans, get, inputs = [], symVal = '', fmode = false, fracOK = false, setFrac, fbtn;
   box.appendChild(row);
   if (q.pre) row.appendChild(html('span','lab', q.pre));
   if (a.k === 'sym'){
@@ -266,10 +274,29 @@ function answerBox(q, onEnter){
     inputs.push(p); get = function(){ return p.value; };
   } else {
     var t = textInput(a.k === 'fn' ? 'sm' : ''); row.appendChild(t); inputs.push(t); get = function(){ return t.value; };
+    // réponse numérique : saisie possible sous forme de fraction (numérateur au-dessus du trait, dénominateur en dessous)
+    if (a.k === 'num' && a.form !== 'int'){
+      var fw = el('span','frin'), fn = textInput('','Numérateur'), fd = textInput('','Dénominateur');
+      fw.appendChild(fn); fw.appendChild(el('span','bar')); fw.appendChild(fd); fw.hidden = true;
+      row.insertBefore(fw, t.nextSibling); inputs.push(fn, fd);
+      setFrac = function(on){
+        if (on === fmode) return;
+        fmode = on; t.hidden = on; fw.hidden = !on;
+        if (on){ var p2 = t.value.split('/'); fn.value = p2[0] || ''; fd.value = p2[1] || ''; (fn.value && !fd.value ? fd : fn).focus(); }
+        else { t.value = fn.value + (fd.value ? '/' + fd.value : ''); t.focus(); }
+        if (fbtn) fbtn.setAttribute('aria-pressed', on);
+      };
+      get = function(){ if (!fmode) return t.value; var n = fn.value.trim(), d = fd.value.trim(); return n || d ? n + '/' + d : ''; };
+      t.addEventListener('keydown', function(ev){ if (ev.key === '/'){ ev.preventDefault(); setFrac(true); } });
+      t.addEventListener('input', function(){ if (t.value.indexOf('/') > -1) setFrac(true); });
+      fn.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === '/' || ev.key === 'ArrowDown'){ ev.preventDefault(); ev.stopImmediatePropagation(); fd.focus(); } });
+      fd.addEventListener('keydown', function(ev){ if (ev.key === 'ArrowUp' || (ev.key === 'Backspace' && !fd.value)){ ev.preventDefault(); fn.focus(); } });
+      fracOK = true;
+    }
   }
   if (q.suf) row.appendChild(html('span','lab', q.suf));
   // petit clavier pour les symboles difficiles à taper sur téléphone
-  var keys = a.k === 'expr' ? [q.kb || 'x', '²', '(', ')', '−', '×', ','] : a.k === 'num' ? ['−', ',', '/'] : a.k === 'sci' || a.k === 'pow' ? ['−', ','] : [];
+  var keys = a.k === 'expr' ? [q.kb || 'x', '²', '(', ')', '−', '×', ','] : a.k === 'num' ? ['−', ','] : a.k === 'sci' || a.k === 'pow' ? ['−', ','] : [];
   if (keys.length){
     var kb = el('div','keys'), last = inputs[0];
     inputs.forEach(function(i){ i.addEventListener('focus', function(){ last = i; }); });
@@ -280,12 +307,21 @@ function answerBox(q, onEnter){
       b.onclick = function(){ insertAt(last, k); };
       kb.appendChild(b);
     });
+    if (fracOK){
+      fbtn = el('button','fbtn'); fbtn.type = 'button'; fbtn.setAttribute('aria-pressed', 'false');
+      fbtn.innerHTML = '<span class="fr"><span>▢</span><span>▢</span></span> Fraction';
+      fbtn.title = 'Écrire ta réponse sous forme de fraction (touche / du clavier)';
+      fbtn.onmousedown = function(ev){ ev.preventDefault(); };
+      fbtn.onclick = function(){ setFrac(!fmode); };
+      kb.appendChild(fbtn);
+    }
     box.appendChild(kb);
   }
-  inputs.forEach(function(i){ if (i.tagName === 'INPUT') i.addEventListener('keydown', function(ev){ if (ev.key === 'Enter'){ ev.preventDefault(); onEnter && onEnter(); } }); });
+  inputs.forEach(function(i){ if (i.tagName === 'INPUT') i.addEventListener('keydown', function(ev){ if (ev.key === 'Enter'){ ev.preventDefault(); ev.stopPropagation(); onEnter && onEnter(); } }); });
+  if (a.form === 'frac' && fracOK) setTimeout(function(){ setFrac(true); if (matchMedia('(pointer:coarse)').matches) document.activeElement.blur(); }, 0);
   var err = el('p','err'); err.setAttribute('role','alert'); box.appendChild(err);
   return {el: box, get: get, err: err,
-    focus: function(){ var i = inputs[0]; if (i && i.tagName === 'INPUT' && !matchMedia('(pointer:coarse)').matches) i.focus(); },
+    focus: function(){ var i = inputs.filter(function(x){ return x.tagName === 'INPUT' && !x.hidden && !(x.parentNode && x.parentNode.hidden); })[0]; if (i && !matchMedia('(pointer:coarse)').matches) i.focus(); },
     disable: function(){ row.classList.add('done'); inputs.forEach(function(i){ i.disabled = true; }); if (kb) kb.remove(); }};
 }
 function shown(q, raw){
@@ -293,7 +329,8 @@ function shown(q, raw){
   if (q.ans.k === 'sci') return raw[0] || raw[1] ? esc(raw[0]) + ' × 10<sup>' + esc(raw[1]) + '</sup>' : '<span class="muted">(pas de réponse)</span>';
   if (q.ans.k === 'pow') return '10<sup>' + esc(raw) + '</sup>';
   if (q.ans.k === 'sym') return esc(raw);
-  return (q.pre ? q.pre + ' ' : '') + esc(raw) + (q.suf ? ' ' + q.suf : '');
+  var m = /^\s*([^/]*)\/([^/]*)\s*$/.exec(raw), v = m ? '<span class="fr"><span>' + esc(m[1]) + '</span><span>' + esc(m[2]) + '</span></span>' : esc(raw);
+  return (q.pre ? q.pre + ' ' : '') + v + (q.suf ? ' ' + q.suf : '');
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function feedback(q, res){
