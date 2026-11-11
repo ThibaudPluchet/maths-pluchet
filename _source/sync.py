@@ -114,7 +114,9 @@ def load(page, dbdir):
                     continue
                 items = eval_items(e["docs"], show, lv, e["id"], wanted)
                 if items:
+                    titres = {x["n"]: x["t"] for sq in levels[lv]["seqs"] for x in sq["notions"]}
                     seq.setdefault("_ev", []).append((last, {"num": e["id"], "titre": "Évaluation commune · " + ", ".join("N%02d" % x for x in e["ns"]),
+                                                             "ns": [{"num": x, "titre": titres.get(x, "")} for x in e["ns"]],
                                                              "cls": show, "items": items}))
             for n in seq["notions"]:
                 s = state.get("n%02d" % n["n"], {})

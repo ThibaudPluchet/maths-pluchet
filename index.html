@@ -119,6 +119,12 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 .seqview .notion.current::after{content:"π";position:absolute;right:14px;top:-18px;font:italic 700 120px/1 "Bricolage Grotesque",Georgia,serif;color:var(--accent);opacity:.07;pointer-events:none}
 .seqview .notion h3{font-size:18px;margin:0 0 14px}
 @media (min-width:640px){ .seqview .notion .groups{grid-template-columns:1fr 1fr} }
+.tabs .tdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--new);margin-left:6px;vertical-align:2px}
+.evcard .evkind{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 4px}
+.evcard.common{border-left:5px solid var(--accent)}
+.evcard .evns{display:flex;flex-wrap:wrap;gap:6px;margin:-6px 0 14px}
+.evcard .evns span{font-size:13px;background:var(--soft);color:var(--ink);border-radius:999px;padding:3px 10px}
+.evcard .evns b{color:var(--accent);margin-right:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -247,22 +253,37 @@ function start(D){
     if (!current){ main.appendChild(el('div','empty','Choisis ta classe ci-dessus pour voir tes documents.')); return; }
     var lv = levelOf(current);
     // séquences et notions de la classe, de la plus récente à la plus ancienne
-    var seqs = (D.niveaux[lv] || []).map(function(s){
-      var ns = mine(s.notions).map(function(n){ return {num:n.num, titre:n.titre, items:mine(n.items)}; });
+    var full = (D.niveaux[lv] || []).map(function(s){
+      var ns = mine(s.notions).map(function(n){ return {num:n.num, titre:n.titre, ns:n.ns, items:mine(n.items)}; });
       return {num:s.num, titre:s.titre, notions:ns.reverse()};
     }).filter(function(s){ return s.notions.length; }).reverse();
-    var all = []; seqs.forEach(function(s){ s.notions.forEach(function(n){ all = all.concat(n.items); }); });
-    if (!seqs.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
+    // évaluations (de notion ou communes à plusieurs notions) : rassemblées dans l'onglet « Évaluations », de la plus récente à la plus ancienne
+    var evals = [];
+    full.forEach(function(s){ s.notions.forEach(function(n){
+      var its = n.items.filter(isEval);
+      if (its.length) evals.push({num:n.num, titre:n.titre, ns:n.ns, seq:s, items:its});
+    }); });
+    var seqs = full.map(function(s){
+      var ns = s.notions.map(function(n){ return {num:n.num, titre:n.titre, items:n.items.filter(function(it){ return !isEval(it); })}; })
+        .filter(function(n){ return typeof n.num === 'number' && n.items.length; });
+      return {num:s.num, titre:s.titre, notions:ns};
+    }).filter(function(s){ return s.notions.length; });
+    var all = []; full.forEach(function(s){ s.notions.forEach(function(n){ all = all.concat(n.items); }); });
+    if (!full.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
 
-    if (lv === '3e'){
-      var tabs = el('div','tabs'); tabs.setAttribute('role','group');
-      [['cours','Mes cours'],['brevet','Réviser le brevet']].forEach(function(t){
-        var b = el('button', null, t[1]); b.setAttribute('aria-pressed', view === t[0]);
-        b.onclick = function(){ view = t[0]; render(); }; tabs.appendChild(b);
-      });
-      main.appendChild(tabs);
-    }
-    if (view === 'brevet') renderBrevet(seqs); else renderCours(seqs);
+    var tabs = el('div','tabs'); tabs.setAttribute('role','group');
+    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(lv === '3e' ? [['brevet','Réviser le brevet']] : []);
+    if (!tlist.some(function(t){ return t[0] === view; })) view = 'cours';
+    tlist.forEach(function(t){
+      var b = el('button', null, t[1]); b.setAttribute('aria-pressed', view === t[0]);
+      if (t[0] === 'evals' && evals.some(function(e){ return e.items.some(isNew); })) b.appendChild(el('span','tdot'));
+      b.onclick = function(){ view = t[0]; render(); }; tabs.appendChild(b);
+    });
+    main.appendChild(tabs);
+    if (view === 'brevet') renderBrevet(seqs);
+    else if (view === 'evals') renderEvals(evals);
+    else if (!seqs.length) main.appendChild(el('div','empty','Pas encore de cours pour la ' + current + '.'));
+    else renderCours(seqs);
     saveSeen(all);
   }
 
@@ -311,6 +332,36 @@ function start(D){
       if (isCur) box.appendChild(el('p','kicker','En ce moment'));
       var h3 = el('h3'); h3.appendChild(el('span','code', codeOf(n.num))); h3.appendChild(document.createTextNode(n.titre));
       box.appendChild(h3); box.appendChild(groups(n.items)); sec.appendChild(box);
+    });
+    main.appendChild(sec);
+  }
+
+  function isEval(it){ return it.type === 'evaluation' || it.type === 'correction'; }
+  function codeTxt(num){ return typeof num === 'string' ? num : 'N' + num; }
+  // Onglet « Évaluations » : une carte par évaluation passée, sujets à gauche, corrections à droite
+  function renderEvals(evals){
+    if (!evals.length){ main.appendChild(el('div','empty','Pas encore d’évaluation publiée. Les sujets et leurs corrections apparaissent ici après chaque évaluation.')); return; }
+    var sec = el('section','seqview');
+    sec.appendChild(el('p','intro','Les sujets de tes évaluations et leurs corrections, de la plus récente à la plus ancienne.'));
+    evals.forEach(function(e){
+      var common = typeof e.num === 'string';
+      var box = el('article','notion evcard' + (common ? ' common' : ''));
+      box.appendChild(el('p','evkind', common ? 'Évaluation commune · ' + (e.ns ? e.ns.length : '') + ' notions' : 'Évaluation · Séquence ' + e.seq.num + ' · ' + e.seq.titre));
+      var h3 = el('h3'); h3.appendChild(el('span','code', codeTxt(e.num)));
+      h3.appendChild(document.createTextNode(common ? 'Évaluation commune' : e.titre)); box.appendChild(h3);
+      if (common && e.ns){
+        var ns = el('div','evns');
+        e.ns.forEach(function(x){ var sp = el('span'); sp.appendChild(el('b', null, 'N' + x.num)); sp.appendChild(document.createTextNode(x.titre)); ns.appendChild(sp); });
+        box.appendChild(ns);
+      }
+      var gr = el('div','groups');
+      [['Sujet', 'evaluation', 'g4'], ['Correction', 'correction', 'g1']].forEach(function(g){
+        var list = e.items.filter(function(it){ return it.type === g[1]; });
+        if (!list.length) return;
+        var d = el('div','grp ' + g[2]); d.appendChild(el('h4', null, list.length > 1 ? g[0] + 's' : g[0]));
+        var ls = el('div','links'); list.forEach(function(it){ ls.appendChild(link(it)); }); d.appendChild(ls); gr.appendChild(d);
+      });
+      box.appendChild(gr); sec.appendChild(box);
     });
     main.appendChild(sec);
   }
