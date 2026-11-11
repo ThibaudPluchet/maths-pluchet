@@ -1,10 +1,13 @@
-"""Synchronise le site élèves avec la page enseignant (artifact « Progressions 4e et 3e »).
+"""Synchronise le site élèves avec la page enseignant (artifact « Progressions »).
 
 Usage :
   python3 sync.py plan  <page.html> <db_dir> <repo_dir>             -> écrit <db_dir>/need.json (PDF à récupérer)
   python3 sync.py build <page.html> <db_dir> <repo_dir> <pdf_dir>   -> met à jour docs/ et data.js dans le dépôt
 
-<db_dir> contient les exports ArtifactData : suivi/*.json, suivi3e/*.json, config/classes.json, config/classes3e.json.
+<db_dir> contient les exports ArtifactData de chaque niveau présent dans la constante LEVELS de la page (6e, 5e, 4e, 3e) :
+la 4e garde les noms d'origine (suivi/, evals/, config/classes.json), les autres niveaux ajoutent leur nom
+(suivi3e/, evals3e/, config/classes3e.json ; suivi5e/, evals5e/, config/classes5e.json…).
+« python3 sync.py collections <page.html> » affiche la liste des collections à exporter.
 Cases de la page enseignant, par notion : d<k> = documents élèves publiés pour la classe k (hors évaluations),
 e<k> = évaluation (sujet élève) et sa correction (version PROF) publiées pour la classe k.
 Si l'évaluation existe en plusieurs sujets (PDF du dossier Evaluation, champs c = classe et s = sujet dans DOCS),
@@ -44,8 +47,23 @@ def encrypt(key, raw):
     nonce = hmac.new(key, hashlib.sha256(raw).digest(), hashlib.sha256).digest()[:12]   # déterministe : pas de changement inutile
     return nonce + AESGCM(key).encrypt(nonce, raw, None)
 
-STORE = {"4e": ("suivi", "classes"), "3e": ("suivi3e", "classes3e")}
-EVSTORE = {"4e": "evals", "3e": "evals3e"}
+ORDER = ["6e", "5e", "4e", "3e"]
+
+
+def suivi_of(lv):
+    return "suivi" if lv == "4e" else "suivi" + lv
+
+
+def cfg_of(lv):
+    return "classes" if lv == "4e" else "classes" + lv
+
+
+def evals_of(lv):
+    return "evals" if lv == "4e" else "evals" + lv
+
+
+def level_list(levels):
+    return [l for l in ORDER if l in levels] + [l for l in levels if l not in ORDER]
 TYPES = {"Activité": "activite", "Cours à trous": "cours", "Exercices": "exercices",
          "Correction exercices": "correction-exo", "Évaluation": "evaluation",
          "Correction": "correction", "Carte mentale": "carte", "Fiche de révision": "revision"}
@@ -86,7 +104,8 @@ def load(page, dbdir):
     global BUNDLE
     BUNDLE = {d["p"]: d["z"] for lv in docs["levels"].values() for L in lv.values() for d in L if d.get("z")}
     BUNDLE.update({d["p"]: d["z"] for L in evals.values() for e in L for d in e.get("docs", []) if d.get("z")})
-    for lv, (suivi, cfg) in STORE.items():
+    for lv in level_list(levels):
+        suivi, cfg = suivi_of(lv), cfg_of(lv)
         try:
             noms = json.load(open(f"{dbdir}/config/{cfg}.json")).get("noms") or []
         except FileNotFoundError:
@@ -97,7 +116,7 @@ def load(page, dbdir):
         for f in glob.glob(f"{dbdir}/{suivi}/*.json"):
             state[os.path.basename(f)[:-5]] = json.load(open(f))
         evstate = {}
-        for f in glob.glob(f"{dbdir}/{EVSTORE[lv]}/*.json"):
+        for f in glob.glob(f"{dbdir}/{evals_of(lv)}/*.json"):
             evstate[os.path.basename(f)[:-5]] = json.load(open(f))
         seqs = []
         for seq in levels[lv]["seqs"]:
@@ -223,6 +242,10 @@ def secret_plan():
 
 
 def main():
+    if sys.argv[1] == "collections":
+        levels = js_const(open(sys.argv[2], encoding="utf-8").read(), "LEVELS")
+        print(json.dumps([c for lv in level_list(levels) for c in (suivi_of(lv), evals_of(lv))] + ["config"]))
+        return
     mode, page, dbdir, repo = sys.argv[1:5]
     data, wanted = load(page, dbdir)
     if mode == "plan":
