@@ -209,6 +209,9 @@ svg.fig.wide{max-width:560px} svg.fig.small{max-width:300px}
 .pq .nlist span{min-height:0;padding:.1em .5em}
 .pans{margin-top:4vh;font-size:calc(clamp(24px,3.6vw,54px) * var(--ps));color:var(--ok);font-weight:700}
 .pmeth{margin-top:2vh;font-size:calc(clamp(17px,2vw,30px) * var(--ps));color:var(--muted);max-width:1500px;line-height:1.5}
+.preveal{margin-top:1vh}
+.preveal[hidden]{display:none}
+.icon[aria-pressed="true"]{background:var(--oks);border-color:var(--ok);color:var(--ok)}
 .pend{text-align:center}
 .pend h2{font-size:clamp(34px,5vw,72px)}
 .pall{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(calc(420px * var(--ps)),1fr));font-size:calc(clamp(16px,1.5vw,24px) * var(--ps))}
@@ -619,12 +622,12 @@ function examResult(qs, raws, timeUp){
 }
 
 /* ---------- Mode classe (projection) ---------- */
-var CL = {n: +(store('auto:cl:n') || 6), t: +(store('auto:cl:t') || 45), sel: null};
+var CL = {n: +(store('auto:cl:n') || 6), t: +(store('auto:cl:t') || 45), c: store('auto:cl:c') || 'end', sel: null};
 function classeSetup(){
   var c = el('section','card');
   c.appendChild(el('p','kicker','Mode classe'));
   c.appendChild(el('h2', null, 'Questions flash pour le début de l’heure'));
-  c.appendChild(html('p','muted small', 'Les questions s’affichent en grand, une par une, avec un temps limité. Les élèves répondent sur leur ardoise ou leur cahier ; la correction est projetée à la fin. Rien n’est enregistré.'));
+  c.appendChild(html('p','muted small', 'Les questions s’affichent en grand, une par une, avec un temps limité. Les élèves répondent sur leur ardoise ou leur cahier ; la correction est projetée à la fin ou après chaque question. Pendant la projection, le bouton « Correction » (ou la touche C) affiche la réponse de la question en cours. Rien n’est enregistré.'));
   var o = el('div','opts');
   function sel(label, values, cur, onch){
     var l = el('label'); l.appendChild(document.createTextNode(label));
@@ -652,6 +655,11 @@ function classeSetup(){
   nIn.onkeydown = function(ev){ if (ev.key === 'Enter'){ ev.preventDefault(); setN(nIn.value); } };
   mi.onclick = function(){ setN(CL.n - 1); }; pl.onclick = function(){ setN(CL.n + 1); };
   o.appendChild(nl); o.appendChild(nBox);
+  (function(){
+    var l = el('label'); l.appendChild(document.createTextNode('Correction'));
+    var s2 = el('select'); [['end','À la fin de la série'],['each','Après chaque question']].forEach(function(v){ var op = el('option', null, v[1]); op.value = v[0]; if (v[0] === CL.c) op.selected = true; s2.appendChild(op); });
+    s2.onchange = function(){ CL.c = s2.value; store('auto:cl:c', CL.c); }; l.appendChild(s2); o.appendChild(l);
+  })();
   o.appendChild(sel('Temps par question', [[30,'30 secondes'],[45,'45 secondes'],[60,'1 minute'],[90,'1 min 30'],[0,'Sans limite (je fais défiler)']], CL.t, function(v){ CL.t = v; store('auto:cl:t', v); }));
   c.appendChild(o);
   var r = el('div','row'); r.style.margin = '16px 0 4px'; r.appendChild(seenToggle(render)); c.appendChild(r);
@@ -699,27 +707,46 @@ function projStart(qs){
     return {el: t, tm: tm};
   }
   function btn(txt, f, title){ var b = el('button','icon', txt); b.type = 'button'; if (title){ b.title = title; b.setAttribute('aria-label', title); } b.onclick = f; return b; }
+  var revealed = false, revealQ = null;
   function showQ(){
-    stopAll(); phase = 'q'; proj.innerHTML = '';
+    stopAll(); phase = 'q'; revealed = false; proj.innerHTML = '';
     var tb = topbar('Question ' + (i + 1) + ' / ' + qs.length, CL.t > 0);
     var pause = btn('Pause', function(){ paused = !paused; if (paused){ left = end - Date.now(); pause.textContent = 'Reprendre'; } else { end = Date.now() + left; pause.textContent = 'Pause'; } });
     if (CL.t > 0) tb.el.appendChild(pause);
+    var cbtn = btn('Correction', function(){ toggle(); }, 'Afficher la correction de cette question (touche C)');
+    tb.el.appendChild(cbtn);
     tb.el.appendChild(btn('Suivante →', next, 'Question suivante'));
     tb.el.appendChild(btn('✕', quit, 'Quitter'));
     proj.appendChild(tb.el);
     var bar = el('div','pbar'), bi = el('i'); bar.appendChild(bi); proj.appendChild(bar);
-    var body = el('div','pbody'); body.appendChild(html('div','pq', qs[i].html)); proj.appendChild(body);
+    var body = el('div','pbody'); body.appendChild(html('div','pq', qs[i].html));
+    var box = el('div','preveal'); box.hidden = true;
+    box.appendChild(html('div','pans', '→ ' + qs[i].corr)); box.appendChild(html('div','pmeth', qs[i].meth));
+    body.appendChild(box); proj.appendChild(body);
+    // afficher / masquer la correction : le chrono s'arrête pendant qu'elle est affichée
+    function toggle(force){
+      revealed = force === undefined ? !revealed : force; box.hidden = !revealed;
+      cbtn.textContent = revealed ? 'Masquer la correction' : 'Correction';
+      cbtn.setAttribute('aria-pressed', revealed);
+      if (CL.t > 0){
+        if (revealed && !paused){ paused = true; left = end - Date.now(); pause.textContent = 'Reprendre'; }
+      }
+      if (revealed) box.scrollIntoView({block:'nearest'});
+    }
+    revealQ = toggle;
     if (CL.t > 0){
       paused = false; end = Date.now() + CL.t * 1000;
       var tick = function(){
         if (paused) return;
         var ms = Math.max(0, end - Date.now()), s = Math.ceil(ms / 1000);
         tb.tm.textContent = s + ' s'; bi.style.width = (100 - ms / (CL.t * 10)) + '%';
-        if (ms <= 0) next();
+        if (ms <= 0){ if (CL.c === 'each') toggle(true); else next(); }
       };
       tick(); timers.push(setInterval(tick, 100));
     }
   }
+  // avec « correction après chaque question », la touche Suivante affiche d'abord la correction
+  function advance(){ if (CL.c === 'each' && !revealed) revealQ(true); else next(); }
   function next(){ if (i < qs.length - 1){ i++; showQ(); } else showEnd(); }
   function showEnd(){
     stopAll(); phase = 'end'; proj.innerHTML = '';
@@ -756,7 +783,8 @@ function projStart(qs){
     if (ev.key === '+' || ev.key === '='){ ev.preventDefault(); setPs(ps + 0.1); return; }
     if (ev.key === '-' || ev.key === '_'){ ev.preventDefault(); setPs(ps - 0.1); return; }
     if (ev.key === '0'){ setPs(1); return; }
-    if (phase === 'q' && (ev.key === 'ArrowRight' || ev.key === ' ' || ev.key === 'PageDown')){ ev.preventDefault(); next(); }
+    if (phase === 'q' && (ev.key === 'c' || ev.key === 'C')){ ev.preventDefault(); revealQ(); return; }
+    if (phase === 'q' && (ev.key === 'ArrowRight' || ev.key === ' ' || ev.key === 'PageDown')){ ev.preventDefault(); advance(); }
     else if (phase === 'c' && (ev.key === 'ArrowRight' || ev.key === ' ' || ev.key === 'PageDown')){ ev.preventDefault(); if (i < qs.length - 1){ i++; showC(); } else showAll(); }
     else if (phase === 'c' && (ev.key === 'ArrowLeft' || ev.key === 'PageUp')){ ev.preventDefault(); if (i > 0){ i--; showC(); } }
   }
