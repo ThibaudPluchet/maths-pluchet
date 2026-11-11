@@ -243,7 +243,7 @@ footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40
 'use strict';
 var A = window.AUTO, main = document.getElementById('main'), picker = document.getElementById('picker'), proj = document.getElementById('proj');
 var D = {classes:{'4e':['4e3','4e4','4e5'], '3e':['3eB','3eD','3eE']}, niveaux:{}};
-var EXAM_N = 9, EXAM_MIN = 20;
+var EXAM_N = 12, EXAM_MIN = 20;
 
 function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
 function html(tag, cls, h){ var e = el(tag, cls); e.innerHTML = h; return e; }
@@ -539,8 +539,8 @@ function pickSeries(gens, n){
   }
   return out;
 }
-// répartition inspirée des sujets de référence : 4 Nombres et calculs, 2 géométrie, 1 données, 1 fonctions, 1 algorithmique
-var EXAM_QUOTA = {nc:4, geo:2, data:1, fct:1, algo:1};
+// répartition sur 12 questions : 5 Nombres et calculs, 3 géométrie, 2 données, 1 fonctions, 1 algorithmique
+var EXAM_QUOTA = {nc:5, geo:3, data:2, fct:1, algo:1};
 function examSeries(){
   var out = [], rest = [];
   A.THEMES.forEach(function(t){
