@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Préparer l'évaluation : relatifs (4e N01) – M. Pluchet</title>
+<meta name="description" content="Exerciseur pour préparer l'évaluation de la notion 1 de 4e : additionner et soustraire des nombres relatifs.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --ink:#1b2333; --muted:#596277; --line:#e2ded3;
+  --accent:#2f5bd3; --accent-ink:#ffffff; --soft:#e8eefc; --gridc:#e9e5da;
+  --ok:#1e7a46; --oks:#e3f4ea; --ko:#b3261e; --kos:#fbe6e4; --mid:#b85c00; --mids:#fbeedd; --hi:#d6336c;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#13161d; --card:#1b1f28; --ink:#eaedf3; --muted:#a3abbc; --line:#2b313e;
+    --accent:#86a4ff; --accent-ink:#0f1320; --soft:#222a3e; --gridc:#1a1e27;
+    --ok:#6fd49a; --oks:#173326; --ko:#ff8a80; --kos:#3a1f1d; --mid:#f0a050; --mids:#33261a; --hi:#ff7aa5; }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;
+  background-image:linear-gradient(var(--gridc) 1px,transparent 1px),linear-gradient(90deg,var(--gridc) 1px,transparent 1px);background-size:22px 22px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header{padding:22px 0 8px}
+.top{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.top a,.top button{color:var(--accent);font-weight:700;font-size:15px;font-family:inherit;text-decoration:none;background:none;border:0;padding:0;cursor:pointer}
+.top a:hover,.top button:hover{text-decoration:underline}
+.kick{color:var(--muted);font-weight:700;font-size:14px;margin:0}
+h1{font:700 clamp(26px,6vw,38px)/1.1 "Bricolage Grotesque",system-ui,sans-serif;margin:2px 0 6px}
+.sub{color:var(--muted);margin:0}
+main{padding:14px 0 60px}
+h2.cat{font-size:15px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tile{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;color:var(--ink);font:inherit;display:flex;gap:12px;align-items:flex-start}
+.tile:hover{border-color:var(--accent);box-shadow:0 6px 20px -14px var(--accent)}
+.tile .ic{font-size:26px;line-height:1}
+.tile b{display:block;font:700 18px/1.2 "Bricolage Grotesque",system-ui,sans-serif;margin-bottom:4px}
+.tile .d{color:var(--muted);font-size:15px;display:block}
+.tile .rec{display:block;margin-top:6px;font-size:13px;font-weight:700;color:var(--ok)}
+.tile.big{border:2px solid var(--accent);background:linear-gradient(135deg,var(--soft),var(--card))}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ph h2{font:700 22px/1.15 "Bricolage Grotesque",system-ui,sans-serif;margin:0}
+.pts{font-weight:700;color:var(--muted);font-size:15px;white-space:nowrap}
+.pts.ok{color:var(--ok)} .pts.mid{color:var(--mid)} .pts.ko{color:var(--ko)}
+.consigne{margin:0;color:var(--muted);font-size:15px}
+.items{display:grid;gap:14px}
+.items > *{min-width:0}
+@media (min-width:700px){ .items.two{grid-template-columns:1fr 1fr} }
+.item{border-left:3px solid var(--line);padding:4px 0 4px 12px;display:flex;flex-direction:column;gap:6px}
+.item.okI{border-color:var(--ok)} .item.koI{border-color:var(--ko)} .item.midI{border-color:var(--mid)}
+.q{font:700 20px/1.35 "Bricolage Grotesque",system-ui,sans-serif}
+.q .nm{color:var(--accent);margin-right:6px}
+.ln{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.ln .eq{font:700 20px "Bricolage Grotesque",sans-serif;width:1.1em;text-align:center}
+.ln .tag{font-size:12px;color:var(--muted);font-weight:700;flex-basis:100%}
+input.w{font:700 19px "Bricolage Grotesque",system-ui,sans-serif;flex:1 1 0;width:100%;min-width:0;max-width:340px;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+input.w.num{max-width:150px;flex:0 1 150px}
+input.w:focus{outline:none;border-color:var(--accent)}
+input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.koF{border-color:var(--ko);background:var(--kos)}
+.cor{font-size:15px;color:var(--ko);font-weight:700}
+.cor.ok{color:var(--ok)}
+.cor small{display:block;font-weight:400;color:var(--muted)}
+.sent{font-size:15px;color:var(--muted);font-style:italic}
+.fill{line-height:2.4;font-size:18px}
+select.s{font:700 16px inherit;font-family:inherit;padding:6px 8px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%}
+select.s.okF{border-color:var(--ok);background:var(--oks)} select.s.koF{border-color:var(--ko);background:var(--kos)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center}
+.btn{font:700 16px inherit;font-family:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 16px;cursor:pointer;min-height:46px}
+.btn:hover{border-color:var(--accent)}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.res{border-radius:14px;padding:12px 16px;font-weight:700;text-align:center}
+.res.ok{background:var(--oks);color:var(--ok)} .res.mid{background:var(--mids);color:var(--mid)} .res.ko{background:var(--kos);color:var(--ko)}
+.res small{display:block;font-weight:400;color:var(--ink)}
+/* barre de symboles */
+.kbar{display:flex;gap:6px;flex-wrap:wrap;padding-left:calc(1.1em + 8px)}
+.kbar button{font:700 20px "Bricolage Grotesque",sans-serif;min-width:44px;min-height:40px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+/* évaluation blanche */
+.timerbar{position:sticky;top:0;z-index:10;background:var(--bg);padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.timer{font:700 24px "Bricolage Grotesque",sans-serif}
+.timer.low{color:var(--ko)}
+.note{font:700 64px/1 "Bricolage Grotesque",sans-serif;text-align:center}
+.bilan{display:grid;gap:8px}
+.bl{display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--bg);border-radius:12px;padding:8px 12px;flex-wrap:wrap}
+.bl b{font-size:16px}
+.bl .btn{min-height:38px;padding:6px 12px;font-size:14px}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><a href="4e-n01.html">🎮 Les 9 jeux</a><button type="button" id="tomenu" hidden>← Menu de l’exerciseur</button></div>
+  <p class="kick">4e · Séquence 1 · N01</p>
+  <h1>Préparer l’évaluation</h1>
+  <p class="sub">Additionner et soustraire des nombres relatifs : les mêmes exercices et le même barème que l’évaluation. Calculatrice interdite !</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script>
+(function(){
+'use strict';
+var main = document.getElementById('main'), tomenu = document.getElementById('tomenu'), kbar = document.getElementById('kbar');
+var MINUS = '−', EPS = 1e-9;
+function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function rnd(a, b){ return a + Math.floor(Math.random() * (b - a + 1)); }
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+function shuffle(a){ for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function eq(a, b){ return Math.abs(a - b) < EPS; }
+function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){ return null; } }
+function num(n){ var s = String(Math.abs(Math.round(n * 100) / 100)).replace('.', ','); return s; }
+function fmt(n){ return (n < -EPS ? MINUS : '') + num(n); }                    // −4 ; 9
+function fmtS(n){ return (n < -EPS ? MINUS : '+') + num(n); }                  // −4 ; +9
+function par(n){ return '(' + fmtS(n) + ')'; }
+function pts(x){ return String(Math.round(x * 100) / 100).replace('.', ','); }
+function plural(n, w){ return n + ' ' + w + (n > 1 ? 's' : ''); }
+
+/* ---------- lecture des réponses ---------- */
+function norm(s){ return String(s || '').replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/\./g, ',').replace(/^=/, ''); }
+function parseNum(s){
+  s = norm(s).replace(/^\((.*)\)$/, '$1');
+  if (!/^[+-]?\d+(,\d+)?$/.test(s)) return null; return parseFloat(s.replace(',', '.'));
+}
+// expression du type (−5) + (+12)  ou  −4 + 9 + 6 − 8  →  liste de termes {op, v, paren}
+function parseExpr(s){
+  s = norm(s); var i = 0, terms = [];
+  function number(){ var m = /^\d+(,\d+)?/.exec(s.slice(i)); if (!m) return null; i += m[0].length; return parseFloat(m[0].replace(',', '.')); }
+  while (i < s.length){
+    var op = '+';
+    if (terms.length){ if (s[i] !== '+' && s[i] !== '-') return null; op = s[i]; i++; }
+    else if ((s[i] === '+' || s[i] === '-') && s[i + 1] === '('){ op = s[i]; i++; }
+    var paren = false, sign = 1, v;
+    if (s[i] === '('){
+      paren = true; i++;
+      if (s[i] === '+' || s[i] === '-'){ sign = s[i] === '-' ? -1 : 1; i++; }
+      v = number(); if (v === null || s[i] !== ')') return null; i++;
+    } else {
+      if (!terms.length && (s[i] === '+' || s[i] === '-')){ sign = s[i] === '-' ? -1 : 1; i++; }
+      v = number(); if (v === null) return null;
+    }
+    terms.push({op: op, v: sign * v, paren: paren, eff: (op === '-' ? -1 : 1) * sign * v});
+  }
+  return terms.length ? terms : null;
+}
+function sameList(a, b){ return a.length === b.length && a.every(function(x, k){ return eq(x, b[k]); }); }
+function sameBag(a, b){ var x = a.slice().sort(function(p, q){ return p - q; }), y = b.slice().sort(function(p, q){ return p - q; }); return sameList(x, y); }
+function effs(t){ return t.map(function(x){ return x.eff; }); }
+function simpWrite(list){ return list.map(function(x, k){ return (k === 0 ? (x < 0 ? MINUS : '') : (x < 0 ? ' ' + MINUS + ' ' : ' + ')) + num(x); }).join(''); }
+
+/* ---------- champs de saisie ---------- */
+var lastInput = null;
+function field(cls, ph){
+  var i = el('input', 'w' + (cls ? ' ' + cls : '')); i.type = 'text'; i.autocomplete = 'off'; i.spellcheck = false; i.inputMode = 'text';
+  if (ph) i.placeholder = ph;
+  // barre de symboles ( ) + − , placée juste sous la ligne en cours de saisie
+  i.addEventListener('focus', function(){ lastInput = i; var ln = i.parentNode; ln.parentNode.insertBefore(kbar, ln.nextSibling); kbar.hidden = false; });
+  return i;
+}
+['(', ')', '+', MINUS, ','].forEach(function(k){
+  var b = el('button', null, k); b.type = 'button';
+  b.addEventListener('mousedown', function(e){ e.preventDefault(); });
+  b.onclick = function(){
+    if (!lastInput || lastInput.disabled) return;
+    var a = lastInput.selectionStart || lastInput.value.length, z = lastInput.selectionEnd || a;
+    lastInput.value = lastInput.value.slice(0, a) + k + lastInput.value.slice(z);
+    lastInput.focus(); lastInput.setSelectionRange(a + 1, a + 1);
+  };
+  kbar.appendChild(b);
+});
+function mark(input, ok){ input.classList.remove('okF', 'koF'); input.classList.add(ok ? 'okF' : 'koF'); }
+function corLine(parent, ok, txt, small){
+  var c = el('div', 'cor' + (ok ? ' ok' : ''), txt); if (small) c.appendChild(el('small', null, small)); parent.appendChild(c); return c;
+}
+function itemState(item, got, max){ item.classList.add(eq(got, max) ? 'okI' : got > 0 ? 'midI' : 'koI'); }
+
+/* ============ Exercice 1 : questions de cours ============ */
+var COURS = [
+  {t: ['Deux nombres opposés ont la même ', 0, ' et des signes ', 1, '.'], c: [['distance à zéro', 'valeur', 'partie entière'], ['contraires', 'identiques', 'positifs']]},
+  {t: ['Soustraire un nombre, c’est ', 0, '.'], c: [['ajouter son opposé', 'soustraire son opposé', 'ajouter son inverse']]},
+  {t: ['Pour tous nombres a et b :   a − b = ', 0], c: [['a + (−b)', 'a − (−b)', 'b − a']]},
+  {t: ['Pour additionner deux nombres de même signe, on ', 0, ' leurs distances à zéro et on garde ', 1, '.'], c: [['additionne', 'soustrait', 'multiplie'], ['le signe commun', 'le signe +', 'le signe −']]},
+  {t: ['Pour additionner deux nombres de signes contraires, on ', 0, ' leurs distances à zéro et on garde le signe de celui qui a la ', 1, '.'], c: [['soustrait', 'additionne', 'multiplie'], ['plus grande distance à zéro', 'plus petite distance à zéro', 'plus grande valeur']]}
+];
+function exCours(){
+  var set = pick([[0, 1, 2], [3, 4, 2]]), max = 0, sels = [];
+  var box = el('div', 'items');
+  set.forEach(function(qi){
+    var Q = COURS[qi], it = el('div', 'item'), p = el('div', 'fill');
+    Q.t.forEach(function(part){
+      if (typeof part === 'string'){ p.appendChild(document.createTextNode(part)); return; }
+      var s = el('select', 's'), o0 = el('option', null, '…'); o0.value = ''; s.appendChild(o0);
+      shuffle(Q.c[part].slice()).forEach(function(o){ var op = el('option', null, o); op.value = o; s.appendChild(op); });
+      s.dataset.good = Q.c[part][0]; p.appendChild(s); sels.push({s: s, it: it});
+    });
+    it.appendChild(p); box.appendChild(it);
+  });
+  max = 3;
+  var w = 3 / sels.length;
+  return {box: box, max: max, check: function(){
+    var got = 0, byIt = new Map();
+    sels.forEach(function(x){
+      var ok = x.s.value === x.s.dataset.good; x.s.disabled = true; mark(x.s, ok); if (ok) got += w;
+      if (!ok) corLine(x.it, false, 'Réponse : ' + x.s.dataset.good);
+      byIt.set(x.it, (byIt.get(x.it) || 0) + (ok ? 1 : 0));
+    });
+    return got;
+  }};
+}
+
+/* ============ Exercice 2 : additionner ============ */
+function exAdd(){
+  var a1 = rnd(3, 9), b1 = rnd(3, 9), a2 = rnd(3, 9), b2 = a2 + rnd(3, 6), d3 = rnd(2, 7) + .5, e3 = Math.ceil(d3) + rnd(1, 4), z = rnd(6, 15);
+  var calcs = [[-a1, -b1], [a2, -b2], [-d3, e3], pick([[-z, z], [z, -z]])];
+  var box = el('div', 'items two'), fs = [];
+  calcs.forEach(function(c, k){
+    var it = el('div', 'item'), r = c[0] + c[1];
+    it.appendChild(el('div', 'q', String.fromCharCode(97 + k) + ')  ' + par(c[0]) + ' + ' + par(c[1])));
+    var ln = el('div', 'ln'); ln.appendChild(el('span', 'eq', '=')); var f = field('num', 'résultat'); ln.appendChild(f); it.appendChild(ln);
+    fs.push({f: f, it: it, c: c, r: r}); box.appendChild(it);
+  });
+  return {box: box, max: 4, check: function(){
+    var got = 0;
+    fs.forEach(function(x){
+      var v = parseNum(x.f.value), g = 0, why;
+      x.f.disabled = true;
+      if (v !== null){
+        if (eq(x.r, 0)) g = eq(v, 0) ? 1 : 0;
+        else g = ((v < 0) === (x.r < 0) && !eq(v, 0) ? .5 : 0) + (eq(Math.abs(v), Math.abs(x.r)) ? .5 : 0);
+      }
+      got += g; mark(x.f, g === 1); itemState(x.it, g, 1);
+      var same = (x.c[0] < 0) === (x.c[1] < 0);
+      why = eq(x.r, 0) ? 'Deux nombres opposés : leur somme vaut 0.' : same ? 'Même signe : on additionne les distances à zéro (' + num(x.c[0]) + ' + ' + num(x.c[1]) + ' = ' + num(x.r) + ') et on garde le signe commun.' :
+        'Signes contraires : on soustrait les distances à zéro (' + num(Math.max(Math.abs(x.c[0]), Math.abs(x.c[1]))) + ' ' + MINUS + ' ' + num(Math.min(Math.abs(x.c[0]), Math.abs(x.c[1]))) + ' = ' + num(Math.abs(x.r)) + ') et on garde le signe du plus éloigné de zéro.';
+      corLine(x.it, g === 1, g === 1 ? '✓ 1/1' : (v === null ? 'Pas de réponse. ' : (g ? 'Moitié des points (' + (eq(Math.abs(v), Math.abs(x.r)) ? 'signe faux' : 'distance à zéro fausse') + '). ' : '')) + 'Réponse : ' + fmt(x.r), g === 1 ? null : why);
+    });
+    return got;
+  }};
+}
+
+/* ============ Exercice 3 : soustraire ============ */
+function exSub(){
+  var a = rnd(2, 6), b = a + rnd(4, 9), c = rnd(4, 9), d = c + rnd(5, 9), e = rnd(3, 8), f = rnd(4, 9), g = rnd(0, 3) + .5, h = rnd(1, 6) + .5;
+  var calcs = [[a, b], [-c, -d], [-e, f], [g, -h]], box = el('div', 'items two'), fs = [];
+  calcs.forEach(function(cc, k){
+    var it = el('div', 'item'), L = 'ABCD'[k], r = cc[0] - cc[1];
+    it.appendChild(el('div', 'q', L + ' = ' + par(cc[0]) + ' ' + MINUS + ' ' + par(cc[1])));
+    var l1 = el('div', 'ln'), f1 = field('', 'addition de l’opposé'); l1.appendChild(el('span', 'eq', '=')); l1.appendChild(f1);
+    var l2 = el('div', 'ln'), f2 = field('num', 'résultat'); l2.appendChild(el('span', 'eq', '=')); l2.appendChild(f2);
+    it.appendChild(l1); it.appendChild(l2); fs.push({f1: f1, f2: f2, it: it, c: cc, r: r}); box.appendChild(it);
+  });
+  return {box: box, max: 4, check: function(){
+    var got = 0;
+    fs.forEach(function(x){
+      var t = parseExpr(x.f1.value), ok1 = !!t && t.length === 2 && t[1].op === '+' && eq(t[0].v, x.c[0]) && eq(t[1].v, -x.c[1]);
+      var v = parseNum(x.f2.value), ok2 = v !== null && eq(v, x.r), g = (ok1 ? .5 : 0) + (ok2 ? .5 : 0);
+      x.f1.disabled = x.f2.disabled = true; mark(x.f1, ok1); mark(x.f2, ok2); got += g; itemState(x.it, g, 1);
+      corLine(x.it, g === 1, g === 1 ? '✓ 1/1' : 'Correction : ' + par(x.c[0]) + ' + ' + par(-x.c[1]) + ' = ' + fmt(x.r),
+        g === 1 ? null : (!ok1 ? 'On remplace « ' + MINUS + ' ' + par(x.c[1]) + ' » par « + ' + par(-x.c[1]) + ' » : soustraire, c’est ajouter l’opposé. ' : '') + (!ok2 ? 'Puis on additionne les deux nombres.' : ''));
+    });
+    return got;
+  }};
+}
+
+/* ============ Exercice 4 : simplifier puis calculer ============ */
+function exSimp(){
+  // E = (−a) + (+b) − (−c) − (+d)
+  var Ev = [-rnd(2, 8), rnd(4, 12), -rnd(2, 9), rnd(5, 12)], Eops = ['+', '+', '-', '-'];
+  var Eeff = Ev.map(function(v, k){ return Eops[k] === '-' ? -v : v; });
+  // F = −a + b − c + d − e
+  var Ff; do { Ff = [-rnd(5, 12), rnd(2, 8), -rnd(2, 7), rnd(2, 9), -rnd(1, 6)]; } while (eq(Ff.reduce(function(s, x){ return s + x; }, 0), 0));
+  var box = el('div', 'items two'), parts = [];
+  function block(name, display, eff, withSimp){
+    var it = el('div', 'item'), P = eff.filter(function(x){ return x > 0; }).reduce(function(s, x){ return s + x; }, 0), N = -eff.filter(function(x){ return x < 0; }).reduce(function(s, x){ return s + x; }, 0), r = P - N;
+    it.appendChild(el('div', 'q', name + ' = ' + display));
+    var lines = [];
+    (withSimp ? [['simplifiée', 'écriture simplifiée']] : []).concat([['regroupement', 'positifs puis négatifs'], ['différence', 'ex. 15 − 12'], ['résultat', 'résultat']]).forEach(function(L){
+      var ln = el('div', 'ln'), f = field(L[0] === 'résultat' ? 'num' : '', L[1]); ln.appendChild(el('span', 'eq', '=')); ln.appendChild(f); it.appendChild(ln); lines.push({k: L[0], f: f});
+    });
+    parts.push({it: it, lines: lines, eff: eff, P: P, N: N, r: r, withSimp: withSimp, name: name}); box.appendChild(it);
+  }
+  block('E', par(Ev[0]) + ' + ' + par(Ev[1]) + ' ' + MINUS + ' ' + par(Ev[2]) + ' ' + MINUS + ' ' + par(Ev[3]), Eeff, true);
+  block('F', simpWrite(Ff), Ff, false);
+  return {box: box, max: 5, check: function(){
+    var got = 0;
+    parts.forEach(function(x){
+      var g = 0, max = x.withSimp ? 3 : 2, msgs = [];
+      x.lines.forEach(function(L){
+        var ok = false, t;
+        L.f.disabled = true;
+        if (L.k === 'simplifiée'){ t = parseExpr(L.f.value); ok = !!t && sameList(effs(t), x.eff) && t.every(function(y){ return !y.paren; }); if (ok) g += 1; else msgs.push('Écriture simplifiée : ' + simpWrite(x.eff) + ' (+ (+a) → + a ; + (−a) → − a ; − (+a) → − a ; − (−a) → + a)'); }
+        if (L.k === 'regroupement'){ t = parseExpr(L.f.value); var e = t && effs(t), k0 = e ? e.findIndex(function(y){ return y < 0; }) : -1;
+          ok = !!t && sameBag(e, x.eff) && (k0 < 0 || e.slice(k0).every(function(y){ return y < 0; })) && t.every(function(y){ return !y.paren; });
+          if (ok) g += 1; else msgs.push('Regroupement : ' + simpWrite(x.eff.filter(function(y){ return y > 0; }).concat(x.eff.filter(function(y){ return y < 0; })))); }
+        if (L.k === 'différence'){ t = parseExpr(L.f.value); ok = !!t && t.length === 2 && eq(t[0].eff, x.P) && eq(t[1].eff, -x.N); if (ok) g += .5; else msgs.push('Différence : ' + num(x.P) + ' ' + MINUS + ' ' + num(x.N) + ' (somme des positifs moins somme des distances des négatifs)'); }
+        if (L.k === 'résultat'){ var v = parseNum(L.f.value); ok = v !== null && eq(v, x.r); if (ok) g += .5; else msgs.push('Résultat : ' + fmt(x.r)); }
+        mark(L.f, ok);
+      });
+      got += g; itemState(x.it, g, max);
+      corLine(x.it, eq(g, max), (eq(g, max) ? '✓ ' : '') + pts(g) + '/' + max, msgs.join(' · ') || null);
+    });
+    return got;
+  }};
+}
+
+/* ============ Exercice 5 : problème ============ */
+var PLACES = ['Cany-Barville', 'Veulettes-sur-Mer', 'Fécamp', 'Yvetot', 'Saint-Valery-en-Caux', 'Étretat'];
+function exPb(){
+  var s, m1, m2, fin, q1, q2, v2, gap, ans1, ans2, unit;
+  if (Math.random() < .5){
+    unit = '°C'; s = -rnd(2, 6); m1 = rnd(7, 12); m2 = rnd(5, 13); fin = s + m1 - m2; v2 = fin - rnd(5, 10); gap = fin - v2;
+    q1 = 'À ' + pick(PLACES) + ', un jour de ' + pick(['janvier', 'février', 'décembre']) + ' (températures imaginées), il fait ' + fmt(s) + ' °C à ' + rnd(6, 8) + ' h. La température monte de ' + m1 + ' °C jusqu’à midi, puis baisse de ' + m2 + ' °C jusqu’à minuit.';
+    ans1 = {eff: [s, m1, -m2], txt: fmt(s) + ' + ' + m1 + ' ' + MINUS + ' ' + m2, sent: 'À minuit, il fait ' + fmt(fin) + ' °C.'};
+    q2 = 'Le lendemain matin, il fait ' + fmt(v2) + ' °C. De combien de degrés la température a-t-elle baissé depuis minuit ?';
+    ans2 = {a: fin, b: v2, r: gap, sent: 'La température a baissé de ' + num(gap) + ' °C.'};
+  } else {
+    unit = 'm'; s = -rnd(6, 14); m1 = rnd(10, 18); m2 = rnd(4, 9); fin = s - m1 + m2; v2 = fin - rnd(6, 14); gap = fin - v2;
+    q1 = 'Au large de Fécamp, un robot sous-marin inspecte la fondation d’une éolienne (situation imaginée). Il se trouve à ' + fmt(s) + ' m (' + num(s) + ' m sous la surface). Il descend de ' + m1 + ' m, puis remonte de ' + m2 + ' m.';
+    ans1 = {eff: [s, -m1, m2], txt: fmt(s) + ' ' + MINUS + ' ' + m1 + ' + ' + m2, sent: 'Le robot se trouve à ' + fmt(fin) + ' m.'};
+    q2 = 'Le fond marin est à ' + fmt(v2) + ' m. De combien de mètres le robot doit-il encore descendre pour atteindre le fond ?';
+    ans2 = {a: fin, b: v2, r: gap, sent: 'Le robot doit encore descendre de ' + num(gap) + ' m.'};
+  }
+  var box = el('div', 'items'), it1 = el('div', 'item'), it2 = el('div', 'item');
+  box.appendChild(el('p', null, q1));
+  it1.appendChild(el('div', 'q', '1. Écris un seul calcul donnant la ' + (unit === 'm' ? 'position finale du robot' : 'température à minuit') + ', puis effectue-le.'));
+  var c1 = el('div', 'ln'), f1 = field('', 'un seul calcul'); c1.appendChild(el('span', 'tag', 'Calcul')); c1.appendChild(f1);
+  var r1 = el('div', 'ln'), g1 = field('num', 'résultat'); r1.appendChild(el('span', 'tag', 'Résultat (' + unit + ')')); r1.appendChild(g1);
+  it1.appendChild(c1); it1.appendChild(r1);
+  it2.appendChild(el('div', 'q', '2. ' + q2));
+  var c2 = el('div', 'ln'), f2 = field('', 'calcul'); c2.appendChild(el('span', 'tag', 'Calcul')); c2.appendChild(f2);
+  var r2 = el('div', 'ln'), g2 = field('num', 'résultat'); r2.appendChild(el('span', 'tag', 'Résultat (' + unit + ')')); r2.appendChild(g2);
+  it2.appendChild(c2); it2.appendChild(r2);
+  box.appendChild(it1); box.appendChild(it2);
+  return {box: box, max: 4, check: function(){
+    var got = 0;
+    // question 1 : calcul (1), résultat (0,5), phrase (0,5 : à écrire sur la copie, compté si le résultat est juste)
+    var t = parseExpr(f1.value), okc = !!t && sameList(effs(t), ans1.eff), v = parseNum(g1.value), okr = v !== null && eq(v, fin);
+    mark(f1, okc); mark(g1, okr); f1.disabled = g1.disabled = true;
+    var p1 = (okc ? 1 : 0) + (okr ? 1 : 0); got += p1; itemState(it1, p1, 2);
+    corLine(it1, p1 === 2, (p1 === 2 ? '✓ ' : '') + p1 + '/2', (okc ? '' : 'Calcul attendu : ' + ans1.txt + ' (ou ' + par(s) + (unit === 'm' ? ' + ' + par(-m1) + ' + ' + par(m2) : ' + ' + par(m1) + ' + ' + par(-m2)) + '). ') + (okr ? '' : 'Résultat : ' + fmt(fin) + ' ' + unit + '. '));
+    it1.appendChild(el('div', 'sent', 'Phrase réponse (0,5 pt sur la copie) : « ' + ans1.sent + ' »'));
+    // question 2 : écart = a − b
+    t = parseExpr(f2.value);
+    var okc2 = !!t && t.length === 2 && eq(t[0].v, ans2.a) && eq(t[1].v, ans2.b) && t[1].op === '-' ;
+    if (!okc2 && t) okc2 = eq(effs(t).reduce(function(s, x){ return s + x; }, 0), gap) && t.length === 2 && sameBag(t.map(function(x){ return Math.abs(x.v); }), [Math.abs(ans2.a), Math.abs(ans2.b)]);
+    v = parseNum(g2.value); var okr2 = v !== null && eq(v, gap);
+    mark(f2, okc2); mark(g2, okr2); f2.disabled = g2.disabled = true;
+    var p2 = (okc2 ? 1 : 0) + (okr2 ? 1 : 0); got += p2; itemState(it2, p2, 2);
+    corLine(it2, p2 === 2, (p2 === 2 ? '✓ ' : '') + p2 + '/2', (okc2 ? '' : 'Un écart se calcule par une soustraction : ' + fmt(ans2.a) + ' ' + MINUS + ' ' + par(ans2.b) + ' = ' + fmt(ans2.a) + ' + ' + par(-ans2.b) + ' = ' + num(gap) + '. ') + (okr2 ? '' : 'Résultat : ' + num(gap) + ' ' + unit + '. '));
+    it2.appendChild(el('div', 'sent', 'Phrase réponse (0,5 pt sur la copie) : « ' + ans2.sent + ' »'));
+    return got;
+  }, note: 'Ici, le calcul et le résultat valent chacun 1 point ; sur ta copie, n’oublie pas la phrase réponse (0,5 pt par question).'};
+}
+
+/* ============ Bonus : nombre manquant ============ */
+function exBonus(){
+  var a = pick([-1, 1]) * rnd(2, 9), c; do { c = pick([-1, 1]) * rnd(2, 9); } while (eq(c, a));
+  var m1 = a - c;                                       // a − m1 = c
+  var b = pick([-1, 1]) * rnd(2, 8), d = pick([-1, 1]) * rnd(3, 13), r = pick([-1, 1]) * rnd(2, 12), m2 = r - b + d; // m2 + b − d = r
+  var box = el('div', 'items two'), fs = [];
+  [['a)', par(a) + ' ' + MINUS + ' … = ' + fmtS(c), m1, par(a) + ' ' + MINUS + ' ' + par(m1) + ' = ' + par(a) + ' + ' + par(-m1) + ' = ' + fmtS(c)],
+   ['b)', '… + ' + par(b) + ' ' + MINUS + ' ' + par(d) + ' = ' + fmtS(r), m2, par(m2) + ' + ' + par(b) + ' ' + MINUS + ' ' + par(d) + ' = ' + fmtS(r)]].forEach(function(Q){
+    var it = el('div', 'item'); it.appendChild(el('div', 'q', Q[0] + ' ' + Q[1]));
+    var ln = el('div', 'ln'), f = field('num', 'nombre manquant'); ln.appendChild(el('span', 'tag', '… =')); ln.appendChild(f); it.appendChild(ln);
+    fs.push({f: f, it: it, r: Q[2], v: Q[3]}); box.appendChild(it);
+  });
+  return {box: box, max: 1, check: function(){
+    var got = 0;
+    fs.forEach(function(x){ var v = parseNum(x.f.value), ok = v !== null && eq(v, x.r); x.f.disabled = true; mark(x.f, ok); if (ok) got += .5; itemState(x.it, ok ? 1 : 0, 1);
+      corLine(x.it, ok, ok ? '✓ 0,5/0,5' : 'Le nombre manquant est ' + fmtS(x.r), 'Vérification : ' + x.v); });
+    return got;
+  }};
+}
+
+/* ============ menu, entraînement, évaluation blanche ============ */
+var EX = [
+  {id: 'cours', n: 'Exercice 1', t: 'Questions de cours', ic: '📖', d: 'Compléter les règles du cours.', max: 3, make: exCours},
+  {id: 'add', n: 'Exercice 2', t: 'Additionner', ic: '➕', d: 'Signe 0,5 pt + distance à zéro 0,5 pt, avec des décimaux.', max: 4, make: exAdd},
+  {id: 'sub', n: 'Exercice 3', t: 'Soustraire', ic: '➖', d: 'Écrire l’addition de l’opposé, puis calculer.', max: 4, make: exSub},
+  {id: 'simp', n: 'Exercice 4', t: 'Simplifier, puis calculer', ic: '✂️', d: 'Écriture simplifiée, regroupement, différence, résultat.', max: 5, make: exSimp},
+  {id: 'pb', n: 'Exercice 5', t: 'Problème', ic: '🌡️', d: 'Un seul calcul, puis un écart.', max: 4, make: exPb},
+  {id: 'bonus', n: 'Bonus', t: 'Le nombre manquant', ic: '⭐', d: 'Pour aller plus loin.', max: 1, make: exBonus}
+];
+function byId(id){ return EX.filter(function(e){ return e.id === id; })[0]; }
+function cls(got, max){ return eq(got, max) ? 'ok' : got >= max * .6 ? 'mid' : 'ko'; }
+function stat(p, t){ if (window.stat) window.stat(p, t); }
+
+function menu(){
+  tomenu.hidden = true; kbar.hidden = true; main.innerHTML = '';
+  var best = store('eval:n01:best');
+  main.appendChild(el('h2', 'cat', 'Le jour J'));
+  var g0 = el('div', 'grid'), t0 = el('button', 'tile big'); t0.type = 'button';
+  t0.appendChild(el('span', 'ic', '📝'));
+  var s0 = el('span'); s0.appendChild(el('b', null, 'Évaluation blanche')); s0.appendChild(el('span', 'd', 'Un sujet complet, 15 minutes, noté sur 20 avec le vrai barème. Un nouveau sujet à chaque essai.'));
+  if (best) s0.appendChild(el('span', 'rec', 'Ta meilleure note : ' + best + '/20'));
+  t0.appendChild(s0); t0.onclick = function(){ location.hash = 'blanc'; }; g0.appendChild(t0); main.appendChild(g0);
+  main.appendChild(el('h2', 'cat', 'S’entraîner exercice par exercice'));
+  var g = el('div', 'grid');
+  EX.forEach(function(x){
+    var b = el('button', 'tile'); b.type = 'button'; b.appendChild(el('span', 'ic', x.ic));
+    var s = el('span'); s.appendChild(el('b', null, x.n + ' · ' + x.t)); s.appendChild(el('span', 'd', x.d + ' (' + pts(x.max) + ' pt' + (x.max > 1 ? 's' : '') + ')'));
+    var rec = store('eval:n01:' + x.id); if (rec) s.appendChild(el('span', 'rec', 'Dernier essai : ' + rec + '/' + pts(x.max)));
+    b.appendChild(s); b.onclick = function(){ location.hash = x.id; }; g.appendChild(b);
+  });
+  main.appendChild(g);
+}
+
+function exPanel(x, inst, n){
+  var p = el('section', 'panel'), h = el('div', 'ph');
+  h.appendChild(el('h2', null, x.ic + ' ' + x.n + ' · ' + x.t)); var sc = el('span', 'pts', pts(x.max) + ' pt' + (x.max > 1 ? 's' : '')); h.appendChild(sc);
+  p.appendChild(h);
+  var c = {cours: 'Complète avec le bon mot.', add: 'Pour chaque calcul : signe 0,5 point, distance à zéro 0,5 point. Tu peux écrire 6,5 ou (−6,5).', sub: 'Transforme chaque soustraction en addition (ex. (−5) + (+12)), puis calcule. Addition de l’opposé 0,5 point ; résultat 0,5 point.',
+    simp: 'E : écriture simplifiée 1 ; regroupement 1 ; différence 0,5 ; résultat 0,5. F : regroupement 1 ; différence 0,5 ; résultat 0,5. Écris par exemple : −4 + 9 + 6 − 8, puis 9 + 6 − 4 − 8, puis 15 − 12.', pb: '', bonus: 'Retrouve le nombre manquant. Ces points s’ajoutent à la note (sans dépasser 20).'}[x.id];
+  if (c) p.appendChild(el('p', 'consigne', c));
+  p.appendChild(inst.box); if (inst.note) p.appendChild(el('p', 'consigne', inst.note));
+  return {p: p, sc: sc};
+}
+
+function train(id){
+  var x = byId(id); if (!x){ menu(); return; }
+  stat('/exos/4e-n01-eval/' + id, 'Préparer l’évaluation N01 · ' + x.t);
+  tomenu.hidden = false; main.innerHTML = '';
+  var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p);
+  var row = el('div', 'row'), bv = el('button', 'btn main', 'Corriger'); bv.type = 'button'; row.appendChild(bv); P.p.appendChild(row);
+  bv.onclick = function(){
+    var got = inst.check(); bv.remove(); kbar.hidden = true;
+    P.sc.textContent = pts(got) + ' / ' + pts(x.max); P.sc.className = 'pts ' + cls(got, x.max);
+    store('eval:n01:' + id, pts(got));
+    var r = el('div', 'res ' + cls(got, x.max), pts(got) + ' / ' + pts(x.max) + (eq(got, x.max) ? ' : parfait !' : ''));
+    r.appendChild(el('small', null, eq(got, x.max) ? 'Tu es prêt(e) pour cet exercice. Essaie l’évaluation blanche !' : 'Lis les corrections en rouge, puis refais une série : les nombres changent.'));
+    P.p.appendChild(r);
+    var r2 = el('div', 'row'), b1 = el('button', 'btn main', 'Nouvelle série'), b2 = el('button', 'btn', 'Menu');
+    b1.onclick = function(){ train(id); window.scrollTo(0, 0); }; b2.onclick = function(){ location.hash = ''; };
+    r2.appendChild(b1); r2.appendChild(b2); P.p.appendChild(r2);
+  };
+  window.scrollTo(0, 0);
+}
+
+var blancTimer = null;
+function blanc(){
+  stat('/exos/4e-n01-eval/blanc', 'Préparer l’évaluation N01 · évaluation blanche');
+  tomenu.hidden = false; main.innerHTML = '';
+  var bar = el('div', 'timerbar'), tm = el('span', 'timer', '15:00'), bend = el('button', 'btn main', 'Rendre ma copie'); bend.type = 'button';
+  bar.appendChild(tm); bar.appendChild(bend); main.appendChild(bar);
+  main.appendChild(el('p', 'consigne', 'Calculatrice interdite. Rédige comme sur ta copie : une étape par ligne. Quand le temps est écoulé, la copie est ramassée automatiquement.'));
+  var parts = EX.map(function(x){ var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p); return {x: x, inst: inst, P: P}; });
+  var t0 = Date.now(), dur = 15 * 60 * 1000, done = false;
+  clearInterval(blancTimer);
+  blancTimer = setInterval(function(){
+    if (!document.body.contains(bar)){ clearInterval(blancTimer); return; }
+    var left = Math.max(0, dur - (Date.now() - t0)), s = Math.ceil(left / 1000);
+    tm.textContent = Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); tm.classList.toggle('low', s <= 120);
+    if (left <= 0) finish(true);
+  }, 500);
+  bend.onclick = function(){ finish(false); };
+  function finish(auto){
+    if (done) return; done = true; clearInterval(blancTimer); kbar.hidden = true;
+    var total = 0, bonus = 0, res = [];
+    parts.forEach(function(o){
+      var got = o.inst.check(); o.P.sc.textContent = pts(got) + ' / ' + pts(o.x.max); o.P.sc.className = 'pts ' + cls(got, o.x.max);
+      if (o.x.id === 'bonus') bonus = got; else total += got; res.push({x: o.x, got: got});
+    });
+    // phrases réponses du problème : comptées si le résultat est juste (elles s'écrivent sur la copie)
+    var note = Math.min(20, total + bonus);
+    note = Math.round(note * 4) / 4;
+    var used = Math.round((Date.now() - t0) / 1000);
+    var best = parseFloat((store('eval:n01:best') || '0').replace(',', '.'));
+    if (note > best) store('eval:n01:best', pts(note));
+    bar.remove();
+    var sum = el('section', 'panel');
+    sum.appendChild(el('div', 'note', pts(note) + '/20'));
+    sum.appendChild(el('p', 'consigne', (auto ? 'Temps écoulé : copie ramassée. ' : 'Copie rendue en ' + Math.floor(used / 60) + ' min ' + ('0' + used % 60).slice(-2) + '. ') + (note > best ? '🏆 Ta meilleure note !' : best ? 'Ta meilleure note : ' + pts(best) + '/20.' : '')));
+    sum.lastChild.style.textAlign = 'center';
+    var bl = el('div', 'bilan');
+    res.forEach(function(r){
+      var line = el('div', 'bl'), left = el('span'); left.appendChild(el('b', null, r.x.n + ' · ' + r.x.t + ' : '));
+      left.appendChild(el('span', 'pts ' + cls(r.got, r.x.max), pts(r.got) + '/' + pts(r.x.max)));
+      line.appendChild(left);
+      if (!eq(r.got, r.x.max) && r.x.id !== 'bonus'){ var b = el('button', 'btn', 'À retravailler →'); b.type = 'button'; b.onclick = function(){ location.hash = r.x.id; }; line.appendChild(b); }
+      bl.appendChild(line);
+    });
+    sum.appendChild(bl);
+    sum.appendChild(el('p', 'consigne', 'Les phrases réponses du problème (0,5 pt chacune) sont comptées quand le résultat est juste : sur ta vraie copie, pense à les écrire ! Les corrections détaillées sont sous chaque exercice.'));
+    var r2 = el('div', 'row'), b1 = el('button', 'btn main', 'Nouveau sujet'), b2 = el('button', 'btn', 'Menu');
+    b1.onclick = function(){ blanc(); }; b2.onclick = function(){ location.hash = ''; };
+    r2.appendChild(b1); r2.appendChild(b2); sum.appendChild(r2);
+    main.insertBefore(sum, main.firstChild); window.scrollTo(0, 0);
+    stat('/exos/4e-n01-eval/blanc/note', 'Évaluation blanche N01 rendue');
+  }
+  window.scrollTo(0, 0);
+}
+
+function route(){
+  var id = location.hash.slice(1);
+  if (id === 'blanc') blanc(); else if (id) train(id); else menu();
+}
+tomenu.onclick = function(){ location.hash = ''; };
+try { if (document.referrer && new URL(document.referrer).pathname.replace(/index\.html$/, '') === new URL('../', location.href).pathname) document.getElementById('home').href = document.referrer; } catch(e){}
+window.addEventListener('hashchange', route);
+route();
+})();
+</script>
+<script src="../stats.js"></script>
+</body>
+</html>

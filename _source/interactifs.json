@@ -1,6 +1,15 @@
 {
   "_doc": "Exercices interactifs hébergés sur le site (dossier exos/), publiés avec les documents élèves de la notion (case Élèves). Clé : niveau puis numéro de notion.",
   "4e": {
-    "1": [{"l": "Exercices interactifs (9 jeux)", "u": "exos/4e-n01.html"}]
+    "1": [
+      {
+        "l": "Préparer l’évaluation (exerciseur + évaluation blanche)",
+        "u": "exos/4e-n01-eval.html"
+      },
+      {
+        "l": "Exercices interactifs (9 jeux)",
+        "u": "exos/4e-n01.html"
+      }
+    ]
   }
 }
