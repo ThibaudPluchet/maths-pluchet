@@ -110,6 +110,20 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 .seqbtn .st{font:700 16px/1.2 "Bricolage Grotesque",system-ui,sans-serif}
 .seqbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .seqbtn[aria-pressed="true"] .sn{color:var(--accent-ink);opacity:.85}
+/* petits dessins : onglets et séquences */
+.ico{display:inline-grid;place-items:center;flex:none}
+.ico svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ico svg .f{fill:currentColor;stroke:none}
+.tabs button{display:inline-flex;align-items:center;gap:7px}
+.tabs .ico{width:19px;height:19px}
+.tile{width:40px;height:40px;border-radius:11px;padding:8px;color:var(--ic,var(--accent));background:color-mix(in srgb,var(--ic,var(--accent)) 14%,transparent)}
+.t-nb{--ic:#2f6fd6} .t-calc{--ic:#7b4fd0} .t-geo{--ic:#1d8a5a} .t-data{--ic:#d0661c}
+@media (prefers-color-scheme:dark){ .t-nb{--ic:#7ea6ff} .t-calc{--ic:#b79bff} .t-geo{--ic:#5fd09a} .t-data{--ic:#ff9a5c} }
+.seqbtn.withico{flex-direction:row;align-items:center;gap:11px}
+.seqbtn .txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.seqbtn[aria-pressed="true"] .tile{color:var(--accent-ink);background:rgba(255,255,255,.2)}
+.seqhead.withico{display:flex;align-items:center;gap:14px}
+.seqhead .tile{width:56px;height:56px;padding:11px;border-radius:15px}
 .seqbtn .dot{position:absolute;top:8px;right:8px;width:10px;height:10px;border-radius:50%;background:var(--new)}
 .seqview{display:flex;flex-direction:column;gap:14px;scroll-margin-top:84px}
 .seqhead .seqname{color:var(--muted);font-size:15px;margin:0 0 2px;font-weight:700}
@@ -294,7 +308,7 @@ function start(D){
     var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(lv === '3e' ? [['brevet','Exercices DNB']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes'], ['curio','Curiosités']]);
     if (!tlist.some(function(t){ return t[0] === view; })) view = 'cours';
     tlist.forEach(function(t){
-      var b = el('button', null, t[1]); b.setAttribute('aria-pressed', view === t[0]);
+      var b = el('button'); b.appendChild(icon(t[0])); b.appendChild(document.createTextNode(t[1])); b.setAttribute('aria-pressed', view === t[0]);
       if (t[0] === 'evals' && evals.some(function(e){ return e.items.some(isNew); })) b.appendChild(el('span','tdot'));
       b.onclick = t[0] === 'auto' || t[0] === 'curio' ? function(){ location.href = (t[0] === 'auto' ? 'auto.html' : 'curiosites.html') + location.hash; } : function(){ view = t[0]; render(); }; tabs.appendChild(b);
     });
@@ -310,6 +324,48 @@ function start(D){
   // Séquences d'un même domaine (« Fonctions (1) », « Fonctions (2) »…) regroupées en une seule entrée du menu,
   // dans l'ordre de leur première apparition ; dedans, les notions de la plus récente à la plus ancienne.
   // code affiché : N15 pour une notion, E01 pour une évaluation commune
+  // Petits dessins (SVG maison) : un par onglet, un par thème de séquence
+  var SVG = {
+    cours:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M8 7.5h7M8 11h5"/>',
+    evals:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4"/><path d="m9 13 2.2 2.2L15.5 11"/>',
+    brevet:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.2 9 2.2 12 0v-5"/><path d="M22 9v6"/>',
+    auto:'<path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12z"/>',
+    curio:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.6 1 2.5h6c0-.9.2-1.7 1-2.5A6 6 0 0 0 12 3z"/>',
+    relatifs:'<path d="M2 14h20"/><path d="M5 11.5v5M12 10.5v7M19 11.5v5"/><path d="M3.5 6h3M17.5 6h3M19 4.5v3"/>',
+    cube:'<path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M12 12 20 7.5M12 12 4 7.5M12 12v9"/>',
+    litteral:'<path d="M7.5 4.5c-2.6 4.5-2.6 10.5 0 15M16.5 4.5c2.6 4.5 2.6 10.5 0 15"/><path d="M9.5 12h5M12 9.5v5"/>',
+    trirect:'<path d="M4 20V4.5L19.5 20z"/><path d="M4 16h4v4"/>',
+    trigo:'<path d="M3.5 20.5h17M3.5 20.5V3.5"/><path d="M3.5 6.5a14 14 0 0 1 14 14"/><path d="M3.5 20.5 13.4 10.6"/><path d="M13.4 10.6v9.9" stroke-dasharray="1.6 2"/><path d="M8 20.5a4.5 4.5 0 0 0-1.3-3.2"/>',
+    propor:'<rect x="3" y="5" width="13" height="10" rx="1.5"/><path d="M9.5 5v10M3 10h13"/><path d="M18.5 7.5c2.5 1.5 2.5 4.5 0 6"/><path d="m17 12.3 1.5 1.3-1.8.9"/>',
+    divis:'<circle class="f" cx="6" cy="7" r="1.6"/><circle class="f" cx="12" cy="7" r="1.6"/><circle class="f" cx="18" cy="7" r="1.6"/><circle class="f" cx="6" cy="12" r="1.6"/><circle class="f" cx="12" cy="12" r="1.6"/><circle class="f" cx="18" cy="12" r="1.6"/><circle class="f" cx="6" cy="17" r="1.6"/><circle class="f" cx="12" cy="17" r="1.6"/><circle class="f" cx="18" cy="17" r="1.6"/>',
+    transfo:'<path d="M12 3v18" stroke-dasharray="2 2.5"/><path d="M9 7 3.5 17H9z"/><path d="M15 7l5.5 10H15z"/>',
+    fonction:'<path d="M4 3v17h17"/><path d="M6 17c4.5-.5 6-11 13.5-12"/>',
+    thales:'<path d="M12 3 3 20h18z"/><path d="M7.4 11.7h9.2"/>',
+    sembl:'<path d="M2 20l5-8.5 5 8.5z"/><path d="M11 20l5.5-15L22 20z"/>',
+    stats:'<path d="M3.5 20.5h17"/><rect x="5.5" y="11" width="3" height="9.5"/><rect x="10.5" y="5" width="3" height="15.5"/><rect x="15.5" y="14" width="3" height="6.5"/>',
+    fraction:'<circle cx="12" cy="12" r="8.5"/><path d="M12 12V3.5M12 12l7.4 4.2"/><path class="f" d="M12 12V3.5a8.5 8.5 0 0 1 7.4 12.7z" opacity=".25"/>',
+    puiss:'<path d="M3.5 10.5 11 20.5M11 10.5 3.5 20.5"/><path d="M14.5 3.5v6M14.5 5.3c.6-1.2 1.5-1.8 2.6-1.8 1.4 0 2.2.9 2.2 2.3v3.7"/>',
+    equation:'<path d="M12 4v15M7.5 20h9"/><path d="M4 8h16"/><path d="M4 8 1.5 14h5zM20 8l-2.5 6h5z"/>',
+    proba:'<rect x="4" y="4" width="16" height="16" rx="3.5"/><circle class="f" cx="8.5" cy="8.5" r="1.5"/><circle class="f" cx="12" cy="12" r="1.5"/><circle class="f" cx="15.5" cy="15.5" r="1.5"/>',
+    globe:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M5 7.5h14M5 16.5h14M12 3.5c-3.2 3.2-3.2 13.8 0 17M12 3.5c3.2 3.2 3.2 13.8 0 17"/>',
+    autre:'<path d="M3 18a9 9 0 0 1 18 0z"/><path d="M12 18 16.5 12"/><path d="M7 18v-1.5M12 18v-2M17 18v-1.5"/>'
+  };
+  var THEMES = [
+    [/relatif/, 'relatifs', 'nb'], [/fraction/, 'fraction', 'nb'], [/puissance/, 'puiss', 'nb'], [/divisib|arithm/, 'divis', 'nb'],
+    [/distributiv|litteral/, 'litteral', 'calc'], [/equation/, 'equation', 'calc'],
+    [/espace|volume/, 'cube', 'geo'], [/trigono/, 'trigo', 'geo'], [/pythagore|triangle rectangle/, 'trirect', 'geo'], [/semblable/, 'sembl', 'geo'],
+    [/thales/, 'thales', 'geo'], [/transformation/, 'transfo', 'geo'], [/coordonn|terrestre/, 'globe', 'geo'],
+    [/fonction/, 'fonction', 'data'], [/proportion/, 'propor', 'data'], [/statisti/, 'stats', 'data'], [/probab/, 'proba', 'data']
+  ];
+  function icon(name, cls){
+    var s = el('span', 'ico' + (cls ? ' ' + cls : '')); s.setAttribute('aria-hidden', 'true');
+    s.innerHTML = '<svg viewBox="0 0 24 24">' + (SVG[name] || SVG.autre) + '</svg>'; return s;
+  }
+  function seqIcon(titre){
+    var t = String(titre).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    for (var i = 0; i < THEMES.length; i++) if (THEMES[i][0].test(t)) return icon(THEMES[i][1], 'tile t-' + THEMES[i][2]);
+    return icon('autre', 'tile');
+  }
   function codeOf(num){ return typeof num === 'string' ? num : 'N' + num; }
   function domainOf(t){ return String(t).replace(/\s*\(\d+\)\s*$/, ''); }
   function renderCours(seqs){
@@ -329,10 +385,12 @@ function start(D){
     nav.appendChild(el('p','kicker','Choisis une séquence'));
     var list = el('div','seqlist');
     doms.forEach(function(d){
-      var b = el('button','seqbtn'); b.type = 'button';
+      var b = el('button','seqbtn withico'); b.type = 'button';
       b.setAttribute('aria-pressed', d.key === seqSel);
-      b.appendChild(el('span','sn', nums(d) + (d.key === curKey ? ' · en cours' : '')));
-      b.appendChild(el('span','st', d.key));
+      b.appendChild(seqIcon(d.key));
+      var tx = el('span','txt');
+      tx.appendChild(el('span','sn', nums(d) + (d.key === curKey ? ' · en cours' : '')));
+      tx.appendChild(el('span','st', d.key)); b.appendChild(tx);
       if (d.notions.some(function(x){ return x.n.items.some(isNew); })) b.appendChild(el('span','dot'));
       b.onclick = function(){ seqSel = d.key; render(); var t = document.getElementById('seq-notions'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
       list.appendChild(b);
@@ -341,9 +399,9 @@ function start(D){
 
     var d = byKey[seqSel];
     var sec = el('section','seqview'); sec.id = 'seq-notions';
-    var hd = el('div','seqhead');
-    hd.appendChild(el('p','seqname', nums(d)));
-    hd.appendChild(el('h2', null, d.key));
+    var hd = el('div','seqhead withico');
+    hd.appendChild(seqIcon(d.key));
+    var hx = el('div'); hx.appendChild(el('p','seqname', nums(d))); hx.appendChild(el('h2', null, d.key)); hd.appendChild(hx);
     sec.appendChild(hd);
     d.notions.forEach(function(x){
       var n = x.n, isCur = n === cur;
