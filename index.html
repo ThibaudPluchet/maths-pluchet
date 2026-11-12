@@ -83,7 +83,11 @@ footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40
 body{background-image:linear-gradient(var(--gridc) 1px,transparent 1px),linear-gradient(90deg,var(--gridc) 1px,transparent 1px);background-size:22px 22px}
 :root{--gridc:#e9e5da;--brick:#b5533c;--stone:#efe6d2;--slate:#3d4658;--win:#26324a;--water:#7fb2d6;--hill:#9cc58a;--hill2:#c3dcae;--tree:#5f9a55;--sky1:#dbeafb;--sky2:#f7f3e8;--axis:#d6336c;--sym:#2f5bd3}
 @media (prefers-color-scheme: dark){:root{--gridc:#1a1e27;--brick:#9a4a37;--stone:#cfc5b1;--slate:#55607a;--win:#0e1422;--water:#2c5878;--hill:#3c5d38;--hill2:#2c4429;--tree:#2f5a2c;--sky1:#1b2640;--sky2:#151a24;--axis:#ff7aa5;--sym:#86a4ff}}
-.banner{display:block;width:100%;height:auto;margin-top:16px;border-radius:18px;border:1px solid var(--line)}
+/* en-tête : titre à gauche, petit dessin du château à droite */
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.headrow .htxt{min-width:0;flex:1 1 260px}
+.banner{display:block;flex:0 1 360px;width:360px;max-width:100%;height:auto;aspect-ratio:800/260;border-radius:14px;border:1px solid var(--line)}
+@media (max-width:620px){ .banner{flex-basis:100%;width:100%;max-height:120px} }
 .banner .gridline{stroke:var(--sym);stroke-opacity:.08;stroke-width:1}
 .banner .sky1{stop-color:var(--sky1)} .banner .sky2{stop-color:var(--sky2)}
 .banner .hill{fill:var(--hill)} .banner .hill2{fill:var(--hill2)} .banner .trees{fill:var(--tree)}
@@ -142,7 +146,6 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 /* grand écran : on exploite la largeur */
 @media (min-width:1000px){
   .wrap{max-width:1200px}
-  .banner{height:300px}
   .seqview{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
   .seqview > .seqhead, .seqview > .intro, .seqview > .notion.current{grid-column:1/-1}
   .seqview .notion.current .groups{grid-template-columns:repeat(4,1fr)}
@@ -154,8 +157,11 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 </head>
 <body>
 <header class="wrap">
+  <div class="headrow">
+  <div class="htxt">
   <h1>Mathématiques</h1>
   <p class="sub">M. Pluchet · Collège Louis Bouilhet, Cany-Barville · 2026/2027</p>
+  </div>
   <svg class="banner" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice" role="img" aria-labelledby="bn-t" xmlns="http://www.w3.org/2000/svg">
 <title id="bn-t">Le château de Cany, dessiné comme une figure de géométrie, avec son axe de symétrie</title>
 <defs>
@@ -198,6 +204,7 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
   <text x="16" y="250" class="cap">Château de Cany · Cany-Barville</text>
 </g>
 </svg>
+  </div>
 </header>
 <nav class="picker" aria-label="Ma classe"><div class="wrap picker-row" id="picker"></div></nav>
 <main class="wrap" id="main"></main>
