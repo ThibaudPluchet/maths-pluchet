@@ -83,11 +83,19 @@ footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40
 body{background-image:linear-gradient(var(--gridc) 1px,transparent 1px),linear-gradient(90deg,var(--gridc) 1px,transparent 1px);background-size:22px 22px}
 :root{--gridc:#e9e5da;--brick:#b5533c;--stone:#efe6d2;--slate:#3d4658;--win:#26324a;--water:#7fb2d6;--hill:#9cc58a;--hill2:#c3dcae;--tree:#5f9a55;--sky1:#dbeafb;--sky2:#f7f3e8;--axis:#d6336c;--sym:#2f5bd3}
 @media (prefers-color-scheme: dark){:root{--gridc:#1a1e27;--brick:#9a4a37;--stone:#cfc5b1;--slate:#55607a;--win:#0e1422;--water:#2c5878;--hill:#3c5d38;--hill2:#2c4429;--tree:#2f5a2c;--sky1:#1b2640;--sky2:#151a24;--axis:#ff7aa5;--sym:#86a4ff}}
-/* en-tête : titre à gauche, petit dessin du château à droite */
-.headrow{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
-.headrow .htxt{min-width:0;flex:1 1 260px}
-.banner{display:block;flex:0 1 360px;width:360px;max-width:100%;height:auto;aspect-ratio:800/260;border-radius:14px;border:1px solid var(--line)}
-@media (max-width:620px){ .banner{flex-basis:100%;width:100%;max-height:120px} }
+/* en-tête : le dessin du château sur toute la largeur, le titre posé dans le dessin, à gauche */
+.headrow{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+.banner{display:block;width:100%;height:clamp(170px,20vw,250px)}
+.headrow .htxt{position:absolute;left:clamp(14px,3vw,30px);top:50%;transform:translateY(-58%);max-width:min(560px,56%);
+  padding:12px 18px 12px 16px;border-radius:14px;background:color-mix(in srgb,var(--card) 72%,transparent);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.headrow h1{margin:0 0 4px}
+.headrow .sub{margin:0}
+/* téléphone : pas la place de poser le titre sans cacher le château : titre au-dessus, dessin en dessous */
+@media (max-width:620px){
+  .headrow{display:flex;flex-direction:column;border:0;border-radius:0;overflow:visible}
+  .headrow .htxt{position:static;transform:none;max-width:none;padding:0 0 12px;background:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .banner{height:150px;border-radius:16px;border:1px solid var(--line)}
+}
 .banner .gridline{stroke:var(--sym);stroke-opacity:.08;stroke-width:1}
 .banner .sky1{stop-color:var(--sky1)} .banner .sky2{stop-color:var(--sky2)}
 .banner .hill{fill:var(--hill)} .banner .hill2{fill:var(--hill2)} .banner .trees{fill:var(--tree)}
@@ -162,16 +170,18 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
   <h1>Mathématiques</h1>
   <p class="sub">M. Pluchet · Collège Louis Bouilhet, Cany-Barville · 2026/2027</p>
   </div>
-  <svg class="banner" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice" role="img" aria-labelledby="bn-t" xmlns="http://www.w3.org/2000/svg">
+  <svg class="banner" viewBox="-500 0 1300 260" preserveAspectRatio="xMaxYMax slice" role="img" aria-labelledby="bn-t" xmlns="http://www.w3.org/2000/svg">
 <title id="bn-t">Le château de Cany, dessiné comme une figure de géométrie, avec son axe de symétrie</title>
 <defs>
   <pattern id="grid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" class="gridline"/></pattern>
   <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sky1"/><stop offset="1" class="sky2"/></linearGradient>
-  <clipPath id="clip"><rect width="800" height="260" rx="18"/></clipPath>
+  <clipPath id="clip"><rect x="-500" width="1300" height="260"/></clipPath>
 </defs>
 <g clip-path="url(#clip)">
-  <rect width="800" height="260" fill="url(#sky)"/>
-  <rect width="800" height="260" fill="url(#grid)"/>
+  <rect x="-500" width="1300" height="260" fill="url(#sky)"/>
+  <rect x="-512" width="1312" height="260" fill="url(#grid)"/>
+  <path d="M-500 158C-390 132-260 172-140 150S-60 202.5 0 175L2 174V260H-500z" class="hill2"/>
+  <path d="M-500 188C-360 168-220 204-90 186S-75 214 0 196L2 195.5V260H-500z" class="hill"/>
   <path d="M0 175C120 120 230 150 330 128S520 100 640 120 760 98 800 110V260H0z" class="hill2"/>
   <path d="M0 196C150 160 260 186 380 170S600 150 800 172V260H0z" class="hill"/>
   <g class="trees">
