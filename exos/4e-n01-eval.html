@@ -127,6 +127,14 @@ function par(n){ return '(' + fmtS(n) + ')'; }
 function pts(x){ return String(Math.round(x * 100) / 100).replace('.', ','); }
 function plural(n, w){ return n + ' ' + w + (n > 1 ? 's' : ''); }
 
+/* ---------- questions des vrais sujets : jamais reproduites ---------- */
+// Empreintes (FNV-1a) des calculs des sujets d'évaluation de toutes les classes, produites par _source/exclu_eval.py.
+// Seules les empreintes figurent ici : les nombres des sujets ne sont pas lisibles dans la page.
+var EXCLU = ["042ae8f7", "044b9b53", "0611c769", "0e63be48", "11e2a349", "164a0cb4", "175b2a83", "184fe3af", "213bf4b3", "23e98077", "24635128", "248f31da", "28980a81", "2a9bb2bc", "2c134eab", "317351ff", "3263fc35", "32d42ef2", "3313975d", "374247ff", "3deef0fc", "423bfe8b", "43bd537b", "47322aa7", "489a7843", "4a227f1a", "4c655cad", "4e5db380", "4fd35095", "50a69112", "58e687ad", "5dea7bb6", "640ca72a", "70d09b3f", "7d06187c", "7d6ebb7b", "7ffb76f0", "8590370f", "8c86296b", "8de92efb", "8f321cab", "94d7d5d3", "9abfcb47", "9ba17668", "a340ce07", "a82d597c", "a8f1d5ed", "aa41b04c", "aae8b808", "af47f2e3", "b0a4a492", "b893954d", "b9d1982e", "bda91165", "bef922cf", "c11bd003", "c51d70d7", "c965af80", "cb6b0e0c", "cd663b95", "ce451afc", "d202b415", "d3864bbb", "d962c0d4", "dc00c2a2", "e068c14d", "e0738380", "e11a5f91", "e268846f", "e62f5c18", "e683fc59", "ecc712ac", "eee430ff", "f3c68601", "f6dc7fc1", "faefd269"];
+function fnv(s){ var h = 0x811c9dc5, b = unescape(encodeURIComponent(s)); for (var i = 0; i < b.length; i++){ h ^= b.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return ('0000000' + h.toString(16)).slice(-8); }
+function excluded(key){ return EXCLU.indexOf(fnv(key)) > -1; }
+function fresh(gen, keyOf){ var x, n = 0; do { x = gen(); } while (excluded(keyOf(x)) && ++n < 60); return x; }
+
 /* ---------- lecture des réponses ---------- */
 function norm(s){ return String(s || '').replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/\./g, ',').replace(/^=/, ''); }
 function parseNum(s){
@@ -233,8 +241,12 @@ function exCours(){
 
 /* ============ Exercice 2 : additionner ============ */
 function exAdd(){
-  var a1 = rnd(3, 9), b1 = rnd(3, 9), a2 = rnd(3, 9), b2 = a2 + rnd(3, 6), d3 = rnd(2, 7) + .5, e3 = Math.ceil(d3) + rnd(1, 4), z = rnd(6, 15);
-  var calcs = [[-a1, -b1], [a2, -b2], [-d3, e3], pick([[-z, z], [z, -z]])];
+  var K = function(c){ return 'add:' + c[0] + '|' + c[1]; };
+  var calcs = [
+    fresh(function(){ return [-rnd(3, 12), -rnd(3, 9)]; }, K),
+    fresh(function(){ var a = rnd(3, 9); return [a, -(a + rnd(3, 8))]; }, K),
+    fresh(function(){ var d = rnd(1, 8) + .5; return [-d, Math.ceil(d) + rnd(1, 4)]; }, K),
+    fresh(function(){ var z = rnd(6, 16); return pick([[-z, z], [z, -z]]); }, K)];
   var box = el('div', 'items two'), fs = [];
   calcs.forEach(function(c, k){
     var it = el('div', 'item'), r = c[0] + c[1];
@@ -267,8 +279,12 @@ function exAdd(){
 
 /* ============ Exercice 3 : soustraire ============ */
 function exSub(){
-  var a = rnd(2, 6), b = a + rnd(4, 9), c = rnd(4, 9), d = c + rnd(5, 9), e = rnd(3, 8), f = rnd(4, 9), g = rnd(0, 3) + .5, h = rnd(1, 6) + .5;
-  var calcs = [[a, b], [-c, -d], [-e, f], [g, -h]], box = el('div', 'items two'), fs = [];
+  var K = function(c){ return 'sub:' + c[0] + '|' + c[1]; };
+  var calcs = [
+    fresh(function(){ var a = rnd(2, 8); return [a, a + rnd(4, 9)]; }, K),
+    fresh(function(){ var c = rnd(3, 9); return [-c, -(c + rnd(3, 9))]; }, K),
+    fresh(function(){ return [-rnd(3, 9), rnd(4, 9)]; }, K),
+    fresh(function(){ return [rnd(0, 6) + .5, -(rnd(1, 6) + .5)]; }, K)], box = el('div', 'items two'), fs = [];
   calcs.forEach(function(cc, k){
     var it = el('div', 'item'), L = 'ABCD'[k], r = cc[0] - cc[1];
     it.appendChild(el('div', 'q', L + ' = ' + par(cc[0]) + ' ' + MINUS + ' ' + par(cc[1])));
@@ -293,10 +309,10 @@ function exSub(){
 /* ============ Exercice 4 : simplifier puis calculer ============ */
 function exSimp(){
   // E = (−a) + (+b) − (−c) − (+d)
-  var Ev = [-rnd(2, 8), rnd(4, 12), -rnd(2, 9), rnd(5, 12)], Eops = ['+', '+', '-', '-'];
+  var Ev = fresh(function(){ return [-rnd(2, 9), rnd(4, 12), -rnd(2, 13), rnd(2, 13)]; }, function(v){ return 'E:' + v.join(','); }), Eops = ['+', '+', '-', '-'];
   var Eeff = Ev.map(function(v, k){ return Eops[k] === '-' ? -v : v; });
   // F = −a + b − c + d − e
-  var Ff; do { Ff = [-rnd(5, 12), rnd(2, 8), -rnd(2, 7), rnd(2, 9), -rnd(1, 6)]; } while (eq(Ff.reduce(function(s, x){ return s + x; }, 0), 0));
+  var Ff; do { Ff = [-rnd(5, 13), rnd(2, 8), -rnd(2, 7), rnd(2, 11), -rnd(1, 6)]; } while (eq(Ff.reduce(function(s, x){ return s + x; }, 0), 0) || excluded('F:' + Ff.join(',')));
   var box = el('div', 'items two'), parts = [];
   function block(name, display, eff, withSimp){
     var it = el('div', 'item'), P = eff.filter(function(x){ return x > 0; }).reduce(function(s, x){ return s + x; }, 0), N = -eff.filter(function(x){ return x < 0; }).reduce(function(s, x){ return s + x; }, 0), r = P - N;
@@ -336,23 +352,39 @@ function exSimp(){
 /* ============ Exercice 5 : problème ============ */
 var PLACES = ['Cany-Barville', 'Veulettes-sur-Mer', 'Fécamp', 'Yvetot', 'Saint-Valery-en-Caux', 'Étretat'];
 function exPb(){
-  var s, m1, m2, fin, q1, q2, v2, gap, ans1, ans2, unit;
-  if (Math.random() < .5){
-    unit = '°C'; s = -rnd(2, 6); m1 = rnd(7, 12); m2 = rnd(5, 13); fin = s + m1 - m2; v2 = fin - rnd(5, 10); gap = fin - v2;
-    q1 = 'À ' + pick(PLACES) + ', un jour de ' + pick(['janvier', 'février', 'décembre']) + ' (températures imaginées), il fait ' + fmt(s) + ' °C à ' + rnd(6, 8) + ' h. La température monte de ' + m1 + ' °C jusqu’à midi, puis baisse de ' + m2 + ' °C jusqu’à minuit.';
-    ans1 = {eff: [s, m1, -m2], txt: fmt(s) + ' + ' + m1 + ' ' + MINUS + ' ' + m2, sent: 'À minuit, il fait ' + fmt(fin) + ' °C.'};
-    q2 = 'Le lendemain matin, il fait ' + fmt(v2) + ' °C. De combien de degrés la température a-t-elle baissé depuis minuit ?';
-    ans2 = {a: fin, b: v2, r: gap, sent: 'La température a baissé de ' + num(gap) + ' °C.'};
-  } else {
-    unit = 'm'; s = -rnd(6, 14); m1 = rnd(10, 18); m2 = rnd(4, 9); fin = s - m1 + m2; v2 = fin - rnd(6, 14); gap = fin - v2;
-    q1 = 'Au large de Fécamp, un robot sous-marin inspecte la fondation d’une éolienne (situation imaginée). Il se trouve à ' + fmt(s) + ' m (' + num(s) + ' m sous la surface). Il descend de ' + m1 + ' m, puis remonte de ' + m2 + ' m.';
-    ans1 = {eff: [s, -m1, m2], txt: fmt(s) + ' ' + MINUS + ' ' + m1 + ' + ' + m2, sent: 'Le robot se trouve à ' + fmt(fin) + ' m.'};
-    q2 = 'Le fond marin est à ' + fmt(v2) + ' m. De combien de mètres le robot doit-il encore descendre pour atteindre le fond ?';
-    ans2 = {a: fin, b: v2, r: gap, sent: 'Le robot doit encore descendre de ' + num(gap) + ' m.'};
-  }
+  // situations sur le modèle des sujets, contextes variés ; écart de la question 2 = a − b (a > b)
+  var T = [
+    function(){ var s = -rnd(2, 6), m1 = rnd(7, 12), m2 = rnd(5, 13), f = s + m1 - m2, v = f - rnd(5, 10);
+      return {unit: '°C', q1: 'À ' + pick(PLACES) + ', un jour de ' + pick(['janvier', 'février', 'décembre']) + ' (températures imaginées), il fait ' + fmt(s) + ' °C à ' + rnd(6, 8) + ' h. La température monte de ' + m1 + ' °C jusqu’à midi, puis baisse de ' + m2 + ' °C jusqu’à minuit.',
+        task: 'la température à minuit', eff: [s, m1, -m2], how: 'on part de ' + fmt(s) + ', la température monte (+) puis baisse (' + MINUS + ')', sent: 'À minuit, il fait ' + fmt(f) + ' °C.',
+        q2: 'Le lendemain matin, il fait ' + fmt(v) + ' °C. De combien de degrés la température a-t-elle baissé depuis minuit ?', a: f, b: v, sent2: function(g){ return 'La température a baissé de ' + num(g) + ' °C.'; }}; },
+    function(){ var s = -rnd(6, 14), m1 = rnd(10, 18), m2 = rnd(4, 9), f = s - m1 + m2, v = f - rnd(6, 14);
+      return {unit: 'm', q1: 'Au large de Fécamp, un robot sous-marin inspecte la fondation d’une éolienne (situation imaginée). Il se trouve à ' + fmt(s) + ' m (' + num(s) + ' m sous la surface). Il descend de ' + m1 + ' m, puis remonte de ' + m2 + ' m.',
+        task: 'la position finale du robot', eff: [s, -m1, m2], how: 'on part de ' + fmt(s) + ', le robot descend (' + MINUS + ') puis remonte (+)', sent: 'Le robot se trouve à ' + fmt(f) + ' m.',
+        q2: 'Le fond marin est à ' + fmt(v) + ' m. De combien de mètres le robot doit-il encore descendre pour atteindre le fond ?', a: f, b: v, sent2: function(g){ return 'Le robot doit encore descendre de ' + num(g) + ' m.'; }}; },
+    function(){ var s = -5 * rnd(3, 12), m1 = 5 * rnd(8, 18), m2 = 5 * rnd(4, 12), f = s + m1 - m2, v = f + 5 * rnd(3, 12), who = pick(['Léo', 'Inès', 'Noah', 'Jade']);
+      return {unit: '€', q1: 'Le compte bancaire de ' + who + ' affiche ' + fmt(s) + ' € (il est à découvert). ' + who + ' y dépose ' + m1 + ' €, puis paie un achat de ' + m2 + ' €.',
+        task: 'le solde final du compte', eff: [s, m1, -m2], how: 'on part de ' + fmt(s) + ', on ajoute le dépôt (+) puis on enlève l’achat (' + MINUS + ')', sent: 'Le compte affiche ' + fmt(f) + ' €.',
+        q2: who + ' voudrait avoir ' + fmt(v) + ' € sur son compte. Combien d’euros lui manque-t-il ?', a: v, b: f, sent2: function(g){ return 'Il lui manque ' + num(g) + ' €.'; }}; },
+    function(){ var s = -rnd(2, 4), m1 = rnd(6, 11), m2 = rnd(3, m1 - 1), f = s + m1 - m2, v = -rnd(1, 5); if (v >= f) v = f - rnd(2, 4);
+      return {unit: 'étages', q1: 'Dans un immeuble, Sami prend l’ascenseur au niveau ' + fmt(s) + ' (parking). Il monte de ' + m1 + ' étages, puis redescend de ' + m2 + ' étages.',
+        task: 'le niveau où arrive Sami', eff: [s, m1, -m2], how: 'on part de ' + fmt(s) + ', l’ascenseur monte (+) puis descend (' + MINUS + ')', sent: 'Sami arrive au niveau ' + fmt(f) + '.',
+        q2: 'Sa voiture est garée au niveau ' + fmt(v) + '. De combien d’étages doit-il descendre pour la rejoindre ?', a: f, b: v, sent2: function(g){ return 'Il doit descendre de ' + num(g) + ' étages.'; }}; },
+    function(){ var s = pick([-18, -20, -24]), m1 = rnd(9, 15), m2 = rnd(4, 8), f = s + m1 - m2;
+      return {unit: '°C', q1: 'Un congélateur est réglé à ' + fmt(s) + ' °C. Pendant une panne, la température monte de ' + m1 + ' °C. Après la réparation, elle baisse de ' + m2 + ' °C en une heure.',
+        task: 'la température du congélateur au bout d’une heure', eff: [s, m1, -m2], how: 'on part de ' + fmt(s) + ', la température monte (+) puis baisse (' + MINUS + ')', sent: 'La température est de ' + fmt(f) + ' °C.',
+        q2: 'Le congélateur doit revenir à ' + fmt(s) + ' °C. De combien de degrés la température doit-elle encore baisser ?', a: f, b: s, sent2: function(g){ return 'Elle doit encore baisser de ' + num(g) + ' °C.'; }}; },
+    function(){ var s = -rnd(5, 12), m1 = rnd(6, 14), m2 = rnd(3, 9), f = s - m1 + m2, v = rnd(4, 15);
+      return {unit: 'm', q1: 'Une plongeuse est à ' + fmt(s) + ' m (sous la surface de la mer). Elle descend de ' + m1 + ' m, puis remonte de ' + m2 + ' m.',
+        task: 'la position finale de la plongeuse', eff: [s, -m1, m2], how: 'on part de ' + fmt(s) + ', elle descend (' + MINUS + ') puis remonte (+)', sent: 'La plongeuse se trouve à ' + fmt(f) + ' m.',
+        q2: 'Une mouette vole à ' + v + ' m au-dessus de la mer, juste au-dessus d’elle. Quelle distance sépare la mouette de la plongeuse ?', a: v, b: f, sent2: function(g){ return 'La mouette et la plongeuse sont séparées de ' + num(g) + ' m.'; }}; }
+  ];
+  var P, tries = 0; do { P = pick(T)(); } while (excluded('pb:' + P.eff.join('|')) && ++tries < 50);
+  var s = P.eff[0], fin = P.eff.reduce(function(x, y){ return x + y; }, 0), gap = P.a - P.b, unit = P.unit, q1 = P.q1, q2 = P.q2;
+  var ans1 = {eff: P.eff, txt: simpWrite(P.eff), sent: P.sent}, ans2 = {a: P.a, b: P.b, r: gap, sent: P.sent2(gap)};
   var box = el('div', 'items'), it1 = el('div', 'item'), it2 = el('div', 'item');
   box.appendChild(el('p', null, q1));
-  it1.appendChild(el('div', 'q', '1. Écris un seul calcul donnant la ' + (unit === 'm' ? 'position finale du robot' : 'température à minuit') + ', puis effectue-le.'));
+  it1.appendChild(el('div', 'q', '1. Écris un seul calcul donnant ' + P.task + ', puis effectue-le.'));
   var c1 = el('div', 'ln'), f1 = field('', 'un seul calcul'); c1.appendChild(el('span', 'tag', 'Calcul')); c1.appendChild(f1);
   var r1 = el('div', 'ln'), g1 = field('num', 'résultat'); r1.appendChild(el('span', 'tag', 'Résultat (' + unit + ')')); r1.appendChild(g1);
   it1.appendChild(c1); it1.appendChild(r1);
@@ -367,8 +399,8 @@ function exPb(){
     var t = parseExpr(f1.value), okc = !!t && sameList(effs(t), ans1.eff), v = parseNum(g1.value), okr = v !== null && eq(v, fin);
     mark(f1, okc); mark(g1, okr); f1.disabled = g1.disabled = true;
     var p1 = (okc ? 1 : 0) + (okr ? 1 : 0); got += p1; itemState(it1, p1, 2);
-    var W1 = []; if (!okc) W1.push('Le calcul ne correspond pas à la situation : on part de ' + fmt(s) + ', puis on ' + (unit === 'm' ? 'descend (' + MINUS + ') puis on remonte (+).' : 'monte (+) puis on baisse (' + MINUS + ').')); if (!okr) W1.push('Le résultat est faux.');
-    corr(it1, p1, 2, {why: W1, always: true, sol: [ans1.txt + ' = ' + fmt(fin), '« ' + ans1.sent + ' »'], noHl: true, solTitle: 'La bonne rédaction (n’oublie pas la phrase sur ta copie)', tip: 'monter, gagner, déposer → + ; descendre, baisser, perdre → ' + MINUS + '.'});
+    var W1 = []; if (!okc) W1.push('Le calcul ne correspond pas à la situation : ' + P.how + '.'); if (!okr) W1.push('Le résultat est faux.');
+    corr(it1, p1, 2, {why: W1, always: true, sol: [ans1.txt + ' = ' + fmt(fin), '« ' + ans1.sent + ' »'], noHl: true, solTitle: 'La bonne rédaction (n’oublie pas la phrase sur ta copie)', tip: 'monter, gagner, déposer → + ; descendre, baisser, payer → ' + MINUS + '.'});
     // question 2 : écart = a − b
     t = parseExpr(f2.value);
     var okc2 = !!t && t.length === 2 && eq(t[0].v, ans2.a) && eq(t[1].v, ans2.b) && t[1].op === '-' ;
@@ -384,9 +416,10 @@ function exPb(){
 
 /* ============ Bonus : nombre manquant ============ */
 function exBonus(){
-  var a = pick([-1, 1]) * rnd(2, 9), c; do { c = pick([-1, 1]) * rnd(2, 9); } while (eq(c, a));
+  var a, c; do { a = pick([-1, 1]) * rnd(2, 9); c = pick([-1, 1]) * rnd(2, 15); } while (eq(c, a) || excluded('b1:' + a + '|' + c));
   var m1 = a - c;                                       // a − m1 = c
-  var b = pick([-1, 1]) * rnd(2, 8), d = pick([-1, 1]) * rnd(3, 13), r = pick([-1, 1]) * rnd(2, 12), m2 = r - b + d; // m2 + b − d = r
+  var b, d, r; do { b = pick([-1, 1]) * rnd(2, 9); d = pick([-1, 1]) * rnd(3, 17); r = pick([-1, 1]) * rnd(1, 19); } while (excluded('b2:' + b + '|' + d + '|' + r));
+  var m2 = r - b + d;                                   // m2 + b − d = r
   var box = el('div', 'items two'), fs = [];
   [['a)', par(a) + ' ' + MINUS + ' … = ' + fmtS(c), m1, par(a) + ' ' + MINUS + ' ' + par(m1) + ' = ' + par(a) + ' + ' + par(-m1) + ' = ' + fmtS(c)],
    ['b)', '… + ' + par(b) + ' ' + MINUS + ' ' + par(d) + ' = ' + fmtS(r), m2, par(m2) + ' + ' + par(b) + ' ' + MINUS + ' ' + par(d) + ' = ' + fmtS(r)]].forEach(function(Q){
@@ -402,6 +435,49 @@ function exBonus(){
   }};
 }
 
+/* ============ Variantes : formulées autrement que dans les sujets ============ */
+var VARS = [
+  function(){ var a = -rnd(21, 69), b; do { b = rnd(12, 69); } while (Math.abs(Math.abs(a) - b) < 3); if (Math.random() < .5){ a = -a; b = -b; }
+    var r = a + b; return {q: 'Sans faire le calcul, le résultat de ' + par(a) + ' + ' + par(b) + ' est-il positif ou négatif ?', opts: ['positif', 'négatif', 'égal à 0'], good: r > 0 ? 'positif' : 'négatif',
+      sol: ['Signes contraires : c’est le nombre le plus éloigné de zéro qui donne le signe.', num(Math.max(Math.abs(a), Math.abs(b))) + ' > ' + num(Math.min(Math.abs(a), Math.abs(b))) + ' donc le résultat a le signe de ' + par(Math.abs(a) > Math.abs(b) ? a : b) + ' : il est ' + (r > 0 ? 'positif' : 'négatif') + '.'], tip: 'on peut connaître le signe d’une somme avant de la calculer.'}; },
+  function(){ var x = pick([-1, 1]) * rnd(3, 12), y; do { y = pick([-1, 1]) * rnd(2, 12); } while (y === x);
+    return {q: 'Quel nombre faut-il ajouter à ' + fmt(x) + ' pour obtenir ' + fmt(y) + ' ?', good: y - x, sol: [fmt(y) + ' ' + MINUS + ' ' + par(x) + ' = ' + fmt(y) + ' + ' + par(-x) + ' = ' + fmt(y - x), 'Vérification : ' + par(x) + ' + ' + par(y - x) + ' = ' + fmt(y)], tip: 'pour trouver ce qu’il faut ajouter, on soustrait : arrivée ' + MINUS + ' départ.'}; },
+  function(){ var S = pick([
+      ['La somme de deux nombres négatifs est toujours négative.', 'vrai', 'Ex. : (' + MINUS + '3) + (' + MINUS + '5) = ' + MINUS + '8. Même signe : on garde le signe ' + MINUS + '.'],
+      ['La différence de deux nombres négatifs est toujours négative.', 'faux', 'Contre-exemple : (' + MINUS + '2) ' + MINUS + ' (' + MINUS + '9) = (' + MINUS + '2) + (+9) = 7, qui est positif.'],
+      ['Soustraire un nombre négatif fait augmenter le résultat.', 'vrai', 'Ex. : 5 ' + MINUS + ' (' + MINUS + '3) = 5 + 3 = 8 > 5. Soustraire (' + MINUS + '3), c’est ajouter 3.'],
+      ['Ajouter un nombre négatif fait augmenter le résultat.', 'faux', 'Ex. : 5 + (' + MINUS + '3) = 2 < 5. Ajouter un négatif fait diminuer.'],
+      ['a ' + MINUS + ' b et b ' + MINUS + ' a sont deux nombres opposés.', 'vrai', 'Ex. : 7 ' + MINUS + ' 2 = 5 et 2 ' + MINUS + ' 7 = ' + MINUS + '5.']]);
+    return {q: 'Vrai ou faux ? « ' + S[0] + ' »', opts: ['vrai', 'faux'], good: S[1], sol: [S[1] === 'vrai' ? 'C’est vrai.' : 'C’est faux.', S[2]], tip: 'pour montrer qu’une phrase est fausse, un seul contre-exemple suffit.'}; },
+  function(){ var a = -rnd(2, 12), b = rnd(2, 12);
+    return {q: 'Sur une droite graduée, le point A a pour abscisse ' + fmt(a) + ' et le point B a pour abscisse ' + fmt(b) + '. Quelle est la distance AB ?', good: b - a, sol: ['AB = ' + fmt(b) + ' ' + MINUS + ' ' + par(a) + ' = ' + fmt(b) + ' + ' + par(-a) + ' = ' + num(b - a)], tip: 'la distance entre deux points = la plus grande abscisse ' + MINUS + ' la plus petite.'}; },
+  function(){ var a = -rnd(5, 9), b = rnd(2, 4), who = pick(['Tom', 'Lina', 'Enzo', 'Maëlys']);
+    return {q: who + ' a écrit : ' + par(a) + ' ' + MINUS + ' ' + par(b) + ' = ' + fmt(a + b) + '. Quelle est son erreur ?', opts: ['Il a ajouté ' + par(b) + ' au lieu d’ajouter son opposé ' + par(-b), 'Il s’est seulement trompé de signe', 'Il n’y a pas d’erreur'], good: 'Il a ajouté ' + par(b) + ' au lieu d’ajouter son opposé ' + par(-b),
+      sol: [par(a) + ' ' + MINUS + ' ' + par(b) + ' = ' + par(a) + ' + ' + par(-b) + ' = ' + fmt(a - b)], tip: 'soustraire, c’est ajouter l’opposé.'}; },
+  function(){ var x = pick([-1, 1]) * rnd(3, 11), y = pick([-1, 1]) * rnd(2, 15);
+    return {q: 'Complète : ' + par(x) + ' ' + MINUS + ' … = ' + fmtS(y), good: x - y, sol: [par(x) + ' ' + MINUS + ' ' + par(x - y) + ' = ' + par(x) + ' + ' + par(y - x) + ' = ' + fmtS(y)], tip: 'si a ' + MINUS + ' ? = c, alors ? = a ' + MINUS + ' c.'}; }
+];
+function exVar(){
+  var idx = shuffle(VARS.map(function(_, k){ return k; })).slice(0, 2), box = el('div', 'items two'), qs = [];
+  idx.forEach(function(k, n){
+    var V = VARS[k](), it = el('div', 'item'), inp;
+    it.appendChild(el('div', 'q', (n + 1) + '. ' + V.q));
+    var ln = el('div', 'ln');
+    if (V.opts){ inp = el('select', 's'); var o0 = el('option', null, '…'); o0.value = ''; inp.appendChild(o0); shuffle(V.opts.slice()).forEach(function(o){ var op = el('option', null, o); op.value = o; inp.appendChild(op); }); }
+    else { ln.appendChild(el('span', 'eq', '…=')); inp = field('num', 'réponse'); }
+    ln.appendChild(inp); it.appendChild(ln); qs.push({V: V, inp: inp, it: it}); box.appendChild(it);
+  });
+  return {box: box, max: 2, check: function(){
+    var got = 0;
+    qs.forEach(function(x){
+      var ok = x.V.opts ? x.inp.value === x.V.good : (function(v){ return v !== null && eq(v, x.V.good); })(parseNum(x.inp.value));
+      x.inp.disabled = true; mark(x.inp, ok); if (ok) got++; itemState(x.it, ok ? 1 : 0, 1);
+      corr(x.it, ok ? 1 : 0, 1, {why: [x.V.opts ? 'La bonne réponse : « ' + x.V.good + ' ».' : 'La bonne réponse est ' + fmt(x.V.good) + '.'], sol: x.V.sol, solTitle: 'Explication', noHl: true, tip: x.V.tip, always: true});
+    });
+    return got;
+  }};
+}
+
 /* ============ menu, entraînement, évaluation blanche ============ */
 var EX = [
   {id: 'cours', n: 'Exercice 1', t: 'Questions de cours', ic: '📖', d: 'Compléter les règles du cours.', max: 3, make: exCours},
@@ -409,7 +485,8 @@ var EX = [
   {id: 'sub', n: 'Exercice 3', t: 'Soustraire', ic: '➖', d: 'Écrire l’addition de l’opposé, puis calculer.', max: 4, make: exSub},
   {id: 'simp', n: 'Exercice 4', t: 'Simplifier, puis calculer', ic: '✂️', d: 'Écriture simplifiée, regroupement, différence, résultat.', max: 5, make: exSimp},
   {id: 'pb', n: 'Exercice 5', t: 'Problème', ic: '🌡️', d: 'Un seul calcul, puis un écart.', max: 4, make: exPb},
-  {id: 'bonus', n: 'Bonus', t: 'Le nombre manquant', ic: '⭐', d: 'Pour aller plus loin.', max: 1, make: exBonus}
+  {id: 'bonus', n: 'Bonus', t: 'Le nombre manquant', ic: '⭐', d: 'Pour aller plus loin.', max: 1, make: exBonus},
+  {id: 'var', n: 'Pour comprendre', t: 'Questions autrement', ic: '🧠', d: 'Des questions posées autrement que dans l’évaluation, pour vérifier que tu as vraiment compris.', max: 2, make: exVar, extra: true}
 ];
 function byId(id){ return EX.filter(function(e){ return e.id === id; })[0]; }
 function cls(got, max){ return eq(got, max) ? 'ok' : got >= max * .6 ? 'mid' : 'ko'; }
@@ -421,14 +498,14 @@ function menu(){
   main.appendChild(el('h2', 'cat', 'Le jour J'));
   var g0 = el('div', 'grid'), t0 = el('button', 'tile big'); t0.type = 'button';
   t0.appendChild(el('span', 'ic', '📝'));
-  var s0 = el('span'); s0.appendChild(el('b', null, 'Évaluation blanche')); s0.appendChild(el('span', 'd', 'Un sujet complet comme le jour J, noté sur 20 avec le vrai barème, sans limite de temps. Un nouveau sujet à chaque fois : recommence autant de fois que tu veux !'));
+  var s0 = el('span'); s0.appendChild(el('b', null, 'Évaluation blanche')); s0.appendChild(el('span', 'd', 'Un sujet complet comme le jour J, noté sur 20 avec le vrai barème, sans limite de temps. Un nouveau sujet à chaque fois (jamais les questions de ton vrai sujet) : recommence autant de fois que tu veux !'));
   if (best) s0.appendChild(el('span', 'rec', 'Ta meilleure note : ' + best + '/20'));
   t0.appendChild(s0); t0.onclick = function(){ location.hash = 'blanc'; }; g0.appendChild(t0); main.appendChild(g0);
   main.appendChild(el('h2', 'cat', 'S’entraîner exercice par exercice'));
   var g = el('div', 'grid');
   EX.forEach(function(x){
     var b = el('button', 'tile'); b.type = 'button'; b.appendChild(el('span', 'ic', x.ic));
-    var s = el('span'); s.appendChild(el('b', null, x.n + ' · ' + x.t)); s.appendChild(el('span', 'd', x.d + ' (' + pts(x.max) + ' pt' + (x.max > 1 ? 's' : '') + ')'));
+    var s = el('span'); s.appendChild(el('b', null, x.n + ' · ' + x.t)); s.appendChild(el('span', 'd', x.d + (x.extra ? ' (non noté)' : ' (' + pts(x.max) + ' pt' + (x.max > 1 ? 's' : '') + ')')));
     var rec = store('eval:n01:' + x.id); if (rec) s.appendChild(el('span', 'rec', 'Dernier essai : ' + rec + '/' + pts(x.max)));
     b.appendChild(s); b.onclick = function(){ location.hash = x.id; }; g.appendChild(b);
   });
@@ -440,7 +517,7 @@ function exPanel(x, inst, n){
   h.appendChild(el('h2', null, x.ic + ' ' + x.n + ' · ' + x.t)); var sc = el('span', 'pts', pts(x.max) + ' pt' + (x.max > 1 ? 's' : '')); h.appendChild(sc);
   p.appendChild(h);
   var c = {cours: 'Complète avec le bon mot.', add: 'Pour chaque calcul : signe 0,5 point, distance à zéro 0,5 point. Tu peux écrire 6,5 ou (−6,5).', sub: 'Transforme chaque soustraction en addition (ex. (−5) + (+12)), puis calcule. Addition de l’opposé 0,5 point ; résultat 0,5 point.',
-    simp: 'E : écriture simplifiée 1 ; regroupement 1 ; différence 0,5 ; résultat 0,5. F : regroupement 1 ; différence 0,5 ; résultat 0,5. Écris par exemple : −4 + 9 + 6 − 8, puis 9 + 6 − 4 − 8, puis 15 − 12.', pb: '', bonus: 'Retrouve le nombre manquant. Ces points s’ajoutent à la note (sans dépasser 20).'}[x.id];
+    var: 'Ces questions ne sont pas comptées dans la note sur 20 : elles servent à vérifier que tu as compris, au-delà des exercices types.', simp: 'E : écriture simplifiée 1 ; regroupement 1 ; différence 0,5 ; résultat 0,5. F : regroupement 1 ; différence 0,5 ; résultat 0,5. Écris par exemple : −4 + 9 + 6 − 8, puis 9 + 6 − 4 − 8, puis 15 − 12.', pb: '', bonus: 'Retrouve le nombre manquant. Ces points s’ajoutent à la note (sans dépasser 20).'}[x.id];
   if (c) p.appendChild(el('p', 'consigne', c));
   p.appendChild(inst.box); if (inst.note) p.appendChild(el('p', 'consigne', inst.note));
   return {p: p, sc: sc};
@@ -474,14 +551,14 @@ function blanc(){
   bar.appendChild(tm); bar.appendChild(bend); main.appendChild(bar);
   main.appendChild(el('p', 'consigne', 'Calculatrice interdite. Prends ton temps : il n’y a pas de limite. Rédige comme sur ta copie, une étape par ligne, puis touche « Rendre ma copie ».'));
   var parts = EX.map(function(x){ var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p); return {x: x, inst: inst, P: P}; });
-  var done = false;
+  var done = false, t0 = Date.now();
   bend.onclick = function(){ finish(); };
   function finish(){
     if (done) return; done = true; kbar.hidden = true;
     var total = 0, bonus = 0, res = [];
     parts.forEach(function(o){
       var got = o.inst.check(); o.P.sc.textContent = pts(got) + ' / ' + pts(o.x.max); o.P.sc.className = 'pts ' + cls(got, o.x.max);
-      if (o.x.id === 'bonus') bonus = got; else total += got; res.push({x: o.x, got: got});
+      if (o.x.extra){} else if (o.x.id === 'bonus') bonus = got; else total += got; res.push({x: o.x, got: got});
     });
     // phrases réponses du problème : comptées si le résultat est juste (elles s'écrivent sur la copie)
     var note = Math.min(20, total + bonus);
@@ -493,15 +570,18 @@ function blanc(){
     bar.remove();
     var sum = el('section', 'panel');
     sum.appendChild(el('div', 'note', pts(note) + '/20'));
+    var used = Math.max(1, Math.round((Date.now() - t0) / 60000));
+    sum.appendChild(el('p', 'consigne', '⏱️ Tu as mis ' + used + ' min' + (used > 15 ? ' : le jour J, tu auras 15 min, entraîne-toi à aller un peu plus vite.' : ' : le jour J, tu auras 15 min, c’est bon !')));
+    sum.lastChild.style.textAlign = 'center';
     sum.appendChild(el('p', 'consigne', 'Sujet n° ' + essai + '. ' + (note > best && essai > 1 ? '🏆 Ta meilleure note !' : best ? 'Ta meilleure note : ' + pts(Math.max(best, note)) + '/20.' : '') + (hist.length > 1 ? ' Tes dernières notes : ' + hist.join(' → ') + '.' : '')));
     sum.lastChild.style.textAlign = 'center';
     var again = el('div', 'row'), ba = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'); ba.type = 'button'; ba.onclick = function(){ blanc(); }; again.appendChild(ba); sum.appendChild(again);
     var bl = el('div', 'bilan');
     res.forEach(function(r){
       var line = el('div', 'bl'), left = el('span'); left.appendChild(el('b', null, r.x.n + ' · ' + r.x.t + ' : '));
-      left.appendChild(el('span', 'pts ' + cls(r.got, r.x.max), pts(r.got) + '/' + pts(r.x.max)));
+      left.appendChild(el('span', 'pts ' + cls(r.got, r.x.max), pts(r.got) + '/' + pts(r.x.max) + (r.x.extra ? ' (non noté)' : '')));
       line.appendChild(left);
-      if (!eq(r.got, r.x.max) && r.x.id !== 'bonus'){ var b = el('button', 'btn', 'À retravailler →'); b.type = 'button'; b.onclick = function(){ location.hash = r.x.id; }; line.appendChild(b); }
+      if (!eq(r.got, r.x.max) && r.x.id !== 'bonus' && !r.x.extra){ var b = el('button', 'btn', 'À retravailler →'); b.type = 'button'; b.onclick = function(){ location.hash = r.x.id; }; line.appendChild(b); }
       bl.appendChild(line);
     });
     sum.appendChild(bl);
