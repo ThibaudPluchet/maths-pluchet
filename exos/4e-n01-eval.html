@@ -64,10 +64,17 @@ input.w{font:700 19px "Bricolage Grotesque",system-ui,sans-serif;flex:1 1 0;widt
 input.w.num{max-width:150px;flex:0 1 150px}
 input.w:focus{outline:none;border-color:var(--accent)}
 input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.koF{border-color:var(--ko);background:var(--kos)}
-.cor{font-size:15px;color:var(--ko);font-weight:700}
-.cor.ok{color:var(--ok)}
-.cor small{display:block;font-weight:400;color:var(--muted)}
-.sent{font-size:15px;color:var(--muted);font-style:italic}
+.corr{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.4}
+.corr.ok{background:var(--oks)} .corr.mid{background:var(--mids)} .corr.ko{background:var(--kos)}
+.cv{font-weight:700;font-size:16px}
+.corr.ok .cv{color:var(--ok)} .corr.mid .cv{color:var(--mid)} .corr.ko .cv{color:var(--ko)}
+.cw{margin:0;padding-left:20px;color:var(--ink)}
+.cs{background:var(--card);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.cs .cl{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px}
+.cs .sl{font:700 19px/1.55 "Bricolage Grotesque",system-ui,sans-serif;white-space:pre-wrap}
+.cs .sl.hl{color:var(--ok)}
+.ct{color:var(--ink)}
+.ct b{color:var(--accent)}
 .fill{line-height:2.4;font-size:18px}
 select.s{font:700 16px inherit;font-family:inherit;padding:6px 8px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%}
 select.s.okF{border-color:var(--ok);background:var(--oks)} select.s.koF{border-color:var(--ko);background:var(--kos)}
@@ -161,8 +168,9 @@ function field(cls, ph){
   i.addEventListener('focus', function(){ lastInput = i; var ln = i.parentNode; ln.parentNode.insertBefore(kbar, ln.nextSibling); kbar.hidden = false; });
   return i;
 }
-['(', ')', '+', MINUS, ','].forEach(function(k){
-  var b = el('button', null, k); b.type = 'button';
+// le signe moins inséré est le tiret « - » de la touche 6 du clavier, pour que tout s'écrive avec le même symbole
+['(', ')', '+', '-', ','].forEach(function(k){
+  var b = el('button', null, k); b.type = 'button'; if (k === '-') b.setAttribute('aria-label', 'moins');
   b.addEventListener('mousedown', function(e){ e.preventDefault(); });
   b.onclick = function(){
     if (!lastInput || lastInput.disabled) return;
@@ -173,8 +181,19 @@ function field(cls, ph){
   kbar.appendChild(b);
 });
 function mark(input, ok){ input.classList.remove('okF', 'koF'); input.classList.add(ok ? 'okF' : 'koF'); }
-function corLine(parent, ok, txt, small){
-  var c = el('div', 'cor' + (ok ? ' ok' : ''), txt); if (small) c.appendChild(el('small', null, small)); parent.appendChild(c); return c;
+// Correction d'une question : verdict + ce qui ne va pas + correction rédigée ligne par ligne + rappel du cours
+function corr(parent, got, max, o){
+  o = o || {}; var full = eq(got, max), k = full ? 'ok' : got > 0 ? 'mid' : 'ko';
+  var c = el('div', 'corr ' + k);
+  c.appendChild(el('div', 'cv', (full ? '✓ Bravo ! ' : got > 0 ? 'Presque ! ' : '✗ ') + pts(got) + ' / ' + pts(max) + ' point' + (max > 1 ? 's' : '')));
+  if (!full && o.why && o.why.length){ var ul = el('ul', 'cw'); o.why.forEach(function(w){ ul.appendChild(el('li', null, w)); }); c.appendChild(ul); }
+  if (o.sol && (!full || o.always)){
+    var s = el('div', 'cs'); s.appendChild(el('span', 'cl', o.solTitle || 'La bonne rédaction'));
+    o.sol.forEach(function(l, i){ s.appendChild(el('div', 'sl' + (i === o.sol.length - 1 && !o.noHl ? ' hl' : ''), l)); });
+    c.appendChild(s);
+  }
+  if (o.tip && !full){ var t = el('div', 'ct'); t.appendChild(el('b', null, '💡 À retenir : ')); t.appendChild(document.createTextNode(o.tip)); c.appendChild(t); }
+  parent.appendChild(c); return c;
 }
 function itemState(item, got, max){ item.classList.add(eq(got, max) ? 'okI' : got > 0 ? 'midI' : 'koI'); }
 
@@ -195,19 +214,19 @@ function exCours(){
       if (typeof part === 'string'){ p.appendChild(document.createTextNode(part)); return; }
       var s = el('select', 's'), o0 = el('option', null, '…'); o0.value = ''; s.appendChild(o0);
       shuffle(Q.c[part].slice()).forEach(function(o){ var op = el('option', null, o); op.value = o; s.appendChild(op); });
-      s.dataset.good = Q.c[part][0]; p.appendChild(s); sels.push({s: s, it: it});
+      s.dataset.good = Q.c[part][0]; p.appendChild(s); sels.push({s: s, it: it, w: 1 / Q.c.length});
     });
+    it.dataset.sent = Q.t.map(function(part){ return typeof part === 'string' ? part : Q.c[part][0]; }).join('');
     it.appendChild(p); box.appendChild(it);
   });
   max = 3;
-  var w = 3 / sels.length;
   return {box: box, max: max, check: function(){
     var got = 0, byIt = new Map();
     sels.forEach(function(x){
-      var ok = x.s.value === x.s.dataset.good; x.s.disabled = true; mark(x.s, ok); if (ok) got += w;
-      if (!ok) corLine(x.it, false, 'Réponse : ' + x.s.dataset.good);
-      byIt.set(x.it, (byIt.get(x.it) || 0) + (ok ? 1 : 0));
+      var ok = x.s.value === x.s.dataset.good; x.s.disabled = true; mark(x.s, ok); if (ok) got += x.w;
+      var b = byIt.get(x.it) || {g: 0, m: 0, why: []}; b.m += x.w; if (ok) b.g += x.w; else b.why.push(x.s.value ? 'Il fallait « ' + x.s.dataset.good + ' » et non « ' + x.s.value + ' ».' : 'Case non remplie : il fallait « ' + x.s.dataset.good + ' ».'); byIt.set(x.it, b);
     });
+    byIt.forEach(function(b, it){ itemState(it, b.g, b.m); corr(it, b.g, b.m, {why: b.why, sol: [it.dataset.sent], solTitle: 'La phrase complète', noHl: true}); });
     return got;
   }};
 }
@@ -233,10 +252,14 @@ function exAdd(){
         else g = ((v < 0) === (x.r < 0) && !eq(v, 0) ? .5 : 0) + (eq(Math.abs(v), Math.abs(x.r)) ? .5 : 0);
       }
       got += g; mark(x.f, g === 1); itemState(x.it, g, 1);
-      var same = (x.c[0] < 0) === (x.c[1] < 0);
-      why = eq(x.r, 0) ? 'Deux nombres opposés : leur somme vaut 0.' : same ? 'Même signe : on additionne les distances à zéro (' + num(x.c[0]) + ' + ' + num(x.c[1]) + ' = ' + num(x.r) + ') et on garde le signe commun.' :
-        'Signes contraires : on soustrait les distances à zéro (' + num(Math.max(Math.abs(x.c[0]), Math.abs(x.c[1]))) + ' ' + MINUS + ' ' + num(Math.min(Math.abs(x.c[0]), Math.abs(x.c[1]))) + ' = ' + num(Math.abs(x.r)) + ') et on garde le signe du plus éloigné de zéro.';
-      corLine(x.it, g === 1, g === 1 ? '✓ 1/1' : (v === null ? 'Pas de réponse. ' : (g ? 'Moitié des points (' + (eq(Math.abs(v), Math.abs(x.r)) ? 'signe faux' : 'distance à zéro fausse') + '). ' : '')) + 'Réponse : ' + fmt(x.r), g === 1 ? null : why);
+      var same = (x.c[0] < 0) === (x.c[1] < 0), A = Math.abs(x.c[0]), B = Math.abs(x.c[1]), W = [];
+      if (v === null) W.push(x.f.value.trim() ? 'Écris seulement le résultat (un nombre), par exemple -12 ou 4,5.' : 'Pas de réponse.');
+      else if (!eq(v, x.r)){ if (!eq(Math.abs(v), Math.abs(x.r))) W.push('La distance à zéro est fausse : c’est ' + num(Math.abs(x.r)) + '.'); if (!eq(x.r, 0) && ((v < 0) !== (x.r < 0) || eq(v, 0))) W.push('Le signe est faux : le résultat est ' + (x.r < 0 ? 'négatif' : 'positif') + '.'); }
+      var sol = eq(x.r, 0) ? [par(x.c[0]) + ' + ' + par(x.c[1]) + ' = 0'] : same ?
+        [par(x.c[0]) + ' + ' + par(x.c[1]) + ' = ' + fmt(x.r), 'distances à zéro : ' + num(A) + ' + ' + num(B) + ' = ' + num(A + B) + ' ; signe ' + (x.r < 0 ? MINUS : '+')] :
+        [par(x.c[0]) + ' + ' + par(x.c[1]) + ' = ' + fmt(x.r), 'distances à zéro : ' + num(Math.max(A, B)) + ' ' + MINUS + ' ' + num(Math.min(A, B)) + ' = ' + num(Math.abs(x.r)) + ' ; signe de ' + par(A > B ? x.c[0] : x.c[1])];
+      if (sol.length > 1) sol = [sol[1], sol[0]];
+      corr(x.it, g, 1, {why: W, sol: sol, tip: eq(x.r, 0) ? 'deux nombres opposés ont une somme égale à 0.' : same ? 'même signe → on additionne les distances à zéro et on garde le signe commun.' : 'signes contraires → on soustrait les distances à zéro et on garde le signe du nombre le plus éloigné de zéro.'});
     });
     return got;
   }};
@@ -259,8 +282,9 @@ function exSub(){
       var t = parseExpr(x.f1.value), ok1 = !!t && t.length === 2 && t[1].op === '+' && eq(t[0].v, x.c[0]) && eq(t[1].v, -x.c[1]);
       var v = parseNum(x.f2.value), ok2 = v !== null && eq(v, x.r), g = (ok1 ? .5 : 0) + (ok2 ? .5 : 0);
       x.f1.disabled = x.f2.disabled = true; mark(x.f1, ok1); mark(x.f2, ok2); got += g; itemState(x.it, g, 1);
-      corLine(x.it, g === 1, g === 1 ? '✓ 1/1' : 'Correction : ' + par(x.c[0]) + ' + ' + par(-x.c[1]) + ' = ' + fmt(x.r),
-        g === 1 ? null : (!ok1 ? 'On remplace « ' + MINUS + ' ' + par(x.c[1]) + ' » par « + ' + par(-x.c[1]) + ' » : soustraire, c’est ajouter l’opposé. ' : '') + (!ok2 ? 'Puis on additionne les deux nombres.' : ''));
+      var W = []; if (!ok1) W.push('Ligne 1 : il faut écrire l’addition de l’opposé.'); if (!ok2) W.push('Ligne 2 : le résultat est faux.');
+      corr(x.it, g, 1, {why: W, sol: ['ABCD'[fs.indexOf(x)] + ' = ' + par(x.c[0]) + ' ' + MINUS + ' ' + par(x.c[1]), '   = ' + par(x.c[0]) + ' + ' + par(-x.c[1]), '   = ' + fmt(x.r)],
+        tip: 'soustraire, c’est ajouter l’opposé : « ' + MINUS + ' ' + par(x.c[1]) + ' » devient « + ' + par(-x.c[1]) + ' ».'});
     });
     return got;
   }};
@@ -281,7 +305,7 @@ function exSimp(){
     (withSimp ? [['simplifiée', 'écriture simplifiée']] : []).concat([['regroupement', 'positifs puis négatifs'], ['différence', 'ex. 15 − 12'], ['résultat', 'résultat']]).forEach(function(L){
       var ln = el('div', 'ln'), f = field(L[0] === 'résultat' ? 'num' : '', L[1]); ln.appendChild(el('span', 'eq', '=')); ln.appendChild(f); it.appendChild(ln); lines.push({k: L[0], f: f});
     });
-    parts.push({it: it, lines: lines, eff: eff, P: P, N: N, r: r, withSimp: withSimp, name: name}); box.appendChild(it);
+    parts.push({it: it, lines: lines, eff: eff, P: P, N: N, r: r, withSimp: withSimp, name: name, disp: display}); box.appendChild(it);
   }
   block('E', par(Ev[0]) + ' + ' + par(Ev[1]) + ' ' + MINUS + ' ' + par(Ev[2]) + ' ' + MINUS + ' ' + par(Ev[3]), Eeff, true);
   block('F', simpWrite(Ff), Ff, false);
@@ -292,16 +316,18 @@ function exSimp(){
       x.lines.forEach(function(L){
         var ok = false, t;
         L.f.disabled = true;
-        if (L.k === 'simplifiée'){ t = parseExpr(L.f.value); ok = !!t && sameList(effs(t), x.eff) && t.every(function(y){ return !y.paren; }); if (ok) g += 1; else msgs.push('Écriture simplifiée : ' + simpWrite(x.eff) + ' (+ (+a) → + a ; + (−a) → − a ; − (+a) → − a ; − (−a) → + a)'); }
+        if (L.k === 'simplifiée'){ t = parseExpr(L.f.value); ok = !!t && sameList(effs(t), x.eff) && t.every(function(y){ return !y.paren; }); if (ok) g += 1; else msgs.push('Ligne 1 (écriture simplifiée) fausse' + (t && t.some(function(y){ return y.paren; }) ? ' : il ne doit plus y avoir de parenthèses.' : '.')); }
         if (L.k === 'regroupement'){ t = parseExpr(L.f.value); var e = t && effs(t), k0 = e ? e.findIndex(function(y){ return y < 0; }) : -1;
           ok = !!t && sameBag(e, x.eff) && (k0 < 0 || e.slice(k0).every(function(y){ return y < 0; })) && t.every(function(y){ return !y.paren; });
-          if (ok) g += 1; else msgs.push('Regroupement : ' + simpWrite(x.eff.filter(function(y){ return y > 0; }).concat(x.eff.filter(function(y){ return y < 0; })))); }
-        if (L.k === 'différence'){ t = parseExpr(L.f.value); ok = !!t && t.length === 2 && eq(t[0].eff, x.P) && eq(t[1].eff, -x.N); if (ok) g += .5; else msgs.push('Différence : ' + num(x.P) + ' ' + MINUS + ' ' + num(x.N) + ' (somme des positifs moins somme des distances des négatifs)'); }
-        if (L.k === 'résultat'){ var v = parseNum(L.f.value); ok = v !== null && eq(v, x.r); if (ok) g += .5; else msgs.push('Résultat : ' + fmt(x.r)); }
+          if (ok) g += 1; else msgs.push('Ligne ' + (x.withSimp ? 2 : 1) + ' (regroupement) fausse : on écrit d’abord tous les nombres positifs, puis tous les négatifs.'); }
+        if (L.k === 'différence'){ t = parseExpr(L.f.value); ok = !!t && t.length === 2 && eq(t[0].eff, x.P) && eq(t[1].eff, -x.N); if (ok) g += .5; else msgs.push('Ligne ' + (x.withSimp ? 3 : 2) + ' (différence) fausse : on additionne les positifs, puis les distances à zéro des négatifs.'); }
+        if (L.k === 'résultat'){ var v = parseNum(L.f.value); ok = v !== null && eq(v, x.r); if (ok) g += .5; else msgs.push('Dernière ligne : le résultat est faux.'); }
         mark(L.f, ok);
       });
       got += g; itemState(x.it, g, max);
-      corLine(x.it, eq(g, max), (eq(g, max) ? '✓ ' : '') + pts(g) + '/' + max, msgs.join(' · ') || null);
+      var pos = x.eff.filter(function(y){ return y > 0; }), neg = x.eff.filter(function(y){ return y < 0; });
+      var sol = [x.name + ' = ' + x.disp].concat(x.withSimp ? ['   = ' + simpWrite(x.eff)] : []).concat(['   = ' + simpWrite(pos.concat(neg)), '   = ' + num(x.P) + ' ' + MINUS + ' ' + num(x.N), '   = ' + fmt(x.r)]);
+      corr(x.it, g, max, {why: msgs, sol: sol, tip: (x.withSimp ? 'pour simplifier : + (+3) → + 3 ; + (' + MINUS + '3) → ' + MINUS + ' 3 ; ' + MINUS + ' (+3) → ' + MINUS + ' 3 ; ' + MINUS + ' (' + MINUS + '3) → + 3. ' : '') + 'Puis on regroupe les positifs (' + pos.map(num).join(' + ') + ' = ' + num(x.P) + ') et les négatifs (' + neg.map(function(y){ return num(-y); }).join(' + ') + ' = ' + num(x.N) + ').'});
     });
     return got;
   }};
@@ -341,8 +367,8 @@ function exPb(){
     var t = parseExpr(f1.value), okc = !!t && sameList(effs(t), ans1.eff), v = parseNum(g1.value), okr = v !== null && eq(v, fin);
     mark(f1, okc); mark(g1, okr); f1.disabled = g1.disabled = true;
     var p1 = (okc ? 1 : 0) + (okr ? 1 : 0); got += p1; itemState(it1, p1, 2);
-    corLine(it1, p1 === 2, (p1 === 2 ? '✓ ' : '') + p1 + '/2', (okc ? '' : 'Calcul attendu : ' + ans1.txt + ' (ou ' + par(s) + (unit === 'm' ? ' + ' + par(-m1) + ' + ' + par(m2) : ' + ' + par(m1) + ' + ' + par(-m2)) + '). ') + (okr ? '' : 'Résultat : ' + fmt(fin) + ' ' + unit + '. '));
-    it1.appendChild(el('div', 'sent', 'Phrase réponse (0,5 pt sur la copie) : « ' + ans1.sent + ' »'));
+    var W1 = []; if (!okc) W1.push('Le calcul ne correspond pas à la situation : on part de ' + fmt(s) + ', puis on ' + (unit === 'm' ? 'descend (' + MINUS + ') puis on remonte (+).' : 'monte (+) puis on baisse (' + MINUS + ').')); if (!okr) W1.push('Le résultat est faux.');
+    corr(it1, p1, 2, {why: W1, always: true, sol: [ans1.txt + ' = ' + fmt(fin), '« ' + ans1.sent + ' »'], noHl: true, solTitle: 'La bonne rédaction (n’oublie pas la phrase sur ta copie)', tip: 'monter, gagner, déposer → + ; descendre, baisser, perdre → ' + MINUS + '.'});
     // question 2 : écart = a − b
     t = parseExpr(f2.value);
     var okc2 = !!t && t.length === 2 && eq(t[0].v, ans2.a) && eq(t[1].v, ans2.b) && t[1].op === '-' ;
@@ -350,8 +376,8 @@ function exPb(){
     v = parseNum(g2.value); var okr2 = v !== null && eq(v, gap);
     mark(f2, okc2); mark(g2, okr2); f2.disabled = g2.disabled = true;
     var p2 = (okc2 ? 1 : 0) + (okr2 ? 1 : 0); got += p2; itemState(it2, p2, 2);
-    corLine(it2, p2 === 2, (p2 === 2 ? '✓ ' : '') + p2 + '/2', (okc2 ? '' : 'Un écart se calcule par une soustraction : ' + fmt(ans2.a) + ' ' + MINUS + ' ' + par(ans2.b) + ' = ' + fmt(ans2.a) + ' + ' + par(-ans2.b) + ' = ' + num(gap) + '. ') + (okr2 ? '' : 'Résultat : ' + num(gap) + ' ' + unit + '. '));
-    it2.appendChild(el('div', 'sent', 'Phrase réponse (0,5 pt sur la copie) : « ' + ans2.sent + ' »'));
+    var W2 = []; if (!okc2) W2.push('Le calcul est faux : un écart se calcule par une soustraction (le plus grand moins le plus petit).'); if (!okr2) W2.push('Le résultat est faux.');
+    corr(it2, p2, 2, {why: W2, always: true, sol: [fmt(ans2.a) + ' ' + MINUS + ' ' + par(ans2.b) + ' = ' + fmt(ans2.a) + ' + ' + par(-ans2.b) + ' = ' + num(gap), '« ' + ans2.sent + ' »'], noHl: true, solTitle: 'La bonne rédaction (n’oublie pas la phrase sur ta copie)', tip: 'écart = le plus grand nombre ' + MINUS + ' le plus petit, et soustraire un négatif revient à ajouter son opposé.'});
     return got;
   }, note: 'Ici, le calcul et le résultat valent chacun 1 point ; sur ta copie, n’oublie pas la phrase réponse (0,5 pt par question).'};
 }
@@ -371,7 +397,7 @@ function exBonus(){
   return {box: box, max: 1, check: function(){
     var got = 0;
     fs.forEach(function(x){ var v = parseNum(x.f.value), ok = v !== null && eq(v, x.r); x.f.disabled = true; mark(x.f, ok); if (ok) got += .5; itemState(x.it, ok ? 1 : 0, 1);
-      corLine(x.it, ok, ok ? '✓ 0,5/0,5' : 'Le nombre manquant est ' + fmtS(x.r), 'Vérification : ' + x.v); });
+      corr(x.it, ok ? .5 : 0, .5, {why: ['Le nombre manquant est ' + fmtS(x.r) + '.'], sol: [x.v], solTitle: 'Vérification', tip: 'remplace les pointillés par ta réponse et calcule : tu dois retrouver le résultat de l’énoncé.'}); });
     return got;
   }};
 }
@@ -395,7 +421,7 @@ function menu(){
   main.appendChild(el('h2', 'cat', 'Le jour J'));
   var g0 = el('div', 'grid'), t0 = el('button', 'tile big'); t0.type = 'button';
   t0.appendChild(el('span', 'ic', '📝'));
-  var s0 = el('span'); s0.appendChild(el('b', null, 'Évaluation blanche')); s0.appendChild(el('span', 'd', 'Un sujet complet, 15 minutes, noté sur 20 avec le vrai barème. Un nouveau sujet à chaque essai.'));
+  var s0 = el('span'); s0.appendChild(el('b', null, 'Évaluation blanche')); s0.appendChild(el('span', 'd', 'Un sujet complet comme le jour J, noté sur 20 avec le vrai barème, sans limite de temps. Un nouveau sujet à chaque fois : recommence autant de fois que tu veux !'));
   if (best) s0.appendChild(el('span', 'rec', 'Ta meilleure note : ' + best + '/20'));
   t0.appendChild(s0); t0.onclick = function(){ location.hash = 'blanc'; }; g0.appendChild(t0); main.appendChild(g0);
   main.appendChild(el('h2', 'cat', 'S’entraîner exercice par exercice'));
@@ -431,34 +457,27 @@ function train(id){
     P.sc.textContent = pts(got) + ' / ' + pts(x.max); P.sc.className = 'pts ' + cls(got, x.max);
     store('eval:n01:' + id, pts(got));
     var r = el('div', 'res ' + cls(got, x.max), pts(got) + ' / ' + pts(x.max) + (eq(got, x.max) ? ' : parfait !' : ''));
-    r.appendChild(el('small', null, eq(got, x.max) ? 'Tu es prêt(e) pour cet exercice. Essaie l’évaluation blanche !' : 'Lis les corrections en rouge, puis refais une série : les nombres changent.'));
+    r.appendChild(el('small', null, eq(got, x.max) ? 'Tu es prêt(e) pour cet exercice. Essaie l’évaluation blanche !' : 'Lis la correction sous chaque question, puis recommence : les nombres changent à chaque fois.'));
     P.p.appendChild(r);
-    var r2 = el('div', 'row'), b1 = el('button', 'btn main', 'Nouvelle série'), b2 = el('button', 'btn', 'Menu');
+    var r2 = el('div', 'row'), b1 = el('button', 'btn main', '🔁 Recommencer (nouveaux nombres)'), b2 = el('button', 'btn', 'Menu');
     b1.onclick = function(){ train(id); window.scrollTo(0, 0); }; b2.onclick = function(){ location.hash = ''; };
     r2.appendChild(b1); r2.appendChild(b2); P.p.appendChild(r2);
   };
   window.scrollTo(0, 0);
 }
 
-var blancTimer = null;
 function blanc(){
   stat('/exos/4e-n01-eval/blanc', 'Préparer l’évaluation N01 · évaluation blanche');
   tomenu.hidden = false; main.innerHTML = '';
-  var bar = el('div', 'timerbar'), tm = el('span', 'timer', '15:00'), bend = el('button', 'btn main', 'Rendre ma copie'); bend.type = 'button';
+  var essai = parseInt(store('eval:n01:essais') || '0', 10) + 1;
+  var bar = el('div', 'timerbar'), tm = el('span', 'timer', 'Sujet n° ' + essai), bend = el('button', 'btn main', 'Rendre ma copie'); bend.type = 'button';
   bar.appendChild(tm); bar.appendChild(bend); main.appendChild(bar);
-  main.appendChild(el('p', 'consigne', 'Calculatrice interdite. Rédige comme sur ta copie : une étape par ligne. Quand le temps est écoulé, la copie est ramassée automatiquement.'));
+  main.appendChild(el('p', 'consigne', 'Calculatrice interdite. Prends ton temps : il n’y a pas de limite. Rédige comme sur ta copie, une étape par ligne, puis touche « Rendre ma copie ».'));
   var parts = EX.map(function(x){ var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p); return {x: x, inst: inst, P: P}; });
-  var t0 = Date.now(), dur = 15 * 60 * 1000, done = false;
-  clearInterval(blancTimer);
-  blancTimer = setInterval(function(){
-    if (!document.body.contains(bar)){ clearInterval(blancTimer); return; }
-    var left = Math.max(0, dur - (Date.now() - t0)), s = Math.ceil(left / 1000);
-    tm.textContent = Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); tm.classList.toggle('low', s <= 120);
-    if (left <= 0) finish(true);
-  }, 500);
-  bend.onclick = function(){ finish(false); };
-  function finish(auto){
-    if (done) return; done = true; clearInterval(blancTimer); kbar.hidden = true;
+  var done = false;
+  bend.onclick = function(){ finish(); };
+  function finish(){
+    if (done) return; done = true; kbar.hidden = true;
     var total = 0, bonus = 0, res = [];
     parts.forEach(function(o){
       var got = o.inst.check(); o.P.sc.textContent = pts(got) + ' / ' + pts(o.x.max); o.P.sc.className = 'pts ' + cls(got, o.x.max);
@@ -467,14 +486,16 @@ function blanc(){
     // phrases réponses du problème : comptées si le résultat est juste (elles s'écrivent sur la copie)
     var note = Math.min(20, total + bonus);
     note = Math.round(note * 4) / 4;
-    var used = Math.round((Date.now() - t0) / 1000);
     var best = parseFloat((store('eval:n01:best') || '0').replace(',', '.'));
     if (note > best) store('eval:n01:best', pts(note));
+    store('eval:n01:essais', String(essai));
+    var hist = (store('eval:n01:notes') || '').split(';').filter(Boolean).concat([pts(note)]).slice(-6); store('eval:n01:notes', hist.join(';'));
     bar.remove();
     var sum = el('section', 'panel');
     sum.appendChild(el('div', 'note', pts(note) + '/20'));
-    sum.appendChild(el('p', 'consigne', (auto ? 'Temps écoulé : copie ramassée. ' : 'Copie rendue en ' + Math.floor(used / 60) + ' min ' + ('0' + used % 60).slice(-2) + '. ') + (note > best ? '🏆 Ta meilleure note !' : best ? 'Ta meilleure note : ' + pts(best) + '/20.' : '')));
+    sum.appendChild(el('p', 'consigne', 'Sujet n° ' + essai + '. ' + (note > best && essai > 1 ? '🏆 Ta meilleure note !' : best ? 'Ta meilleure note : ' + pts(Math.max(best, note)) + '/20.' : '') + (hist.length > 1 ? ' Tes dernières notes : ' + hist.join(' → ') + '.' : '')));
     sum.lastChild.style.textAlign = 'center';
+    var again = el('div', 'row'), ba = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'); ba.type = 'button'; ba.onclick = function(){ blanc(); }; again.appendChild(ba); sum.appendChild(again);
     var bl = el('div', 'bilan');
     res.forEach(function(r){
       var line = el('div', 'bl'), left = el('span'); left.appendChild(el('b', null, r.x.n + ' · ' + r.x.t + ' : '));
@@ -485,10 +506,13 @@ function blanc(){
     });
     sum.appendChild(bl);
     sum.appendChild(el('p', 'consigne', 'Les phrases réponses du problème (0,5 pt chacune) sont comptées quand le résultat est juste : sur ta vraie copie, pense à les écrire ! Les corrections détaillées sont sous chaque exercice.'));
-    var r2 = el('div', 'row'), b1 = el('button', 'btn main', 'Nouveau sujet'), b2 = el('button', 'btn', 'Menu');
-    b1.onclick = function(){ blanc(); }; b2.onclick = function(){ location.hash = ''; };
-    r2.appendChild(b1); r2.appendChild(b2); sum.appendChild(r2);
-    main.insertBefore(sum, main.firstChild); window.scrollTo(0, 0);
+    var r2 = el('div', 'row'), b2 = el('button', 'btn', 'Menu'); b2.onclick = function(){ location.hash = ''; }; r2.appendChild(b2); sum.appendChild(r2);
+    main.insertBefore(sum, main.firstChild);
+    // en bas de la copie corrigée aussi : recommencer
+    var foot = el('section', 'panel'); foot.appendChild(el('p', 'consigne', 'Tu as lu toutes les corrections ? Entraîne-toi encore : un nouveau sujet est tiré à chaque fois, tu peux recommencer autant de fois que tu veux.'));
+    var fr = el('div', 'row'), fb1 = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'), fb2 = el('button', 'btn', 'Menu');
+    fb1.onclick = function(){ blanc(); }; fb2.onclick = function(){ location.hash = ''; }; fr.appendChild(fb1); fr.appendChild(fb2); foot.appendChild(fr); main.appendChild(foot);
+    window.scrollTo(0, 0);
     stat('/exos/4e-n01-eval/blanc/note', 'Évaluation blanche N01 rendue');
   }
   window.scrollTo(0, 0);
