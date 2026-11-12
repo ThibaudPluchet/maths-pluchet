@@ -14,7 +14,10 @@ Si l'évaluation existe en plusieurs sujets (PDF du dossier Evaluation, champs c
 la classe k ne reçoit que ses propres sujets et leurs corrections.
 Les PDF d'évaluation peuvent être regroupés par la page enseignant dans un paquet docs/<niveau>/nXX/evaluations.json
 (champ z dans DOCS : {chemin du PDF: contenu en base64}) : plan demande alors le paquet, et build en extrait les PDF.
-c<k> (Fait en classe) + d<k> = correction de la fiche d'exercices (version PROF) publiée pour la classe k.
+Jauge « Imprimé / Distribué / Complété » de la page enseignant (champs pd<k><a|c|e|r> = 0 à 3, pour Activité, Cours,
+Exercices, Fiche de révision) : un document élève est aussi publié pour la classe k dès qu'il y est au moins « Distribué » (2),
+même sans d<k> ; le cours distribué entraîne aussi carte mentale, vidéos, MathALÉA et animations de la notion.
+c<k> (Fait en classe) + d<k> (ou fiche d'exercices distribuée) = correction de la fiche d'exercices (version PROF) publiée pour la classe k.
 Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours (version PROF, complétée) et les corrections (évaluation, fiche d'exercices).
 L'évaluation aménagée (PAP) n'est jamais publiée.
 Évaluations communes à plusieurs notions (constante EVALS de la page : {niveau: [{id: "E01", ns: [15, 16, 17], docs}]},
@@ -70,6 +73,7 @@ TYPES = {"Activité": "activite", "Cours à trous": "cours", "Exercices": "exerc
 LABELS = {"Cours à trous": "Cours (complété)", "Exercices": "Fiche d'exercices", "Correction": "Correction de l'évaluation",
           "Correction exercices": "Correction de la fiche d'exercices"}
 EVALS = {"evaluation", "correction"}
+PDKEY = {"activite": "a", "cours": "c", "exercices": "e", "revision": "r"}   # jauge de la page enseignant (pd<k><clé>)
 # Versions PROF publiées : cours complété, correction de l'évaluation et correction de la fiche d'exercices
 PROF_OK = {"Cours à trous": "Cours à trous", "Évaluation": "Correction", "Exercices": "Correction exercices"}
 
@@ -139,11 +143,16 @@ def load(page, dbdir):
                                                              "cls": show, "items": items}))
             for n in seq["notions"]:
                 s = state.get("n%02d" % n["n"], {})
-                show_docs = [noms[k] for k in range(len(noms)) if s.get(f"d{k+1}")]
+                # document distribué (jauge ≥ 2) à la classe k : publié pour elle, même sans la case « Élèves » (d<k>)
+                dist = lambda k, key: s.get(f"d{k+1}") or (s.get(f"pd{k+1}{key}") or 0) >= 2
+                by_type = {t: [noms[k] for k in range(len(noms)) if dist(k, key)] for t, key in PDKEY.items()}
+                # autres ressources (carte mentale, vidéos, MathALÉA, animations) : avec le cours
+                show_docs = by_type["cours"]
+                show_any = sorted({c for v in by_type.values() for c in v})
                 show_eval = [noms[k] for k in range(len(noms)) if s.get(f"e{k+1}")]
-                # Correction de la fiche d'exercices : quand la notion est « Fait en classe » (et ses documents publiés)
-                show_fait = [noms[k] for k in range(len(noms)) if s.get(f"c{k+1}") and s.get(f"d{k+1}")]
-                if not show_docs and not show_eval:
+                # Correction de la fiche d'exercices : quand la notion est « Fait en classe » (et la fiche publiée)
+                show_fait = [noms[k] for k in range(len(noms)) if s.get(f"c{k+1}") and dist(k, "e")]
+                if not show_any and not show_eval:
                     continue
                 items = []
                 for d in docs["levels"].get(lv, {}).get(str(n["n"]), []):
@@ -157,7 +166,7 @@ def load(page, dbdir):
                     else:
                         lab = d["l"]
                     t = TYPES[lab]
-                    cls = show_eval if t in EVALS else show_fait if t == "correction-exo" else show_docs
+                    cls = show_eval if t in EVALS else show_fait if t == "correction-exo" else by_type.get(t, show_docs)
                     label = LABELS.get(lab, lab)
                     # Évaluation en plusieurs sujets (dossier Evaluation) : chaque PDF porte sa classe (c) et
                     # son sujet (s) ; il n'est publié que pour cette classe, si sa case « Éval » est cochée.
@@ -188,7 +197,7 @@ def load(page, dbdir):
                     items.append({"type": "anim", "label": k.get("l") or "Animation", "href": href, "cls": show_docs})
                 for v in n.get("vids") or []:
                     items.append({"type": "video", "label": "Vidéo : " + v["l"], "href": v["u"], "cls": sorted(set(show_docs) | set(show_eval))})
-                notions.append({"num": n["n"], "titre": n["t"], "cls": sorted(set(show_docs) | set(show_eval)), "items": items})
+                notions.append({"num": n["n"], "titre": n["t"], "cls": sorted(set(show_any) | set(show_eval)), "items": items})
             for last, ev in seq.pop("_ev", []):
                 i = 0                                   # juste après la dernière notion évaluée (et les évaluations déjà placées)
                 for j, x in enumerate(notions):
