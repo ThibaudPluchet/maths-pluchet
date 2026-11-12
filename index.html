@@ -224,11 +224,11 @@ function start(D){
   var picker = document.getElementById('picker'), main = document.getElementById('main');
   var GROUPS = [
     {key:'comprendre', title:'Comprendre', cls:'g1', types:['activite','cours','anim','video']},
-    {key:'entrainer', title:'S’entraîner', cls:'g2', types:['exercices','correction-exo','alea']},
+    {key:'entrainer', title:'S’entraîner', cls:'g2', types:['exercices','correction-exo','exo','alea']},
     {key:'reviser', title:'Réviser', cls:'g3', types:['revision','carte']},
     {key:'evaluer', title:'Évaluation', cls:'g4', types:['evaluation','correction']}
   ];
-  var ICON = {anim:'✨', cours:'📘', activite:'💡', video:'▶', exercices:'✏️', alea:'💻', revision:'📝', carte:'🧠', evaluation:'📄', correction:'✅', 'correction-exo':'✔️'};
+  var ICON = {exo:'🎮', anim:'✨', cours:'📘', activite:'💡', video:'▶', exercices:'✏️', alea:'💻', revision:'📝', carte:'🧠', evaluation:'📄', correction:'✅', 'correction-exo':'✔️'};
   function store(k, v){ try{ if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
   function levelOf(c){ for (var l in D.classes) if (D.classes[l].indexOf(c) > -1) return l; }
   function find(c){ c = (c || '').toLowerCase(); for (var l in D.classes) for (var i = 0; i < D.classes[l].length; i++) if (D.classes[l][i].toLowerCase() === c) return D.classes[l][i]; return ''; }
@@ -272,7 +272,7 @@ function start(D){
     a.appendChild(el('span','ic', ICON[it.type] || '•'));
     a.appendChild(el('span','t', it.label));
     if (isNew(it)) a.appendChild(el('span','badge','Nouveau'));
-    else if (it.type === 'video' || it.type === 'alea' || it.type === 'anim') a.appendChild(el('span','ext','↗'));
+    else if (it.type === 'video' || it.type === 'alea' || it.type === 'anim' || it.type === 'exo') a.appendChild(el('span','ext','↗'));
     return a;
   }
   function groups(items){

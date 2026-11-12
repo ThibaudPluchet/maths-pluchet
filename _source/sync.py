@@ -100,6 +100,10 @@ def load(page, dbdir):
     html = open(page, encoding="utf-8").read()
     levels, docs = js_const(html, "LEVELS"), js_const(html, "DOCS")
     links = js_const_opt(html, "LINKS")
+    try:
+        inter = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "interactifs.json"), encoding="utf-8"))
+    except FileNotFoundError:
+        inter = {}
     evals = js_const_opt(html, "EVALS")
     ANIMS.clear()
     classes, data, wanted = {}, {"niveaux": {}}, {}
@@ -183,6 +187,8 @@ def load(page, dbdir):
                     items.append({"type": t, "label": label, "href": d["p"], "cls": cls, "_s": d.get("s") or ""})
                     wanted[d["p"]] = d.get("b")
                 items.sort(key=lambda i: (list(TYPES.values()).index(i["type"]), i.pop("_s")))
+                for k in (inter.get(lv, {}).get(str(n["n"])) or []) if show_docs else []:
+                    items.append({"type": "exo", "label": k["l"], "href": k["u"], "cls": show_docs})
                 if n.get("alea") and show_docs:
                     items.append({"type": "alea", "label": "Exercices en ligne (MathALÉA)", "href": n["alea"], "cls": show_docs})
                 for k in (links.get(lv, {}).get(str(n["n"])) or []) if show_docs else []:

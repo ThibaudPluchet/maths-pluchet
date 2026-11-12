@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nombres relatifs : additionner et soustraire – M. Pluchet</title>
+<meta name="description" content="9 exercices interactifs pour s'entraîner à additionner et soustraire des nombres relatifs (4e, N01).">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --ink:#1b2333; --muted:#596277; --line:#e2ded3;
+  --accent:#2f5bd3; --accent-ink:#ffffff; --soft:#e8eefc; --gridc:#e9e5da;
+  --ok:#1e7a46; --oks:#e3f4ea; --ko:#b3261e; --kos:#fbe6e4;
+  --pos:#c2410c; --poss:#fdeadb; --neg:#1d5fd0; --negs:#e1ebfc; --hi:#d6336c;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#13161d; --card:#1b1f28; --ink:#eaedf3; --muted:#a3abbc; --line:#2b313e;
+    --accent:#86a4ff; --accent-ink:#0f1320; --soft:#222a3e; --gridc:#1a1e27;
+    --ok:#6fd49a; --oks:#173326; --ko:#ff8a80; --kos:#3a1f1d;
+    --pos:#ff9a5c; --poss:#3a2516; --neg:#7ea8ff; --negs:#1d2a4a; --hi:#ff7aa5; }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;
+  background-image:linear-gradient(var(--gridc) 1px,transparent 1px),linear-gradient(90deg,var(--gridc) 1px,transparent 1px);background-size:22px 22px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header{padding:22px 0 8px}
+.top{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.top a,.top button{color:var(--accent);font:700 15px inherit;font-family:inherit;text-decoration:none;background:none;border:0;padding:0;cursor:pointer}
+.top a:hover,.top button:hover{text-decoration:underline}
+.kick{color:var(--muted);font-weight:700;font-size:14px;margin:0}
+h1{font:700 clamp(26px,6vw,38px)/1.1 "Bricolage Grotesque",system-ui,sans-serif;margin:2px 0 6px}
+.sub{color:var(--muted);margin:0}
+main{padding:14px 0 60px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.cat{grid-column:1/-1;font:700 15px inherit;font-family:inherit;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:12px 0 0}
+.tile{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;color:var(--ink);font:inherit;display:flex;gap:12px;align-items:flex-start;min-height:96px}
+.tile:hover{border-color:var(--accent);box-shadow:0 6px 20px -14px var(--accent)}
+.tile .ic{font-size:28px;line-height:1}
+.tile b{display:block;font:700 18px/1.2 "Bricolage Grotesque",system-ui,sans-serif;margin-bottom:4px}
+.tile span.d{color:var(--muted);font-size:15px}
+.tile .rec{display:block;margin-top:6px;font-size:13px;font-weight:700;color:var(--ok)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ph h2{font:700 24px/1.15 "Bricolage Grotesque",system-ui,sans-serif;margin:0}
+.score{font-weight:700;color:var(--muted);font-size:15px}
+.consigne{margin:0;color:var(--muted)}
+.calc{font:700 clamp(26px,7vw,40px)/1.2 "Bricolage Grotesque",system-ui,sans-serif;text-align:center;margin:4px 0;letter-spacing:.01em}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center}
+.btn{font:700 16px inherit;font-family:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 16px;cursor:pointer;min-height:46px}
+.btn:hover{border-color:var(--accent)}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.sel{background:var(--soft);border-color:var(--accent)}
+input.ans{font:700 24px inherit;font-family:inherit;width:6.5em;text-align:center;padding:8px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+input.ans:focus{outline:none;border-color:var(--accent)}
+input.ans.small{font-size:18px;width:4.6em;padding:6px}
+.fb{border-radius:12px;padding:10px 14px;font-weight:700;text-align:center}
+.fb.ok{background:var(--oks);color:var(--ok)}
+.fb.ko{background:var(--kos);color:var(--ko)}
+.fb small{display:block;font-weight:400;color:var(--ink);margin-top:2px}
+.end{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.end .big{font:700 46px/1 "Bricolage Grotesque",system-ui,sans-serif}
+.pos{color:var(--pos)} .neg{color:var(--neg)}
+.prog{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.prog b{display:block;height:100%;background:var(--accent);transition:width .3s}
+/* droite graduée */
+.nl{width:100%;height:auto;touch-action:manipulation;user-select:none;cursor:pointer}
+.nl text{font:700 22px "Atkinson Hyperlegible",sans-serif;fill:var(--muted)}
+.nl .tick{stroke:var(--muted);stroke-width:1.5}
+.nl .axis{stroke:var(--ink);stroke-width:2}
+.nl .zero{fill:var(--ink)}
+/* jetons */
+.tokens{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:64px;padding:12px;border:2px dashed var(--line);border-radius:14px}
+.tok{width:46px;height:46px;border-radius:50%;border:0;font:700 26px/1 inherit;font-family:inherit;cursor:pointer;display:grid;place-items:center;transition:transform .15s,opacity .25s}
+.tok.p{background:var(--poss);color:var(--pos);box-shadow:inset 0 0 0 3px var(--pos)}
+.tok.m{background:var(--negs);color:var(--neg);box-shadow:inset 0 0 0 3px var(--neg)}
+.tok.picked{transform:scale(1.15);outline:3px solid var(--hi);outline-offset:2px}
+.tok.gone{opacity:0;transform:scale(.3)}
+.hint{font-size:15px;color:var(--muted);text-align:center;margin:0}
+/* QCM */
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices .btn{text-align:left;font-size:19px}
+.choices .btn.good{background:var(--oks);border-color:var(--ok);color:var(--ok)}
+.choices .btn.bad{background:var(--kos);border-color:var(--ko);color:var(--ko)}
+/* chrono */
+.timer{font:700 22px "Bricolage Grotesque",sans-serif}
+.levels{display:flex;flex-direction:column;gap:8px}
+.keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:340px;margin:0 auto;width:100%}
+.keypad .btn{padding:8px;font-size:20px}
+/* simplifier */
+.terms{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;font:700 26px "Bricolage Grotesque",sans-serif}
+.sgn{width:50px;height:50px;border-radius:12px;border:2px solid var(--line);background:var(--bg);font:700 26px inherit;font-family:inherit;cursor:pointer;color:var(--ink)}
+.sgn.set{border-color:var(--accent);background:var(--soft)}
+.sgn.okb{border-color:var(--ok);background:var(--oks)}
+.sgn.kob{border-color:var(--ko);background:var(--kos)}
+/* memory */
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.card{aspect-ratio:4/3;border-radius:12px;border:0;cursor:pointer;font:700 clamp(15px,4vw,22px)/1.15 inherit;font-family:inherit;background:var(--accent);color:transparent;transition:background .2s}
+.card.up{background:var(--soft);color:var(--ink);box-shadow:inset 0 0 0 2px var(--accent)}
+.card.done{background:var(--oks);color:var(--ok);box-shadow:none;cursor:default}
+/* erreurs */
+.copy{display:flex;flex-direction:column;gap:6px;background:repeating-linear-gradient(var(--card) 0 33px,var(--line) 33px 34px);padding:6px 10px;border-left:3px solid var(--hi);border-radius:4px}
+.line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:44px;font:20px "Bricolage Grotesque",sans-serif}
+.line .eq{flex:1 1 200px;font-weight:700}
+.line .btn{padding:6px 10px;min-height:38px;font-size:14px}
+.line.okl .eq{color:var(--ok)} .line.kol .eq{color:var(--ko)}
+.mark{font-weight:700;font-size:15px}
+/* pyramide */
+.pyr{display:flex;flex-direction:column-reverse;gap:6px;align-items:center}
+.prow{display:flex;gap:6px}
+.pc{width:68px;height:52px;border-radius:10px;border:2px solid var(--line);background:var(--bg);display:grid;place-items:center;font:700 20px "Bricolage Grotesque",sans-serif}
+.pc input{width:100%;height:100%;border:0;background:transparent;text-align:center;font:inherit;color:var(--ink);border-radius:8px}
+.pc input:focus{outline:2px solid var(--accent)}
+.pc.okc{border-color:var(--ok);background:var(--oks)} .pc.koc{border-color:var(--ko);background:var(--kos)}
+.pc.given{background:var(--card)}
+@media (max-width:420px){ .pc{width:58px;height:46px;font-size:17px} }
+/* chemin */
+.path{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:400px;margin:0 auto;width:100%}
+.pcell{aspect-ratio:1;border-radius:12px;border:2px solid var(--line);background:var(--card);font:700 clamp(18px,5vw,24px) "Bricolage Grotesque",sans-serif;cursor:pointer;color:var(--ink)}
+.pcell.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.pcell.next{border-color:var(--accent);border-style:dashed}
+.pcell.start{box-shadow:inset 0 0 0 3px var(--ok)}
+.pcell.goal{box-shadow:inset 0 0 0 3px var(--hi)}
+.target{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;font-weight:700}
+.target span{background:var(--soft);padding:6px 14px;border-radius:999px}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 1 · N01</p>
+  <h1>Additionner et soustraire des nombres relatifs</h1>
+  <p class="sub" id="sub">9 exercices interactifs. Les nombres changent à chaque partie : tu peux rejouer autant que tu veux.</p>
+</header>
+<main class="wrap" id="main"></main>
+<script>
+(function(){
+'use strict';
+var main = document.getElementById('main'), tomenu = document.getElementById('tomenu');
+var MINUS = '−';
+function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function rnd(a, b){ return a + Math.floor(Math.random() * (b - a + 1)); }
+function rndNZ(a, b){ var x; do { x = rnd(a, b); } while (x === 0); return x; }
+function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+function shuffle(a){ for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function fmt(n){ return n < 0 ? MINUS + Math.abs(n) : String(n); }            // −3, 5
+function fmtS(n){ return n < 0 ? MINUS + Math.abs(n) : '+' + n; }            // −3, +5
+function par(n){ return '(' + fmtS(n) + ')'; }                                  // (−3), (+5)
+function parse(s){
+  s = String(s).trim().replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(',', '.');
+  if (!/^[+-]?\d+$/.test(s)) return null; return parseInt(s, 10);
+}
+function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){ return null; } }
+function stat(p, t){ if (window.stat) window.stat(p, t); }
+function signed(n){ var s = el('span', n < 0 ? 'neg' : 'pos', fmt(n)); return s; }
+function fb(box, ok, msg, detail){
+  box.innerHTML = ''; var f = el('div', 'fb ' + (ok ? 'ok' : 'ko'), msg);
+  if (detail) f.appendChild(el('small', null, detail)); box.appendChild(f);
+}
+function answerBox(onSubmit, label){
+  var row = el('div', 'row'), inp = el('input', 'ans'); inp.type = 'text'; inp.inputMode = 'text'; inp.autocomplete = 'off';
+  inp.setAttribute('aria-label', label || 'Ta réponse'); inp.placeholder = '?';
+  var bm = el('button', 'btn', MINUS); bm.type = 'button'; bm.title = 'Changer le signe';
+  bm.onclick = function(){ var v = inp.value.trim(); inp.value = /^[-−]/.test(v) ? v.slice(1) : MINUS + v; inp.focus(); };
+  var b = el('button', 'btn main', 'Valider'); b.type = 'button';
+  function go(){ onSubmit(inp.value, inp); }
+  b.onclick = go; inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') go(); });
+  row.appendChild(bm); row.appendChild(inp); row.appendChild(b);
+  return {row: row, input: inp, button: b};
+}
+// Une série de N questions : make() construit chaque question et appelle done(juste)
+function series(panel, n, make, onEnd){
+  var i = 0, good = 0, area = el('div'), prog = el('div', 'prog'), bar = el('b');
+  prog.appendChild(bar); panel.appendChild(prog); panel.appendChild(area);
+  var sc = panel.querySelector('.score');
+  function upd(){ bar.style.width = (100 * i / n) + '%'; if (sc) sc.textContent = 'Question ' + Math.min(i + 1, n) + '/' + n + ' · ' + good + ' juste' + (good > 1 ? 's' : ''); }
+  function next(){
+    upd(); area.innerHTML = '';
+    if (i >= n){ if (sc) sc.textContent = ''; bar.style.width = '100%'; endScreen(area, good, n, onEnd); return; }
+    make(area, function(ok){ if (ok) good++; i++; upd(); }, function(){ next(); });
+  }
+  next();
+}
+function endScreen(area, good, n, again){
+  var e = el('div', 'end');
+  e.appendChild(el('div', 'big', good + '/' + n));
+  e.appendChild(el('p', null, good === n ? 'Parfait, bravo !' : good >= n * .7 ? 'Très bien ! Encore une série pour viser le sans-faute ?' : 'Continue à t’entraîner : regarde bien les corrections.'));
+  var r = el('div', 'row'), b1 = el('button', 'btn main', 'Nouvelle série'), b2 = el('button', 'btn', 'Autres exercices');
+  b1.onclick = again; b2.onclick = function(){ location.hash = ''; };
+  r.appendChild(b1); r.appendChild(b2); e.appendChild(r); area.appendChild(e);
+}
+function nextBtn(area, cont, label){
+  var b = el('button', 'btn main', label || 'Question suivante'); b.type = 'button';
+  b.onclick = cont; var r = el('div', 'row'); r.appendChild(b); area.appendChild(r); setTimeout(function(){ b.focus(); }, 30);
+}
+function panelFor(ex){
+  var p = el('section', 'panel'), h = el('div', 'ph');
+  h.appendChild(el('h2', null, ex.icon + ' ' + ex.title)); h.appendChild(el('span', 'score'));
+  p.appendChild(h); if (ex.consigne) p.appendChild(el('p', 'consigne', ex.consigne));
+  return p;
+}
+// explication d'une addition / soustraction
+function explain(a, op, b){
+  var bb = op === '-' ? -b : b, r = a + bb, txt = '';
+  if (op === '-') txt = 'Soustraire ' + par(b) + ', c’est ajouter son opposé ' + par(-b) + ' : ' + fmt(a) + ' + ' + par(-b) + ' = ' + fmt(r) + '. ';
+  else if ((a < 0) === (b < 0)) txt = 'Même signe : on ajoute les distances à zéro et on garde le signe. ';
+  else txt = 'Signes contraires : on soustrait les distances à zéro et on prend le signe du nombre le plus éloigné de zéro. ';
+  return txt;
+}
+
+/* ============ 1. Droite graduée ============ */
+function exDroite(p){
+  var MIN = -15, MAX = 15;
+  series(p, 8, function(area, done, cont){
+    var a, b, op, r;
+    do { a = rnd(-9, 9); b = rndNZ(-9, 9); op = pick(['+', '-']); r = op === '+' ? a + b : a - b; } while (r < MIN || r > MAX);
+    var step = op === '+' ? b : -b;
+    area.appendChild(el('div', 'calc', fmt(a) + ' ' + (op === '+' ? '+' : MINUS) + ' ' + par(b)));
+    area.appendChild(el('p', 'hint', 'Le pion part de ' + fmt(a) + '. Touche la droite ou utilise les flèches pour l’amener sur le résultat.'));
+    var pos = a, W = 640, H = 150, x0 = 24, u = (W - 40) / (MAX - MIN);
+    function X(v){ return x0 + (v - MIN) * u; }
+    var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('class', 'nl');
+    function S(t, at){ var e = document.createElementNS(ns, t); for (var k in at) e.setAttribute(k, at[k]); svg.appendChild(e); return e; }
+    S('line', {x1: 10, y1: 90, x2: W - 10, y2: 90, 'class': 'axis'});
+    for (var v = MIN; v <= MAX; v++){
+      S('line', {x1: X(v), y1: v % 5 ? 82 : 74, x2: X(v), y2: v % 5 ? 98 : 106, 'class': 'tick'});
+      if (v % 5 === 0 || v === a){ var t = S('text', {x: X(v), y: 134, 'text-anchor': 'middle', 'class': v === 0 ? 'zero' : ''}); t.textContent = fmt(v); }
+    }
+    S('circle', {cx: X(a), cy: 90, r: 7, fill: 'var(--muted)'});
+    var arrow = S('path', {d: '', fill: 'none', stroke: 'var(--hi)', 'stroke-width': 3, 'stroke-linecap': 'round'});
+    var pion = S('circle', {cx: X(a), cy: 58, r: 13, fill: 'var(--accent)'});
+    var lab = S('text', {x: X(a), y: 32, 'text-anchor': 'middle'}); lab.style.fill = 'var(--accent)'; lab.style.fontSize = '26px';
+    function draw(){ pion.setAttribute('cx', X(pos)); lab.setAttribute('x', X(pos)); lab.textContent = fmt(pos); }
+    draw(); area.appendChild(svg);
+    var locked = false;
+    svg.addEventListener('click', function(e){
+      if (locked) return; var r0 = svg.getBoundingClientRect(), vx = (e.clientX - r0.left) * W / r0.width;
+      pos = Math.max(MIN, Math.min(MAX, Math.round((vx - x0) / u + MIN))); draw();
+    });
+    var ctr = el('div', 'row');
+    [['−5', -5], ['−1', -1], ['+1', 1], ['+5', 5]].forEach(function(d){
+      var bt = el('button', 'btn', d[0].replace('-', MINUS)); bt.type = 'button';
+      bt.onclick = function(){ if (!locked){ pos = Math.max(MIN, Math.min(MAX, pos + d[1])); draw(); } };
+      ctr.appendChild(bt);
+    });
+    var val = el('button', 'btn main', 'Valider'); val.type = 'button'; ctr.appendChild(val); area.appendChild(ctr);
+    var out = el('div'); area.appendChild(out);
+    val.onclick = function(){
+      if (locked) return; locked = true; ctr.querySelectorAll('button').forEach(function(x){ x.disabled = true; });
+      var ok = pos === r;
+      arrow.setAttribute('d', 'M' + X(a) + ' 90 Q ' + (X(a) + X(r)) / 2 + ' ' + 30 + ' ' + X(r) + ' 90');
+      var len = Math.abs(X(r) - X(a)) * 1.3 + 10; arrow.style.strokeDasharray = len; arrow.style.strokeDashoffset = len;
+      arrow.style.transition = 'stroke-dashoffset 0.9s ease'; requestAnimationFrame(function(){ arrow.style.strokeDashoffset = 0; });
+      pos = r; setTimeout(draw, 900);
+      fb(out, ok, ok ? 'Bravo ! ' + fmt(a) + ' ' + (op === '+' ? '+' : MINUS) + ' ' + par(b) + ' = ' + fmt(r) : 'Pas tout à fait : le résultat est ' + fmt(r) + '.',
+        explain(a, op, b) + 'Sur la droite : on part de ' + fmt(a) + ' et on avance de ' + Math.abs(step) + ' vers la ' + (step > 0 ? 'droite' : 'gauche') + '.');
+      done(ok); nextBtn(out, cont);
+    };
+  }, function(){ open('droite'); });
+}
+
+/* ============ 2. Jetons ============ */
+function exJetons(p){
+  series(p, 6, function(area, done, cont){
+    var a = rndNZ(-6, 6), b = rndNZ(-5, 5), op = pick(['+', '-', '-']), r = op === '+' ? a + b : a - b;
+    var toks = [], need = 0, needSign = 0;
+    for (var i = 0; i < Math.abs(a); i++) toks.push(a > 0 ? 1 : -1);
+    if (op === '+') for (i = 0; i < Math.abs(b); i++) toks.push(b > 0 ? 1 : -1);
+    else { need = Math.abs(b); needSign = b > 0 ? 1 : -1; }
+    area.appendChild(el('div', 'calc', fmt(a) + ' ' + (op === '+' ? '+' : MINUS) + ' ' + par(b)));
+    var info = el('p', 'hint'), box = el('div', 'tokens'), tools = el('div', 'row'), picked = null;
+    area.appendChild(info); area.appendChild(box); area.appendChild(tools);
+    var addPair = el('button', 'btn', 'Ajouter une paire  + et ' + MINUS); addPair.type = 'button';
+    addPair.onclick = function(){ toks.push(1); toks.push(-1); picked = null; render(); };
+    if (op === '-') tools.appendChild(addPair);
+    function render(){
+      box.innerHTML = '';
+      if (need > 0){
+        info.innerHTML = '';
+        info.appendChild(document.createTextNode('Soustraire ' + par(b) + ' : enlève ' + need + ' jeton' + (need > 1 ? 's ' : ' ') + (needSign > 0 ? '+' : MINUS) + ' (touche-les). '));
+        if (toks.filter(function(t){ return t === needSign; }).length < need) info.appendChild(el('b', null, 'Pas assez ? Ajoute des paires « + et − » : elles valent 0.'));
+      } else info.textContent = 'Touche un jeton + puis un jeton ' + MINUS + ' : une paire vaut 0 et disparaît. Puis écris le résultat.';
+      addPair.hidden = need <= 0;
+      if (!toks.length) box.appendChild(el('span', 'hint', 'Plus aucun jeton : il reste 0.'));
+      toks.forEach(function(t, k){
+        var bt = el('button', 'tok ' + (t > 0 ? 'p' : 'm') + (picked === k ? ' picked' : ''), t > 0 ? '+' : MINUS); bt.type = 'button';
+        bt.setAttribute('aria-label', 'jeton ' + (t > 0 ? 'plus' : 'moins'));
+        bt.onclick = function(){
+          if (need > 0){ if (t === needSign){ toks.splice(k, 1); need--; render(); } return; }
+          if (picked === null){ picked = k; render(); return; }
+          if (picked === k){ picked = null; render(); return; }
+          if (toks[picked] !== t){
+            var x = Math.max(picked, k), y = Math.min(picked, k);
+            box.children[x].classList.add('gone'); box.children[y].classList.add('gone');
+            setTimeout(function(){ toks.splice(x, 1); toks.splice(y, 1); picked = null; render(); }, 250);
+          } else { picked = k; render(); }
+        };
+        box.appendChild(bt);
+      });
+    }
+    render();
+    var out = el('div');
+    var ab = answerBox(function(v){
+      var n = parse(v); if (n === null){ fb(out, false, 'Écris un nombre entier, par exemple ' + MINUS + '3.'); return; }
+      ab.button.disabled = true; ab.input.disabled = true; var ok = n === r;
+      fb(out, ok, ok ? 'Bravo ! Le résultat est ' + fmt(r) + '.' : 'Non : le résultat est ' + fmt(r) + '.',
+        explain(a, op, b) + 'Avec les jetons : il reste ' + Math.abs(r) + ' jeton' + (Math.abs(r) > 1 ? 's ' : ' ') + (r > 0 ? '+' : r < 0 ? MINUS : '') + (r === 0 ? '(aucun jeton)' : '') + '.');
+      done(ok); nextBtn(out, cont);
+    });
+    area.appendChild(ab.row); area.appendChild(out);
+  }, function(){ open('jetons'); });
+}
+
+/* ============ 3. Situations ============ */
+function exSituations(p){
+  var T = [
+    function(){ var a = rnd(-8, 6), b = rnd(3, 12); return {t: 'Ce matin, il fait ' + fmt(a) + ' °C. Dans la journée, la température monte de ' + b + ' °C. Quelle température fait-il l’après-midi ?', a: a, op: '+', b: b, u: ' °C'}; },
+    function(){ var a = rnd(-4, 8), b = rnd(5, 12); return {t: 'À midi il fait ' + fmt(a) + ' °C. La nuit, la température baisse de ' + b + ' °C. Quelle température fait-il la nuit ?', a: a, op: '+', b: -b, u: ' °C'}; },
+    function(){ var a = rnd(-3, -1), b = rnd(4, 9); return {t: 'Léa prend l’ascenseur au niveau ' + fmt(a) + ' (parking). Elle monte de ' + b + ' étages. À quel étage arrive-t-elle ?', a: a, op: '+', b: b, u: ''}; },
+    function(){ var a = rnd(2, 6), b = rnd(a + 1, a + 4); return {t: 'Tom est au ' + a + 'e étage. Il descend de ' + b + ' étages. À quel niveau arrive-t-il ?', a: a, op: '+', b: -b, u: ''}; },
+    function(){ var a = -5 * rnd(2, 12), b = 5 * rnd(3, 16); return {t: 'Le compte de Sami est à ' + fmt(a) + ' €. Il y dépose ' + b + ' €. Quel est le nouveau solde ?', a: a, op: '+', b: b, u: ' €'}; },
+    function(){ var a = 5 * rnd(1, 8), b = 5 * rnd(a / 5 + 1, a / 5 + 8); return {t: 'Le compte de Nina est à ' + a + ' €. Elle paie un achat de ' + b + ' €. Quel est le nouveau solde ?', a: a, op: '+', b: -b, u: ' €'}; },
+    function(){ var a = -rnd(8, 25), b = rnd(3, 7); return {t: 'Une plongeuse est à ' + fmt(a) + ' m (sous la surface). Elle remonte de ' + b + ' m. À quelle profondeur est-elle ?', a: a, op: '+', b: b, u: ' m'}; },
+    function(){ var a = rnd(2, 12), b = -rnd(2, 10); return {t: 'Aujourd’hui, la température maximale est ' + fmt(a) + ' °C et la minimale ' + fmt(b) + ' °C. Quel est l’écart entre les deux ?', a: a, op: '-', b: b, u: ' °C'}; },
+    function(){ var a = rnd(20, 60) * 10, b = -rnd(5, 40) * 10; return {t: 'Un avion vole à ' + a + ' m d’altitude, au-dessus d’un sous-marin à ' + fmt(b) + ' m. Quelle distance verticale les sépare ?', a: a, op: '-', b: b, u: ' m'}; }
+  ];
+  var order = shuffle(T.slice()).slice(0, 6);
+  series(p, 6, function(area, done, cont){
+    var s = order.shift()(), r = s.op === '+' ? s.a + s.b : s.a - s.b;
+    function w(a, op, b){ return fmt(a) + ' ' + (op === '+' ? '+' : MINUS) + ' ' + par(b); }
+    var good = w(s.a, s.op, s.b), opts = [good];
+    var fakes = s.op === '+' ? [w(s.a, '-', s.b), w(s.a, '+', -s.b), w(-s.a, '+', s.b)] : [w(s.a, '+', s.b), w(s.b, '-', s.a), w(s.a, '-', -s.b)];
+    fakes.forEach(function(f){ if (opts.indexOf(f) < 0 && opts.length < 3) opts.push(f); });
+    shuffle(opts);
+    area.appendChild(el('p', null, s.t));
+    area.appendChild(el('p', 'hint', 'Étape 1 : quel calcul correspond à la situation ?'));
+    var ch = el('div', 'choices'), step2 = el('div'), out = el('div');
+    opts.forEach(function(o){
+      var bt = el('button', 'btn', o); bt.type = 'button';
+      bt.onclick = function(){
+        if (ch.dataset.done) return;
+        if (o === good){ ch.dataset.done = 1; bt.classList.add('good'); [].forEach.call(ch.children, function(x){ x.disabled = true; }); go2(); }
+        else { bt.classList.add('bad'); bt.disabled = true; ch.dataset.miss = 1; }
+      };
+      ch.appendChild(bt);
+    });
+    area.appendChild(ch); area.appendChild(step2); area.appendChild(out);
+    function go2(){
+      step2.appendChild(el('p', 'hint', 'Étape 2 : calcule ' + good + (s.u ? ' (réponse en' + s.u.replace(' ', ' ') + ')' : '')));
+      var ab = answerBox(function(v){
+        var n = parse(v); if (n === null){ fb(out, false, 'Écris un nombre entier.'); return; }
+        ab.button.disabled = true; ab.input.disabled = true;
+        var ok = n === r && !ch.dataset.miss;
+        fb(out, n === r, n === r ? (ch.dataset.miss ? 'Bon calcul ! (mais le premier choix était faux)' : 'Bravo !') + ' Réponse : ' + fmt(r) + s.u : 'Non : ' + good + ' = ' + fmt(r) + s.u + '.', explain(s.a, s.op, s.b));
+        done(ok); nextBtn(out, cont);
+      });
+      step2.appendChild(ab.row); setTimeout(function(){ ab.input.focus(); }, 30);
+    }
+  }, function(){ open('situations'); });
+}
+
+/* ============ 4. Contre-la-montre ============ */
+var LEVELS = [
+  {k: 1, n: 'Niveau 1 · sans parenthèses', d: 'ex. ' + MINUS + '7 + 3   ou   4 ' + MINUS + ' 9', gen: function(){ var a = rnd(-12, 12), b = rnd(1, 12), op = pick(['+', '-']); return {q: fmt(a) + ' ' + (op === '+' ? '+' : MINUS) + ' ' + b, r: op === '+' ? a + b : a - b}; }},
+  {k: 2, n: 'Niveau 2 · signes qui se suivent', d: 'ex. (' + MINUS + '4) ' + MINUS + ' (' + MINUS + '7)', gen: function(){ var a = rndNZ(-12, 12), b = rndNZ(-12, 12), op = pick(['+', '-']); return {q: par(a) + ' ' + (op === '+' ? '+' : MINUS) + ' ' + par(b), r: op === '+' ? a + b : a - b}; }},
+  {k: 3, n: 'Niveau 3 · longues sommes', d: 'ex. ' + MINUS + '3 + 8 ' + MINUS + ' 5 + 2', gen: function(){ var n = rnd(4, 5), s = rndNZ(-9, 9), q = fmt(s); for (var i = 1; i < n; i++){ var t = rnd(1, 9), op = pick(['+', '-']); q += ' ' + (op === '+' ? '+' : MINUS) + ' ' + t; s += op === '+' ? t : -t; } return {q: q, r: s}; }}
+];
+function exChrono(p){
+  var lv = el('div', 'levels');
+  LEVELS.forEach(function(L){
+    var rec = store('exo:chrono:' + L.k), bt = el('button', 'tile');
+    bt.type = 'button'; bt.appendChild(el('span', 'ic', '⏱️'));
+    var tx = el('span'); tx.appendChild(el('b', null, L.n)); tx.appendChild(el('span', 'd', L.d));
+    if (rec) tx.appendChild(el('span', 'rec', 'Ton record : ' + rec));
+    bt.appendChild(tx); bt.onclick = function(){ run(L); }; lv.appendChild(bt);
+  });
+  p.appendChild(el('p', 'consigne', 'Le plus de bonnes réponses possible en 2 minutes. Une erreur ne fait pas perdre de point, mais coûte du temps !'));
+  p.appendChild(lv);
+  function run(L){
+    lv.remove(); p.querySelector('.consigne').remove();
+    var t0 = Date.now(), dur = 120000, score = 0, errs = [], cur, sc = p.querySelector('.score');
+    var top = el('div', 'row'), timer = el('span', 'timer', '2:00'); top.appendChild(timer); p.appendChild(top);
+    var calc = el('div', 'calc'), inp = el('input', 'ans'), out = el('div');
+    inp.readOnly = true; inp.setAttribute('aria-label', 'Ta réponse');
+    p.appendChild(calc); var r0 = el('div', 'row'); r0.appendChild(inp); p.appendChild(r0);
+    var pad = el('div', 'keypad');
+    ['7','8','9','⌫','4','5','6',MINUS,'1','2','3','OK','0'].forEach(function(k){
+      var b = el('button', 'btn' + (k === 'OK' ? ' main' : ''), k); b.type = 'button';
+      if (k === 'OK') b.style.gridRow = 'span 2';
+      b.onclick = function(){ key(k); }; pad.appendChild(b);
+    });
+    p.appendChild(pad); p.appendChild(out);
+    function key(k){
+      if (k === '⌫') inp.value = inp.value.slice(0, -1);
+      else if (k === MINUS) inp.value = inp.value[0] === MINUS ? inp.value.slice(1) : MINUS + inp.value;
+      else if (k === 'OK') submit();
+      else if (inp.value.replace(MINUS, '').length < 3) inp.value += k;
+    }
+    function onKey(e){
+      if (/^\d$/.test(e.key)) key(e.key); else if (e.key === '-') key(MINUS); else if (e.key === 'Backspace') key('⌫'); else if (e.key === 'Enter') key('OK'); else return;
+      e.preventDefault();
+    }
+    document.addEventListener('keydown', onKey);
+    function q(){ cur = L.gen(); calc.textContent = cur.q + ' = ?'; inp.value = ''; sc.textContent = score + ' point' + (score > 1 ? 's' : ''); }
+    function submit(){
+      var n = parse(inp.value); if (n === null) return;
+      if (n === cur.r){ score++; fb(out, true, 'Juste !'); }
+      else { errs.push(cur.q + ' = ' + fmt(cur.r)); fb(out, false, 'Non : ' + cur.q + ' = ' + fmt(cur.r)); }
+      q();
+    }
+    var iv = setInterval(function(){
+      var left = Math.max(0, dur - (Date.now() - t0)), s = Math.ceil(left / 1000);
+      timer.textContent = Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2);
+      if (!document.body.contains(p)){ clearInterval(iv); document.removeEventListener('keydown', onKey); return; }
+      if (left <= 0){
+        clearInterval(iv); document.removeEventListener('keydown', onKey);
+        var rec = parseInt(store('exo:chrono:' + L.k) || '0', 10), best = score > rec;
+        if (best) store('exo:chrono:' + L.k, score);
+        [top, calc, r0, pad, out].forEach(function(x){ x.remove(); }); sc.textContent = '';
+        var e = el('div', 'end'); e.appendChild(el('div', 'big', score));
+        e.appendChild(el('p', null, (best ? '🏆 Nouveau record ! ' : 'Ton record : ' + Math.max(rec, score) + '. ') + 'Bonnes réponses en 2 minutes.'));
+        if (errs.length){ var ul = el('div', 'hint', 'À revoir : ' + errs.slice(0, 6).join(' ; ')); e.appendChild(ul); }
+        var r = el('div', 'row'), b1 = el('button', 'btn main', 'Rejouer'), b2 = el('button', 'btn', 'Changer de niveau');
+        b1.onclick = function(){ open('chrono', L); }; b2.onclick = function(){ open('chrono'); };
+        r.appendChild(b1); r.appendChild(b2); e.appendChild(r); p.appendChild(e);
+      }
+    }, 200);
+    q();
+  }
+  return run;
+}
+
+/* ============ 5. Simplifier pas à pas ============ */
+function exSimplifier(p){
+  series(p, 6, function(area, done, cont){
+    var n = pick([3, 3, 4]), terms = [], ops = ['+'];
+    for (var i = 0; i < n; i++) terms.push(rndNZ(-9, 9));
+    for (i = 1; i < n; i++) ops.push(pick(['+', '-']));
+    // signe effectif de chaque terme dans l'écriture simplifiée
+    var eff = terms.map(function(t, k){ return (ops[k] === '-' ? -t : t); });
+    var r = eff.reduce(function(s, x){ return s + x; }, 0);
+    var expr = par(terms[0]); for (i = 1; i < n; i++) expr += ' ' + (ops[i] === '+' ? '+' : MINUS) + ' ' + par(terms[i]);
+    area.appendChild(el('div', 'calc', expr));
+    area.appendChild(el('p', 'hint', 'Étape 1 : écris sans parenthèses. Touche les cases pour choisir le signe devant chaque nombre.'));
+    var line = el('div', 'terms'), choice = [];
+    eff.forEach(function(x, k){
+      var s = el('button', 'sgn', '?'); s.type = 'button'; choice.push(null);
+      s.setAttribute('aria-label', 'signe devant ' + Math.abs(x));
+      s.onclick = function(){ if (line.dataset.lock) return; choice[k] = choice[k] === '+' ? '-' : '+'; s.textContent = choice[k] === '+' ? '+' : MINUS; s.classList.add('set'); };
+      line.appendChild(s); line.appendChild(el('span', null, String(Math.abs(x))));
+    });
+    area.appendChild(line);
+    var out = el('div'), step2 = el('div'), chk = el('div', 'row'), bc = el('button', 'btn main', 'Vérifier l’écriture'); bc.type = 'button';
+    chk.appendChild(bc); area.appendChild(chk); area.appendChild(out); area.appendChild(step2);
+    var firstTry = true;
+    bc.onclick = function(){
+      if (choice.indexOf(null) > -1){ fb(out, false, 'Choisis un signe dans chaque case.'); return; }
+      var wrong = 0;
+      eff.forEach(function(x, k){ var b = line.children[2 * k], good = (x > 0 ? '+' : '-') === choice[k]; b.classList.remove('okb', 'kob'); b.classList.add(good ? 'okb' : 'kob'); if (!good) wrong++; });
+      if (wrong){ firstTry = false; fb(out, false, wrong + ' signe' + (wrong > 1 ? 's' : '') + ' à corriger (en rouge).', 'Rappel : + (+3) devient + 3 ; + (' + MINUS + '3) devient ' + MINUS + ' 3 ; ' + MINUS + ' (+3) devient ' + MINUS + ' 3 ; ' + MINUS + ' (' + MINUS + '3) devient + 3. Devant le premier nombre, le signe + peut s’écrire.'); return; }
+      line.dataset.lock = 1; chk.remove();
+      var simp = eff.map(function(x, k){ return (k === 0 ? (x < 0 ? MINUS : '') : (x < 0 ? ' ' + MINUS + ' ' : ' + ')) + Math.abs(x); }).join('');
+      fb(out, true, 'Écriture simplifiée : ' + simp);
+      step2.appendChild(el('p', 'hint', 'Étape 2 : calcule ' + simp));
+      var ab = answerBox(function(v){
+        var m = parse(v); if (m === null) return; ab.button.disabled = true; ab.input.disabled = true;
+        var ok = m === r;
+        var pos = eff.filter(function(x){ return x > 0; }).reduce(function(s, x){ return s + x; }, 0), neg = eff.filter(function(x){ return x < 0; }).reduce(function(s, x){ return s + x; }, 0);
+        fb(out2, ok, ok ? 'Bravo ! ' + simp + ' = ' + fmt(r) : 'Non : ' + simp + ' = ' + fmt(r), 'Astuce : on regroupe les termes positifs (' + pos + ') et négatifs (' + fmt(neg) + ') : ' + pos + ' + ' + par(neg) + ' = ' + fmt(r) + '.');
+        done(ok && firstTry); nextBtn(out2, cont);
+      });
+      var out2 = el('div'); step2.appendChild(ab.row); step2.appendChild(out2); setTimeout(function(){ ab.input.focus(); }, 30);
+    };
+  }, function(){ open('simplifier'); });
+}
+
+/* ============ 6. Paires (memory) ============ */
+function exPaires(p){
+  var pairs = [], used = {};
+  while (pairs.length < 6){
+    var a = rndNZ(-9, 9), b = rndNZ(-9, 9), op = pick(['+', '-']), r = op === '+' ? a + b : a - b;
+    if (used[r] || Math.abs(r) > 15) continue; used[r] = 1;
+    pairs.push({q: (Math.random() < .5 ? fmt(a) : par(a)) + ' ' + (op === '+' ? '+' : MINUS) + ' ' + par(b), r: fmt(r), id: pairs.length});
+  }
+  var cards = [];
+  pairs.forEach(function(x){ cards.push({t: x.q, id: x.id}); cards.push({t: x.r, id: x.id}); });
+  shuffle(cards);
+  var grid = el('div', 'mem'), up = [], found = 0, moves = 0, busy = false, sc = p.querySelector('.score'), out = el('div');
+  cards.forEach(function(c){
+    var b = el('button', 'card', c.t); b.type = 'button'; b.setAttribute('aria-label', 'carte cachée');
+    b.onclick = function(){
+      if (busy || b.classList.contains('up') || b.classList.contains('done')) return;
+      b.classList.add('up'); b.setAttribute('aria-label', c.t); up.push({b: b, c: c});
+      if (up.length === 2){
+        moves++; sc.textContent = moves + ' essai' + (moves > 1 ? 's' : '') + ' · ' + found + '/6 paires';
+        var x = up[0], y = up[1];
+        if (x.c.id === y.c.id){ x.b.classList.add('done'); y.b.classList.add('done'); found++; up = []; sc.textContent = moves + ' essai' + (moves > 1 ? 's' : '') + ' · ' + found + '/6 paires'; if (found === 6) win(); }
+        else { busy = true; setTimeout(function(){ [x, y].forEach(function(z){ z.b.classList.remove('up'); z.b.setAttribute('aria-label', 'carte cachée'); }); up = []; busy = false; }, 1100); }
+      }
+    };
+    grid.appendChild(b);
+  });
+  p.appendChild(grid); p.appendChild(out); sc.textContent = '0 essai · 0/6 paires';
+  function win(){
+    var rec = parseInt(store('exo:paires') || '0', 10), best = !rec || moves < rec; if (best) store('exo:paires', moves);
+    var e = el('div', 'end'); e.appendChild(el('div', 'big', moves + ' essais'));
+    e.appendChild(el('p', null, (best ? '🏆 Nouveau record ! ' : 'Ton record : ' + rec + ' essais. ') + 'Le minimum possible est 6.'));
+    var r = el('div', 'row'), b1 = el('button', 'btn main', 'Rejouer'), b2 = el('button', 'btn', 'Autres exercices');
+    b1.onclick = function(){ open('paires'); }; b2.onclick = function(){ location.hash = ''; };
+    r.appendChild(b1); r.appendChild(b2); e.appendChild(r); out.appendChild(e);
+  }
+}
+
+/* ============ 7. Chasse à l'erreur ============ */
+function exErreurs(p){
+  var lines = [], nbad = 3;
+  for (var i = 0; i < 8; i++){
+    var a = rndNZ(-12, 12), b = rndNZ(-9, 9), op = pick(['+', '-']), r = op === '+' ? a + b : a - b;
+    lines.push({q: (i % 2 ? par(a) : fmt(a)) + ' ' + (op === '+' ? '+' : MINUS) + ' ' + par(b), r: r, shown: r, a: a, b: b, op: op, bad: false});
+  }
+  shuffle(lines).slice(0, nbad).forEach(function(L){
+    // erreurs typiques d'élève
+    var c = [L.op === '+' ? -(L.a + L.b) : L.a + L.b, (L.a < 0 ? -1 : 1) * (Math.abs(L.a) + Math.abs(L.b)), -L.r, L.r + (Math.random() < .5 ? 2 : -2)]
+      .filter(function(x){ return x !== L.r; });
+    L.shown = pick(c); L.bad = true;
+  });
+  p.appendChild(el('p', 'hint', 'Copie de Kylian : 3 calculs sont faux. Touche « Faux » devant ceux qui sont faux et écris le bon résultat.'));
+  var copy = el('div', 'copy'), st = [];
+  lines.forEach(function(L, k){
+    var ln = el('div', 'line'), eq = el('span', 'eq', L.q + ' = ' + fmt(L.shown)), bt = el('button', 'btn', 'Faux ?'), inp = el('input', 'ans small');
+    bt.type = 'button'; inp.hidden = true; inp.placeholder = 'bon résultat'; inp.setAttribute('aria-label', 'bon résultat de ' + L.q);
+    st.push({on: false, inp: inp, bt: bt, ln: ln});
+    bt.onclick = function(){ if (copy.dataset.lock) return; st[k].on = !st[k].on; bt.classList.toggle('sel', st[k].on); bt.textContent = st[k].on ? 'Faux ✗' : 'Faux ?'; inp.hidden = !st[k].on; if (st[k].on) inp.focus(); };
+    ln.appendChild(eq); ln.appendChild(bt); ln.appendChild(inp); copy.appendChild(ln);
+  });
+  p.appendChild(copy);
+  var out = el('div'), rr = el('div', 'row'), bv = el('button', 'btn main', 'Corriger la copie'); bv.type = 'button'; rr.appendChild(bv);
+  p.appendChild(rr); p.appendChild(out);
+  bv.onclick = function(){
+    copy.dataset.lock = 1; bv.disabled = true; var pts = 0;
+    lines.forEach(function(L, k){
+      var s = st[k], v = parse(s.inp.value), okMark = s.on === L.bad, okVal = !L.bad || v === L.r, ok = okMark && okVal;
+      if (ok) pts++;
+      s.ln.classList.add(ok ? 'okl' : 'kol'); s.inp.disabled = true; s.bt.disabled = true;
+      var m = el('span', 'mark', ok ? '✓' : (L.bad ? (s.on ? 'Bon repérage, mais ' + L.q + ' = ' + fmt(L.r) : 'Erreur non vue : ' + L.q + ' = ' + fmt(L.r)) : 'Ce calcul était juste'));
+      s.ln.appendChild(m);
+    });
+    fb(out, pts === 8, pts + '/8 lignes bien corrigées', pts === 8 ? 'Tu ferais un excellent professeur !' : 'Les erreurs fréquentes : oublier que soustraire un négatif revient à ajouter, ou ajouter les distances à zéro alors que les signes sont contraires.');
+    var r = el('div', 'row'), b1 = el('button', 'btn main', 'Nouvelle copie'), b2 = el('button', 'btn', 'Autres exercices');
+    b1.onclick = function(){ open('erreurs'); }; b2.onclick = function(){ location.hash = ''; };
+    r.appendChild(b1); r.appendChild(b2); out.appendChild(r);
+  };
+}
+
+/* ============ 8. Pyramide ============ */
+function exPyramide(p){
+  var lv = el('div', 'row'), cur = store('exo:pyr') || '1';
+  [['1', 'Facile : de bas en haut'], ['2', 'Difficile : il faut soustraire']].forEach(function(o){
+    var b = el('button', 'btn' + (o[0] === cur ? ' sel' : ''), o[1]); b.type = 'button';
+    b.onclick = function(){ store('exo:pyr', o[0]); open('pyramide'); }; lv.appendChild(b);
+  });
+  p.appendChild(el('p', 'hint', 'Chaque case est la somme des deux cases juste en dessous.'));
+  p.appendChild(lv);
+  // pyramide : rows[0] = base (4 cases) ... rows[3] = sommet
+  var base = [], i, j;
+  for (i = 0; i < 4; i++) base.push(rndNZ(-9, 9));
+  var rows = [base];
+  for (i = 1; i < 4; i++){ var rw = []; for (j = 0; j < 4 - i; j++) rw.push(rows[i - 1][j] + rows[i - 1][j + 1]); rows.push(rw); }
+  var cells = []; rows.forEach(function(rw, r){ rw.forEach(function(v, c){ cells.push({r: r, c: c, v: v}); }); });
+  function solvable(known){
+    var k = {}; known.forEach(function(x){ k[x] = 1; }); var changed = true, id = function(r, c){ return r + ',' + c; };
+    while (changed){
+      changed = false;
+      for (var r = 1; r < 4; r++) for (var c = 0; c < 4 - r; c++){
+        var t = id(r, c), L = id(r - 1, c), R = id(r - 1, c + 1), have = (k[t] ? 1 : 0) + (k[L] ? 1 : 0) + (k[R] ? 1 : 0);
+        if (have === 2){ k[t] = k[L] = k[R] = 1; changed = true; }
+      }
+    }
+    return cells.every(function(x){ return k[id(x.r, x.c)]; });
+  }
+  var given;
+  if (cur === '1') given = cells.filter(function(x){ return x.r === 0; }).map(function(x){ return x.r + ',' + x.c; });
+  else {
+    var tries = 0;
+    do {
+      given = shuffle(cells.map(function(x){ return x.r + ',' + x.c; })).slice(0, 4);
+      tries++;
+    } while ((!solvable(given) || given.filter(function(g){ return g[0] === '0'; }).length > 2 || given.filter(function(g){ return g[0] === '0'; }).length === 0) && tries < 500);
+  }
+  var pyr = el('div', 'pyr'), inputs = [];
+  rows.forEach(function(rw, r){
+    var line = el('div', 'prow');
+    rw.forEach(function(v, c){
+      var d = el('div', 'pc');
+      if (given.indexOf(r + ',' + c) > -1){ d.classList.add('given'); d.textContent = fmt(v); }
+      else { var inp = el('input'); inp.setAttribute('aria-label', 'case ligne ' + (r + 1) + ' position ' + (c + 1)); inp.inputMode = 'text'; inp.autocomplete = 'off'; d.appendChild(inp); inputs.push({inp: inp, v: v, d: d}); }
+      line.appendChild(d);
+    });
+    pyr.appendChild(line);
+  });
+  p.appendChild(pyr);
+  var out = el('div'), r0 = el('div', 'row'), bv = el('button', 'btn main', 'Vérifier'); bv.type = 'button';
+  var bm = el('button', 'btn', 'Signe ' + MINUS); bm.type = 'button'; bm.title = 'Change le signe de la case sélectionnée';
+  var lastFocus = null; inputs.forEach(function(x){ x.inp.addEventListener('focus', function(){ lastFocus = x.inp; }); });
+  bm.onmousedown = function(e){ e.preventDefault(); };
+  bm.onclick = function(){ if (!lastFocus) return; var v = lastFocus.value.trim(); lastFocus.value = /^[-−]/.test(v) ? v.slice(1) : MINUS + v; lastFocus.focus(); };
+  r0.appendChild(bm); r0.appendChild(bv); p.appendChild(r0); p.appendChild(out);
+  bv.onclick = function(){
+    var bad = 0, empty = 0;
+    inputs.forEach(function(x){
+      x.d.classList.remove('okc', 'koc'); var v = parse(x.inp.value);
+      if (v === null){ empty++; return; }
+      if (v === x.v) x.d.classList.add('okc'); else { x.d.classList.add('koc'); bad++; }
+    });
+    if (!bad && !empty){
+      inputs.forEach(function(x){ x.inp.disabled = true; });
+      fb(out, true, 'Pyramide complète, bravo !');
+      var r = el('div', 'row'), b1 = el('button', 'btn main', 'Nouvelle pyramide'); b1.onclick = function(){ open('pyramide'); }; r.appendChild(b1); out.appendChild(r);
+    } else fb(out, false, (bad ? bad + ' case' + (bad > 1 ? 's' : '') + ' fausse' + (bad > 1 ? 's' : '') + ' (en rouge)' : '') + (bad && empty ? ' · ' : '') + (empty ? empty + ' case' + (empty > 1 ? 's' : '') + ' vide' + (empty > 1 ? 's' : '') : ''),
+      cur === '2' ? 'Si tu connais la case du haut et une case du bas : case manquante = haut ' + MINUS + ' case connue.' : 'Additionne les deux cases juste en dessous.');
+  };
+}
+
+/* ============ 9. Chemin ============ */
+function exChemin(p){
+  var N = 5, g = [], i, j;
+  for (i = 0; i < N; i++){ g.push([]); for (j = 0; j < N; j++) g[i].push(rndNZ(-9, 9)); }
+  // chemin secret de (0,0) à (N-1,N-1) en allant à droite ou en bas
+  var r = 0, c = 0, target = g[0][0];
+  while (r < N - 1 || c < N - 1){ if (r === N - 1 || (c < N - 1 && Math.random() < .5)) c++; else r++; target += g[r][c]; }
+  p.appendChild(el('p', 'hint', 'Pars de la case verte, avance d’une case vers la droite ou vers le bas, jusqu’à la case rose. La somme des nombres traversés doit être égale à la cible.'));
+  var tg = el('div', 'target'), sumS = el('span'), tS = el('span', null, 'Cible : ' + fmt(target)); tg.appendChild(tS); tg.appendChild(sumS); p.appendChild(tg);
+  var grid = el('div', 'path'), path = [[0, 0]], btns = [];
+  for (i = 0; i < N; i++) for (j = 0; j < N; j++) (function(i, j){
+    var b = el('button', 'pcell', fmt(g[i][j])); b.type = 'button';
+    if (i === 0 && j === 0) b.classList.add('start'); if (i === N - 1 && j === N - 1) b.classList.add('goal');
+    b.onclick = function(){
+      if (grid.dataset.lock) return;
+      var last = path[path.length - 1], k = -1;
+      path.forEach(function(q, n){ if (q[0] === i && q[1] === j) k = n; });
+      if (k > 0){ path = path.slice(0, k); draw(); return; }               // revenir en arrière
+      if ((i === last[0] && j === last[1] + 1) || (j === last[1] && i === last[0] + 1)){ path.push([i, j]); draw(); }
+    };
+    btns.push(b); grid.appendChild(b);
+  })(i, j);
+  p.appendChild(grid);
+  var out = el('div'), rr = el('div', 'row'), b0 = el('button', 'btn', 'Recommencer'); b0.type = 'button'; rr.appendChild(b0); p.appendChild(rr); p.appendChild(out);
+  b0.onclick = function(){ if (!grid.dataset.lock){ path = [[0, 0]]; draw(); } };
+  var tries = 0;
+  function draw(){
+    var s = 0, last = path[path.length - 1];
+    btns.forEach(function(b){ b.classList.remove('on', 'next'); });
+    path.forEach(function(q){ s += g[q[0]][q[1]]; btns[q[0] * N + q[1]].classList.add('on'); });
+    if (last[1] < N - 1) btns[last[0] * N + last[1] + 1].classList.add('next');
+    if (last[0] < N - 1) btns[(last[0] + 1) * N + last[1]].classList.add('next');
+    sumS.textContent = 'Ta somme : ' + fmt(s);
+    out.innerHTML = '';
+    if (last[0] === N - 1 && last[1] === N - 1){
+      tries++;
+      if (s === target){
+        grid.dataset.lock = 1; fb(out, true, 'Gagné ! Ton chemin donne bien ' + fmt(target) + '.', tries > 1 ? 'Trouvé en ' + tries + ' essais.' : 'Du premier coup, impressionnant !');
+        var r = el('div', 'row'), b1 = el('button', 'btn main', 'Nouvelle grille'); b1.onclick = function(){ open('chemin'); }; r.appendChild(b1); out.appendChild(r);
+      } else fb(out, false, 'Arrivé, mais ta somme vaut ' + fmt(s) + ' au lieu de ' + fmt(target) + '.', 'Touche une case de ton chemin pour revenir en arrière à partir de là, ou recommence.');
+    }
+  }
+  draw();
+}
+
+/* ============ menu ============ */
+var EX = [
+  {id: 'droite', cat: 'Comprendre', icon: '📏', title: 'La droite graduée', d: 'Déplace le pion pour trouver le résultat, puis regarde le trajet.', run: exDroite},
+  {id: 'jetons', cat: 'Comprendre', icon: '🔴', title: 'Les jetons + et −', d: 'Une paire + et − vaut zéro : fais-les disparaître !', run: exJetons},
+  {id: 'situations', cat: 'Comprendre', icon: '🌡️', title: 'Situations de la vie', d: 'Températures, ascenseur, compte en banque : choisis le calcul puis calcule.', run: exSituations},
+  {id: 'chrono', cat: 'S’entraîner', icon: '⏱️', title: 'Contre-la-montre', d: '2 minutes, 3 niveaux. Bats ton record !', run: exChrono},
+  {id: 'simplifier', cat: 'S’entraîner', icon: '✂️', title: 'Simplifier pas à pas', d: 'Enlève les parenthèses signe par signe, puis calcule.', run: exSimplifier},
+  {id: 'paires', cat: 'S’entraîner', icon: '🃏', title: 'Les paires', d: 'Memory : associe chaque calcul à son résultat.', run: exPaires},
+  {id: 'erreurs', cat: 'Chercher', icon: '🔍', title: 'Chasse à l’erreur', d: 'Corrige la copie de Kylian : 3 calculs sont faux.', run: exErreurs},
+  {id: 'pyramide', cat: 'Chercher', icon: '🔺', title: 'La pyramide', d: 'Chaque case est la somme des deux du dessous.', run: exPyramide},
+  {id: 'chemin', cat: 'Chercher', icon: '🧭', title: 'Le chemin', d: 'Trouve le chemin dont la somme fait exactement la cible.', run: exChemin}
+];
+function menu(){
+  tomenu.hidden = true; main.innerHTML = '';
+  var grid = el('div', 'grid'), lastCat = '';
+  EX.forEach(function(x){
+    if (x.cat !== lastCat){ grid.appendChild(el('h2', 'cat', x.cat)); lastCat = x.cat; }
+    var b = el('button', 'tile'); b.type = 'button'; b.appendChild(el('span', 'ic', x.icon));
+    var t = el('span'); t.appendChild(el('b', null, x.title)); t.appendChild(el('span', 'd', x.d)); b.appendChild(t);
+    b.onclick = function(){ location.hash = x.id; }; grid.appendChild(b);
+  });
+  main.appendChild(grid);
+}
+function open(id, arg){
+  var x = EX.filter(function(e){ return e.id === id; })[0]; if (!x){ menu(); return; }
+  tomenu.hidden = false; main.innerHTML = ''; var p = panelFor(x); main.appendChild(p);
+  var run = x.run(p); if (arg && typeof run === 'function') run(arg);
+  window.scrollTo(0, 0);
+}
+function route(){ var id = location.hash.slice(1); if (id){ stat('/exos/4e-n01/' + id, 'N01 relatifs · ' + id); open(id); } else menu(); }
+tomenu.onclick = function(){ location.hash = ''; };
+// lien retour : la page des cours de la classe si on vient du site
+try { if (document.referrer && new URL(document.referrer).pathname.replace(/index\.html$/, '') === new URL('../', location.href).pathname) document.getElementById('home').href = document.referrer; } catch(e){}
+window.addEventListener('hashchange', route);
+route();
+})();
+</script>
+<script src="../stats.js"></script>
+</body>
+</html>
