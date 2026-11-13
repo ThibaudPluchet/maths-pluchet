@@ -53,6 +53,12 @@ main.wrap{padding-top:22px;padding-bottom:56px;display:flex;flex-direction:colum
 .doc{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);background:var(--cs);
   border:1px solid transparent;border-radius:10px;padding:10px 12px;min-height:46px;font-weight:700;font-size:16px}
 .doc:hover{border-color:var(--c)}
+.mrow{display:flex;align-items:center;gap:10px}
+.mrow .mt{display:flex;align-items:center;gap:10px;flex:1 1 auto;min-width:0;font-weight:600}
+.mrow .mt .ic{width:26px;height:26px;border-radius:7px;background:var(--c);color:var(--card);display:grid;place-items:center;font-size:13px;flex:none}
+.mrow .chips{display:flex;gap:6px;flex:none}
+.doc.chip{padding:6px 8px;min-width:50px;justify-content:center;font-weight:700}
+.doc.chip .t{flex:none}
 .doc .ic{width:26px;height:26px;border-radius:7px;background:var(--c);color:var(--card);display:grid;place-items:center;font-size:13px;flex:none}
 .doc .t{flex:1}
 .doc .ext{color:var(--muted);font-size:13px;font-weight:400}
@@ -485,13 +491,24 @@ function start(D){
     }
     var nums = e.ns.map(function(x){ return x.num; }), items = [];
     full.forEach(function(s){ s.notions.forEach(function(n){ if (nums.indexOf(n.num) < 0) return;
-      n.items.forEach(function(it){ if (isEval(it)) return; var c = {}; for (var kk in it) c[kk] = it[kk]; if (nums.length > 1) c.label = 'N' + n.num + ' · ' + it.label; c._n = n.num; items.push(c); }); }); });
+      n.items.forEach(function(it){ if (isEval(it)) return; var c = {}; for (var kk in it) c[kk] = it[kk]; if (nums.length > 1) c.label = 'N' + n.num + ' · ' + it.label; c._n = n.num; c._base = it.label; items.push(c); }); }); });
     items.sort(function(x, y){ return x._n - y._n; });
     var gr = el('div', 'groups');
     REV.forEach(function(g){
       var list = items.filter(function(it){ return g[2].indexOf(it.type) > -1; }); if (!list.length) return;
       list.sort(function(x, y){ return g[2].indexOf(x.type) - g[2].indexOf(y.type) || x._n - y._n; });
-      var d = el('div', 'grp ' + g[1]); d.appendChild(el('h4', null, g[0])); var ls = el('div', 'links'); list.forEach(function(it){ ls.appendChild(link(it)); }); d.appendChild(ls); gr.appendChild(d);
+      var d = el('div', 'grp ' + g[1]); d.appendChild(el('h4', null, g[0])); var ls = el('div', 'links');
+      // Plusieurs notions : un seul intitulé par type de document (« Fiche de révision ») suivi d'un bouton par notion
+      g[2].forEach(function(ty){
+        var tl = list.filter(function(it){ return it.type === ty; }); if (!tl.length) return;
+        if (nums.length < 2 || tl.length < 2 || ty === 'video' || ty === 'anim'){ tl.forEach(function(it){ ls.appendChild(link(it)); }); return; }
+        var row = el('div', 'mrow'); var mt = el('span', 'mt'); mt.appendChild(el('span', 'ic', ICON[ty] || '•')); mt.appendChild(el('span', 't', tl[0]._base)); row.appendChild(mt);
+        var ch = el('div', 'chips');
+        tl.forEach(function(it){ var a = link(it); a.classList.add('chip'); var ic = a.querySelector('.ic'); if (ic) a.removeChild(ic); a.querySelector('.t').textContent = 'N' + it._n;
+          a.title = ((e.ns.filter(function(y){ return y.num === it._n; })[0] || {}).titre) || ''; ch.appendChild(a); });
+        row.appendChild(ch); ls.appendChild(row);
+      });
+      d.appendChild(ls); gr.appendChild(d);
     });
     if (!items.length && !e.blanc) box.appendChild(el('p', 'intro', 'Les documents pour réviser apparaîtront ici dès qu’ils seront distribués en classe.'));
     box.appendChild(gr); return box;
