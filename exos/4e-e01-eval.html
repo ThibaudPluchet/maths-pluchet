@@ -275,22 +275,23 @@ function unitSel(){ return sel(['cm', 'cm²', 'm'], 'unité'); }
 
 /* ============ Exercice 1 : question de cours (1,5 point) ============ */
 var COURS = [
-  {t: ['Si un triangle est ', 0, ', alors le carré de la longueur de l’', 1, ' est égal à la ', 2, ' des carrés des longueurs des deux autres côtés.'],
-   c: [['rectangle', 'isocèle', 'équilatéral'], ['hypoténuse', 'angle droit', 'plus petit côté'], ['somme', 'différence', 'moitié']]},
-  {t: ['Dans un triangle rectangle, l’hypoténuse est le côté ', 0, ' à l’angle droit ; c’est le côté le plus ', 1, '. Le théorème de Pythagore ne s’utilise que dans un triangle ', 2, '.'],
-   c: [['opposé', 'adjacent', 'perpendiculaire'], ['long', 'court', 'droit'], ['rectangle', 'isocèle', 'quelconque']]}
+  {q: 'Énonce le théorème de Pythagore.', good: 'Si un triangle est rectangle, alors le carré de la longueur de l’hypoténuse est égal à la somme des carrés des longueurs des deux autres côtés.',
+   bad: ['Si un triangle est rectangle, alors la longueur de l’hypoténuse est égale à la somme des longueurs des deux autres côtés.', 'Si un triangle est rectangle, alors le carré de la longueur d’un côté est égal à la somme des carrés des longueurs des deux autres côtés.', 'Dans tout triangle, le carré de la longueur du plus grand côté est égal à la somme des carrés des longueurs des deux autres côtés.'],
+   parts: ['la condition : le triangle est rectangle', 'le carré de l’hypoténuse (pas d’un côté quelconque)', 'est égal à la somme des carrés (pas des longueurs)']},
+  {q: 'Qu’appelle-t-on l’hypoténuse d’un triangle rectangle ? Dans quel cas peut-on utiliser le théorème de Pythagore ?', good: 'L’hypoténuse est le côté opposé à l’angle droit, c’est le plus long côté ; on utilise le théorème de Pythagore seulement dans un triangle rectangle.',
+   bad: ['L’hypoténuse est un côté de l’angle droit, c’est le plus long côté ; on utilise le théorème de Pythagore seulement dans un triangle rectangle.', 'L’hypoténuse est le côté opposé à l’angle droit, c’est le plus court côté ; on utilise le théorème de Pythagore dans tous les triangles.', 'L’hypoténuse est le côté opposé à l’angle droit, c’est le plus long côté ; on utilise le théorème de Pythagore dans tous les triangles.'],
+   parts: ['le côté opposé à l’angle droit', 'le plus long côté', 'seulement dans un triangle rectangle']}
 ];
 function exCours(){
-  var Q = pick(COURS), box = el('div', 'items'), sels = [];
-  var it = el('div', 'item'), p = el('div', 'fill');
-  Q.t.forEach(function(part){ if (typeof part === 'string'){ p.appendChild(document.createTextNode(part)); return; }
-    var s = sel(shuffle(Q.c[part].slice())); s.dataset.good = Q.c[part][0]; p.appendChild(s); sels.push(s); });
-  it.appendChild(p); box.appendChild(it);
-  var sent = Q.t.map(function(part){ return typeof part === 'string' ? part : Q.c[part][0]; }).join('');
-  return {box: box, max: 1.5, fill: function(){ sels.forEach(function(s){ s.value = s.dataset.good; }); }, check: function(){
-    var g = 0, why = [];
-    sels.forEach(function(s){ var ok = s.value === s.dataset.good; s.disabled = true; mark(s, ok); if (ok) g += .5; else why.push(s.value ? 'Il fallait « ' + s.dataset.good + ' » et non « ' + s.value + ' ».' : 'Case non remplie : il fallait « ' + s.dataset.good + ' ».'); });
-    itemState(it, g, 1.5); corr(it, g, 1.5, {why: why, sol: [sent], solTitle: 'La phrase complète', noHl: true, tip: 'le théorème de Pythagore ne s’utilise que dans un triangle rectangle, et l’hypoténuse est le côté opposé à l’angle droit.'});
+  var Q = pick(COURS), box = el('div', 'items'), it = el('div', 'item');
+  it.appendChild(el('div', 'q', Q.q)); it.appendChild(el('p', 'consigne', 'Sur ta copie, tu l’écris toi-même. Ici, choisis la seule phrase entièrement juste (lis-les bien : une erreur d’un mot suffit).'));
+  var opts = shuffle([Q.good].concat(Q.bad)), rs = [], nm = 'c' + Math.random().toString(36).slice(2);
+  opts.forEach(function(o){ var lb = el('label', 'ln'), r = el('input'); r.type = 'radio'; r.name = nm; r.value = o; lb.appendChild(r); lb.appendChild(el('span', null, o)); lb.style.alignItems = 'flex-start'; it.appendChild(lb); rs.push(r); });
+  box.appendChild(it);
+  return {box: box, max: 1.5, fill: function(){ rs.forEach(function(r){ r.checked = r.value === Q.good; }); }, check: function(){
+    var ch = rs.filter(function(r){ return r.checked; })[0], ok = !!ch && ch.value === Q.good; lock(rs);
+    var g = ok ? 1.5 : 0; itemState(it, g, 1.5);
+    corr(it, g, 1.5, {why: [ch ? 'Cette phrase contient une erreur. Il faut les trois éléments : ' + Q.parts.join(' ; ') + '.' : 'Aucune phrase choisie.'], sol: [Q.good], solTitle: 'La bonne réponse (0,5 point par élément sur ta copie)', noHl: true, tip: 'apprends l’énoncé mot pour mot : ' + Q.parts.join(', ') + '.'});
     return g;
   }};
 }
@@ -538,7 +539,7 @@ function exVar(){
 
 /* ============ menu, entraînement, évaluation blanche ============ */
 var EX = [
-  {id: 'cours', n: 'Exercice 1', t: 'Question de cours', ic: '📖', d: 'Le théorème et l’hypoténuse.', max: 1.5, make: exCours},
+  {id: 'cours', n: 'Exercice 1', t: 'Question de cours', ic: '📖', d: 'Énoncer le théorème, définir l’hypoténuse.', max: 1.5, make: exCours},
   {id: 'egal', n: 'Exercice 2', t: 'Hypoténuse et égalité', ic: '📐', d: 'Repérer l’hypoténuse et écrire l’égalité de Pythagore.', max: 3, make: exEgal},
   {id: 'hyp', n: 'Exercice 3', t: 'Calculer l’hypoténuse', ic: '📏', d: 'Rédiger le calcul, valeur exacte et arrondi.', max: 4, make: exHyp},
   {id: 'cote', n: 'Exercice 4', t: 'Calculer un côté de l’angle droit', ic: '📐', d: 'Soustraire les carrés, valeur exacte et arrondi.', max: 4, make: exCote},
@@ -575,7 +576,7 @@ function exPanel(x, inst){
   var p = el('section', 'panel'), h = el('div', 'ph');
   h.appendChild(el('h2', null, x.ic + ' ' + x.n + ' · ' + x.t)); var sc = el('span', 'pts', pts(x.max) + ' pt' + (x.max > 1 ? 's' : '')); h.appendChild(sc);
   p.appendChild(h);
-  var c = {cours: 'Choisis le bon mot (0,5 point chacun).', egal: 'Pour chaque triangle : l’hypoténuse (0,5 point) et l’égalité (1 point). Pour les carrés, utilise la touche ² (ou écris AB2).',
+  var c = {cours: 'Le jour J, tu rédiges toi-même (0,5 point par élément juste).', egal: 'Pour chaque triangle : l’hypoténuse (0,5 point) et l’égalité (1 point). Pour les carrés, utilise la touche ² (ou écris AB2).',
     hyp: 'Une ligne par étape, comme sur ta copie (0,5 point chacune) : angle droit et hypoténuse, théorème, égalité, remplacement, calcul du carré, valeur exacte, arrondi, unité.',
     cote: 'Une ligne par étape (0,5 point chacune) : angle droit et hypoténuse, égalité, soustraction, remplacement, calcul du carré, valeur exacte, arrondi, unité.',
     erreur: 'a) l’explication : 1 point ; b) le calcul du carré et la longueur : 0,5 point chacun.',
