@@ -501,7 +501,7 @@ function start(D){
     }
     var nums = e.ns.map(function(x){ return x.num; }), items = [];
     full.forEach(function(s){ s.notions.forEach(function(n){ if (nums.indexOf(n.num) < 0) return;
-      n.items.forEach(function(it){ if (isEval(it)) return; var c = {}; for (var kk in it) c[kk] = it[kk]; if (nums.length > 1) c.label = 'N' + n.num + ' · ' + it.label; c._n = n.num; c._base = it.label; items.push(c); }); }); });
+      n.items.forEach(function(it){ if (isEval(it) || (e.blanc && it.href === e.blanc)) return; var c = {}; for (var kk in it) c[kk] = it[kk]; if (nums.length > 1) c.label = 'N' + n.num + ' · ' + it.label; c._n = n.num; c._base = it.label; items.push(c); }); }); });
     items.sort(function(x, y){ return x._n - y._n; });
     var gr = el('div', 'groups');
     REV.forEach(function(g){
