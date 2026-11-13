@@ -754,6 +754,14 @@ window.addEventListener('hashchange', route);
 route();
 })();
 </script>
+<script>
+// « ← Retour » : revient à la page précédente du site élèves (avec la classe), pas à l'accueil
+(function(){ var a = document.getElementById('home'); if (!a) return;
+  a.textContent = '← Retour';
+  try { var u = localStorage.getItem('mp:retour'); if (u && u.indexOf(location.origin) === 0) a.href = u; } catch(e){}
+  a.onclick = function(ev){ if (history.length > 1 && document.referrer.indexOf(location.origin) === 0 && !/\/exos\//.test(document.referrer)){ ev.preventDefault(); history.back(); } };
+})();
+</script>
 <script src="../stats.js"></script>
 </body>
 </html>
