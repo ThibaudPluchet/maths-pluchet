@@ -163,6 +163,9 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 .evcard .evns{display:flex;flex-wrap:wrap;gap:6px;margin:-6px 0 14px}
 .evcard .evns span{font-size:13px;background:var(--soft);color:var(--ink);border-radius:999px;padding:3px 10px}
 .evcard .evns b{color:var(--accent);margin-right:4px}
+.dmcard{border-left:5px solid var(--hi,#d6336c)}
+.dmcard .dmres{margin:0 0 14px;line-height:1.45}
+.dmcard .dmtip{margin:12px 0 0;font-size:14px;color:var(--muted);background:var(--soft);border-radius:10px;padding:9px 12px}
 /* évaluation à venir */
 .upcard{border:2px solid var(--hi,#d6336c);background:linear-gradient(135deg,color-mix(in srgb,var(--hi,#d6336c) 9%,var(--card)),var(--card))}
 .upcard .evkind{color:var(--hi,#d6336c)}
@@ -258,7 +261,7 @@ function start(D){
     {key:'reviser', title:'Réviser', cls:'g3', types:['revision','carte']},
     {key:'evaluer', title:'Évaluation', cls:'g4', types:['evaluation','correction']}
   ];
-  var ICON = {blanc:'📝', exo:'🎮', anim:'✨', cours:'📘', activite:'💡', video:'▶', exercices:'✏️', alea:'💻', revision:'📝', carte:'🧠', evaluation:'📄', correction:'✅', 'correction-exo':'✔️'};
+  var ICON = {dm:'🎨', blanc:'📝', exo:'🎮', anim:'✨', cours:'📘', activite:'💡', video:'▶', exercices:'✏️', alea:'💻', revision:'📝', carte:'🧠', evaluation:'📄', correction:'✅', 'correction-exo':'✔️'};
   function store(k, v){ try{ if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
   function levelOf(c){ for (var l in D.classes) if (D.classes[l].indexOf(c) > -1) return l; }
   function find(c){ c = (c || '').toLowerCase(); for (var l in D.classes) for (var i = 0; i < D.classes[l].length; i++) if (D.classes[l][i].toLowerCase() === c) return D.classes[l][i]; return ''; }
@@ -353,21 +356,27 @@ function start(D){
       return {num:s.num, titre:s.titre, notions:ns};
     }).filter(function(s){ return s.notions.length; });
     var all = []; full.forEach(function(s){ s.notions.forEach(function(n){ all = all.concat(n.items); }); });
-    if (!full.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
+    // DM donnés à la classe (onglet « DM »), du plus récent au plus ancien
+    var dms = (D.dm || []).filter(function(d){ return d.cls.indexOf(current) > -1; })
+      .sort(function(a, b){ return a.dates[current] < b.dates[current] ? 1 : -1; });
+    dms.forEach(function(d){ all.push({href: d.href}); if (d.anim) all.push({href: d.anim}); });
+    if (!full.length && !dms.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
 
     var up = upcoming(lv);
     var tabs = el('div','tabs'); tabs.setAttribute('role','group');
-    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(lv === '3e' ? [['brevet','Exercices DNB']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes'], ['curio','Curiosités']]);
+    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(dms.length ? [['dm','DM']] : []).concat(lv === '3e' ? [['brevet','Exercices DNB']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes'], ['curio','Curiosités']]);
     if (!tlist.some(function(t){ return t[0] === view; })) view = 'cours';
     tlist.forEach(function(t){
       var b = el('button'); b.appendChild(icon(t[0])); b.appendChild(document.createTextNode(t[1])); b.setAttribute('aria-pressed', view === t[0]);
       if (t[0] === 'evals' && (up.length || evals.some(function(e){ return e.items.some(isNew); }))) b.appendChild(el('span','tdot'));
+      if (t[0] === 'dm' && dms.some(function(d){ return isNew(d); })) b.appendChild(el('span','tdot'));
       b.onclick = t[0] === 'auto' || t[0] === 'curio' ? function(){ location.href = (t[0] === 'auto' ? 'auto.html' : 'curiosites.html') + location.hash; } : function(){ view = t[0]; render(); }; tabs.appendChild(b);
     });
     main.appendChild(tabs);
     if (view === 'cours' && up.length) main.appendChild(upBanner(up));
     if (view === 'brevet') renderBrevet(seqs);
     else if (view === 'evals') renderEvals(evals, up, full);
+    else if (view === 'dm') renderDm(dms);
     else if (!seqs.length) main.appendChild(el('div','empty','Pas encore de cours pour la ' + current + '.'));
     else renderCours(seqs);
     saveSeen(all);
@@ -379,6 +388,7 @@ function start(D){
   // code affiché : N15 pour une notion, E01 pour une évaluation commune
   // Petits dessins (SVG maison) : un par onglet, un par thème de séquence
   var SVG = {
+    dm:'<rect x="4" y="3" width="16" height="13" rx="1.5"/><path d="M8 7h8M8 10.5h5"/><path d="M9 16l-2.5 5M15 16l2.5 5M12 16v3"/>',
     cours:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M8 7.5h7M8 11h5"/>',
     evals:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4"/><path d="m9 13 2.2 2.2L15.5 11"/>',
     brevet:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.2 9 2.2 12 0v-5"/><path d="M22 9v6"/>',
@@ -573,6 +583,29 @@ function start(D){
         var ls = el('div','links'); list.forEach(function(it){ ls.appendChild(link(it)); }); d.appendChild(ls); gr.appendChild(d);
       });
       box.appendChild(gr); sec.appendChild(box);
+    });
+    main.appendChild(sec);
+  }
+
+  // Onglet « DM » : devoirs maison donnés à la classe (affiche sur papier Canson), du plus récent au plus ancien
+  function renderDm(dms){
+    var sec = el('section','seqview');
+    sec.appendChild(el('p','intro','Tes devoirs maison : le sujet à ouvrir, imprimer ou relire, avec un exemple d’affiche.'));
+    dms.forEach(function(d){
+      var box = el('article','notion evcard dmcard');
+      box.appendChild(el('p','evkind','DM · donné ' + dayTxt(d.dates[current]).replace(/^\S+ /, 'le ')));
+      var h3 = el('h3'); h3.appendChild(el('span','code','DM')); h3.appendChild(document.createTextNode(d.titre)); box.appendChild(h3);
+      var tags = el('div','evns');
+      [d.modalite, d.notions].forEach(function(x){ if (x) tags.appendChild(el('span', null, x)); });
+      if (tags.children.length) box.appendChild(tags);
+      if (d.resume) box.appendChild(el('p','dmres', d.resume));
+      var gr = el('div','groups'), g = el('div','grp g4'); g.appendChild(el('h4', null, 'Le DM'));
+      var ls = el('div','links');
+      ls.appendChild(link({type:'dm', label:'Sujet du DM (exemple d’affiche + mission)', href:d.href}));
+      if (d.anim) ls.appendChild(link({type:'anim', label:'Animation : les patrons qui se plient', href:d.anim}));
+      g.appendChild(ls); gr.appendChild(g); box.appendChild(gr);
+      box.appendChild(el('p','dmtip','✂ Avant de rendre : découpe le bas de la page 2 (barème et « Avant de rendre, je coche ») et colle-le au dos de ton affiche.'));
+      sec.appendChild(box);
     });
     main.appendChild(sec);
   }

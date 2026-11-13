@@ -24,6 +24,11 @@ même sans d<k> ; le cours distribué entraîne aussi carte mentale, vidéos, Ma
 c<k> (Fait en classe) + d<k> (ou fiche d'exercices distribuée) = correction de la fiche d'exercices (version PROF) publiée pour la classe k.
 Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours (version PROF, complétée) et les corrections (évaluation, fiche d'exercices).
 L'évaluation aménagée (PAP) n'est jamais publiée.
+DM (constante DMS de la page : {niveau: [{t, m, n, r, f, d, a?}]}, collection « dm » : id "<niveau>-<f>" = {lv, f, c: {k: "AAAA-MM-JJ"}}) :
+un DM coché « Donné en <classe k> » dans l'onglet DM est publié pour la seule classe k (onglet « DM » du site élèves),
+avec la date où il a été donné. Seules les 2 premières pages du PDF (exemple d'affiche + mission) sont publiées :
+les pages suivantes (cartes, corrigé) sont réservées au professeur. PDF source : dm/<niveau>/<f>.pdf de la page enseignant,
+copié en docs/dm/<niveau>/<f>.pdf.
 Évaluations communes à plusieurs notions (constante EVALS de la page : {niveau: [{id: "E01", ns: [15, 16, 17], docs}]}) :
 publiées comme ci-dessus (évaluation déclarée reliée à E01) ; affichées après la dernière notion évaluée.
 """
@@ -229,7 +234,68 @@ def load(page, dbdir):
         data["niveaux"][lv] = seqs
     data["classes"] = classes
     data["planned"] = planned_evals(dbdir, levels, classes, inter)
+    data["dm"] = dm_items(html, dbdir, levels, classes)
     return data, wanted
+
+
+DM_PAGES = 2          # pages publiées d'un DM : exemple d'affiche + mission (jamais les cartes ni le corrigé)
+
+
+def dm_items(html, dbdir, levels, classes):
+    """DM cochés « Donné en » dans l'onglet DM de la page enseignant, par classe (le plus récent en premier)."""
+    dms = js_const_opt(html, "DMS")
+    out = []
+    for f in sorted(glob.glob(f"{dbdir}/dm/*.json")):
+        p = json.load(open(f))
+        lv, slug = p.get("lv"), p.get("f")
+        if lv not in levels or not isinstance(slug, str) or not re.fullmatch(r"[a-z0-9-]+", slug):
+            continue
+        meta = next((d for d in dms.get(lv, []) if d.get("f") == slug), None)
+        noms = classes.get(lv) or []
+        given = {noms[int(k) - 1]: d for k, d in (p.get("c") or {}).items()
+                 if isinstance(d, str) and str(k).isdigit() and 0 < int(k) <= len(noms)}
+        if not meta or not given:
+            continue
+        it = {"lv": lv, "f": slug, "titre": meta.get("t") or slug, "modalite": meta.get("m") or "", "notions": meta.get("n") or "",
+              "resume": " ".join(x for x in re.split(r"(?<=[.!?])\s+", meta.get("r") or "")
+                                                if not re.search(r"corrig|professeur|\bpages? \d", x, re.I)), "href": f"docs/dm/{lv}/{slug}.pdf", "src": f"dm/{lv}/{slug}.pdf",
+              "cls": sorted(given), "dates": given}
+        if meta.get("b"):
+            it["b"] = meta["b"]
+        m = ANIM_RE.match(meta.get("a") or "")
+        if m:
+            ANIMS.add(m.group(1))
+            it["anim"] = f"anim/{m.group(1)}.html" + (m.group(2) or "")
+        out.append(it)
+    out.sort(key=lambda x: max(x["dates"].values()), reverse=True)
+    return out
+
+
+def dm_prev(repo):
+    """Taille des PDF source des DM déjà publiés (data.json précédent), pour repérer un PDF modifié."""
+    try:
+        return {d["src"]: d.get("b") for d in json.load(open(os.path.join(repo, "data.json"), encoding="utf-8")).get("dm", [])}
+    except (FileNotFoundError, ValueError):
+        return {}
+
+
+def dm_need(data, repo):
+    prev = dm_prev(repo)
+    return [d["src"] for d in data["dm"] if not os.path.exists(os.path.join(repo, d["href"])) or (d.get("b") and prev.get(d["src"]) != d["b"])]
+
+
+def first_pages(src, dst, n):
+    """Copie les n premières pages du PDF src dans dst."""
+    try:
+        from pypdf import PdfReader, PdfWriter
+        r, w = PdfReader(src), PdfWriter()
+        for pg in r.pages[:n]:
+            w.add_page(pg)
+        with open(dst, "wb") as fh:
+            w.write(fh)
+    except ImportError:
+        import subprocess
+        subprocess.run(["qpdf", "--empty", "--pages", src, f"1-{n}", "--", dst], check=True)
 
 
 def blanc_of(x):
@@ -303,7 +369,7 @@ def secret_plan():
 def main():
     if sys.argv[1] == "collections":
         levels = js_const(open(sys.argv[2], encoding="utf-8").read(), "LEVELS")
-        print(json.dumps([c for lv in level_list(levels) for c in (suivi_of(lv), evals_of(lv))] + ["config", "evaluations"]))
+        print(json.dumps([c for lv in level_list(levels) for c in (suivi_of(lv), evals_of(lv))] + ["config", "evaluations", "dm"]))
         return
     mode, page, dbdir, repo = sys.argv[1:5]
     data, wanted = load(page, dbdir)
@@ -312,12 +378,13 @@ def main():
         # PDF rangés dans un paquet evaluations.json : on demande le paquet (une seule fois) plutôt que le PDF
         for c, lst in secret_plan().items():
             missing += [it["src"] for it, e in lst if not os.path.exists(os.path.join(repo, e))]
-        need = list(dict.fromkeys(BUNDLE.get(p, p) for p in missing))
+        need = list(dict.fromkeys([BUNDLE.get(p, p) for p in missing] + dm_need(data, repo)))
         print(f"{len(missing)} PDF à mettre à jour")
         json.dump(need, open(f"{dbdir}/need.json", "w"), ensure_ascii=False)
         anim_need = [f"https://claude.ai/artifact/{a}" for a in sorted(ANIMS) if not os.path.exists(os.path.join(repo, "anim", a + ".html"))]
         json.dump(anim_need, open(f"{dbdir}/need_anim.json", "w"), ensure_ascii=False)
         print(f"{len(ANIMS)} animation(s) publiée(s), {len(anim_need)} à récupérer (need_anim.json)")
+        print(f"{len(data['dm'])} DM publié(s)")
         print(f"{len(wanted)} PDF publiés au total, {len(need)} fichier(s) à récupérer")
         return
     pdfdir = sys.argv[5]
@@ -343,6 +410,18 @@ def main():
             shutil.copyfile(src, dst)
         elif not os.path.exists(dst):
             sys.exit(f"PDF manquant : {p}")
+    # DM : 2 premières pages du PDF de la page enseignant (W/pdf/dm/<niveau>/<f>.pdf) -> docs/dm/<niveau>/<f>.pdf
+    dm_keep = set()
+    for d in data["dm"]:
+        src, dst = os.path.join(pdfdir, d["src"]), os.path.join(repo, d["href"])
+        if os.path.exists(src):
+            if open(src, "rb").read(5) != b"%PDF-":
+                sys.exit(f"Contenu invalide : {d['src']}")
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            first_pages(src, dst, DM_PAGES)
+        elif not os.path.exists(dst):
+            sys.exit(f"PDF manquant : {d['src']}")
+        dm_keep.add(d["href"])
     # Animations : copie des pages récupérées (W/pdf/anim/<id>/index.html), retrait de celles qui ne sont plus publiées
     for a in ANIMS:
         src, dst = os.path.join(pdfdir, "anim", a, "index.html"), os.path.join(repo, "anim", a + ".html")
@@ -355,6 +434,9 @@ def main():
         for s in [s for l in data["niveaux"].values() for s in l]:
             for n in s["notions"]:
                 n["items"] = [i for i in n["items"] if not (i["type"] == "anim" and i["href"].split("/")[1].split(".")[0] in missing_anim)]
+        for d in data["dm"]:
+            if d.get("anim") and d["anim"].split("/")[1].split(".")[0] in missing_anim:
+                d.pop("anim")
     for f in glob.glob(os.path.join(repo, "anim", "*.html")):
         if os.path.basename(f)[:-5] not in ANIMS:
             os.remove(f)
@@ -389,13 +471,13 @@ def main():
         if os.path.relpath(f, repo).replace(os.sep, "/") not in keep:
             os.remove(f); removed += 1
     for f in glob.glob(os.path.join(repo, "docs", "**", "*.pdf"), recursive=True):
-        if os.path.relpath(f, repo).replace(os.sep, "/") not in wanted:
+        if os.path.relpath(f, repo).replace(os.sep, "/") not in wanted and os.path.relpath(f, repo).replace(os.sep, "/") not in dm_keep:
             os.remove(f); removed += 1
     json.dump(data, open(os.path.join(repo, "data.json"), "w", encoding="utf-8"), ensure_ascii=False)
     # data.js : gardé pour les navigateurs qui ont encore l'ancienne page en cache
     open(os.path.join(repo, "data.js"), "w", encoding="utf-8").write(
         "window.SITE_DATA = " + json.dumps(data, ensure_ascii=False) + ";\n")
-    print(f"{len(wanted)} PDF en ligne, {sum(len(v) for v in SECRET.values())} correction(s) chiffrée(s), {removed} fichier(s) retiré(s)")
+    print(f"{len(wanted)} PDF en ligne, {len(data['dm'])} DM, {sum(len(v) for v in SECRET.values())} correction(s) chiffrée(s), {removed} fichier(s) retiré(s)")
     if len(sys.argv) > 6 and sys.argv[6] == "--liens":
         for c in [c for l in data["classes"].values() for c in l]:
             print(f"{c} : https://thibaudpluchet.github.io/maths-pluchet/#{c}/{b64u(classkey(c))}")
