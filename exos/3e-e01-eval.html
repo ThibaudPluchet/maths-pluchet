@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Préparer l'évaluation commune : équations et coordonnées (3e E01) – M. Pluchet</title>
-<meta name="description" content="Exerciseur pour préparer l'évaluation commune E01 de 3e : coordonnées terrestres, tester et résoudre des équations.">
+<title>Préparer l'évaluation : équations et coordonnées (3e E01) – M. Pluchet</title>
+<meta name="description" content="Exerciseur pour préparer l'évaluation E01 de 3e : coordonnées terrestres, tester et résoudre des équations.">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
@@ -122,8 +122,8 @@ svg.map .pt.sol circle{fill:none;stroke:var(--ok);stroke-width:3} svg.map .pt.so
 <body>
 <header class="wrap">
   <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Menu de l’exerciseur</button></div>
-  <p class="kick">3e · Évaluation commune E01 · N09, N10, N11</p>
-  <h1>Préparer l’évaluation commune</h1>
+  <p class="kick">3e · Évaluation E01 · N9, N10, N11</p>
+  <h1>Préparer l’évaluation</h1>
   <p class="sub">Coordonnées terrestres, tester et résoudre des équations : les mêmes exercices et le même barème que l’évaluation. Calculatrice interdite !</p>
 </header>
 <main class="wrap" id="main"></main>
@@ -277,8 +277,8 @@ var COURS = [
   {t: ['Un nombre est solution d’une équation si, quand on remplace x par ce nombre, ', 0, '.'], c: [['les deux membres sont égaux', 'le premier membre vaut 0', 'on trouve un nombre entier']]},
   {t: ['La latitude d’un point se repère par rapport ', 0, ', la longitude par rapport ', 1, '.'], c: [['à l’équateur', 'au méridien de Greenwich', 'au pôle Nord'], ['au méridien de Greenwich', 'à l’équateur', 'au pôle Sud']]}
 ];
-function exCours(){
-  var set = Math.random() < .6 ? [0, 1] : shuffle([0, 1, 2, 3]).slice(0, 2), sels = [], box = el('div', 'items');
+function exCours(only){
+  var set = only || (Math.random() < .6 ? [0, 1] : shuffle([0, 1, 2, 3]).slice(0, 2)), sels = [], box = el('div', 'items');
   set.forEach(function(qi){
     var Q = COURS[qi], it = el('div', 'item'), p = el('div', 'fill');
     Q.t.forEach(function(part){
@@ -288,7 +288,7 @@ function exCours(){
     it.dataset.sent = Q.t.map(function(part){ return typeof part === 'string' ? part : Q.c[part][0]; }).join('');
     it.appendChild(p); box.appendChild(it);
   });
-  return {box: box, max: 1, check: function(){
+  return {box: box, max: set.length * .5, check: function(){
     var got = 0, byIt = new Map();
     sels.forEach(function(x){
       var ok = x.s.value === x.s.dataset.good; x.s.disabled = true; mark(x.s, ok); if (ok) got += x.w;
@@ -527,6 +527,50 @@ function exBonus(){
   }};
 }
 
+/* ============ Exercices supplémentaires des évaluations par notion ============ */
+function exAnti(){
+  var box = el('div', 'items two'), rows = [], used = {};
+  for (var i = 0; i < 3; i++){
+    var P; do { P = randPt(); } while (used[P.lat + '|' + P.lon]); used[P.lat + '|' + P.lon] = 1;
+    var anti = {lat: -P.lat, lon: P.lon > 0 ? P.lon - 180 : P.lon + 180}, it = el('div', 'item'), ci = coordInput(), ln = el('div', 'ln');
+    it.appendChild(el('div', 'q', String.fromCharCode(97 + i) + ') Antipode de ' + coordTxt(P) + ' :')); ln.appendChild(ci.box); it.appendChild(ln); box.appendChild(it); rows.push({P: P, anti: anti, ci: ci, it: it});
+  }
+  return {box: box, max: 3, check: function(){
+    var got = 0;
+    rows.forEach(function(x){
+      var r = x.ci.read(), okLa = r.lat !== null && eq(r.lat, x.anti.lat), okLo = r.lon !== null && eq(r.lon, x.anti.lon), g = (okLa ? .5 : 0) + (okLo ? .5 : 0);
+      x.ci.lock(okLa, okLo); got += g; itemState(x.it, g, 1);
+      corr(x.it, g, 1, {why: [].concat(okLa ? [] : ['Latitude : même valeur, hémisphère opposé (N ↔ S).']).concat(okLo ? [] : ['Longitude : 180° ' + MINUS + ' ' + Math.abs(x.P.lon) + '° = ' + (180 - Math.abs(x.P.lon)) + '°, côté opposé (E ↔ O).']), sol: ['Antipode : ' + coordTxt(x.anti)]});
+    });
+    return got;
+  }};
+}
+// tester une valeur dans la mise en équation d'un problème (deux situations)
+function exTestPb(){
+  var box = el('div', 'items'), rows = [];
+  shuffle(CTX.slice()).slice(0, 2).forEach(function(C, i){
+    var q = rnd(3, 8), p = q + rnd(3, 9), s = rnd(3, 7), F = (p - q) * s, t = Math.random() < .4 ? s : (function(){ var u; do { u = rnd(2, 9); } while (u === s); return u; })();
+    var it = el('div', 'item');
+    it.appendChild(el('p', null, C.lieu + ' (prix fictifs). ' + C.sans + ' ' + p + ' €. ' + C.avec + ' ' + F + ' € une fois, puis ' + q + ' € par ' + C.u + '. On note x le nombre de ' + C.us + ' ; l’équation ' + p + 'x = ' + F + ' + ' + q + 'x traduit l’égalité des deux prix.'));
+    it.appendChild(el('div', 'q', String.fromCharCode(97 + i) + ') ' + C.qui + ' pense que la réponse est ' + t + '. A-t-il raison ?'));
+    function L(tag){ var ln = el('div', 'ln'), f = field('num', 'valeur'); ln.appendChild(el('span', 'tag', tag)); ln.appendChild(f); it.appendChild(ln); return f; }
+    var f1 = L('Prix ' + C.f1 + ' pour ' + t + ' ' + C.us), f2 = L('Prix ' + C.f2 + ' pour ' + t + ' ' + C.us), lt = el('div', 'ln'), s1 = sel(['oui', 'non']);
+    lt.appendChild(el('span', 'tag', 'Conclusion : ' + t + ' est-il solution ?')); lt.appendChild(s1); it.appendChild(lt); box.appendChild(it);
+    rows.push({p: p, q: q, F: F, t: t, ok: t === s, f1: f1, f2: f2, s1: s1, it: it});
+  });
+  return {box: box, max: 4, check: function(){
+    var got = 0;
+    rows.forEach(function(x){
+      var v1 = parseVal(x.f1.value), v2 = parseVal(x.f2.value), a = v1 !== null && eq(v1, x.p * x.t), b = v2 !== null && eq(v2, x.F + x.q * x.t), c = x.s1.value === (x.ok ? 'oui' : 'non');
+      [x.f1, x.f2, x.s1].forEach(function(z){ z.disabled = true; }); mark(x.f1, a); mark(x.f2, b); mark(x.s1, c);
+      var g = (a ? .5 : 0) + (b ? .5 : 0) + (c ? 1 : 0); got += g; itemState(x.it, g, 2);
+      var A = x.p * x.t, B = x.F + x.q * x.t;
+      corr(x.it, g, 2, {why: [].concat(a && b ? [] : ['Un des calculs est faux.']).concat(c ? [] : ['La conclusion est fausse.']), sol: [x.p + ' × ' + x.t + ' = ' + A + ' et ' + x.F + ' + ' + x.q + ' × ' + x.t + ' = ' + B, A === B ? A + ' = ' + B + ' : ' + x.t + ' est solution, il a raison.' : A + ' ≠ ' + B + ' : ' + x.t + ' n’est pas solution, il a tort.'], noHl: true, tip: 'tester, c’est remplacer x par le nombre dans chaque membre, puis comparer.'});
+    });
+    return got;
+  }};
+}
+
 /* ============ Questions posées autrement (non notées) ============ */
 var VARS = [
   function(){ return {q: 'Quelle est la latitude d’un point situé sur l’équateur ?', opts: ['0°', '90° N', '180°'], good: '0°', sol: ['L’équateur est le parallèle de référence : sa latitude est 0°.'], tip: 'la latitude va de 0° (équateur) à 90° (pôles).'}; },
@@ -537,8 +581,8 @@ var VARS = [
   function(){ var a = rnd(2, 9), s = rnd(2, 9); return {q: 'Pour résoudre ' + a + 'x = ' + a * s + ', que fait-on aux deux membres ?', opts: ['on les divise par ' + a, 'on leur soustrait ' + a, 'on les multiplie par ' + a], good: 'on les divise par ' + a, sol: ['x = ' + a * s + ' ÷ ' + a + ' = ' + s + '.'], tip: 'pour enlever un coefficient multiplicateur, on divise.'}; },
   function(){ var a = rnd(2, 5), b = rnd(1, 9), t = rnd(2, 6), c = a * t + b + pick([0, 0, 1, -1]); var ok = c === a * t + b; return {q: 'Sans résoudre : x = ' + t + ' est-il solution de ' + a + 'x + ' + b + ' = ' + c + ' ?', opts: ['oui', 'non'], good: ok ? 'oui' : 'non', sol: [a + ' × ' + t + ' + ' + b + ' = ' + (a * t + b) + (ok ? ' = ' : ' ≠ ') + c + (ok ? ', donc oui.' : ', donc non.')], tip: 'tester, c’est remplacer x et comparer les deux membres.'}; }
 ];
-function exVar(){
-  var idx = shuffle(VARS.map(function(_, k){ return k; })).slice(0, 2), box = el('div', 'items two'), qs = [];
+function exVar(pool){
+  var idx = shuffle((pool || VARS.map(function(_, k){ return k; })).slice()).slice(0, 2), box = el('div', 'items two'), qs = [];
   idx.forEach(function(k, n){
     var V = VARS[k](), it = el('div', 'item'), s = sel(shuffle(V.opts.slice()));
     it.appendChild(el('div', 'q', (n + 1) + '. ' + V.q)); var ln = el('div', 'ln'); ln.appendChild(s); it.appendChild(ln); qs.push({V: V, s: s, it: it}); box.appendChild(it);
@@ -562,6 +606,29 @@ var EX = [
   {id: 'var', n: 'Pour comprendre', t: 'Questions autrement', ic: '🧠', d: 'Des questions posées autrement que dans l’évaluation, pour vérifier que tu as vraiment compris.', max: 2, make: exVar, extra: true}
 ];
 function byId(id){ return EX.filter(function(e){ return e.id === id; })[0]; }
+// Évaluations par notion : même durée que l'évaluation blanche (30 min), notées sur 20 (au prorata des points)
+var NOT = {
+  n09: {num: 9, t: 'Coordonnées terrestres', ic: '🌍', parts: [
+    {id: 'cours', n: 'Exercice 1', t: 'Question de cours', ic: '📖', max: .5, make: function(){ return exCours([3]); }},
+    {id: 'coord', n: 'Exercice 2', t: 'Lire et placer des points', ic: '🌍', max: 4, make: exCoord},
+    {id: 'coord', n: 'Exercice 3', t: 'Lire et placer des points', ic: '🌍', max: 4, make: exCoord},
+    {id: 'coord', n: 'Exercice 4', t: 'Lire et placer des points', ic: '🌍', max: 4, make: exCoord},
+    {id: 'anti', train: 'bonus', n: 'Exercice 5', t: 'Antipodes', ic: '🔄', max: 3, make: exAnti},
+    {id: 'var', train: 'var', n: 'Exercice 6', t: 'Pour comprendre', ic: '🧠', max: 2, make: function(){ return exVar([0, 1, 2]); }}]},
+  n10: {num: 10, t: 'Tester un nombre', ic: '🔎', parts: [
+    {id: 'cours', n: 'Exercice 1', t: 'Question de cours', ic: '📖', max: .5, make: function(){ return exCours([2]); }},
+    {id: 'test', n: 'Exercice 2', t: 'Tester un nombre', ic: '🔎', max: 3, make: exTest},
+    {id: 'test', n: 'Exercice 3', t: 'Tester un nombre', ic: '🔎', max: 3, make: exTest},
+    {id: 'test', n: 'Exercice 4', t: 'Tester un nombre', ic: '🔎', max: 3, make: exTest},
+    {id: 'testpb', train: 'pb', n: 'Exercice 5', t: 'Tester dans un problème', ic: '🎟️', max: 4, make: exTestPb},
+    {id: 'var', train: 'var', n: 'Exercice 6', t: 'Pour comprendre', ic: '🧠', max: 2, make: function(){ return exVar([3, 6]); }}]},
+  n11: {num: 11, t: 'Résoudre une équation', ic: '⚖️', parts: [
+    {id: 'cours', n: 'Exercice 1', t: 'Question de cours', ic: '📖', max: 1, make: function(){ return exCours([0, 1]); }},
+    {id: 'solve', n: 'Exercice 2', t: 'Résoudre des équations', ic: '⚖️', max: 6, make: exSolve},
+    {id: 'solve', n: 'Exercice 3', t: 'Résoudre des équations', ic: '⚖️', max: 6, make: exSolve},
+    {id: 'pb', n: 'Exercice 4', t: 'Problème', ic: '🎟️', max: 6, make: exPb},
+    {id: 'var', train: 'var', n: 'Exercice 5', t: 'Pour comprendre', ic: '🧠', max: 2, make: function(){ return exVar([4, 5]); }}]}
+};
 function cls(got, max){ return eq(got, max) ? 'ok' : got >= max * .6 ? 'mid' : 'ko'; }
 function stat(p, t){ if (window.stat) window.stat(p, t); }
 
@@ -574,6 +641,15 @@ function menu(){
   var s0 = el('span'); s0.appendChild(el('b', null, 'Évaluation blanche')); s0.appendChild(el('span', 'd', 'Un sujet complet comme le jour J, noté sur 20 avec le vrai barème, sans limite de temps. Un nouveau sujet à chaque fois (jamais les questions de ton vrai sujet) : recommence autant de fois que tu veux !'));
   if (best) s0.appendChild(el('span', 'rec', 'Ta meilleure note : ' + best + '/20'));
   t0.appendChild(s0); t0.onclick = function(){ location.hash = 'blanc'; }; g0.appendChild(t0); main.appendChild(g0);
+  main.appendChild(el('h2', 'cat', 'Une évaluation par notion'));
+  var gn = el('div', 'grid');
+  Object.keys(NOT).forEach(function(k){
+    var N = NOT[k], b = el('button', 'tile'); b.type = 'button'; b.appendChild(el('span', 'ic', N.ic));
+    var s = el('span'); s.appendChild(el('b', null, 'Évaluation N' + N.num + ' · ' + N.t)); s.appendChild(el('span', 'd', 'Un sujet entier sur cette notion seulement, de la même durée que l’évaluation blanche (30 min), noté sur 20.'));
+    var rb = store('eval:e01:' + k + ':best'); if (rb) s.appendChild(el('span', 'rec', 'Ta meilleure note : ' + rb + '/20'));
+    b.appendChild(s); b.onclick = function(){ location.hash = k; }; gn.appendChild(b);
+  });
+  main.appendChild(gn);
   main.appendChild(el('h2', 'cat', 'S’entraîner exercice par exercice'));
   var g = el('div', 'grid');
   EX.forEach(function(x){
@@ -589,9 +665,9 @@ function exPanel(x, inst, n){
   var p = el('section', 'panel'), h = el('div', 'ph');
   h.appendChild(el('h2', null, x.ic + ' ' + x.n + ' · ' + x.t)); var sc = el('span', 'pts', pts(x.max) + ' pt' + (x.max > 1 ? 's' : '')); h.appendChild(sc);
   p.appendChild(h);
-  var c = {cours: 'Complète avec le bon mot (0,5 point par phrase).', coord: 'a) Pour chaque point : latitude 0,5 point, longitude 0,5 point. b) Chaque point bien placé : 1 point.',
+  var c = {anti: 'Pour chaque point : latitude 0,5 point, longitude 0,5 point.', testpb: 'Pour chaque situation : les deux calculs 0,5 point chacun, la conclusion 1 point.', cours: 'Complète avec le bon mot (0,5 point par phrase).', coord: 'a) Pour chaque point : latitude 0,5 point, longitude 0,5 point. b) Chaque point bien placé : 1 point.',
     test: 'Pour chaque ligne : les deux membres 0,5 point chacun, la conclusion 0,5 point.', solve: 'Une étape par ligne, par exemple 5x = 20, puis x = 4. a) 2 points ; b) 3 points ; c) 1 point. Pour une fraction, écris par exemple -7/3.',
-    pb: '', bonus: 'Ces points s’ajoutent à la note (sans dépasser 20).', var: 'Ces questions ne sont pas comptées dans la note sur 20 : elles servent à vérifier que tu as compris, au-delà des exercices types.'}[x.id];
+    pb: '', bonus: 'Ces points s’ajoutent à la note (sans dépasser 20).', var: x.counted ? 'Des questions posées autrement, pour vérifier que tu as compris (1 point chacune).' : 'Ces questions ne sont pas comptées dans la note sur 20 : elles servent à vérifier que tu as compris, au-delà des exercices types.'}[x.id];
   if (c) p.appendChild(el('p', 'consigne', c));
   p.appendChild(inst.box); if (inst.note) p.appendChild(el('p', 'consigne', inst.note));
   return {p: p, sc: sc};
@@ -617,14 +693,17 @@ function train(id){
   window.scrollTo(0, 0);
 }
 
-function blanc(){
-  stat('/exos/3e-e01-eval/blanc', 'Préparer l’évaluation E01 · évaluation blanche');
+function blanc(mode){
+  mode = mode || 'blanc';
+  var N = NOT[mode], key = N ? 'eval:e01:' + mode + ':' : 'eval:e01:', list = N ? N.parts.map(function(x){ var y = {}; for (var k in x) y[k] = x[k]; y.counted = true; return y; }) : EX;
+  stat('/exos/3e-e01-eval/' + mode, 'Préparer l’évaluation E01 · ' + (N ? 'évaluation N' + N.num : 'évaluation blanche'));
   tomenu.hidden = false; main.innerHTML = '';
-  var essai = parseInt(store('eval:e01:essais') || '0', 10) + 1;
+  if (N) main.appendChild(el('h2', 'cat', 'Évaluation N' + N.num + ' · ' + N.t + ' · 30 min'));
+  var essai = parseInt(store(key + 'essais') || '0', 10) + 1;
   var bar = el('div', 'timerbar'), tm = el('span', 'timer', 'Sujet n° ' + essai), bend = el('button', 'btn main', 'Rendre ma copie'); bend.type = 'button';
   bar.appendChild(tm); bar.appendChild(bend); main.appendChild(bar);
   main.appendChild(el('p', 'consigne', 'Calculatrice interdite. Prends ton temps : il n’y a pas de limite. Rédige comme sur ta copie, une étape par ligne, puis touche « Rendre ma copie ».'));
-  var parts = EX.map(function(x){ var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p); return {x: x, inst: inst, P: P}; });
+  var parts = list.map(function(x){ var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p); return {x: x, inst: inst, P: P}; });
   var done = false, t0 = Date.now();
   bend.onclick = function(){ finish(); };
   function finish(){
@@ -634,13 +713,14 @@ function blanc(){
       var got = o.inst.check(); o.P.sc.textContent = pts(got) + ' / ' + pts(o.x.max); o.P.sc.className = 'pts ' + cls(got, o.x.max);
       if (o.x.extra){} else if (o.x.id === 'bonus') bonus = got; else total += got; res.push({x: o.x, got: got});
     });
-    // phrases réponses du problème : comptées si le résultat est juste (elles s'écrivent sur la copie)
-    var note = Math.min(20, total + bonus);
+    // évaluation blanche : barème du vrai sujet ; évaluation par notion : note ramenée sur 20
+    var maxN = list.reduce(function(s, x){ return s + (x.extra || x.id === 'bonus' ? 0 : x.max); }, 0);
+    var note = N ? total / maxN * 20 : Math.min(20, total + bonus);
     note = Math.round(note * 4) / 4;
-    var best = parseFloat((store('eval:e01:best') || '0').replace(',', '.'));
-    if (note > best) store('eval:e01:best', pts(note));
-    store('eval:e01:essais', String(essai));
-    var hist = (store('eval:e01:notes') || '').split(';').filter(Boolean).concat([pts(note)]).slice(-6); store('eval:e01:notes', hist.join(';'));
+    var best = parseFloat((store(key + 'best') || '0').replace(',', '.'));
+    if (note > best) store(key + 'best', pts(note));
+    store(key + 'essais', String(essai));
+    var hist = (store(key + 'notes') || '').split(';').filter(Boolean).concat([pts(note)]).slice(-6); store(key + 'notes', hist.join(';'));
     bar.remove();
     var sum = el('section', 'panel');
     sum.appendChild(el('div', 'note', pts(note) + '/20'));
@@ -649,32 +729,32 @@ function blanc(){
     sum.lastChild.style.textAlign = 'center';
     sum.appendChild(el('p', 'consigne', 'Sujet n° ' + essai + '. ' + (note > best && essai > 1 ? '🏆 Ta meilleure note !' : best ? 'Ta meilleure note : ' + pts(Math.max(best, note)) + '/20.' : '') + (hist.length > 1 ? ' Tes dernières notes : ' + hist.join(' → ') + '.' : '')));
     sum.lastChild.style.textAlign = 'center';
-    var again = el('div', 'row'), ba = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'); ba.type = 'button'; ba.onclick = function(){ blanc(); }; again.appendChild(ba); sum.appendChild(again);
+    var again = el('div', 'row'), ba = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'); ba.type = 'button'; ba.onclick = function(){ blanc(mode); }; again.appendChild(ba); sum.appendChild(again);
     var bl = el('div', 'bilan');
     res.forEach(function(r){
       var line = el('div', 'bl'), left = el('span'); left.appendChild(el('b', null, r.x.n + ' · ' + r.x.t + ' : '));
       left.appendChild(el('span', 'pts ' + cls(r.got, r.x.max), pts(r.got) + '/' + pts(r.x.max) + (r.x.extra ? ' (non noté)' : '')));
       line.appendChild(left);
-      if (!eq(r.got, r.x.max) && r.x.id !== 'bonus' && !r.x.extra){ var b = el('button', 'btn', 'À retravailler →'); b.type = 'button'; b.onclick = function(){ location.hash = r.x.id; }; line.appendChild(b); }
+      if (!eq(r.got, r.x.max) && r.x.id !== 'bonus' && !r.x.extra){ var b = el('button', 'btn', 'À retravailler →'); b.type = 'button'; b.onclick = function(){ location.hash = r.x.train || r.x.id; }; line.appendChild(b); }
       bl.appendChild(line);
     });
     sum.appendChild(bl);
-    sum.appendChild(el('p', 'consigne', 'La phrase de conclusion du problème est comptée quand le nombre est juste : sur ta vraie copie, pense à l’écrire ! Les corrections détaillées sont sous chaque exercice.'));
+    sum.appendChild(el('p', 'consigne', (N ? 'Note ramenée sur 20 : ' + pts(total) + ' points sur ' + pts(maxN) + '. ' : 'La phrase de conclusion du problème est comptée quand le nombre est juste : sur ta vraie copie, pense à l’écrire ! ') + 'Les corrections détaillées sont sous chaque exercice.'));
     var r2 = el('div', 'row'), b2 = el('button', 'btn', 'Menu'); b2.onclick = function(){ location.hash = ''; }; r2.appendChild(b2); sum.appendChild(r2);
     main.insertBefore(sum, main.firstChild);
     // en bas de la copie corrigée aussi : recommencer
     var foot = el('section', 'panel'); foot.appendChild(el('p', 'consigne', 'Tu as lu toutes les corrections ? Entraîne-toi encore : un nouveau sujet est tiré à chaque fois, tu peux recommencer autant de fois que tu veux.'));
     var fr = el('div', 'row'), fb1 = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'), fb2 = el('button', 'btn', 'Menu');
-    fb1.onclick = function(){ blanc(); }; fb2.onclick = function(){ location.hash = ''; }; fr.appendChild(fb1); fr.appendChild(fb2); foot.appendChild(fr); main.appendChild(foot);
+    fb1.onclick = function(){ blanc(mode); }; fb2.onclick = function(){ location.hash = ''; }; fr.appendChild(fb1); fr.appendChild(fb2); foot.appendChild(fr); main.appendChild(foot);
     window.scrollTo(0, 0);
-    stat('/exos/3e-e01-eval/blanc/note', 'Évaluation blanche E01 rendue');
+    stat('/exos/3e-e01-eval/' + mode + '/note', (N ? 'Évaluation N' + N.num : 'Évaluation blanche') + ' E01 rendue');
   }
   window.scrollTo(0, 0);
 }
 
 function route(){
   var id = location.hash.slice(1);
-  if (id === 'blanc') blanc(); else if (id) train(id); else menu();
+  if (id === 'blanc' || NOT[id]) blanc(id); else if (id) train(id); else menu();
 }
 tomenu.onclick = function(){ location.hash = ''; };
 try { if (document.referrer && new URL(document.referrer).pathname.replace(/index\.html$/, '') === new URL('../', location.href).pathname) document.getElementById('home').href = document.referrer; } catch(e){}

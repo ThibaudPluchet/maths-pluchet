@@ -218,6 +218,10 @@ def load(page, dbdir):
     return data, wanted
 
 
+def blanc_of(x):
+    return (x.get("u") if isinstance(x, dict) else x) or ""
+
+
 def planned_evals(dbdir, levels, classes, inter):
     """Évaluations déclarées dans la page enseignant (collection « evaluations ») : date par classe, notions, évaluation blanche.
     Chaque élève voit l'évaluation à venir de sa classe jusqu'au jour J inclus (le site compare la date au jour courant) ;
@@ -237,7 +241,8 @@ def planned_evals(dbdir, levels, classes, inter):
         ns = [{"num": n, "titre": titles.get(n, "")} for n in p.get("ns") or []]
         doc = p.get("doc") or ""
         out.append({"id": os.path.basename(f)[:-5], "lv": lv, "nom": p.get("nom") or "", "doc": doc, "ns": ns, "dates": dates,
-                    "commune": doc.startswith("E") or len(ns) > 1, "blanc": blancs.get(lv, {}).get(doc) or ""})
+                    "commune": doc.startswith("E") or len(ns) > 1, "blanc": blanc_of(blancs.get(lv, {}).get(doc)),
+                    "parNotion": (blancs.get(lv, {}).get(doc) or {}).get("notions", []) if isinstance(blancs.get(lv, {}).get(doc), dict) else []})
     return out
 
 
