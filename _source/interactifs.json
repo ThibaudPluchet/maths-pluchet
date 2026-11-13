@@ -10,7 +10,7 @@
     "10": [
       {
         "l": "Préparer l’évaluation (exerciseur + évaluation blanche)",
-        "u": "exos/4e-n10-eval.html"
+        "u": "exos/4e-e01-eval.html"
       }
     ]
   },
@@ -28,7 +28,6 @@
     },
     "4e": {
       "N01": "exos/4e-n01-eval.html",
-      "N10": "exos/4e-n10-eval.html",
       "E01": {
         "u": "exos/4e-e01-eval.html",
         "notions": []
