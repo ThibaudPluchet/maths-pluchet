@@ -172,6 +172,9 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 .upcard .blanc small{display:block;font-weight:400;opacity:.9}
 .upbanner{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:2px solid var(--hi,#d6336c);border-radius:14px;padding:10px 14px;margin:0 0 14px;background:var(--card)}
 .upbanner b{color:var(--hi,#d6336c)}
+.upbanner{cursor:pointer;transition:box-shadow .15s,transform .15s}
+.upbanner:hover{box-shadow:0 6px 18px -10px var(--hi,#d6336c);transform:translateY(-1px)}
+.upbanner:focus-visible{outline:3px solid var(--hi,#d6336c);outline-offset:2px}
 .seqview h2.cat{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 0}
 .upbanner button{font:700 15px inherit;font-family:inherit;border:0;border-radius:10px;padding:8px 14px;background:var(--hi,#d6336c);color:#fff;cursor:pointer}
 /* grand écran : on exploite la largeur */
@@ -481,7 +484,11 @@ function start(D){
     var e = list[0], b = el('div', 'upbanner'), t = el('span');
     t.appendChild(el('b', null, '📅 ' + upTitle(e) + ' ' + dayTxt(e.dates[current])));
     t.appendChild(document.createTextNode(' (' + whenTxt(e.dates[current]) + ') · ' + e.ns.map(function(x){ return 'N' + x.num; }).join(', ')));
-    var go = el('button', null, 'Réviser →'); go.type = 'button'; go.onclick = function(){ view = 'evals'; render(); window.scrollTo(0, 0); };
+    // tout le bandeau est cliquable : il ouvre l'onglet Évaluations (comme le bouton « Réviser »)
+    var go = el('button', null, 'Réviser →'); go.type = 'button'; go.tabIndex = -1;
+    function open(){ view = 'evals'; render(); window.scrollTo(0, 0); }
+    b.setAttribute('role', 'button'); b.tabIndex = 0; b.title = 'Réviser pour cette évaluation';
+    b.onclick = open; b.onkeydown = function(ev){ if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); open(); } };
     b.appendChild(t); b.appendChild(go); return b;
   }
   var REV = [['Revoir le cours', 'g1', ['revision', 'carte', 'cours']], ['S’entraîner', 'g2', ['exo', 'correction-exo']], ['Revoir en vidéo', 'g3', ['video']], ['Animations', 'g3', ['anim']]];
