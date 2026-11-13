@@ -151,6 +151,17 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 .evcard .evns{display:flex;flex-wrap:wrap;gap:6px;margin:-6px 0 14px}
 .evcard .evns span{font-size:13px;background:var(--soft);color:var(--ink);border-radius:999px;padding:3px 10px}
 .evcard .evns b{color:var(--accent);margin-right:4px}
+/* évaluation à venir */
+.upcard{border:2px solid var(--hi,#d6336c);background:linear-gradient(135deg,color-mix(in srgb,var(--hi,#d6336c) 9%,var(--card)),var(--card))}
+.upcard .evkind{color:var(--hi,#d6336c)}
+.upcard .when{display:inline-block;font-weight:700;font-size:13px;color:#fff;background:var(--hi,#d6336c);border-radius:999px;padding:2px 10px;margin-left:6px;vertical-align:2px}
+.upcard .blanc{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--accent-ink);background:var(--accent);border-radius:14px;padding:12px 16px;margin:4px 0 14px;font-weight:700}
+.upcard .blanc .ic{font-size:26px}
+.upcard .blanc small{display:block;font-weight:400;opacity:.9}
+.upbanner{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:2px solid var(--hi,#d6336c);border-radius:14px;padding:10px 14px;margin:0 0 14px;background:var(--card)}
+.upbanner b{color:var(--hi,#d6336c)}
+.seqview h2.cat{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 0}
+.upbanner button{font:700 15px inherit;font-family:inherit;border:0;border-radius:10px;padding:8px 14px;background:var(--hi,#d6336c);color:#fff;cursor:pointer}
 /* grand écran : on exploite la largeur */
 @media (min-width:1000px){
   .wrap{max-width:1200px}
@@ -321,17 +332,19 @@ function start(D){
     var all = []; full.forEach(function(s){ s.notions.forEach(function(n){ all = all.concat(n.items); }); });
     if (!full.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
 
+    var up = upcoming(lv);
     var tabs = el('div','tabs'); tabs.setAttribute('role','group');
     var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(lv === '3e' ? [['brevet','Exercices DNB']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes'], ['curio','Curiosités']]);
     if (!tlist.some(function(t){ return t[0] === view; })) view = 'cours';
     tlist.forEach(function(t){
       var b = el('button'); b.appendChild(icon(t[0])); b.appendChild(document.createTextNode(t[1])); b.setAttribute('aria-pressed', view === t[0]);
-      if (t[0] === 'evals' && evals.some(function(e){ return e.items.some(isNew); })) b.appendChild(el('span','tdot'));
+      if (t[0] === 'evals' && (up.length || evals.some(function(e){ return e.items.some(isNew); }))) b.appendChild(el('span','tdot'));
       b.onclick = t[0] === 'auto' || t[0] === 'curio' ? function(){ location.href = (t[0] === 'auto' ? 'auto.html' : 'curiosites.html') + location.hash; } : function(){ view = t[0]; render(); }; tabs.appendChild(b);
     });
     main.appendChild(tabs);
+    if (view === 'cours' && up.length) main.appendChild(upBanner(up));
     if (view === 'brevet') renderBrevet(seqs);
-    else if (view === 'evals') renderEvals(evals);
+    else if (view === 'evals') renderEvals(evals, up, full);
     else if (!seqs.length) main.appendChild(el('div','empty','Pas encore de cours pour la ' + current + '.'));
     else renderCours(seqs);
     saveSeen(all);
@@ -431,11 +444,59 @@ function start(D){
   }
 
   function isEval(it){ return it.type === 'evaluation' || it.type === 'correction'; }
+  // Évaluations à venir (déclarées dans la page enseignant) : jusqu'au jour J inclus pour la classe
+  function todayIso(){ var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function upcoming(lv){
+    var t = todayIso();
+    return (D.planned || []).filter(function(p){ return p.lv === lv && p.dates[current] && p.dates[current] >= t; })
+      .sort(function(a, b){ return a.dates[current] < b.dates[current] ? -1 : 1; });
+  }
+  function dayTxt(iso){ var p = iso.split('-'), d = new Date(+p[0], +p[1] - 1, +p[2]); return d.toLocaleDateString('fr-FR', {weekday: 'long', day: 'numeric', month: 'long'}); }
+  function whenTxt(iso){
+    var p = iso.split('-'), d = new Date(+p[0], +p[1] - 1, +p[2]), n = new Date(); n = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    var k = Math.round((d - n) / 864e5); return k <= 0 ? 'aujourd’hui' : k === 1 ? 'demain' : 'dans ' + k + ' jours';
+  }
+  function upTitle(e){ return e.nom || (e.commune ? 'Évaluation commune' : 'Évaluation') ; }
+  function upBanner(list){
+    var e = list[0], b = el('div', 'upbanner'), t = el('span');
+    t.appendChild(el('b', null, '📅 ' + upTitle(e) + ' ' + dayTxt(e.dates[current])));
+    t.appendChild(document.createTextNode(' (' + whenTxt(e.dates[current]) + ') · ' + e.ns.map(function(x){ return 'N' + x.num; }).join(', ')));
+    var go = el('button', null, 'Réviser →'); go.type = 'button'; go.onclick = function(){ view = 'evals'; render(); window.scrollTo(0, 0); };
+    b.appendChild(t); b.appendChild(go); return b;
+  }
+  var REV = [['Revoir le cours', 'g1', ['revision', 'carte', 'cours']], ['S’entraîner', 'g2', ['exo', 'exercices', 'correction-exo', 'alea']], ['Revoir en vidéo', 'g3', ['video', 'anim']]];
+  function upCard(e, full){
+    var box = el('article', 'notion evcard upcard');
+    var k = el('p', 'evkind', (e.commune ? 'Évaluation commune à venir · ' : 'Évaluation à venir · ') + dayTxt(e.dates[current])); k.appendChild(el('span', 'when', whenTxt(e.dates[current]))); box.appendChild(k);
+    var h3 = el('h3'); if (e.doc) h3.appendChild(el('span', 'code', e.doc)); h3.appendChild(document.createTextNode(e.commune ? upTitle(e) : (e.ns[0] ? e.ns[0].titre : upTitle(e)))); box.appendChild(h3);
+    if (e.ns.length){ var ns = el('div', 'evns'); e.ns.forEach(function(x){ var sp = el('span'); sp.appendChild(el('b', null, 'N' + x.num)); sp.appendChild(document.createTextNode(x.titre)); ns.appendChild(sp); }); box.appendChild(ns); }
+    if (e.blanc){
+      var a = el('a', 'blanc'); a.href = e.blanc; a.target = '_blank'; a.rel = 'noopener'; a.appendChild(el('span', 'ic', '📝'));
+      var t = el('span'); t.appendChild(document.createTextNode('Évaluation blanche')); t.appendChild(el('small', null, 'Un sujet comme le jour J, corrigé et noté sur 20. À refaire autant de fois que tu veux.')); a.appendChild(t); box.appendChild(a);
+    }
+    var nums = e.ns.map(function(x){ return x.num; }), items = [];
+    full.forEach(function(s){ s.notions.forEach(function(n){ if (nums.indexOf(n.num) < 0) return;
+      n.items.forEach(function(it){ if (isEval(it)) return; var c = {}; for (var kk in it) c[kk] = it[kk]; if (nums.length > 1) c.label = 'N' + n.num + ' · ' + it.label; c._n = n.num; items.push(c); }); }); });
+    items.sort(function(x, y){ return x._n - y._n; });
+    var gr = el('div', 'groups');
+    REV.forEach(function(g){
+      var list = items.filter(function(it){ return g[2].indexOf(it.type) > -1; }); if (!list.length) return;
+      list.sort(function(x, y){ return g[2].indexOf(x.type) - g[2].indexOf(y.type) || x._n - y._n; });
+      var d = el('div', 'grp ' + g[1]); d.appendChild(el('h4', null, g[0])); var ls = el('div', 'links'); list.forEach(function(it){ ls.appendChild(link(it)); }); d.appendChild(ls); gr.appendChild(d);
+    });
+    if (!items.length && !e.blanc) box.appendChild(el('p', 'intro', 'Les documents pour réviser apparaîtront ici dès qu’ils seront distribués en classe.'));
+    box.appendChild(gr); return box;
+  }
   function codeTxt(num){ return typeof num === 'string' ? num : 'N' + num; }
   // Onglet « Évaluations » : une carte par évaluation passée, sujets à gauche, corrections à droite
-  function renderEvals(evals){
-    if (!evals.length){ main.appendChild(el('div','empty','Pas encore d’évaluation publiée. Les sujets et leurs corrections apparaissent ici après chaque évaluation.')); return; }
+  function renderEvals(evals, up, full){
+    if (up && up.length){
+      var us = el('section', 'seqview'); us.appendChild(el('p', 'intro', 'À venir : tout ce qu’il faut pour réviser, rassemblé au même endroit.'));
+      up.forEach(function(e){ us.appendChild(upCard(e, full)); }); main.appendChild(us);
+    }
+    if (!evals.length){ if (!up || !up.length) main.appendChild(el('div','empty','Pas encore d’évaluation publiée. Les sujets et leurs corrections apparaissent ici après chaque évaluation.')); return; }
     var sec = el('section','seqview');
+    if (up && up.length) sec.appendChild(el('h2', 'cat', 'Évaluations passées'));
     sec.appendChild(el('p','intro','Les sujets de tes évaluations et leurs corrections, de la plus récente à la plus ancienne.'));
     evals.forEach(function(e){
       var common = typeof e.num === 'string';

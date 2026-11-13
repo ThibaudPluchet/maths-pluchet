@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Préparer l'évaluation commune : équations et coordonnées (3e E01) – M. Pluchet</title>
+<meta name="description" content="Exerciseur pour préparer l'évaluation commune E01 de 3e : coordonnées terrestres, tester et résoudre des équations.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --ink:#1b2333; --muted:#596277; --line:#e2ded3;
+  --accent:#2f5bd3; --accent-ink:#ffffff; --soft:#e8eefc; --gridc:#e9e5da;
+  --ok:#1e7a46; --oks:#e3f4ea; --ko:#b3261e; --kos:#fbe6e4; --mid:#b85c00; --mids:#fbeedd; --hi:#d6336c;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#13161d; --card:#1b1f28; --ink:#eaedf3; --muted:#a3abbc; --line:#2b313e;
+    --accent:#86a4ff; --accent-ink:#0f1320; --soft:#222a3e; --gridc:#1a1e27;
+    --ok:#6fd49a; --oks:#173326; --ko:#ff8a80; --kos:#3a1f1d; --mid:#f0a050; --mids:#33261a; --hi:#ff7aa5; }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;
+  background-image:linear-gradient(var(--gridc) 1px,transparent 1px),linear-gradient(90deg,var(--gridc) 1px,transparent 1px);background-size:22px 22px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header{padding:22px 0 8px}
+.top{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.top a,.top button{color:var(--accent);font-weight:700;font-size:15px;font-family:inherit;text-decoration:none;background:none;border:0;padding:0;cursor:pointer}
+.top a:hover,.top button:hover{text-decoration:underline}
+.kick{color:var(--muted);font-weight:700;font-size:14px;margin:0}
+h1{font:700 clamp(26px,6vw,38px)/1.1 "Bricolage Grotesque",system-ui,sans-serif;margin:2px 0 6px}
+.sub{color:var(--muted);margin:0}
+main{padding:14px 0 60px}
+h2.cat{font-size:15px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tile{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;color:var(--ink);font:inherit;display:flex;gap:12px;align-items:flex-start}
+.tile:hover{border-color:var(--accent);box-shadow:0 6px 20px -14px var(--accent)}
+.tile .ic{font-size:26px;line-height:1}
+.tile b{display:block;font:700 18px/1.2 "Bricolage Grotesque",system-ui,sans-serif;margin-bottom:4px}
+.tile .d{color:var(--muted);font-size:15px;display:block}
+.tile .rec{display:block;margin-top:6px;font-size:13px;font-weight:700;color:var(--ok)}
+.tile.big{border:2px solid var(--accent);background:linear-gradient(135deg,var(--soft),var(--card))}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ph h2{font:700 22px/1.15 "Bricolage Grotesque",system-ui,sans-serif;margin:0}
+.pts{font-weight:700;color:var(--muted);font-size:15px;white-space:nowrap}
+.pts.ok{color:var(--ok)} .pts.mid{color:var(--mid)} .pts.ko{color:var(--ko)}
+.consigne{margin:0;color:var(--muted);font-size:15px}
+.items{display:grid;gap:14px}
+.items > *{min-width:0}
+@media (min-width:700px){ .items.two{grid-template-columns:1fr 1fr} }
+.item{border-left:3px solid var(--line);padding:4px 0 4px 12px;display:flex;flex-direction:column;gap:6px}
+.item.okI{border-color:var(--ok)} .item.koI{border-color:var(--ko)} .item.midI{border-color:var(--mid)}
+.q{font:700 20px/1.35 "Bricolage Grotesque",system-ui,sans-serif}
+.q .nm{color:var(--accent);margin-right:6px}
+.ln{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.ln .eq{font:700 20px "Bricolage Grotesque",sans-serif;width:1.1em;text-align:center}
+.ln .tag{font-size:12px;color:var(--muted);font-weight:700;flex-basis:100%}
+input.w{font:700 19px "Bricolage Grotesque",system-ui,sans-serif;flex:1 1 0;width:100%;min-width:0;max-width:340px;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+input.w.num{max-width:150px;flex:0 1 150px}
+input.w:focus{outline:none;border-color:var(--accent)}
+input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.koF{border-color:var(--ko);background:var(--kos)}
+.corr{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.4}
+.corr.ok{background:var(--oks)} .corr.mid{background:var(--mids)} .corr.ko{background:var(--kos)}
+.cv{font-weight:700;font-size:16px}
+.corr.ok .cv{color:var(--ok)} .corr.mid .cv{color:var(--mid)} .corr.ko .cv{color:var(--ko)}
+.cw{margin:0;padding-left:20px;color:var(--ink)}
+.cs{background:var(--card);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.cs .cl{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px}
+.cs .sl{font:700 19px/1.55 "Bricolage Grotesque",system-ui,sans-serif;white-space:pre-wrap}
+.cs .sl.hl{color:var(--ok)}
+.ct{color:var(--ink)}
+.ct b{color:var(--accent)}
+.fill{line-height:2.4;font-size:18px}
+select.s{font:700 16px inherit;font-family:inherit;padding:6px 8px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%}
+select.s.okF{border-color:var(--ok);background:var(--oks)} select.s.koF{border-color:var(--ko);background:var(--kos)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center}
+.btn{font:700 16px inherit;font-family:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 16px;cursor:pointer;min-height:46px}
+.btn:hover{border-color:var(--accent)}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.res{border-radius:14px;padding:12px 16px;font-weight:700;text-align:center}
+.res.ok{background:var(--oks);color:var(--ok)} .res.mid{background:var(--mids);color:var(--mid)} .res.ko{background:var(--kos);color:var(--ko)}
+.res small{display:block;font-weight:400;color:var(--ink)}
+/* planisphère */
+.mapbox{margin:0 -6px;overflow-x:auto}
+.mapbox.zoom svg.map{min-width:900px}
+svg.map{width:100%;height:auto;display:block;touch-action:manipulation;cursor:crosshair;user-select:none}
+svg.map .sea{fill:var(--soft)}
+svg.map .gl{stroke:var(--line);stroke-width:1}
+svg.map .axis{stroke:var(--accent);stroke-width:2}
+svg.map .lab{font:700 19px "Atkinson Hyperlegible",sans-serif;fill:var(--muted)}
+svg.map .lab2{font:italic 17px "Atkinson Hyperlegible",sans-serif;fill:var(--accent)}
+svg.map .pt circle{fill:var(--ink)} svg.map .pt text{font:700 26px "Bricolage Grotesque",sans-serif;fill:var(--ink)}
+svg.map .pt.mine circle{fill:var(--hi)} svg.map .pt.mine text{fill:var(--hi)}
+svg.map .pt.good circle{fill:var(--ok)} svg.map .pt.good text{fill:var(--ok)}
+svg.map .pt.bad circle{fill:var(--ko)} svg.map .pt.bad text{fill:var(--ko)}
+svg.map .pt.sol circle{fill:none;stroke:var(--ok);stroke-width:3} svg.map .pt.sol text{fill:var(--ok)}
+.coord{display:inline-flex;align-items:center;gap:3px;flex-wrap:nowrap;font:700 18px "Bricolage Grotesque",sans-serif}
+.coord input.w.c{max-width:54px;flex:0 0 54px;padding:6px 6px}
+.coord select.s{padding:5px 2px}
+.row.left{justify-content:flex-start}
+.btn.sel{background:var(--soft);border-color:var(--accent)}
+/* barre de symboles */
+.kbar{display:flex;gap:6px;flex-wrap:wrap;padding-left:calc(1.1em + 8px)}
+.kbar button{font:700 20px "Bricolage Grotesque",sans-serif;min-width:44px;min-height:40px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+/* évaluation blanche */
+.timerbar{position:sticky;top:0;z-index:10;background:var(--bg);padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.timer{font:700 24px "Bricolage Grotesque",sans-serif}
+.timer.low{color:var(--ko)}
+.note{font:700 64px/1 "Bricolage Grotesque",sans-serif;text-align:center}
+.bilan{display:grid;gap:8px}
+.bl{display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--bg);border-radius:12px;padding:8px 12px;flex-wrap:wrap}
+.bl b{font-size:16px}
+.bl .btn{min-height:38px;padding:6px 12px;font-size:14px}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Menu de l’exerciseur</button></div>
+  <p class="kick">3e · Évaluation commune E01 · N09, N10, N11</p>
+  <h1>Préparer l’évaluation commune</h1>
+  <p class="sub">Coordonnées terrestres, tester et résoudre des équations : les mêmes exercices et le même barème que l’évaluation. Calculatrice interdite !</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script>
+(function(){
+'use strict';
+var main = document.getElementById('main'), tomenu = document.getElementById('tomenu'), kbar = document.getElementById('kbar');
+var MINUS = '−', EPS = 1e-9;
+function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function rnd(a, b){ return a + Math.floor(Math.random() * (b - a + 1)); }
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+function shuffle(a){ for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function eq(a, b){ return Math.abs(a - b) < EPS; }
+function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){ return null; } }
+function num(n){ var s = String(Math.abs(Math.round(n * 100) / 100)).replace('.', ','); return s; }
+function fmt(n){ return (n < -EPS ? MINUS : '') + num(n); }                    // −4 ; 9
+function fmtS(n){ return (n < -EPS ? MINUS : '+') + num(n); }                  // −4 ; +9
+function par(n){ return '(' + fmtS(n) + ')'; }
+function pts(x){ return String(Math.round(x * 100) / 100).replace('.', ','); }
+function plural(n, w){ return n + ' ' + w + (n > 1 ? 's' : ''); }
+
+/* ---------- questions des vrais sujets : jamais reproduites ---------- */
+// Empreintes (FNV-1a) des calculs des sujets d'évaluation de toutes les classes, produites par _source/exclu_e01.py.
+// Seules les empreintes figurent ici : les nombres des sujets ne sont pas lisibles dans la page.
+var EXCLU = ["03768ecd", "049715de", "07318222", "0c6f0d1d", "123b0edd", "1cbc2d89", "23e2c325", "29040a80", "35b1cb75", "35b338f4", "36d420e9", "3738747f", "38c732c0", "3ac72130", "3acdf377", "3e6ac4af", "3e6e33e8", "4111973a", "41999238", "43845738", "467d3160", "4a5d8957", "4bc85744", "4c7f7969", "4f5e4033", "4f9cf47b", "518f98db", "52c124c2", "555701ac", "57c99124", "5d8c9be2", "5e0994f0", "61489c37", "620ab3b3", "62722add", "63e1ae91", "64c08372", "653468cd", "66e9ca05", "679e820f", "686f41f1", "6d5c32f2", "7044402f", "7507bcac", "75174e80", "7853e12e", "7a33a202", "7a34097a", "7c6d0039", "81ac4fdd", "82c92096", "86006fe6", "868112f3", "87644cec", "878403f1", "8bc75a1d", "8cf9d129", "9036d6fb", "90e68a2b", "91685d2d", "91d0b303", "954e3d81", "9cbdf5f9", "a2c69989", "a3d201a2", "a98441ec", "ad4352fb", "add44ff7", "af024324", "b07530d9", "b2d00ab2", "b4c92e45", "ba436915", "bb3b9732", "bdd0d5d0", "bebc37da", "c20051fc", "c41603c6", "c4a3d59c", "c7a618ec", "c94c4fb9", "c960fd7e", "cd76e007", "cfd5c037", "d4ebce8b", "d6903610", "d9fe392d", "da17911b", "df051946", "e27a555d", "e2fa9fac", "e37e9985", "e52fd41d", "ea1b614e", "eb7b491d", "eb9a2970", "ebff2b05", "f272d254", "f3947a97", "f6bd7532"];
+function fnv(s){ var h = 0x811c9dc5, b = unescape(encodeURIComponent(s)); for (var i = 0; i < b.length; i++){ h ^= b.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return ('0000000' + h.toString(16)).slice(-8); }
+function excluded(key){ return EXCLU.indexOf(fnv(key)) > -1; }
+function fresh(gen, keyOf){ var x, n = 0; do { x = gen(); } while (excluded(keyOf(x)) && ++n < 60); return x; }
+
+/* ---------- lecture des réponses ---------- */
+function norm(s){ return String(s || '').replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/\./g, ',').replace(/^=/, ''); }
+function parseNum(s){
+  s = norm(s).replace(/^\((.*)\)$/, '$1');
+  if (!/^[+-]?\d+(,\d+)?$/.test(s)) return null; return parseFloat(s.replace(',', '.'));
+}
+// expression du type (−5) + (+12)  ou  −4 + 9 + 6 − 8  →  liste de termes {op, v, paren}
+function parseExpr(s){
+  s = norm(s); var i = 0, terms = [];
+  function number(){ var m = /^\d+(,\d+)?/.exec(s.slice(i)); if (!m) return null; i += m[0].length; return parseFloat(m[0].replace(',', '.')); }
+  while (i < s.length){
+    var op = '+';
+    if (terms.length){ if (s[i] !== '+' && s[i] !== '-') return null; op = s[i]; i++; }
+    else if ((s[i] === '+' || s[i] === '-') && s[i + 1] === '('){ op = s[i]; i++; }
+    var paren = false, sign = 1, v;
+    if (s[i] === '('){
+      paren = true; i++;
+      if (s[i] === '+' || s[i] === '-'){ sign = s[i] === '-' ? -1 : 1; i++; }
+      v = number(); if (v === null || s[i] !== ')') return null; i++;
+    } else {
+      if (!terms.length && (s[i] === '+' || s[i] === '-')){ sign = s[i] === '-' ? -1 : 1; i++; }
+      v = number(); if (v === null) return null;
+    }
+    terms.push({op: op, v: sign * v, paren: paren, eff: (op === '-' ? -1 : 1) * sign * v});
+  }
+  return terms.length ? terms : null;
+}
+function sameList(a, b){ return a.length === b.length && a.every(function(x, k){ return eq(x, b[k]); }); }
+function sameBag(a, b){ var x = a.slice().sort(function(p, q){ return p - q; }), y = b.slice().sort(function(p, q){ return p - q; }); return sameList(x, y); }
+function effs(t){ return t.map(function(x){ return x.eff; }); }
+function simpWrite(list){ return list.map(function(x, k){ return (k === 0 ? (x < 0 ? MINUS : '') : (x < 0 ? ' ' + MINUS + ' ' : ' + ')) + num(x); }).join(''); }
+
+/* ---------- champs de saisie ---------- */
+var lastInput = null;
+function field(cls, ph){
+  var i = el('input', 'w' + (cls ? ' ' + cls : '')); i.type = 'text'; i.autocomplete = 'off'; i.spellcheck = false; i.inputMode = 'text';
+  if (ph) i.placeholder = ph;
+  // barre de symboles ( ) + − , placée juste sous la ligne en cours de saisie
+  i.addEventListener('focus', function(){ lastInput = i; var ln = i.parentNode; ln.parentNode.insertBefore(kbar, ln.nextSibling); kbar.hidden = false; });
+  return i;
+}
+// le signe moins inséré est le tiret « - » de la touche 6 du clavier, pour que tout s'écrive avec le même symbole
+['x', '=', '+', '-', '/', '(', ')', ','].forEach(function(k){
+  var b = el('button', null, k); b.type = 'button'; if (k === '-') b.setAttribute('aria-label', 'moins');
+  b.addEventListener('mousedown', function(e){ e.preventDefault(); });
+  b.onclick = function(){
+    if (!lastInput || lastInput.disabled) return;
+    var a = lastInput.selectionStart || lastInput.value.length, z = lastInput.selectionEnd || a;
+    lastInput.value = lastInput.value.slice(0, a) + k + lastInput.value.slice(z);
+    lastInput.focus(); lastInput.setSelectionRange(a + 1, a + 1);
+  };
+  kbar.appendChild(b);
+});
+function mark(input, ok){ input.classList.remove('okF', 'koF'); input.classList.add(ok ? 'okF' : 'koF'); }
+// Correction d'une question : verdict + ce qui ne va pas + correction rédigée ligne par ligne + rappel du cours
+function corr(parent, got, max, o){
+  o = o || {}; var full = eq(got, max), k = full ? 'ok' : got > 0 ? 'mid' : 'ko';
+  var c = el('div', 'corr ' + k);
+  c.appendChild(el('div', 'cv', (full ? '✓ Bravo ! ' : got > 0 ? 'Presque ! ' : '✗ ') + pts(got) + ' / ' + pts(max) + ' point' + (max > 1 ? 's' : '')));
+  if (!full && o.why && o.why.length){ var ul = el('ul', 'cw'); o.why.forEach(function(w){ ul.appendChild(el('li', null, w)); }); c.appendChild(ul); }
+  if (o.sol && (!full || o.always)){
+    var s = el('div', 'cs'); s.appendChild(el('span', 'cl', o.solTitle || 'La bonne rédaction'));
+    o.sol.forEach(function(l, i){ s.appendChild(el('div', 'sl' + (i === o.sol.length - 1 && !o.noHl ? ' hl' : ''), l)); });
+    c.appendChild(s);
+  }
+  if (o.tip && !full){ var t = el('div', 'ct'); t.appendChild(el('b', null, '💡 À retenir : ')); t.appendChild(document.createTextNode(o.tip)); c.appendChild(t); }
+  parent.appendChild(c); return c;
+}
+function itemState(item, got, max){ item.classList.add(eq(got, max) ? 'okI' : got > 0 ? 'midI' : 'koI'); }
+
+/* ---------- outils : expressions du premier degré ---------- */
+function normE(s){ return String(s || '').replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/,/g, '.').replace(/[×*·]/g, '').replace(/X/g, 'x'); }
+// a·x + b  →  {a, b}   (« 12x », « 30+7x », « 7x+30 », « -x », « 2-3x »)
+function parseLin(s){
+  s = normE(s); if (!s) return null;
+  if (!/^[+-]?(\d+(\.\d+)?x?|x)([+-](\d+(\.\d+)?x?|x))*$/.test(s)) return null;
+  var a = 0, b = 0, re = /([+-]?)(\d+(?:\.\d+)?)?(x?)/g, m;
+  while ((m = re.exec(s)) && m[0] !== ''){
+    var k = m[1] === '-' ? -1 : 1, v = m[2] ? parseFloat(m[2]) : 1;
+    if (m[3]) a += k * v; else if (m[2]) b += k * v;
+  }
+  return {a: a, b: b};
+}
+function parseEqn(s){ var p = normE(s).split('='); if (p.length !== 2) return null; var L = parseLin(p[0]), R = parseLin(p[1]); return L && R ? {L: L, R: R} : null; }
+function solOf(E){ var k = E.L.a - E.R.a; return eq(k, 0) ? null : (E.R.b - E.L.b) / k; }
+// nombre, fraction ou décimal : « -7/3 », « 7/-3 », « 2,5 »
+function parseVal(s){
+  s = normE(s).replace(/^x=/, '').replace(/^\((.*)\)$/, '$1');
+  var m = /^([+-]?\d+(?:\.\d+)?)\/([+-]?\d+(?:\.\d+)?)$/.exec(s);
+  if (m){ var d = parseFloat(m[2]); return eq(d, 0) ? null : parseFloat(m[1]) / d; }
+  return /^[+-]?\d+(\.\d+)?$/.test(s) ? parseFloat(s) : null;
+}
+function coefX(a){ return a === 1 ? 'x' : a === -1 ? MINUS + 'x' : fmt(a) + 'x'; }
+// écriture d'un membre a·x + b (constFirst : « 2 − 3x »)
+function lin(a, b, constFirst){
+  if (eq(a, 0)) return fmt(b);
+  if (eq(b, 0)) return coefX(a);
+  if (constFirst) return fmt(b) + (a < 0 ? ' ' + MINUS + ' ' + (a === -1 ? 'x' : num(-a) + 'x') : ' + ' + (a === 1 ? 'x' : num(a) + 'x'));
+  return coefX(a) + (b < 0 ? ' ' + MINUS + ' ' + num(-b) : ' + ' + num(b));
+}
+function frac(p, q){ // fraction irréductible p/q avec le signe devant
+  if (q < 0){ p = -p; q = -q; } var g = (function gcd(x, y){ return y ? gcd(y, x % y) : Math.abs(x); })(Math.abs(p), q);
+  p /= g; q /= g; return q === 1 ? fmt(p) : (p < 0 ? MINUS : '') + Math.abs(p) + '/' + q;
+}
+function times(a, x){ return (a === 1 ? '' : a === -1 ? MINUS : fmt(a) + ' × ') + (x < 0 ? '(' + fmt(x) + ')' : fmt(x)); }
+// valeur rédigée d'un membre pour x = t : « 4 × 3 − 1 = 11 »
+function evalTxt(a, b, t, constFirst){
+  var ax = a === 1 ? (t < 0 ? '(' + fmt(t) + ')' : fmt(t)) : a === -1 ? MINUS + (t < 0 ? '(' + fmt(t) + ')' : fmt(t)) : num(Math.abs(a)) + ' × ' + (t < 0 ? '(' + fmt(t) + ')' : fmt(t));
+  var v = a * t + b, s;
+  if (eq(b, 0)) s = (a < 0 && a !== -1 ? MINUS : '') + ax;
+  else if (constFirst) s = fmt(b) + (a < 0 ? ' ' + MINUS + ' ' : ' + ') + (a === -1 || a === 1 ? (t < 0 ? '(' + fmt(t) + ')' : fmt(t)) : ax);
+  else s = (a < 0 && a !== -1 ? MINUS : '') + ax + (b < 0 ? ' ' + MINUS + ' ' + num(-b) : ' + ' + num(b));
+  return s + ' = ' + fmt(v);
+}
+function sel(opts, ph){ var s = el('select', 's'), o0 = el('option', null, ph || '…'); o0.value = ''; s.appendChild(o0); opts.forEach(function(o){ var op = el('option', null, o); op.value = o; s.appendChild(op); }); return s; }
+
+/* ============ Exercice 1 : question de cours ============ */
+var COURS = [
+  {t: ['Une équation garde les mêmes solutions si l’on ajoute (ou soustrait) ', 0, ' aux deux membres.'], c: [['un même nombre', 'des nombres différents', 'le nombre x seulement']]},
+  {t: ['Une équation garde les mêmes solutions si l’on multiplie (ou divise) les deux membres par un même nombre ', 0, '.'], c: [['non nul', 'positif', 'entier']]},
+  {t: ['Un nombre est solution d’une équation si, quand on remplace x par ce nombre, ', 0, '.'], c: [['les deux membres sont égaux', 'le premier membre vaut 0', 'on trouve un nombre entier']]},
+  {t: ['La latitude d’un point se repère par rapport ', 0, ', la longitude par rapport ', 1, '.'], c: [['à l’équateur', 'au méridien de Greenwich', 'au pôle Nord'], ['au méridien de Greenwich', 'à l’équateur', 'au pôle Sud']]}
+];
+function exCours(){
+  var set = Math.random() < .6 ? [0, 1] : shuffle([0, 1, 2, 3]).slice(0, 2), sels = [], box = el('div', 'items');
+  set.forEach(function(qi){
+    var Q = COURS[qi], it = el('div', 'item'), p = el('div', 'fill');
+    Q.t.forEach(function(part){
+      if (typeof part === 'string'){ p.appendChild(document.createTextNode(part)); return; }
+      var s = sel(shuffle(Q.c[part].slice())); s.dataset.good = Q.c[part][0]; p.appendChild(s); sels.push({s: s, it: it, w: .5 / Q.c.length});
+    });
+    it.dataset.sent = Q.t.map(function(part){ return typeof part === 'string' ? part : Q.c[part][0]; }).join('');
+    it.appendChild(p); box.appendChild(it);
+  });
+  return {box: box, max: 1, check: function(){
+    var got = 0, byIt = new Map();
+    sels.forEach(function(x){
+      var ok = x.s.value === x.s.dataset.good; x.s.disabled = true; mark(x.s, ok); if (ok) got += x.w;
+      var b = byIt.get(x.it) || {g: 0, m: 0, why: []}; b.m += x.w; if (ok) b.g += x.w; else b.why.push(x.s.value ? 'Il fallait « ' + x.s.dataset.good + ' » et non « ' + x.s.value + ' ».' : 'Case non remplie : il fallait « ' + x.s.dataset.good + ' ».'); byIt.set(x.it, b);
+    });
+    byIt.forEach(function(b, it){ itemState(it, b.g, b.m); corr(it, b.g, b.m, {why: b.why, sol: [it.dataset.sent], solTitle: 'La phrase complète', noHl: true}); });
+    return got;
+  }};
+}
+
+/* ============ Exercice 2 : coordonnées terrestres (planisphère) ============ */
+var NS = 'http://www.w3.org/2000/svg';
+function coordTxt(p){ return '(' + Math.abs(p.lat) + '° ' + (p.lat === 0 ? '' : p.lat > 0 ? 'N' : 'S') + ' ; ' + Math.abs(p.lon) + '° ' + (p.lon === 0 || Math.abs(p.lon) === 180 ? '' : p.lon > 0 ? 'E' : 'O') + ')'; }
+function randPt(){ return {lat: pick([-1, 1]) * 15 * rnd(1, 5), lon: pick([-1, 1]) * 15 * rnd(1, 11)}; }
+function map(){
+  var W = 780, H = 410, x0 = 60, y0 = 12, k = 2;               // 2 unités par degré
+  var svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('class', 'map');
+  function S(t, at, txt){ var e = document.createElementNS(NS, t); for (var a in at) e.setAttribute(a, at[a]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; }
+  function X(lon){ return x0 + (lon + 180) * k; } function Y(lat){ return y0 + (90 - lat) * k; }
+  S('rect', {x: X(-180), y: Y(90), width: 360 * k, height: 180 * k, 'class': 'sea'});
+  for (var lo = -180; lo <= 180; lo += 15) S('line', {x1: X(lo), y1: Y(90), x2: X(lo), y2: Y(-90), 'class': lo === 0 ? 'axis' : 'gl'});
+  for (var la = -90; la <= 90; la += 15) S('line', {x1: X(-180), y1: Y(la), x2: X(180), y2: Y(la), 'class': la === 0 ? 'axis' : 'gl'});
+  for (la = -90; la <= 90; la += 30) S('text', {x: X(-180) - 6, y: Y(la) + 6, 'text-anchor': 'end', 'class': 'lab'}, la === 0 ? '0°' : Math.abs(la) + (la > 0 ? 'N' : 'S'));
+  for (lo = -180; lo <= 180; lo += 30) S('text', {x: X(lo), y: Y(-90) + 22, 'text-anchor': 'middle', 'class': 'lab'}, lo === 0 ? '0°' : Math.abs(lo) + (Math.abs(lo) === 180 ? '' : lo > 0 ? 'E' : 'O'));
+  S('text', {x: X(0) + 4, y: Y(90) + 12, 'class': 'lab2'}, 'Greenwich'); S('text', {x: X(-180) + 4, y: Y(0) - 4, 'class': 'lab2'}, 'équateur');
+  var layer = document.createElementNS(NS, 'g'); svg.appendChild(layer);
+  return {svg: svg, X: X, Y: Y, layer: layer, at: function(e){ var r = svg.getBoundingClientRect(), px = (e.clientX - r.left) * W / r.width, py = (e.clientY - r.top) * H / r.height;
+      return {lon: Math.max(-180, Math.min(180, Math.round(((px - x0) / k - 180) / 15) * 15)), lat: Math.max(-90, Math.min(90, Math.round((90 - (py - y0) / k) / 15) * 15))}; },
+    dot: function(p, name, cl){ var g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'pt ' + (cl || ''));
+      var c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', X(p.lon)); c.setAttribute('cy', Y(p.lat)); c.setAttribute('r', 8); g.appendChild(c);
+      var t = document.createElementNS(NS, 'text'); t.setAttribute('x', X(p.lon) + 9); t.setAttribute('y', Y(p.lat) - 9); t.textContent = name; g.appendChild(t); layer.appendChild(g); return g; }};
+}
+function coordInput(){
+  var box = el('span', 'coord'), la = field('num c', 'lat.'), ns = sel(['N', 'S'], '?'), lo = field('num c', 'long.'), eo = sel(['E', 'O'], '?');
+  box.appendChild(document.createTextNode('(')); box.appendChild(la); box.appendChild(document.createTextNode('°')); box.appendChild(ns);
+  box.appendChild(document.createTextNode(' ; ')); box.appendChild(lo); box.appendChild(document.createTextNode('°')); box.appendChild(eo); box.appendChild(document.createTextNode(')'));
+  return {box: box, read: function(){ var a = parseVal(la.value), b = parseVal(lo.value);
+      return {lat: a === null ? null : (ns.value === 'S' ? -a : ns.value === 'N' ? a : (a === 0 ? 0 : NaN)), lon: b === null ? null : (eo.value === 'O' ? -b : eo.value === 'E' ? b : (b === 0 || b === 180 ? b : NaN))}; },
+    lock: function(okLat, okLon){ [la, ns, lo, eo].forEach(function(x){ x.disabled = true; }); mark(la, okLat); mark(ns, okLat); mark(lo, okLon); mark(eo, okLon); }};
+}
+function exCoord(){
+  var used = {}, P = {};
+  ['A', 'B', 'C', 'D'].forEach(function(n){ P[n] = fresh(function(){ var p; do { p = randPt(); } while (used[p.lat + '|' + p.lon]); return p; }, function(p){ return 'pt:' + p.lat + '|' + p.lon; }); used[P[n].lat + '|' + P[n].lon] = 1; });
+  var box = el('div', 'items'), M = map(); M.dot(P.A, 'A'); M.dot(P.B, 'B');
+  var wrapMap = el('div', 'mapbox'); wrapMap.appendChild(M.svg); box.appendChild(wrapMap);
+  var zr = el('div', 'row left'), zb = el('button', 'btn', '🔍 Agrandir la carte'); zb.type = 'button';
+  zb.onclick = function(){ var z = wrapMap.classList.toggle('zoom'); zb.textContent = z ? '↔ Carte entière' : '🔍 Agrandir la carte'; }; zr.appendChild(zb); box.appendChild(zr);
+  box.appendChild(el('p', 'consigne', 'Le quadrillage est tracé tous les 15°. Les latitudes sont graduées à gauche, les longitudes en bas.'));
+  var itA = el('div', 'item'); itA.appendChild(el('div', 'q', 'a) Donne les coordonnées des points A et B.'));
+  var inA = coordInput(), inB = coordInput(), lA = el('div', 'ln'), lB = el('div', 'ln');
+  lA.appendChild(el('span', 'eq', 'A')); lA.appendChild(inA.box); lB.appendChild(el('span', 'eq', 'B')); lB.appendChild(inB.box); itA.appendChild(lA); itA.appendChild(lB);
+  var itB = el('div', 'item'); itB.appendChild(el('div', 'q', 'b) Place les points C ' + coordTxt(P.C) + ' et D ' + coordTxt(P.D) + '.'));
+  var cur = 'C', placed = {}, tools = el('div', 'row left'), bC = el('button', 'btn sel', 'Placer C'), bD = el('button', 'btn', 'Placer D');
+  bC.type = bD.type = 'button'; bC.onclick = function(){ cur = 'C'; bC.classList.add('sel'); bD.classList.remove('sel'); }; bD.onclick = function(){ cur = 'D'; bD.classList.add('sel'); bC.classList.remove('sel'); };
+  tools.appendChild(bC); tools.appendChild(bD); itB.appendChild(tools); itB.appendChild(el('p', 'consigne', 'Choisis le point, puis touche la carte à l’endroit voulu (sur un croisement du quadrillage).'));
+  var lockMap = false;
+  M.svg.addEventListener('click', function(e){
+    if (lockMap) return; var p = M.at(e); if (placed[cur]) placed[cur].g.remove();
+    placed[cur] = {p: p, g: M.dot(p, cur, 'mine')};
+    if (cur === 'C' && !placed.D) bD.onclick();
+  });
+  box.appendChild(itA); box.appendChild(itB);
+  return {box: box, max: 4, check: function(){
+    var got = 0, why = [], sol = [];
+    [['A', inA], ['B', inB]].forEach(function(z){
+      var r = z[1].read(), p = P[z[0]], okLa = r.lat !== null && eq(r.lat, p.lat), okLo = r.lon !== null && eq(r.lon, p.lon);
+      z[1].lock(okLa, okLo); got += (okLa ? .5 : 0) + (okLo ? .5 : 0);
+      if (!okLa) why.push('Latitude de ' + z[0] + ' fausse : on compte depuis l’équateur, vers le Nord ou vers le Sud.');
+      if (!okLo) why.push('Longitude de ' + z[0] + ' fausse : on compte depuis le méridien de Greenwich, vers l’Est ou vers l’Ouest.');
+      sol.push(z[0] + ' ' + coordTxt(p));
+    });
+    var gA = got; itemState(itA, gA, 2); corr(itA, gA, 2, {why: why, sol: sol, noHl: true, tip: 'on écrit (latitude ; longitude) : d’abord N ou S, puis E ou O.'});
+    lockMap = true; bC.disabled = bD.disabled = true; var g2 = 0, why2 = [];
+    ['C', 'D'].forEach(function(n){
+      var ok = placed[n] && placed[n].p.lat === P[n].lat && placed[n].p.lon === P[n].lon;
+      if (ok) g2 += 1; else why2.push(placed[n] ? n + ' est mal placé (tu l’as mis en ' + coordTxt(placed[n].p) + ').' : n + ' n’est pas placé.');
+      if (placed[n]) placed[n].g.setAttribute('class', 'pt ' + (ok ? 'good' : 'bad'));
+      if (!ok) M.dot(P[n], n, 'sol');
+    });
+    got += g2; itemState(itB, g2, 2);
+    corr(itB, g2, 2, {why: why2, sol: ['Les bonnes positions sont en vert sur la carte.'], noHl: true, tip: 'pour ' + coordTxt(P.C) + ' : on se place sur le parallèle ' + Math.abs(P.C.lat) + '° ' + (P.C.lat > 0 ? 'N' : 'S') + ', puis on suit ce parallèle jusqu’au méridien ' + Math.abs(P.C.lon) + '° ' + (P.C.lon > 0 ? 'E' : 'O') + '.'});
+    return got;
+  }};
+}
+
+/* ============ Exercice 3 : tester un nombre ============ */
+function genTest(isSol, t){
+  return fresh(function(){
+    var a1 = rnd(2, 6), b1 = pick([-1, 1]) * rnd(1, 9), a2 = rnd(1, 5); if (a2 === a1) a2 = a1 - 1 || 1;
+    var cf = Math.random() < .3; if (cf){ a1 = -a1; b1 = Math.abs(b1) + rnd(1, 4); }
+    var b2 = a1 * t + b1 - a2 * t + (isSol ? 0 : pick([-1, 1]) * rnd(1, 4));
+    return {a1: a1, b1: b1, a2: a2, b2: b2, cf: cf, t: t, isSol: isSol};
+  }, function(E){ return 'eq:' + E.a1 + '|' + E.b1 + '|' + E.a2 + '|' + E.b2; });
+}
+function exTest(){
+  var sol1 = Math.random() < .5, lines = [genTest(sol1, rnd(2, 5)), genTest(!sol1, -rnd(1, 3))], box = el('div', 'items'), rows = [];
+  lines.forEach(function(E, k){
+    var it = el('div', 'item');
+    it.appendChild(el('div', 'q', (k ? 'b) ' : 'a) ') + 'Le nombre ' + fmt(E.t) + ' est-il solution de ' + lin(E.a1, E.b1, E.cf) + ' = ' + lin(E.a2, E.b2) + ' ?'));
+    var l1 = el('div', 'ln'), f1 = field('num', 'valeur'); l1.appendChild(el('span', 'tag', '1er membre pour x = ' + fmt(E.t))); l1.appendChild(f1);
+    var l2 = el('div', 'ln'), f2 = field('num', 'valeur'); l2.appendChild(el('span', 'tag', '2nd membre pour x = ' + fmt(E.t))); l2.appendChild(f2);
+    var l3 = el('div', 'ln'), s = sel(['oui', 'non']); l3.appendChild(el('span', 'tag', 'Est-ce une solution ?')); l3.appendChild(s);
+    it.appendChild(l1); it.appendChild(l2); it.appendChild(l3); rows.push({E: E, f1: f1, f2: f2, s: s, it: it}); box.appendChild(it);
+  });
+  return {box: box, max: 3, check: function(){
+    var got = 0;
+    rows.forEach(function(x){
+      var E = x.E, v1 = E.a1 * E.t + E.b1, v2 = E.a2 * E.t + E.b2, r1 = parseVal(x.f1.value), r2 = parseVal(x.f2.value);
+      var ok1 = r1 !== null && eq(r1, v1), ok2 = r2 !== null && eq(r2, v2), ok3 = x.s.value === (E.isSol ? 'oui' : 'non');
+      [x.f1, x.f2, x.s].forEach(function(z){ z.disabled = true; }); mark(x.f1, ok1); mark(x.f2, ok2); mark(x.s, ok3);
+      var g = (ok1 ? .5 : 0) + (ok2 ? .5 : 0) + (ok3 ? .5 : 0); got += g; itemState(x.it, g, 1.5);
+      var W = []; if (!ok1) W.push('Le 1er membre est faux.'); if (!ok2) W.push('Le 2nd membre est faux.'); if (!ok3) W.push('La conclusion est fausse.');
+      corr(x.it, g, 1.5, {why: W, sol: ['1er membre : ' + evalTxt(E.a1, E.b1, E.t, E.cf), '2nd membre : ' + evalTxt(E.a2, E.b2, E.t), E.isSol ? fmt(v1) + ' = ' + fmt(v2) + ' : les deux membres sont égaux, donc ' + fmt(E.t) + ' est solution.' : fmt(v1) + ' ≠ ' + fmt(v2) + ' : les deux membres ne sont pas égaux, donc ' + fmt(E.t) + ' n’est pas solution.'],
+        tip: 'on calcule chaque membre séparément en remplaçant x par le nombre (attention aux parenthèses autour des négatifs), puis on compare.'});
+    });
+    return got;
+  }};
+}
+
+/* ============ Exercice 4 : résoudre des équations ============ */
+function eqLine(it, ph){ var ln = el('div', 'ln'), f = field('', ph); ln.appendChild(el('span', 'eq', '')); ln.appendChild(f); it.appendChild(ln); return f; }
+function exSolve(){
+  var box = el('div', 'items two'), parts = [];
+  // a) ax + b = c
+  var A = fresh(function(){ var a = rnd(2, 7), s = pick([-1, 1]) * rnd(1, 6), b = pick([-1, 1]) * rnd(1, 9); return {a: a, b: b, c: a * s + b, s: s}; }, function(E){ return 'eq:' + E.a + '|' + E.b + '|0|' + E.c; });
+  // b) ax + b = cx + d
+  var B = fresh(function(){ var c = rnd(2, 6), a = c + rnd(2, 5), s = pick([-1, 1]) * rnd(1, 5), b = pick([-1, 1]) * rnd(2, 9); return {a: a, b: b, c: c, d: (a - c) * s + b, s: s}; }, function(E){ return 'eq:' + E.a + '|' + E.b + '|' + E.c + '|' + E.d; });
+  // c) kx = m, solution non entière
+  var C = fresh(function(){ var k, m; do { k = pick([-1, 1]) * rnd(2, 7); m = pick([-1, 1]) * rnd(2, 11); } while (m % k === 0); return {k: k, m: m}; }, function(E){ return 'eq:' + E.k + '|0|0|' + E.m; });
+  var itA = el('div', 'item'); itA.appendChild(el('div', 'q', 'a) Résous : ' + lin(A.a, A.b) + ' = ' + fmt(A.c)));
+  var a1 = eqLine(itA, 'ex. 5x = 20'), a2 = eqLine(itA, 'x = …');
+  var itB = el('div', 'item'); itB.appendChild(el('div', 'q', 'b) Résous : ' + lin(B.a, B.b) + ' = ' + lin(B.c, B.d)));
+  var b1 = eqLine(itB, 'étape 1'), b2 = eqLine(itB, 'étape 2'), b3 = eqLine(itB, 'x = …');
+  var itC = el('div', 'item'); itC.appendChild(el('div', 'q', 'c) Résous : ' + coefX(C.k) + ' = ' + fmt(C.m)));
+  var c1 = eqLine(itC, 'x = … (fraction)');
+  box.appendChild(itA); box.appendChild(itB); box.appendChild(itC);
+  function stepOk(f, orig, wantForm){ // équation équivalente (même solution), de la forme voulue
+    var E = parseEqn(f.value); if (!E) return false; var s = solOf(E); if (s === null || !eq(s, orig)) return false;
+    if (wantForm === 'xOneSide') return eq(E.R.a, 0) || eq(E.L.a, 0);
+    if (wantForm === 'kx=m') return (eq(E.L.b, 0) && eq(E.R.a, 0)) || (eq(E.R.b, 0) && eq(E.L.a, 0));
+    return true;
+  }
+  function xOk(f, s){ var v = parseVal(f.value); return v !== null && eq(v, s); }
+  return {box: box, max: 6, check: function(){
+    var got = 0;
+    // a) : 2 points (étape 1, x = 1)
+    var ok1 = stepOk(a1, A.s, 'kx=m'), ok2 = xOk(a2, A.s), g = (ok1 ? 1 : 0) + (ok2 ? 1 : 0); [a1, a2].forEach(function(f){ f.disabled = true; }); mark(a1, ok1); mark(a2, ok2);
+    got += g; itemState(itA, g, 2);
+    corr(itA, g, 2, {why: [].concat(ok1 ? [] : ['Étape 1 : il faut isoler le terme en x (' + (A.b > 0 ? 'soustraire ' + A.b : 'ajouter ' + (-A.b)) + ' aux deux membres).']).concat(ok2 ? [] : ['La solution est fausse.']),
+      sol: [lin(A.a, A.b) + ' = ' + fmt(A.c), coefX(A.a) + ' = ' + fmt(A.c) + (A.b > 0 ? ' ' + MINUS + ' ' + A.b : ' + ' + (-A.b)), coefX(A.a) + ' = ' + fmt(A.c - A.b), 'x = ' + fmt(A.c - A.b) + ' ÷ ' + A.a, 'x = ' + fmt(A.s)], tip: 'on enlève d’abord le nombre seul, puis on divise par le coefficient de x.'});
+    // b) : 3 points (deux étapes, x = 1)
+    var k1 = stepOk(b1, B.s, 'xOneSide'), k2 = stepOk(b2, B.s, 'kx=m'), k3 = xOk(b3, B.s), gb = (k1 ? 1 : 0) + (k2 ? 1 : 0) + (k3 ? 1 : 0);
+    [b1, b2, b3].forEach(function(f){ f.disabled = true; }); mark(b1, k1); mark(b2, k2); mark(b3, k3); got += gb; itemState(itB, gb, 3);
+    corr(itB, gb, 3, {why: [].concat(k1 ? [] : ['Étape 1 : il faut regrouper les x d’un seul côté (soustraire ' + coefX(B.c) + ' aux deux membres).']).concat(k2 ? [] : ['Étape 2 : il faut isoler le terme en x (' + (B.b > 0 ? 'soustraire ' + B.b : 'ajouter ' + (-B.b)) + ').']).concat(k3 ? [] : ['La solution est fausse.']),
+      sol: [lin(B.a, B.b) + ' = ' + lin(B.c, B.d), lin(B.a - B.c, B.b) + ' = ' + fmt(B.d), coefX(B.a - B.c) + ' = ' + fmt(B.d - B.b), 'x = ' + fmt(B.d - B.b) + ' ÷ ' + (B.a - B.c), 'x = ' + fmt(B.s)], tip: 'les x d’un côté, les nombres de l’autre : chaque étape se fait sur les deux membres.'});
+    // c) : 1 point
+    var kc = xOk(c1, C.m / C.k); c1.disabled = true; mark(c1, kc); got += kc ? 1 : 0; itemState(itC, kc ? 1 : 0, 1);
+    corr(itC, kc ? 1 : 0, 1, {why: ['La solution est x = ' + frac(C.m, C.k) + '.'], sol: [coefX(C.k) + ' = ' + fmt(C.m), 'x = ' + fmt(C.m) + ' ÷ ' + (C.k < 0 ? '(' + fmt(C.k) + ')' : C.k), 'x = ' + frac(C.m, C.k)], tip: 'quand la division ne tombe pas juste, on laisse la solution sous forme de fraction (écris par exemple -7/3).'});
+    return got;
+  }};
+}
+
+/* ============ Exercice 5 : problème ============ */
+var CTX = [
+  {lieu: 'Au lac de Caniel, à Vittefleur, Tom veut faire du téléski nautique cet été', u: 'séance', us: 'séances', sans: 'Sans abonnement, une séance coûte', avec: 'Avec l’abonnement, on paie', qui: 'Tom', f1: 'sans abonnement', f2: 'avec l’abonnement'},
+  {lieu: 'Au centre équestre de Cany-Barville, Lina veut prendre des cours d’équitation', u: 'cours', us: 'cours', sans: 'Sans carte, un cours coûte', avec: 'Avec la carte « Cavalier », on paie', qui: 'Lina', f1: 'sans carte', f2: 'avec la carte'},
+  {lieu: 'À Étretat, Lucas veut prendre des séances de surf', u: 'séance', us: 'séances', sans: 'Sans abonnement, une séance coûte', avec: 'Avec l’abonnement, on paie', qui: 'Lucas', f1: 'sans abonnement', f2: 'avec l’abonnement'},
+  {lieu: 'Jade veut aller nager à la piscine de Fécamp', u: 'entrée', us: 'entrées', sans: 'Sans carte, une entrée coûte', avec: 'Avec la carte « Nageur », on paie', qui: 'Jade', f1: 'sans carte', f2: 'avec la carte'},
+  {lieu: 'Noah veut aller voir des films au cinéma de Fécamp', u: 'place', us: 'places', sans: 'Sans carte, une place coûte', avec: 'Avec la carte « Cinéphile », on paie', qui: 'Noah', f1: 'sans carte', f2: 'avec la carte'},
+  {lieu: 'Inès veut grimper dans une salle d’escalade près de Rouen', u: 'séance', us: 'séances', sans: 'Sans abonnement, une séance coûte', avec: 'Avec l’abonnement, on paie', qui: 'Inès', f1: 'sans abonnement', f2: 'avec l’abonnement'},
+  {lieu: 'Sami veut faire du kayak de mer à Veulettes-sur-Mer', u: 'sortie', us: 'sorties', sans: 'Sans carte, une sortie coûte', avec: 'Avec la carte « Matelot », on paie', qui: 'Sami', f1: 'sans carte', f2: 'avec la carte'}
+];
+function exPb(){
+  var C = pick(CTX), V = fresh(function(){ var q = rnd(3, 8), p = q + rnd(3, 9), s = rnd(3, 7); return {p: p, q: q, s: s, F: (p - q) * s}; }, function(v){ return 'pb:' + v.p + '|' + v.F + '|' + v.q; });
+  var t; do { t = rnd(2, 9); } while (t === V.s);
+  var box = el('div', 'items');
+  box.appendChild(el('p', null, C.lieu + ' (prix fictifs). ' + C.sans + ' ' + V.p + ' €. ' + C.avec + ' ' + V.F + ' € une fois, puis ' + V.q + ' € par ' + C.u + '. Pour combien de ' + C.us + ' les deux formules coûtent-elles le même prix ?'));
+  var it1 = el('div', 'item'); it1.appendChild(el('div', 'q', '1. On note x le nombre de ' + C.us + '. Exprime le prix payé ' + C.f1 + ', puis ' + C.f2 + ', en fonction de x. Écris une équation qui traduit le problème.'));
+  function L(it, tag, ph, cl){ var ln = el('div', 'ln'), f = field(cl || '', ph); ln.appendChild(el('span', 'tag', tag)); ln.appendChild(f); it.appendChild(ln); return f; }
+  var p1 = L(it1, 'Prix ' + C.f1, 'en fonction de x'), p2 = L(it1, 'Prix ' + C.f2, 'en fonction de x'), pe = L(it1, 'Équation', '… = …');
+  var it2 = el('div', 'item'); it2.appendChild(el('div', 'q', '2. ' + C.qui + ' pense que la réponse est ' + t + '. Le nombre ' + t + ' est-il solution de cette équation ?'));
+  var t1 = L(it2, 'Prix ' + C.f1 + ' pour ' + t + ' ' + C.us, 'valeur', 'num'), t2 = L(it2, 'Prix ' + C.f2 + ' pour ' + t + ' ' + C.us, 'valeur', 'num');
+  var lt = el('div', 'ln'), ts = sel(['oui', 'non']); lt.appendChild(el('span', 'tag', 'Conclusion : ' + t + ' est-il solution ?')); lt.appendChild(ts); it2.appendChild(lt);
+  var it3 = el('div', 'item'); it3.appendChild(el('div', 'q', '3. Résous l’équation.'));
+  var r1 = L(it3, 'Étape', 'ex. 5x = 30'), r2 = L(it3, 'Solution', 'x = …');
+  var it4 = el('div', 'item'); it4.appendChild(el('div', 'q', '4. Conclus : pour combien de ' + C.us + ' les deux formules coûtent-elles le même prix, et quel est ce prix ?'));
+  var c1 = L(it4, 'Nombre de ' + C.us, 'nombre', 'num'), c2 = L(it4, 'Prix payé (€)', 'prix', 'num');
+  [it1, it2, it3, it4].forEach(function(x){ box.appendChild(x); });
+  function sameLin(P, a, b){ return P && eq(P.a, a) && eq(P.b, b); }
+  return {box: box, max: 6, note: 'Sur ta copie, la conclusion se rédige avec une phrase.', check: function(){
+    var got = 0;
+    // 1 : prix sans (0,5), prix avec (1), équation (0,5)
+    var o1 = sameLin(parseLin(p1.value), V.p, 0), o2 = sameLin(parseLin(p2.value), V.q, V.F), E = parseEqn(pe.value);
+    var o3 = !!E && ((sameLin(E.L, V.p, 0) && sameLin(E.R, V.q, V.F)) || (sameLin(E.R, V.p, 0) && sameLin(E.L, V.q, V.F)));
+    [p1, p2, pe].forEach(function(f){ f.disabled = true; }); mark(p1, o1); mark(p2, o2); mark(pe, o3);
+    var g1 = (o1 ? .5 : 0) + (o2 ? 1 : 0) + (o3 ? .5 : 0); got += g1; itemState(it1, g1, 2);
+    corr(it1, g1, 2, {why: [].concat(o1 ? [] : ['Prix ' + C.f1 + ' : ' + V.p + ' € pour chaque ' + C.u + ', donc ' + V.p + 'x.']).concat(o2 ? [] : ['Prix ' + C.f2 + ' : ' + V.F + ' € une seule fois, plus ' + V.q + ' € par ' + C.u + ', donc ' + V.F + ' + ' + V.q + 'x.']).concat(o3 ? [] : ['L’équation dit que les deux prix sont égaux.']),
+      sol: ['Prix ' + C.f1 + ' : ' + V.p + 'x', 'Prix ' + C.f2 + ' : ' + V.F + ' + ' + V.q + 'x', 'Équation : ' + V.p + 'x = ' + V.F + ' + ' + V.q + 'x'], noHl: true, tip: 'le prix « à l’unité » se multiplie par x ; le prix payé une seule fois s’ajoute.'});
+    // 2 : calculs (0,5), conclusion (0,5)
+    var v1 = parseVal(t1.value), v2 = parseVal(t2.value), q1 = v1 !== null && eq(v1, V.p * t), q2 = v2 !== null && eq(v2, V.F + V.q * t), q3 = ts.value === 'non';
+    [t1, t2, ts].forEach(function(f){ f.disabled = true; }); mark(t1, q1); mark(t2, q2); mark(ts, q3);
+    var g2 = (q1 ? .25 : 0) + (q2 ? .25 : 0) + (q3 ? .5 : 0); got += g2; itemState(it2, g2, 1);
+    corr(it2, g2, 1, {why: [].concat(q1 && q2 ? [] : ['Un des calculs est faux.']).concat(q3 ? [] : ['La conclusion est fausse.']),
+      sol: [V.p + ' × ' + t + ' = ' + V.p * t + ' et ' + V.F + ' + ' + V.q + ' × ' + t + ' = ' + (V.F + V.q * t), V.p * t + ' ≠ ' + (V.F + V.q * t) + ', donc ' + t + ' n’est pas solution.'], noHl: true, tip: 'pour tester, on calcule les deux membres avec x = ' + t + ' et on compare.'});
+    // 3 : étapes (1), solution (1)
+    var s1 = parseEqn(r1.value), w1 = !!s1 && solOf(s1) !== null && eq(solOf(s1), V.s) && ((eq(s1.L.b, 0) && eq(s1.R.a, 0)) || (eq(s1.R.b, 0) && eq(s1.L.a, 0))), sv = parseVal(r2.value), w2 = sv !== null && eq(sv, V.s);
+    r1.disabled = r2.disabled = true; mark(r1, w1); mark(r2, w2); var g3 = (w1 ? 1 : 0) + (w2 ? 1 : 0); got += g3; itemState(it3, g3, 2);
+    corr(it3, g3, 2, {why: [].concat(w1 ? [] : ['Étape : on regroupe les x d’un côté (' + V.p + 'x ' + MINUS + ' ' + V.q + 'x = ' + V.F + ').']).concat(w2 ? [] : ['La solution est fausse.']),
+      sol: [V.p + 'x = ' + V.F + ' + ' + V.q + 'x', V.p + 'x ' + MINUS + ' ' + V.q + 'x = ' + V.F, (V.p - V.q) + 'x = ' + V.F, 'x = ' + V.F + ' ÷ ' + (V.p - V.q), 'x = ' + V.s], tip: 'on soustrait ' + V.q + 'x aux deux membres, puis on divise par ' + (V.p - V.q) + '.'});
+    // 4 : nombre (phrase, 0,5), prix (0,5)
+    var n4 = parseVal(c1.value), m4 = parseVal(c2.value), u1 = n4 !== null && eq(n4, V.s), u2 = m4 !== null && eq(m4, V.p * V.s);
+    c1.disabled = c2.disabled = true; mark(c1, u1); mark(c2, u2); var g4 = (u1 ? .5 : 0) + (u2 ? .5 : 0); got += g4; itemState(it4, g4, 1);
+    corr(it4, g4, 1, {why: [].concat(u1 ? [] : ['Le nombre de ' + C.us + ' est la solution de l’équation : ' + V.s + '.']).concat(u2 ? [] : ['Le prix : ' + V.p + ' × ' + V.s + ' = ' + V.p * V.s + ' € (ou ' + V.F + ' + ' + V.q + ' × ' + V.s + ').']),
+      always: true, sol: ['« Pour ' + V.s + ' ' + C.us + ', les deux formules coûtent le même prix : ' + V.p * V.s + ' €. »'], solTitle: 'La phrase à écrire sur ta copie', noHl: true, tip: 'on vérifie : ' + V.p + ' × ' + V.s + ' = ' + V.p * V.s + ' et ' + V.F + ' + ' + V.q + ' × ' + V.s + ' = ' + (V.F + V.q * V.s) + '.'});
+    return got;
+  }};
+}
+
+/* ============ Bonus ============ */
+function exBonus(){
+  var P = randPt(), anti = {lat: -P.lat, lon: P.lon > 0 ? P.lon - 180 : P.lon + 180};
+  var B = fresh(function(){ var a = rnd(2, 5), x = a * rnd(2, 4), b = pick([-1, 1]) * rnd(1, 3), c = x - x / a - b; return {a: a, x: x, b: b, c: c}; }, function(v){ return 'bb:' + v.a + '|' + v.b + '|' + v.c; });
+  if (B.c <= 0){ B.b = -Math.abs(B.b); B.c = B.x - B.x / B.a - B.b; }
+  var box = el('div', 'items two');
+  var it1 = el('div', 'item'); it1.appendChild(el('div', 'q', 'a) Antipode (point diamétralement opposé) de ' + coordTxt(P) + ' :'));
+  var ci = coordInput(), l1 = el('div', 'ln'); l1.appendChild(ci.box); it1.appendChild(l1);
+  var it2 = el('div', 'item'); it2.appendChild(el('div', 'q', 'b) Résous : x/' + B.a + ' ' + (B.b < 0 ? MINUS + ' ' + (-B.b) : '+ ' + B.b) + ' = x ' + MINUS + ' ' + B.c));
+  var l2 = el('div', 'ln'), f2 = field('num', 'x = …'); l2.appendChild(el('span', 'eq', 'x =')); l2.appendChild(f2); it2.appendChild(l2);
+  box.appendChild(it1); box.appendChild(it2);
+  return {box: box, max: 1, check: function(){
+    var r = ci.read(), okA = r.lat !== null && r.lon !== null && eq(r.lat, anti.lat) && eq(r.lon, anti.lon); ci.lock(okA, okA);
+    itemState(it1, okA ? 1 : 0, 1); corr(it1, okA ? .5 : 0, .5, {why: ['L’antipode est ' + coordTxt(anti) + '.'], sol: ['Latitude : même valeur, hémisphère opposé (N ↔ S).', 'Longitude : 180° ' + MINUS + ' ' + Math.abs(P.lon) + '° = ' + (180 - Math.abs(P.lon)) + '°, côté opposé (E ↔ O).', coordTxt(anti)]});
+    var v = parseVal(f2.value), okB = v !== null && eq(v, B.x); f2.disabled = true; mark(f2, okB); itemState(it2, okB ? 1 : 0, 1);
+    corr(it2, okB ? .5 : 0, .5, {why: ['La solution est x = ' + B.x + '.'], sol: ['On multiplie les deux membres par ' + B.a + ' : x ' + (B.b * B.a < 0 ? MINUS + ' ' + (-B.b * B.a) : '+ ' + B.b * B.a) + ' = ' + B.a + 'x ' + MINUS + ' ' + B.a * B.c, 'x = ' + B.x + ' (vérification : ' + B.x + '/' + B.a + ' ' + (B.b < 0 ? MINUS + ' ' + (-B.b) : '+ ' + B.b) + ' = ' + (B.x / B.a + B.b) + ' et ' + B.x + ' ' + MINUS + ' ' + B.c + ' = ' + (B.x - B.c) + ')']});
+    return (okA ? .5 : 0) + (okB ? .5 : 0);
+  }};
+}
+
+/* ============ Questions posées autrement (non notées) ============ */
+var VARS = [
+  function(){ return {q: 'Quelle est la latitude d’un point situé sur l’équateur ?', opts: ['0°', '90° N', '180°'], good: '0°', sol: ['L’équateur est le parallèle de référence : sa latitude est 0°.'], tip: 'la latitude va de 0° (équateur) à 90° (pôles).'}; },
+  function(){ return {q: 'Quelle est la longitude d’un point situé sur le méridien de Greenwich ?', opts: ['0°', '90° E', '180°'], good: '0°', sol: ['Le méridien de Greenwich est le méridien de référence : sa longitude est 0°.'], tip: 'la longitude va de 0° (Greenwich) à 180° Est ou Ouest.'}; },
+  function(){ return {q: 'Quelles sont les coordonnées du pôle Nord ?', opts: ['latitude 90° N', 'latitude 0°', 'longitude 90° E'], good: 'latitude 90° N', sol: ['Le pôle Nord est le point le plus au nord : sa latitude est 90° N (tous les méridiens s’y rejoignent).'], tip: 'aux pôles, la latitude vaut 90°.'}; },
+  function(){ var a = rnd(2, 6), b = rnd(1, 5), c = b + rnd(1, 4); return {q: 'Combien de solutions l’équation ' + a + 'x + ' + b + ' = ' + a + 'x + ' + c + ' a-t-elle ?', opts: ['aucune', 'une seule', 'une infinité'], good: 'aucune', sol: [a + 'x + ' + b + ' et ' + a + 'x + ' + c + ' ne sont jamais égaux (on aurait ' + b + ' = ' + c + ').', 'L’équation n’a aucune solution.'], tip: 'une équation n’a pas toujours une solution.'}; },
+  function(){ var k = rnd(2, 9), m = 3 * rnd(3, 9) + k; return {q: 'Quelle équation traduit : « le triple d’un nombre x, augmenté de ' + k + ', est égal à ' + m + ' » ?', opts: ['3x + ' + k + ' = ' + m, '3(x + ' + k + ') = ' + m, 'x + 3 × ' + k + ' = ' + m], good: '3x + ' + k + ' = ' + m, sol: ['« Le triple de x » : 3x ; « augmenté de ' + k + ' » : 3x + ' + k + '.', 'Équation : 3x + ' + k + ' = ' + m + ' (solution : x = ' + (m - k) / 3 + ').'], tip: 'on traduit la phrase dans l’ordre où elle est construite.'}; },
+  function(){ var a = rnd(2, 9), s = rnd(2, 9); return {q: 'Pour résoudre ' + a + 'x = ' + a * s + ', que fait-on aux deux membres ?', opts: ['on les divise par ' + a, 'on leur soustrait ' + a, 'on les multiplie par ' + a], good: 'on les divise par ' + a, sol: ['x = ' + a * s + ' ÷ ' + a + ' = ' + s + '.'], tip: 'pour enlever un coefficient multiplicateur, on divise.'}; },
+  function(){ var a = rnd(2, 5), b = rnd(1, 9), t = rnd(2, 6), c = a * t + b + pick([0, 0, 1, -1]); var ok = c === a * t + b; return {q: 'Sans résoudre : x = ' + t + ' est-il solution de ' + a + 'x + ' + b + ' = ' + c + ' ?', opts: ['oui', 'non'], good: ok ? 'oui' : 'non', sol: [a + ' × ' + t + ' + ' + b + ' = ' + (a * t + b) + (ok ? ' = ' : ' ≠ ') + c + (ok ? ', donc oui.' : ', donc non.')], tip: 'tester, c’est remplacer x et comparer les deux membres.'}; }
+];
+function exVar(){
+  var idx = shuffle(VARS.map(function(_, k){ return k; })).slice(0, 2), box = el('div', 'items two'), qs = [];
+  idx.forEach(function(k, n){
+    var V = VARS[k](), it = el('div', 'item'), s = sel(shuffle(V.opts.slice()));
+    it.appendChild(el('div', 'q', (n + 1) + '. ' + V.q)); var ln = el('div', 'ln'); ln.appendChild(s); it.appendChild(ln); qs.push({V: V, s: s, it: it}); box.appendChild(it);
+  });
+  return {box: box, max: 2, check: function(){
+    var got = 0;
+    qs.forEach(function(x){ var ok = x.s.value === x.V.good; x.s.disabled = true; mark(x.s, ok); if (ok) got++; itemState(x.it, ok ? 1 : 0, 1);
+      corr(x.it, ok ? 1 : 0, 1, {why: ['La bonne réponse : « ' + x.V.good + ' ».'], sol: x.V.sol, solTitle: 'Explication', noHl: true, tip: x.V.tip, always: true}); });
+    return got;
+  }};
+}
+
+/* ============ menu, entraînement, évaluation blanche ============ */
+var EX = [
+  {id: 'cours', n: 'Exercice 1', t: 'Question de cours', ic: '📖', d: 'Les règles pour transformer une équation.', max: 1, make: exCours},
+  {id: 'coord', n: 'Exercice 2', t: 'Coordonnées terrestres', ic: '🌍', d: 'Lire et placer des points sur un planisphère.', max: 4, make: exCoord},
+  {id: 'test', n: 'Exercice 3', t: 'Tester un nombre', ic: '🔎', d: 'Calculer les deux membres, puis conclure.', max: 3, make: exTest},
+  {id: 'solve', n: 'Exercice 4', t: 'Résoudre des équations', ic: '⚖️', d: 'Une étape par ligne, jusqu’à x = …', max: 6, make: exSolve},
+  {id: 'pb', n: 'Exercice 5', t: 'Problème', ic: '🎟️', d: 'Mettre en équation deux formules de prix.', max: 6, make: exPb},
+  {id: 'bonus', n: 'Bonus', t: 'Antipode et équation', ic: '⭐', d: 'Pour aller plus loin.', max: 1, make: exBonus},
+  {id: 'var', n: 'Pour comprendre', t: 'Questions autrement', ic: '🧠', d: 'Des questions posées autrement que dans l’évaluation, pour vérifier que tu as vraiment compris.', max: 2, make: exVar, extra: true}
+];
+function byId(id){ return EX.filter(function(e){ return e.id === id; })[0]; }
+function cls(got, max){ return eq(got, max) ? 'ok' : got >= max * .6 ? 'mid' : 'ko'; }
+function stat(p, t){ if (window.stat) window.stat(p, t); }
+
+function menu(){
+  tomenu.hidden = true; kbar.hidden = true; main.innerHTML = '';
+  var best = store('eval:e01:best');
+  main.appendChild(el('h2', 'cat', 'Le jour J'));
+  var g0 = el('div', 'grid'), t0 = el('button', 'tile big'); t0.type = 'button';
+  t0.appendChild(el('span', 'ic', '📝'));
+  var s0 = el('span'); s0.appendChild(el('b', null, 'Évaluation blanche')); s0.appendChild(el('span', 'd', 'Un sujet complet comme le jour J, noté sur 20 avec le vrai barème, sans limite de temps. Un nouveau sujet à chaque fois (jamais les questions de ton vrai sujet) : recommence autant de fois que tu veux !'));
+  if (best) s0.appendChild(el('span', 'rec', 'Ta meilleure note : ' + best + '/20'));
+  t0.appendChild(s0); t0.onclick = function(){ location.hash = 'blanc'; }; g0.appendChild(t0); main.appendChild(g0);
+  main.appendChild(el('h2', 'cat', 'S’entraîner exercice par exercice'));
+  var g = el('div', 'grid');
+  EX.forEach(function(x){
+    var b = el('button', 'tile'); b.type = 'button'; b.appendChild(el('span', 'ic', x.ic));
+    var s = el('span'); s.appendChild(el('b', null, x.n + ' · ' + x.t)); s.appendChild(el('span', 'd', x.d + (x.extra ? ' (non noté)' : ' (' + pts(x.max) + ' pt' + (x.max > 1 ? 's' : '') + ')')));
+    var rec = store('eval:e01:' + x.id); if (rec) s.appendChild(el('span', 'rec', 'Dernier essai : ' + rec + '/' + pts(x.max)));
+    b.appendChild(s); b.onclick = function(){ location.hash = x.id; }; g.appendChild(b);
+  });
+  main.appendChild(g);
+}
+
+function exPanel(x, inst, n){
+  var p = el('section', 'panel'), h = el('div', 'ph');
+  h.appendChild(el('h2', null, x.ic + ' ' + x.n + ' · ' + x.t)); var sc = el('span', 'pts', pts(x.max) + ' pt' + (x.max > 1 ? 's' : '')); h.appendChild(sc);
+  p.appendChild(h);
+  var c = {cours: 'Complète avec le bon mot (0,5 point par phrase).', coord: 'a) Pour chaque point : latitude 0,5 point, longitude 0,5 point. b) Chaque point bien placé : 1 point.',
+    test: 'Pour chaque ligne : les deux membres 0,5 point chacun, la conclusion 0,5 point.', solve: 'Une étape par ligne, par exemple 5x = 20, puis x = 4. a) 2 points ; b) 3 points ; c) 1 point. Pour une fraction, écris par exemple -7/3.',
+    pb: '', bonus: 'Ces points s’ajoutent à la note (sans dépasser 20).', var: 'Ces questions ne sont pas comptées dans la note sur 20 : elles servent à vérifier que tu as compris, au-delà des exercices types.'}[x.id];
+  if (c) p.appendChild(el('p', 'consigne', c));
+  p.appendChild(inst.box); if (inst.note) p.appendChild(el('p', 'consigne', inst.note));
+  return {p: p, sc: sc};
+}
+
+function train(id){
+  var x = byId(id); if (!x){ menu(); return; }
+  stat('/exos/3e-e01-eval/' + id, 'Préparer l’évaluation E01 · ' + x.t);
+  tomenu.hidden = false; main.innerHTML = '';
+  var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p);
+  var row = el('div', 'row'), bv = el('button', 'btn main', 'Corriger'); bv.type = 'button'; row.appendChild(bv); P.p.appendChild(row);
+  bv.onclick = function(){
+    var got = inst.check(); bv.remove(); kbar.hidden = true;
+    P.sc.textContent = pts(got) + ' / ' + pts(x.max); P.sc.className = 'pts ' + cls(got, x.max);
+    store('eval:e01:' + id, pts(got));
+    var r = el('div', 'res ' + cls(got, x.max), pts(got) + ' / ' + pts(x.max) + (eq(got, x.max) ? ' : parfait !' : ''));
+    r.appendChild(el('small', null, eq(got, x.max) ? 'Tu es prêt(e) pour cet exercice. Essaie l’évaluation blanche !' : 'Lis la correction sous chaque question, puis recommence : les nombres changent à chaque fois.'));
+    P.p.appendChild(r);
+    var r2 = el('div', 'row'), b1 = el('button', 'btn main', '🔁 Recommencer (nouveaux nombres)'), b2 = el('button', 'btn', 'Menu');
+    b1.onclick = function(){ train(id); window.scrollTo(0, 0); }; b2.onclick = function(){ location.hash = ''; };
+    r2.appendChild(b1); r2.appendChild(b2); P.p.appendChild(r2);
+  };
+  window.scrollTo(0, 0);
+}
+
+function blanc(){
+  stat('/exos/3e-e01-eval/blanc', 'Préparer l’évaluation E01 · évaluation blanche');
+  tomenu.hidden = false; main.innerHTML = '';
+  var essai = parseInt(store('eval:e01:essais') || '0', 10) + 1;
+  var bar = el('div', 'timerbar'), tm = el('span', 'timer', 'Sujet n° ' + essai), bend = el('button', 'btn main', 'Rendre ma copie'); bend.type = 'button';
+  bar.appendChild(tm); bar.appendChild(bend); main.appendChild(bar);
+  main.appendChild(el('p', 'consigne', 'Calculatrice interdite. Prends ton temps : il n’y a pas de limite. Rédige comme sur ta copie, une étape par ligne, puis touche « Rendre ma copie ».'));
+  var parts = EX.map(function(x){ var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p); return {x: x, inst: inst, P: P}; });
+  var done = false, t0 = Date.now();
+  bend.onclick = function(){ finish(); };
+  function finish(){
+    if (done) return; done = true; kbar.hidden = true;
+    var total = 0, bonus = 0, res = [];
+    parts.forEach(function(o){
+      var got = o.inst.check(); o.P.sc.textContent = pts(got) + ' / ' + pts(o.x.max); o.P.sc.className = 'pts ' + cls(got, o.x.max);
+      if (o.x.extra){} else if (o.x.id === 'bonus') bonus = got; else total += got; res.push({x: o.x, got: got});
+    });
+    // phrases réponses du problème : comptées si le résultat est juste (elles s'écrivent sur la copie)
+    var note = Math.min(20, total + bonus);
+    note = Math.round(note * 4) / 4;
+    var best = parseFloat((store('eval:e01:best') || '0').replace(',', '.'));
+    if (note > best) store('eval:e01:best', pts(note));
+    store('eval:e01:essais', String(essai));
+    var hist = (store('eval:e01:notes') || '').split(';').filter(Boolean).concat([pts(note)]).slice(-6); store('eval:e01:notes', hist.join(';'));
+    bar.remove();
+    var sum = el('section', 'panel');
+    sum.appendChild(el('div', 'note', pts(note) + '/20'));
+    var used = Math.max(1, Math.round((Date.now() - t0) / 60000));
+    sum.appendChild(el('p', 'consigne', '⏱️ Tu as mis ' + used + ' min' + (used > 30 ? ' : le jour J, tu auras 30 min, entraîne-toi à aller un peu plus vite.' : ' : le jour J, tu auras 30 min, c’est bon !')));
+    sum.lastChild.style.textAlign = 'center';
+    sum.appendChild(el('p', 'consigne', 'Sujet n° ' + essai + '. ' + (note > best && essai > 1 ? '🏆 Ta meilleure note !' : best ? 'Ta meilleure note : ' + pts(Math.max(best, note)) + '/20.' : '') + (hist.length > 1 ? ' Tes dernières notes : ' + hist.join(' → ') + '.' : '')));
+    sum.lastChild.style.textAlign = 'center';
+    var again = el('div', 'row'), ba = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'); ba.type = 'button'; ba.onclick = function(){ blanc(); }; again.appendChild(ba); sum.appendChild(again);
+    var bl = el('div', 'bilan');
+    res.forEach(function(r){
+      var line = el('div', 'bl'), left = el('span'); left.appendChild(el('b', null, r.x.n + ' · ' + r.x.t + ' : '));
+      left.appendChild(el('span', 'pts ' + cls(r.got, r.x.max), pts(r.got) + '/' + pts(r.x.max) + (r.x.extra ? ' (non noté)' : '')));
+      line.appendChild(left);
+      if (!eq(r.got, r.x.max) && r.x.id !== 'bonus' && !r.x.extra){ var b = el('button', 'btn', 'À retravailler →'); b.type = 'button'; b.onclick = function(){ location.hash = r.x.id; }; line.appendChild(b); }
+      bl.appendChild(line);
+    });
+    sum.appendChild(bl);
+    sum.appendChild(el('p', 'consigne', 'La phrase de conclusion du problème est comptée quand le nombre est juste : sur ta vraie copie, pense à l’écrire ! Les corrections détaillées sont sous chaque exercice.'));
+    var r2 = el('div', 'row'), b2 = el('button', 'btn', 'Menu'); b2.onclick = function(){ location.hash = ''; }; r2.appendChild(b2); sum.appendChild(r2);
+    main.insertBefore(sum, main.firstChild);
+    // en bas de la copie corrigée aussi : recommencer
+    var foot = el('section', 'panel'); foot.appendChild(el('p', 'consigne', 'Tu as lu toutes les corrections ? Entraîne-toi encore : un nouveau sujet est tiré à chaque fois, tu peux recommencer autant de fois que tu veux.'));
+    var fr = el('div', 'row'), fb1 = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'), fb2 = el('button', 'btn', 'Menu');
+    fb1.onclick = function(){ blanc(); }; fb2.onclick = function(){ location.hash = ''; }; fr.appendChild(fb1); fr.appendChild(fb2); foot.appendChild(fr); main.appendChild(foot);
+    window.scrollTo(0, 0);
+    stat('/exos/3e-e01-eval/blanc/note', 'Évaluation blanche E01 rendue');
+  }
+  window.scrollTo(0, 0);
+}
+
+function route(){
+  var id = location.hash.slice(1);
+  if (id === 'blanc') blanc(); else if (id) train(id); else menu();
+}
+tomenu.onclick = function(){ location.hash = ''; };
+try { if (document.referrer && new URL(document.referrer).pathname.replace(/index\.html$/, '') === new URL('../', location.href).pathname) document.getElementById('home').href = document.referrer; } catch(e){}
+window.addEventListener('hashchange', route);
+route();
+})();
+</script>
+<script src="../stats.js"></script>
+</body>
+</html>

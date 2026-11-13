@@ -214,7 +214,31 @@ def load(page, dbdir):
                 seqs.append({"num": seq["n"], "titre": seq["t"], "notions": notions})
         data["niveaux"][lv] = seqs
     data["classes"] = classes
+    data["planned"] = planned_evals(dbdir, levels, classes, inter)
     return data, wanted
+
+
+def planned_evals(dbdir, levels, classes, inter):
+    """Évaluations déclarées dans la page enseignant (collection « evaluations ») : date par classe, notions, évaluation blanche.
+    Chaque élève voit l'évaluation à venir de sa classe jusqu'au jour J inclus (le site compare la date au jour courant) ;
+    une classe dont l'évaluation est cochée « faite » (f<k>) n'est plus listée."""
+    out, blancs = [], inter.get("blancs", {})
+    for f in sorted(glob.glob(f"{dbdir}/evaluations/*.json")):
+        p = json.load(open(f))
+        lv = p.get("lv")
+        if lv not in levels or not classes.get(lv):
+            continue
+        noms, done = classes[lv], p.get("f") or {}
+        dates = {noms[int(k) - 1]: d for k, d in (p.get("dates") or {}).items()
+                 if d and str(k).isdigit() and 0 < int(k) <= len(noms) and not done.get(k) and not done.get(int(k))}
+        if not dates:
+            continue
+        titles = {n["n"]: n["t"] for s in levels[lv]["seqs"] for n in s["notions"]}
+        ns = [{"num": n, "titre": titles.get(n, "")} for n in p.get("ns") or []]
+        doc = p.get("doc") or ""
+        out.append({"id": os.path.basename(f)[:-5], "lv": lv, "nom": p.get("nom") or "", "doc": doc, "ns": ns, "dates": dates,
+                    "commune": doc.startswith("E") or len(ns) > 1, "blanc": blancs.get(lv, {}).get(doc) or ""})
+    return out
 
 
 BUNDLE = {}
@@ -259,7 +283,7 @@ def secret_plan():
 def main():
     if sys.argv[1] == "collections":
         levels = js_const(open(sys.argv[2], encoding="utf-8").read(), "LEVELS")
-        print(json.dumps([c for lv in level_list(levels) for c in (suivi_of(lv), evals_of(lv))] + ["config"]))
+        print(json.dumps([c for lv in level_list(levels) for c in (suivi_of(lv), evals_of(lv))] + ["config", "evaluations"]))
         return
     mode, page, dbdir, repo = sys.argv[1:5]
     data, wanted = load(page, dbdir)

@@ -11,5 +11,14 @@
         "u": "exos/4e-n01.html"
       }
     ]
+  },
+  "blancs": {
+    "_doc": "Évaluations blanches par évaluation déclarée (doc : E01 pour une évaluation commune, N10 pour une évaluation de notion)",
+    "3e": {
+      "E01": "exos/3e-e01-eval.html"
+    },
+    "4e": {
+      "N01": "exos/4e-n01-eval.html"
+    }
   }
 }
