@@ -167,6 +167,10 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
   .wrap{max-width:1200px}
   .seqview{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
   .seqview > .seqhead, .seqview > .intro, .seqview > .notion.current{grid-column:1/-1}
+  .seqview > .upcard, .seqview > h2.cat{grid-column:1/-1}
+  .seqview .notion.upcard .groups{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .seqview .notion.upcard .groups .pn{grid-column:1/-1}
+  .seqview .notion.upcard .groups .pn .links{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
   .seqview .notion.current .groups{grid-template-columns:repeat(4,1fr)}
   .seqview .notion:not(.current) .groups{grid-template-columns:1fr 1fr}
   .seqlist{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
@@ -474,7 +478,7 @@ function start(D){
       var a = el('a', 'blanc'); a.href = e.blanc; a.target = '_blank'; a.rel = 'noopener'; a.appendChild(el('span', 'ic', '📝'));
       var t = el('span'); t.appendChild(document.createTextNode('Évaluation blanche')); t.appendChild(el('small', null, 'Un sujet comme le jour J, corrigé et noté sur 20. À refaire autant de fois que tu veux.')); a.appendChild(t); box.appendChild(a);
       if (e.parNotion && e.parNotion.length){
-        var pn = el('div', 'grp g4'); pn.appendChild(el('h4', null, 'Une évaluation par notion (30 min chacune)')); var pl = el('div', 'links');
+        var pn = el('div', 'grp g4 pn'); pn.appendChild(el('h4', null, 'Une évaluation par notion (30 min chacune)')); var pl = el('div', 'links');
         e.parNotion.forEach(function(n){ var x = (e.ns.filter(function(y){ return y.num === n; })[0] || {}).titre || ''; pl.appendChild(link({type: 'blanc', label: 'Évaluation N' + n + (x ? ' · ' + x : ''), href: e.blanc + '#n' + ('0' + n).slice(-2)})); });
         pn.appendChild(pl); var gw = el('div', 'groups'); gw.appendChild(pn); box.appendChild(gw);
       }
