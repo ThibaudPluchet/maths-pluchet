@@ -58,7 +58,13 @@ main.wrap{padding-top:22px;padding-bottom:56px;display:flex;flex-direction:colum
 .mrow .mt .ic{width:26px;height:26px;border-radius:7px;background:var(--c);color:var(--card);display:grid;place-items:center;font-size:13px;flex:none}
 .mrow .chips{display:flex;gap:6px;flex:none}
 .doc.chip{padding:6px 8px;min-width:50px;justify-content:center;font-weight:700}
+@media (max-width:420px){.mrow .chips{gap:4px}.doc.chip{min-width:44px;padding:6px}.mrow{gap:8px}.mrow .mt{gap:8px}}
+@media (max-width:340px){.mrow{flex-wrap:wrap}}
 .doc.chip .t{flex:none}
+.mrow.wide{align-items:flex-start}
+.mrow.wide .mt{flex:none;width:72px;min-height:40px}
+.mrow.wide .chips{flex:1 1 auto;flex-wrap:wrap}
+.mrow.wide .doc.chip{min-height:40px}
 .doc .ic{width:26px;height:26px;border-radius:7px;background:var(--c);color:var(--card);display:grid;place-items:center;font-size:13px;flex:none}
 .doc .t{flex:1}
 .doc .ext{color:var(--muted);font-size:13px;font-weight:400}
@@ -501,7 +507,20 @@ function start(D){
       // Plusieurs notions : un seul intitulé par type de document (« Fiche de révision ») suivi d'un bouton par notion
       g[2].forEach(function(ty){
         var tl = list.filter(function(it){ return it.type === ty; }); if (!tl.length) return;
-        if (nums.length < 2 || tl.length < 2 || ty === 'video' || ty === 'anim'){ tl.forEach(function(it){ ls.appendChild(link(it)); }); return; }
+        if (nums.length > 1 && (ty === 'video' || ty === 'anim')){
+          // Vidéos et animations : une ligne par notion, un bouton par titre court
+          nums.forEach(function(nn){
+            var tn = tl.filter(function(it){ return it._n === nn; }); if (!tn.length) return;
+            var row = el('div', 'mrow wide'); var mt = el('span', 'mt'); mt.appendChild(el('span', 'ic', ICON[ty] || '•')); mt.appendChild(el('span', 't', 'N' + nn)); row.appendChild(mt);
+            mt.title = ((e.ns.filter(function(y){ return y.num === nn; })[0] || {}).titre) || '';
+            var ch = el('div', 'chips');
+            tn.forEach(function(it){ var a = link(it); a.classList.add('chip'); var ic = a.querySelector('.ic'); if (ic) a.removeChild(ic);
+              var s = it._base.replace(/^(Vidéo\s*:\s*|Animation\s+)/i, ''); a.querySelector('.t').textContent = s.charAt(0).toUpperCase() + s.slice(1); ch.appendChild(a); });
+            row.appendChild(ch); ls.appendChild(row);
+          });
+          return;
+        }
+        if (nums.length < 2 || tl.length < 2){ tl.forEach(function(it){ ls.appendChild(link(it)); }); return; }
         var row = el('div', 'mrow'); var mt = el('span', 'mt'); mt.appendChild(el('span', 'ic', ICON[ty] || '•')); mt.appendChild(el('span', 't', tl[0]._base)); row.appendChild(mt);
         var ch = el('div', 'chips');
         tl.forEach(function(it){ var a = link(it); a.classList.add('chip'); var ic = a.querySelector('.ic'); if (ic) a.removeChild(ic); a.querySelector('.t').textContent = 'N' + it._n;
