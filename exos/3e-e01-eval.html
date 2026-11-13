@@ -641,15 +641,7 @@ function menu(){
   var s0 = el('span'); s0.appendChild(el('b', null, 'Évaluation blanche')); s0.appendChild(el('span', 'd', 'Un sujet complet comme le jour J, noté sur 20 avec le vrai barème, sans limite de temps. Un nouveau sujet à chaque fois (jamais les questions de ton vrai sujet) : recommence autant de fois que tu veux !'));
   if (best) s0.appendChild(el('span', 'rec', 'Ta meilleure note : ' + best + '/20'));
   t0.appendChild(s0); t0.onclick = function(){ location.hash = 'blanc'; }; g0.appendChild(t0); main.appendChild(g0);
-  main.appendChild(el('h2', 'cat', 'Une évaluation par notion'));
-  var gn = el('div', 'grid');
-  Object.keys(NOT).forEach(function(k){
-    var N = NOT[k], b = el('button', 'tile'); b.type = 'button'; b.appendChild(el('span', 'ic', N.ic));
-    var s = el('span'); s.appendChild(el('b', null, 'Évaluation N' + N.num + ' · ' + N.t)); s.appendChild(el('span', 'd', 'Un sujet entier sur cette notion seulement, de la même durée que l’évaluation blanche (30 min), noté sur 20.'));
-    var rb = store('eval:e01:' + k + ':best'); if (rb) s.appendChild(el('span', 'rec', 'Ta meilleure note : ' + rb + '/20'));
-    b.appendChild(s); b.onclick = function(){ location.hash = k; }; gn.appendChild(b);
-  });
-  main.appendChild(gn);
+  // Les évaluations par notion sont proposées sur le site élèves (liens #n09, #n10, #n11), pas dans ce menu
   main.appendChild(el('h2', 'cat', 'S’entraîner exercice par exercice'));
   var g = el('div', 'grid');
   EX.forEach(function(x){
