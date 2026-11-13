@@ -570,21 +570,9 @@ function start(D){
     main.appendChild(sec);
   }
 
+  // Onglet « Exercices DNB » : les fiches de révision et cartes mentales n'y sont plus (elles restent dans chaque notion)
   function renderBrevet(seqs){
-    main.appendChild(el('p','intro','Toutes les fiches de révision et cartes mentales de l’année, de la première notion à la dernière.'));
-    var any = false;
-    seqs.slice().reverse().forEach(function(s){
-      s.notions.slice().reverse().forEach(function(n){
-        var list = n.items.filter(function(it){ return it.type === 'revision' || it.type === 'carte'; })
-          .sort(function(a){ return a.type === 'revision' ? -1 : 1; });
-        if (!list.length) return; any = true;
-        var box = el('div','rev-n g3'), h3 = el('h3');
-        h3.appendChild(el('span','code', codeOf(n.num))); h3.appendChild(document.createTextNode(n.titre));
-        box.appendChild(h3); var ls = el('div','links'); list.forEach(function(it){ ls.appendChild(link(it)); });
-        box.appendChild(ls); main.appendChild(box);
-      });
-    });
-    if (!any) main.appendChild(el('div','empty','Pas encore de fiche de révision.'));
+    main.appendChild(el('div','empty','Les exercices de brevet arrivent bientôt ici.'));
   }
 
   if (current) loadSeen();
