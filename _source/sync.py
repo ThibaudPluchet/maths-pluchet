@@ -9,7 +9,11 @@ la 4e garde les noms d'origine (suivi/, evals/, config/classes.json), les autres
 (suivi3e/, evals3e/, config/classes3e.json ; suivi5e/, evals5e/, config/classes5e.json…).
 « python3 sync.py collections <page.html> » affiche la liste des collections à exporter.
 Cases de la page enseignant, par notion : d<k> = documents élèves publiés pour la classe k (hors évaluations),
-e<k> = évaluation (sujet élève) et sa correction (version PROF) publiées pour la classe k.
+Évaluations : pilotées par l'onglet Évaluations de la page enseignant (collection « evaluations », une évaluation déclarée
+= {lv, ns, dates, doc: "N12" | "E01" | "", f: {k: faite}, r: {k: correction publiée}}) : pour la classe k, le sujet ÉLÈVE
+est publié dès que l'évaluation est cochée « Faite » (f), la correction (évaluation version PROF) quand elle est cochée
+« Correction » (r). doc = "N12" : évaluation de la notion 12 ; doc = "E01" : évaluation commune E01. Les anciennes cases
+e<k> (onglet Notions) et c<k> des collections evals… ne publient plus rien.
 Si l'évaluation existe en plusieurs sujets (PDF du dossier Evaluation, champs c = classe et s = sujet dans DOCS),
 la classe k ne reçoit que ses propres sujets et leurs corrections.
 Les PDF d'évaluation peuvent être regroupés par la page enseignant dans un paquet docs/<niveau>/nXX/evaluations.json
@@ -20,9 +24,8 @@ même sans d<k> ; le cours distribué entraîne aussi carte mentale, vidéos, Ma
 c<k> (Fait en classe) + d<k> (ou fiche d'exercices distribuée) = correction de la fiche d'exercices (version PROF) publiée pour la classe k.
 Seuls les PDF ÉLÈVE cochés sont copiés dans le dépôt, sauf le cours (version PROF, complétée) et les corrections (évaluation, fiche d'exercices).
 L'évaluation aménagée (PAP) n'est jamais publiée.
-Évaluations communes à plusieurs notions (constante EVALS de la page : {niveau: [{id: "E01", ns: [15, 16, 17], docs}]},
-cases c<k> « Faite en » dans <db_dir>/evals/*.json et <db_dir>/evals3e/*.json) : sujet ÉLÈVE et correction PROF publiés
-pour la classe k quand c<k> est cochée, comme une évaluation de notion ; affichées après la dernière notion évaluée.
+Évaluations communes à plusieurs notions (constante EVALS de la page : {niveau: [{id: "E01", ns: [15, 16, 17], docs}]}) :
+publiées comme ci-dessus (évaluation déclarée reliée à E01) ; affichées après la dernière notion évaluée.
 """
 import json, os, re, sys, glob, shutil, base64, hmac, hashlib
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -112,6 +115,9 @@ def load(page, dbdir):
     global BUNDLE
     BUNDLE = {d["p"]: d["z"] for lv in docs["levels"].values() for L in lv.values() for d in L if d.get("z")}
     BUNDLE.update({d["p"]: d["z"] for L in evals.values() for e in L for d in e.get("docs", []) if d.get("z")})
+    plans = []
+    for f in sorted(glob.glob(f"{dbdir}/evaluations/*.json")):
+        plans.append(json.load(open(f)))
     for lv in level_list(levels):
         suivi, cfg = suivi_of(lv), cfg_of(lv)
         try:
@@ -123,9 +129,17 @@ def load(page, dbdir):
         state = {}
         for f in glob.glob(f"{dbdir}/{suivi}/*.json"):
             state[os.path.basename(f)[:-5]] = json.load(open(f))
-        evstate = {}
-        for f in glob.glob(f"{dbdir}/{evals_of(lv)}/*.json"):
-            evstate[os.path.basename(f)[:-5]] = json.load(open(f))
+        # évaluations déclarées : classes où le sujet (faite) et la correction sont publiés, par document relié (N12, E01)
+        on = lambda p, fld, k: bool((p.get(fld) or {}).get(str(k + 1)) or (p.get(fld) or {}).get(k + 1))
+        suj, cor = {}, {}
+        for p in plans:
+            if p.get("lv") != lv or not re.fullmatch(r"[NE]\d+", p.get("doc") or ""):
+                continue
+            for k in range(len(noms)):
+                if on(p, "f", k):
+                    suj.setdefault(p["doc"], set()).add(noms[k])
+                    if on(p, "r", k):
+                        cor.setdefault(p["doc"], set()).add(noms[k])
         seqs = []
         for seq in levels[lv]["seqs"]:
             notions = []
@@ -135,11 +149,10 @@ def load(page, dbdir):
                 last = max(e["ns"])
                 if last not in seq_nums:
                     continue
-                st = evstate.get(e["id"], {})
-                show = [noms[k] for k in range(len(noms)) if st.get(f"c{k+1}")]
+                show = sorted(suj.get(e["id"], ()))
                 if not show:
                     continue
-                items = eval_items(e["docs"], show, lv, e["id"], wanted)
+                items = eval_items(e["docs"], show, sorted(cor.get(e["id"], ())), wanted)
                 if items:
                     titres = {x["n"]: x["t"] for sq in levels[lv]["seqs"] for x in sq["notions"]}
                     seq.setdefault("_ev", []).append((last, {"num": e["id"], "titre": "Évaluation commune · " + ", ".join("N%02d" % x for x in e["ns"]),
@@ -153,7 +166,8 @@ def load(page, dbdir):
                 # autres ressources (carte mentale, vidéos, MathALÉA, animations) : avec le cours
                 show_docs = by_type["cours"]
                 show_any = sorted({c for v in by_type.values() for c in v})
-                show_eval = [noms[k] for k in range(len(noms)) if s.get(f"e{k+1}")]
+                show_eval = sorted(suj.get("N%d" % n["n"], ()))          # sujet : évaluation déclarée cochée « Faite »
+                show_corr = sorted(cor.get("N%d" % n["n"], ()))          # correction : cochée « Correction »
                 # Correction de la fiche d'exercices : quand la notion est « Fait en classe » (et la fiche publiée)
                 show_fait = [noms[k] for k in range(len(noms)) if s.get(f"c{k+1}") and dist(k, "e")]
                 if not show_any and not show_eval:
@@ -170,7 +184,7 @@ def load(page, dbdir):
                     else:
                         lab = d["l"]
                     t = TYPES[lab]
-                    cls = show_eval if t in EVALS else show_fait if t == "correction-exo" else by_type.get(t, show_docs)
+                    cls = show_eval if t == "evaluation" else show_corr if t == "correction" else show_fait if t == "correction-exo" else by_type.get(t, show_docs)
                     label = LABELS.get(lab, lab)
                     # Évaluation en plusieurs sujets (dossier Evaluation) : chaque PDF porte sa classe (c) et
                     # son sujet (s) ; il n'est publié que pour cette classe, si sa case « Éval » est cochée.
@@ -250,8 +264,9 @@ BUNDLE = {}
 SECRET = {}
 
 
-def eval_items(docs, show_eval, lv, num, wanted):
-    """Sujets ÉLÈVE et corrections PROF d'une évaluation commune, chacun pour sa classe (jamais les PAP ni le préambule)."""
+def eval_items(docs, show_eval, show_corr, wanted):
+    """Sujets ÉLÈVE (classes show_eval) et corrections PROF (classes show_corr) d'une évaluation commune,
+    chacun pour sa classe (jamais les PAP ni le préambule)."""
     items = []
     for d in docs:
         if d["w"] == "PROF":
@@ -262,7 +277,7 @@ def eval_items(docs, show_eval, lv, num, wanted):
             continue
         else:
             lab = "Évaluation"
-        cls = [c for c in show_eval if not d.get("c") or c == d["c"]]
+        cls = [c for c in (show_corr if lab == "Correction" else show_eval) if not d.get("c") or c == d["c"]]
         if not cls:
             continue
         label = LABELS.get(lab, lab) + (" (sujet " + d["s"] + ")" if d.get("s") else "")
