@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Préparer l'évaluation E01 : le théorème de Pythagore (4e) – M. Pluchet</title>
+<meta name="description" content="Exerciseur pour préparer l'évaluation E01 de 4e (35 min) : le théorème de Pythagore.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --ink:#1b2333; --muted:#596277; --line:#e2ded3;
+  --accent:#2f5bd3; --accent-ink:#ffffff; --soft:#e8eefc; --gridc:#e9e5da;
+  --ok:#1e7a46; --oks:#e3f4ea; --ko:#b3261e; --kos:#fbe6e4; --mid:#b85c00; --mids:#fbeedd; --hi:#d6336c;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#13161d; --card:#1b1f28; --ink:#eaedf3; --muted:#a3abbc; --line:#2b313e;
+    --accent:#86a4ff; --accent-ink:#0f1320; --soft:#222a3e; --gridc:#1a1e27;
+    --ok:#6fd49a; --oks:#173326; --ko:#ff8a80; --kos:#3a1f1d; --mid:#f0a050; --mids:#33261a; --hi:#ff7aa5; }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;
+  background-image:linear-gradient(var(--gridc) 1px,transparent 1px),linear-gradient(90deg,var(--gridc) 1px,transparent 1px);background-size:22px 22px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header{padding:22px 0 8px}
+.top{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.top a,.top button{color:var(--accent);font-weight:700;font-size:15px;font-family:inherit;text-decoration:none;background:none;border:0;padding:0;cursor:pointer}
+.top a:hover,.top button:hover{text-decoration:underline}
+.kick{color:var(--muted);font-weight:700;font-size:14px;margin:0}
+h1{font:700 clamp(26px,6vw,38px)/1.1 "Bricolage Grotesque",system-ui,sans-serif;margin:2px 0 6px}
+.sub{color:var(--muted);margin:0}
+main{padding:14px 0 60px}
+h2.cat{font-size:15px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tile{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;color:var(--ink);font:inherit;display:flex;gap:12px;align-items:flex-start}
+.tile:hover{border-color:var(--accent);box-shadow:0 6px 20px -14px var(--accent)}
+.tile .ic{font-size:26px;line-height:1}
+.tile b{display:block;font:700 18px/1.2 "Bricolage Grotesque",system-ui,sans-serif;margin-bottom:4px}
+.tile .d{color:var(--muted);font-size:15px;display:block}
+.tile .rec{display:block;margin-top:6px;font-size:13px;font-weight:700;color:var(--ok)}
+.tile.big{border:2px solid var(--accent);background:linear-gradient(135deg,var(--soft),var(--card))}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ph h2{font:700 22px/1.15 "Bricolage Grotesque",system-ui,sans-serif;margin:0}
+.pts{font-weight:700;color:var(--muted);font-size:15px;white-space:nowrap}
+.pts.ok{color:var(--ok)} .pts.mid{color:var(--mid)} .pts.ko{color:var(--ko)}
+.consigne{margin:0;color:var(--muted);font-size:15px}
+.items{display:grid;gap:14px}
+.items > *{min-width:0}
+@media (min-width:700px){ .items.two{grid-template-columns:1fr 1fr} }
+.item{border-left:3px solid var(--line);padding:4px 0 4px 12px;display:flex;flex-direction:column;gap:6px}
+.item.okI{border-color:var(--ok)} .item.koI{border-color:var(--ko)} .item.midI{border-color:var(--mid)}
+.q{font:700 20px/1.35 "Bricolage Grotesque",system-ui,sans-serif}
+.q .nm{color:var(--accent);margin-right:6px}
+.ln{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.ln .eq{font:700 20px "Bricolage Grotesque",sans-serif;width:1.1em;text-align:center}
+.ln .tag{font-size:12px;color:var(--muted);font-weight:700;flex-basis:100%}
+input.w{font:700 19px "Bricolage Grotesque",system-ui,sans-serif;flex:1 1 0;width:100%;min-width:0;max-width:340px;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+input.w.num{max-width:150px;flex:0 1 150px}
+input.w:focus{outline:none;border-color:var(--accent)}
+input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.koF{border-color:var(--ko);background:var(--kos)}
+.corr{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.4}
+.corr.ok{background:var(--oks)} .corr.mid{background:var(--mids)} .corr.ko{background:var(--kos)}
+.cv{font-weight:700;font-size:16px}
+.corr.ok .cv{color:var(--ok)} .corr.mid .cv{color:var(--mid)} .corr.ko .cv{color:var(--ko)}
+.cw{margin:0;padding-left:20px;color:var(--ink)}
+.cs{background:var(--card);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.cs .cl{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px}
+.cs .sl{font:700 19px/1.55 "Bricolage Grotesque",system-ui,sans-serif;white-space:pre-wrap}
+.cs .sl.hl{color:var(--ok)}
+.ct{color:var(--ink)}
+.ct b{color:var(--accent)}
+.fill{line-height:2.4;font-size:18px}
+select.s{font:700 16px inherit;font-family:inherit;padding:6px 8px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%}
+select.s.okF{border-color:var(--ok);background:var(--oks)} select.s.koF{border-color:var(--ko);background:var(--kos)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center}
+.btn{font:700 16px inherit;font-family:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 16px;cursor:pointer;min-height:46px}
+.btn:hover{border-color:var(--accent)}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.res{border-radius:14px;padding:12px 16px;font-weight:700;text-align:center}
+.res.ok{background:var(--oks);color:var(--ok)} .res.mid{background:var(--mids);color:var(--mid)} .res.ko{background:var(--kos);color:var(--ko)}
+.res small{display:block;font-weight:400;color:var(--ink)}
+.row.left{justify-content:flex-start}
+.btn.sel{background:var(--soft);border-color:var(--accent)}
+/* barre de symboles */
+.kbar{display:flex;gap:6px;flex-wrap:wrap;padding-left:calc(1.1em + 8px)}
+.kbar button{font:700 20px "Bricolage Grotesque",sans-serif;min-width:44px;min-height:40px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+/* évaluation blanche */
+.timerbar{position:sticky;top:0;z-index:10;background:var(--bg);padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.timer{font:700 24px "Bricolage Grotesque",sans-serif}
+.timer.low{color:var(--ko)}
+.note{font:700 64px/1 "Bricolage Grotesque",sans-serif;text-align:center}
+.bilan{display:grid;gap:8px}
+.bl{display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--bg);border-radius:12px;padding:8px 12px;flex-wrap:wrap}
+.bl b{font-size:16px}
+.bl .btn{min-height:38px;padding:6px 12px;font-size:14px}
+/* figures */
+.figrow{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.figrow > .txt{flex:1 1 260px;min-width:0}
+svg.fig{width:280px;max-width:100%;height:auto;flex:none;color:var(--ink)}
+svg.fig .tri{fill:var(--soft);stroke:currentColor;stroke-width:2.5;stroke-linejoin:round}
+svg.fig .ra{fill:none;stroke:currentColor;stroke-width:1.8}
+svg.fig .vx{font:700 18px "Bricolage Grotesque",sans-serif;fill:currentColor}
+svg.fig .lg{font:700 15px "Atkinson Hyperlegible",sans-serif;fill:var(--accent)}
+svg.fig .gd{stroke:var(--muted);stroke-width:2;stroke-dasharray:6 5}
+.ln .lab{font-weight:700;white-space:nowrap}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Menu de l’exerciseur</button></div>
+  <p class="kick">4e · Évaluation E01 · N10</p>
+  <h1>Préparer l’évaluation</h1>
+  <p class="sub">Le théorème de Pythagore (évaluation de 35 min) : les mêmes exercices et le même barème que l’évaluation. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script>
+(function(){
+'use strict';
+var main = document.getElementById('main'), tomenu = document.getElementById('tomenu'), kbar = document.getElementById('kbar');
+var MINUS = '−', EPS = 1e-6, KEY = 'eval:4ee01:', PATH = '/exos/4e-e01-eval/';
+function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function rnd(a, b){ return a + Math.floor(Math.random() * (b - a + 1)); }
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+function shuffle(a){ for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function eq(a, b){ return Math.abs(a - b) < EPS; }
+function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){ return null; } }
+function num(n){ return String(Math.round(n * 1000) / 1000).replace('.', ','); }
+function pts(x){ return String(Math.round(x * 100) / 100).replace('.', ','); }
+function r1(x){ return Math.round(x * 10) / 10; }
+function sq(x){ return Math.round(x * x * 10000) / 10000; }
+
+/* ---------- questions des vrais sujets : jamais reproduites ---------- */
+// Empreintes (FNV-1a) des questions des sujets d'évaluation de toutes les classes (A, B et PAP), produites par _source/exclu_4e_e01.py.
+// Seules les empreintes figurent ici : les nombres et les noms de triangles des sujets ne sont pas lisibles dans la page.
+var EXCLU = ["00cce1a4", "06a99362", "0a8826f4", "1142a676", "153f5dd9", "1884fd79", "18d2baae", "1e2aef23", "2436bcde", "2670487c", "2b831f88", "2c83211b", "2ed962fd", "4e03cf08", "4f0e9639", "5003d22e", "593c82ee", "5b550252", "5cc5af73", "5e55070b", "616aa75c", "618b9c09", "64b936bc", "66b939e2", "67b93b75", "69a272d8", "6a20a3d7", "6ab3062d", "6b8babc7", "6ba275fe", "6ee8b9a4", "70f1e8a8", "7c1f78a8", "7f1f7d61", "81c31ff6", "8627035e", "872704f1", "8a1cf333", "8e3fadeb", "8ff7220c", "a240b0e1", "a3412e03", "b018d3b8", "b118d54b", "b1e57755", "b8df20e8", "bc3806fd", "bc87944b", "bd3dc45d", "c1024218", "c302453e", "c5ba5828", "c66fed73", "c6ba59bb", "c9f4e74a", "ca4f27cb", "caf4e8dd", "cf4f2faa", "d826381b", "da3d9870", "e0800b58", "e3801011", "e623b2a6", "ec30bc14", "eff7e865", "f107d3a0", "f207d533", "f9a0ba09"];
+function fnv(s){ var h = 0x811c9dc5, b = unescape(encodeURIComponent(s)); for (var i = 0; i < b.length; i++){ h ^= b.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return ('0000000' + h.toString(16)).slice(-8); }
+function excluded(key){ return EXCLU.indexOf(fnv(key)) > -1; }
+function fresh(gen, keyOf){ var x, n = 0; do { x = gen(); } while (excluded(keyOf(x)) && ++n < 80); return x; }
+
+/* ---------- champs de saisie et barre de symboles ---------- */
+var lastInput = null;
+function field(cls, ph){
+  var i = el('input', 'w' + (cls ? ' ' + cls : '')); i.type = 'text'; i.autocomplete = 'off'; i.spellcheck = false; i.autocapitalize = 'off';
+  if (ph) i.placeholder = ph;
+  i.addEventListener('focus', function(){ lastInput = i; var ln = i.parentNode; ln.parentNode.insertBefore(kbar, ln.nextSibling); kbar.hidden = false; });
+  return i;
+}
+['²', '√', '=', '+', '-', '≈', ',', '[', ']'].forEach(function(k){
+  var b = el('button', null, k); b.type = 'button'; if (k === '-') b.setAttribute('aria-label', 'moins');
+  b.addEventListener('mousedown', function(e){ e.preventDefault(); });
+  b.onclick = function(){
+    if (!lastInput || lastInput.disabled) return;
+    var a = lastInput.selectionStart == null ? lastInput.value.length : lastInput.selectionStart, z = lastInput.selectionEnd == null ? a : lastInput.selectionEnd;
+    lastInput.value = lastInput.value.slice(0, a) + k + lastInput.value.slice(z);
+    lastInput.focus(); lastInput.setSelectionRange(a + k.length, a + k.length);
+  };
+  kbar.appendChild(b);
+});
+function mark(input, ok){ input.classList.remove('okF', 'koF'); input.classList.add(ok ? 'okF' : 'koF'); }
+function lock(list){ list.forEach(function(x){ x.disabled = true; }); }
+function sel(opts, ph){ var s = el('select', 's'), o0 = el('option', null, ph || '…'); o0.value = ''; s.appendChild(o0); opts.forEach(function(o){ var op = el('option', null, o); op.value = o; s.appendChild(op); }); return s; }
+// Correction d'une question : verdict + ce qui ne va pas + bonne rédaction ligne par ligne + rappel du cours
+function corr(parent, got, max, o){
+  o = o || {}; var full = eq(got, max), k = full ? 'ok' : got > 0 ? 'mid' : 'ko';
+  var c = el('div', 'corr ' + k);
+  c.appendChild(el('div', 'cv', (full ? '✓ Bravo ! ' : got > 0 ? 'Presque ! ' : '✗ ') + pts(got) + ' / ' + pts(max) + ' point' + (max > 1 ? 's' : '')));
+  if (!full && o.why && o.why.length){ var ul = el('ul', 'cw'); o.why.forEach(function(w){ ul.appendChild(el('li', null, w)); }); c.appendChild(ul); }
+  if (o.sol && (!full || o.always)){
+    var s = el('div', 'cs'); s.appendChild(el('span', 'cl', o.solTitle || 'La bonne rédaction'));
+    o.sol.forEach(function(l, i){ s.appendChild(el('div', 'sl' + (i === o.sol.length - 1 && !o.noHl ? ' hl' : ''), l)); });
+    c.appendChild(s);
+  }
+  if (o.tip && !full){ var t = el('div', 'ct'); t.appendChild(el('b', null, '💡 À retenir : ')); t.appendChild(document.createTextNode(o.tip)); c.appendChild(t); }
+  parent.appendChild(c); return c;
+}
+function itemState(item, got, max){ item.classList.add(eq(got, max) ? 'okI' : got > 0 ? 'midI' : 'koI'); }
+function line(it, lab, ph, cls){ var ln = el('div', 'ln'); if (lab) ln.appendChild(el('span', 'lab', lab)); var f = field(cls || '', ph); ln.appendChild(f); it.appendChild(ln); return f; }
+
+/* ---------- lecture des réponses ---------- */
+// « AC2 = AB2 + BC2 », « AC^2=AB^2+BC^2 », « 10² = 6² + h² »  →  [{s: ±1, k: 'S:AC' | 'V:h' | 'N:10'}]
+function normP(s){
+  return String(s || '').replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/\^2|\*\*2/g, '²').replace(/\./g, ',')
+    .replace(/([A-Za-z])([A-Za-z])2(?![\d,])/g, function(m, a, b){ return (a + b).toUpperCase() + '²'; }).replace(/\[|\]/g, '')
+    .replace(/(^|[=+-])([a-z])2(?![\d,])/g, '$1$2²').replace(/racinede|racine|sqrt|rac/gi, '√');
+}
+function termKey(t){
+  var m = /^([A-Za-z]{2})²$/.exec(t); if (m) return 'S:' + m[1].toUpperCase().split('').sort().join('');
+  m = /^([a-z])²$/.exec(t); if (m) return 'V:' + m[1];
+  m = /^\(?(\d+(?:,\d+)?)\)?²$/.exec(t); if (m) return 'N:' + parseFloat(m[1].replace(',', '.'));
+  return null;
+}
+function side(str){
+  if (!str) return null; var out = [], re = /([+-]?)([^+-]+)/g, m, used = 0;
+  while ((m = re.exec(str))){ var k = termKey(m[2]); if (!k) return null; out.push({s: m[1] === '-' ? -1 : 1, k: k}); used += m[0].length; }
+  return used === str.length && out.length ? out : null;
+}
+function parseEqP(s){ var p = normP(s).split('='); if (p.length !== 2) return null; var L = side(p[0]), R = side(p[1]); return L && R ? [L, R] : null; }
+function seg(a, b){ return 'S:' + [a, b].sort().join(''); }
+function nk(v){ return 'N:' + Math.round(v * 10000) / 10000; }
+function bag(list){ return list.map(function(t){ return (t.s < 0 ? '-' : '+') + t.k; }).sort().join(' '); }
+// une égalité « un terme = deux termes » (dans un sens ou dans l'autre)
+function isPyth(E, hyp, a, b){
+  if (!E) return false;
+  function ok(L, R){ return L.length === 1 && L[0].s > 0 && L[0].k === hyp && bag(R) === bag([{s: 1, k: a}, {s: 1, k: b}]); }
+  return ok(E[0], E[1]) || ok(E[1], E[0]);
+}
+function isDiff(E, x, H, L){
+  if (!E) return false;
+  function ok(A, B){ return A.length === 1 && A[0].s > 0 && A[0].k === x && bag(B) === bag([{s: 1, k: H}, {s: -1, k: L}]); }
+  return ok(E[0], E[1]) || ok(E[1], E[0]);
+}
+// nombre seul (on enlève un éventuel « AC² = », « h = », « ≈ », l'unité)
+function val(s){
+  s = normP(s).replace(/^[A-Za-z]{1,2}²?(=|≈)/, '').replace(/^[=≈]/, '').replace(/(cm|m)²?$/, '');
+  return /^\d+(,\d+)?$/.test(s) ? parseFloat(s.replace(',', '.')) : null;
+}
+function rootOf(s){ // « √65 », « √(65) »  →  65
+  s = normP(s).replace(/^[A-Za-z]{1,2}=/, '').replace(/^=/, '');
+  var m = /^√\(?(\d+(?:,\d+)?)\)?$/.exec(s); return m ? parseFloat(m[1].replace(',', '.')) : null;
+}
+function segOk(s, a, b){ s = String(s || '').replace(/[\s\[\]()]/g, '').toUpperCase(); return s.length === 2 && s.split('').sort().join('') === [a, b].sort().join(''); }
+
+/* ---------- figures ---------- */
+var NS = 'http://www.w3.org/2000/svg';
+// Triangle rectangle en R (sommets P et Q au bout des côtés de l'angle droit) ; lab : étiquettes des côtés RP, RQ, PQ
+function fig(o){
+  var W = 300, H = 190, svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('class', 'fig'); svg.setAttribute('aria-hidden', 'true');
+  function S(t, at, txt){ var e = document.createElementNS(NS, t); for (var a in at) e.setAttribute(a, at[a]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; }
+  var hp = o.hp || rnd(3, 7), wq = o.wq || rnd(3, 7), r = Math.max(.45, Math.min(2.2, hp / wq)), bw = 140, bh = 115;
+  var w = Math.min(bw, bh / r), h = w * r; if (h > bh){ h = bh; w = h / r; }
+  var fx = o.fx || 1, fy = o.fy || 1, cx = W / 2, cy = H / 2 + 4;
+  function P2(x, y){ return [cx + fx * (x - w / 2), cy - fy * (y - h / 2)]; }
+  var R = P2(0, 0), P = P2(0, h), Q = P2(w, 0), G = [(R[0] + P[0] + Q[0]) / 3, (R[1] + P[1] + Q[1]) / 3];
+  if (o.ground){ var g1 = P2(-25, 0), g2 = P2(w + 25, 0); S('line', {x1: g1[0], y1: g1[1], x2: g2[0], y2: g2[1], 'class': 'gd'}); }
+  S('polygon', {points: [R, P, Q].map(function(p){ return p.join(','); }).join(' '), 'class': 'tri'});
+  var k = 13, a1 = P2(0, k), a2 = P2(k, k), a3 = P2(k, 0); S('polyline', {points: [a1, a2, a3].map(function(p){ return p.join(','); }).join(' '), 'class': 'ra'});
+  function out(p, d){ var vx = p[0] - G[0], vy = p[1] - G[1], n = Math.sqrt(vx * vx + vy * vy) || 1; return [p[0] + vx / n * d, p[1] + vy / n * d]; }
+  if (o.names){ [[R, o.names[0]], [P, o.names[1]], [Q, o.names[2]]].forEach(function(v){ var q = out(v[0], 15); S('text', {x: q[0], y: q[1] + 6, 'text-anchor': 'middle', 'class': 'vx'}, v[1]); }); }
+  function mid(p, q){ return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]; }
+  var lab = o.lab || {};
+  // étiquette d'un côté : à l'extérieur du triangle, alignée pour ne jamais chevaucher le trait
+  [['RP', R, P], ['RQ', R, Q], ['PQ', P, Q]].forEach(function(c){ if (!lab[c[0]]) return;
+    var M = mid(c[1], c[2]), vx = M[0] - G[0], vy = M[1] - G[1], n = Math.sqrt(vx * vx + vy * vy) || 1; vx /= n; vy /= n;
+    var d = c[0] === 'PQ' ? 16 : 8, x = M[0] + vx * d, y = M[1] + vy * d + 5 + (vy > .5 ? 10 : vy < -.5 ? -4 : 0);
+    S('text', {x: x, y: y, 'text-anchor': vx > .35 ? 'start' : vx < -.35 ? 'end' : 'middle', 'class': 'lg'}, lab[c[0]]); });
+  return svg;
+}
+function figRow(svg, txt){ var r = el('div', 'figrow'), t = el('div', 'txt'); if (typeof txt === 'string') t.appendChild(el('p', null, txt)); else t.appendChild(txt); r.appendChild(t); r.appendChild(svg); return r; }
+// Triangle nommé : trois lettres qui se suivent, angle droit en l'une d'elles (jamais un triangle des vrais sujets)
+var ALPHA = 'ABCDEFGHIJKLMNPRSTUVWXYZ';
+function triName(avoid){
+  return fresh(function(){ var i, L, R; do { i = rnd(0, ALPHA.length - 3); L = ALPHA.slice(i, i + 3).split(''); } while (avoid && avoid.indexOf(L.join('')) > -1);
+      R = pick(L); var o = L.filter(function(x){ return x !== R; }); if (Math.random() < .5) o.reverse(); return {L: L, R: R, P: o[0], Q: o[1], name: L.join('')}; },
+    function(t){ return 'tr:' + t.name + '|' + t.R; });
+}
+function egal(t){ return t.P + t.Q + '² = ' + t.R + t.P + '² + ' + t.R + t.Q + '²'; }
+
+
+function sides(s){ s = normP(s).replace(/^[A-Za-z]{1,2}²=/, '').replace(/^=/, ''); return side(s); }
+// « AC² = 8² + 5² » ou « 8² + 5² » (avec ou sans membre de gauche)
+function isSumN(s, x, a, b){ var E = parseEqP(s); if (E) return isPyth(E, x, a, b); var R = sides(s); return !!R && bag(R) === bag([{s: 1, k: a}, {s: 1, k: b}]); }
+function isDiffN(s, x, H, L){ var E = parseEqP(s); if (E) return isDiff(E, x, H, L); var R = sides(s); return !!R && bag(R) === bag([{s: 1, k: H}, {s: -1, k: L}]); }
+// « 144 − 64 » (avec ou sans « MP² = »)
+function diffNums(s){ s = normP(s).replace(/^[A-Za-z]{1,2}²=/, '').replace(/^=/, ''); var m = /^(\d+(?:,\d+)?)-(\d+(?:,\d+)?)$/.exec(s); return m ? [parseFloat(m[1].replace(',', '.')), parseFloat(m[2].replace(',', '.'))] : null; }
+function notBorder(v){ var d = v * 10 - Math.floor(v * 10); return Math.abs(d - .5) > .05; }
+function unitSel(){ return sel(['cm', 'cm²', 'm'], 'unité'); }
+
+/* ============ Exercice 1 : question de cours (1,5 point) ============ */
+var COURS = [
+  {t: ['Si un triangle est ', 0, ', alors le carré de la longueur de l’', 1, ' est égal à la ', 2, ' des carrés des longueurs des deux autres côtés.'],
+   c: [['rectangle', 'isocèle', 'équilatéral'], ['hypoténuse', 'angle droit', 'plus petit côté'], ['somme', 'différence', 'moitié']]},
+  {t: ['Dans un triangle rectangle, l’hypoténuse est le côté ', 0, ' à l’angle droit ; c’est le côté le plus ', 1, '. Le théorème de Pythagore ne s’utilise que dans un triangle ', 2, '.'],
+   c: [['opposé', 'adjacent', 'perpendiculaire'], ['long', 'court', 'droit'], ['rectangle', 'isocèle', 'quelconque']]}
+];
+function exCours(){
+  var Q = pick(COURS), box = el('div', 'items'), sels = [];
+  var it = el('div', 'item'), p = el('div', 'fill');
+  Q.t.forEach(function(part){ if (typeof part === 'string'){ p.appendChild(document.createTextNode(part)); return; }
+    var s = sel(shuffle(Q.c[part].slice())); s.dataset.good = Q.c[part][0]; p.appendChild(s); sels.push(s); });
+  it.appendChild(p); box.appendChild(it);
+  var sent = Q.t.map(function(part){ return typeof part === 'string' ? part : Q.c[part][0]; }).join('');
+  return {box: box, max: 1.5, fill: function(){ sels.forEach(function(s){ s.value = s.dataset.good; }); }, check: function(){
+    var g = 0, why = [];
+    sels.forEach(function(s){ var ok = s.value === s.dataset.good; s.disabled = true; mark(s, ok); if (ok) g += .5; else why.push(s.value ? 'Il fallait « ' + s.dataset.good + ' » et non « ' + s.value + ' ».' : 'Case non remplie : il fallait « ' + s.dataset.good + ' ».'); });
+    itemState(it, g, 1.5); corr(it, g, 1.5, {why: why, sol: [sent], solTitle: 'La phrase complète', noHl: true, tip: 'le théorème de Pythagore ne s’utilise que dans un triangle rectangle, et l’hypoténuse est le côté opposé à l’angle droit.'});
+    return g;
+  }};
+}
+
+/* ============ Exercice 2 : repérer l'hypoténuse, écrire l'égalité (3 points) ============ */
+function exEgal(){
+  var A = triName(), B = triName([A.name]), box = el('div', 'items two'), rows = [];
+  [A, B].forEach(function(T){
+    var it = el('div', 'item'); it.appendChild(el('div', 'q', T.name + ' rectangle en ' + T.R + ' :'));
+    it.appendChild(fig({names: [T.R, T.P, T.Q], fx: pick([-1, 1]), fy: pick([-1, 1])}));
+    var fh = line(it, 'Hypoténuse :', '[…]', 'num'), f = line(it, 'Égalité :', '…² = …² + …²'); rows.push({T: T, fh: fh, f: f, it: it}); box.appendChild(it);
+  });
+  return {box: box, max: 3, fill: function(){ rows.forEach(function(x){ x.fh.value = '[' + x.T.P + x.T.Q + ']'; x.f.value = egal(x.T); }); }, check: function(){
+    var got = 0;
+    rows.forEach(function(x){
+      var T = x.T, oh = segOk(x.fh.value, T.P, T.Q), E = parseEqP(x.f.value), ok = isPyth(E, seg(T.P, T.Q), seg(T.R, T.P), seg(T.R, T.Q));
+      lock([x.fh, x.f]); mark(x.fh, oh); mark(x.f, ok);
+      var why = [], g = (oh ? .5 : 0) + (ok ? 1 : 0);
+      if (!oh) why.push('L’hypoténuse est le côté opposé à l’angle droit ' + T.R + ' : [' + T.P + T.Q + '].');
+      if (!ok){
+        if (!E) why.push('Écris une égalité avec des carrés, par exemple ' + egal(T) + ' (touche ² ou écris AB2).');
+        else why.push('L’hypoténuse au carré doit être seule d’un côté du signe = : ' + egal(T) + '.');
+      }
+      itemState(x.it, g, 1.5); got += g;
+      corr(x.it, g, 1.5, {why: why, sol: ['Hypoténuse : [' + T.P + T.Q + ']', egal(T)], tip: 'repère d’abord l’angle droit : l’hypoténuse est le côté qui ne le touche pas.'});
+    });
+    return got;
+  }};
+}
+
+/* ============ Exercice 3 : calculer l'hypoténuse (4 points) ============ */
+function exHyp(){
+  var T = triName(), D = fresh(function(){ var a, b, c; do { a = rnd(2, 12); b = rnd(2, 12); c = Math.sqrt(a * a + b * b); } while (a === b || c % 1 === 0 || !notBorder(c)); return {a: a, b: b}; },
+    function(d){ return 'hy:' + Math.min(d.a, d.b) + '|' + Math.max(d.a, d.b); });
+  var a = D.a, b = D.b, c2 = a * a + b * b, c = Math.sqrt(c2), RP = T.R + T.P, RQ = T.R + T.Q, PQ = T.P + T.Q;
+  var box = el('div', 'items');
+  var txt = el('div'); txt.appendChild(el('p', null, T.name + ' est rectangle en ' + T.R + ', ' + RP + ' = ' + a + ' cm et ' + RQ + ' = ' + b + ' cm. Calcule ' + PQ + ', puis donne sa valeur arrondie au dixième. Rédige.'));
+  box.appendChild(figRow(fig({names: [T.R, T.P, T.Q], hp: a, wq: b, lab: {RP: a + ' cm', RQ: b + ' cm'}, fx: pick([-1, 1]), fy: pick([-1, 1])}), txt));
+  var it = el('div', 'item');
+  var l1 = el('div', 'ln'); l1.appendChild(el('span', 'lab', 'Le triangle ' + T.name + ' est rectangle en'));
+  var sR = sel(shuffle(T.L.slice())); l1.appendChild(sR); l1.appendChild(el('span', 'lab', ', d’hypoténuse')); var fH = field('num', '[…]'); l1.appendChild(fH); it.appendChild(l1);
+  var l2 = el('div', 'ln'); l2.appendChild(el('span', 'lab', 'D’après le théorème de')); var sT = sel(['Pythagore', 'Thalès', 'Fermat']); l2.appendChild(sT); it.appendChild(l2);
+  var fE = line(it, 'Égalité :', PQ + '² = …² + …²'), fN = line(it, 'Je remplace :', PQ + '² = …² + …²'), fV = line(it, PQ + '² =', 'valeur', 'num'), fX = line(it, PQ + ' =', 'valeur exacte (√…)', 'num'), fA = line(it, PQ + ' ≈', 'au dixième', 'num');
+  var sU = unitSel(); it.lastChild.appendChild(sU);
+  box.appendChild(it);
+  return {box: box, max: 4, fill: function(){ sR.value = T.R; fH.value = '[' + PQ + ']'; sT.value = 'Pythagore'; fE.value = PQ + '² = ' + RP + '² + ' + RQ + '²'; fN.value = PQ + '² = ' + a + '² + ' + b + '²'; fV.value = c2; fX.value = '√' + c2; fA.value = num(r1(c)); sU.value = 'cm'; }, check: function(){
+    var o1 = sR.value === T.R && segOk(fH.value, T.P, T.Q), o2 = sT.value === 'Pythagore', o3 = isPyth(parseEqP(fE.value), seg(T.P, T.Q), seg(T.R, T.P), seg(T.R, T.Q)), o4 = isSumN(fN.value, seg(T.P, T.Q), nk(a), nk(b));
+    var v = val(fV.value), o5 = v !== null && eq(v, c2), rx = rootOf(fX.value), o6 = rx !== null && eq(rx, c2), va = val(fA.value), o7 = va !== null && eq(va, r1(c)), o8 = sU.value === 'cm';
+    lock([sR, fH, sT, fE, fN, fV, fX, fA, sU]); mark(sR, sR.value === T.R); mark(fH, segOk(fH.value, T.P, T.Q)); mark(sT, o2); mark(fE, o3); mark(fN, o4); mark(fV, o5); mark(fX, o6); mark(fA, o7); mark(sU, o8);
+    var got = [o1, o2, o3, o4, o5, o6, o7, o8].filter(Boolean).length / 2, why = [];
+    if (!o1) why.push('Angle droit et hypoténuse : rectangle en ' + T.R + ', d’hypoténuse [' + PQ + '] (0,5 point pour les deux).');
+    if (!o2) why.push('C’est le théorème de Pythagore qui relie les longueurs des côtés d’un triangle rectangle.');
+    if (!o3) why.push('L’égalité : ' + PQ + '² = ' + RP + '² + ' + RQ + '².');
+    if (!o4) why.push('On remplace par les longueurs : ' + PQ + '² = ' + a + '² + ' + b + '².');
+    if (!o5) why.push(PQ + '² = ' + a * a + ' + ' + b * b + ' = ' + c2 + '.');
+    if (!o6) why.push('La valeur exacte s’écrit avec la racine carrée : ' + PQ + ' = √' + c2 + ' (touche √).');
+    if (!o7) why.push('À la calculatrice, √' + c2 + ' ≈ ' + num(c) + '… donc ' + PQ + ' ≈ ' + num(r1(c)) + ' au dixième.');
+    if (!o8) why.push('Les longueurs sont en cm : la réponse aussi (pas cm², qui est une aire).');
+    itemState(it, got, 4);
+    corr(it, got, 4, {why: why, sol: ['Le triangle ' + T.name + ' est rectangle en ' + T.R + ', d’hypoténuse [' + PQ + '].', 'D’après le théorème de Pythagore : ' + PQ + '² = ' + RP + '² + ' + RQ + '²',
+      PQ + '² = ' + a + '² + ' + b + '² = ' + a * a + ' + ' + b * b + ' = ' + c2, PQ + ' = √' + c2 + ' (valeur exacte)', PQ + ' ≈ ' + num(r1(c)) + ' cm (au dixième)'],
+      tip: 'pour l’hypoténuse, on ADDITIONNE les carrés des deux autres côtés, puis on prend la racine carrée.'});
+    return got;
+  }};
+}
+
+/* ============ Exercice 4 : calculer un côté de l'angle droit (4 points) ============ */
+function exCote(){
+  var T = triName(), D = fresh(function(){ var c, a, x; do { c = rnd(6, 15); a = rnd(2, c - 2); x = Math.sqrt(c * c - a * a); } while (x % 1 === 0 || !notBorder(x)); return {c: c, a: a}; },
+    function(d){ return 'co:' + d.c + '|' + d.a; });
+  var c = D.c, a = D.a, x2 = c * c - a * a, X = Math.sqrt(x2), RP = T.R + T.P, RQ = T.R + T.Q, PQ = T.P + T.Q;
+  var box = el('div', 'items');
+  var txt = el('div'); txt.appendChild(el('p', null, T.name + ' est rectangle en ' + T.R + ', ' + PQ + ' = ' + c + ' cm et ' + RP + ' = ' + a + ' cm. Calcule ' + RQ + ', puis donne sa valeur arrondie au dixième. Rédige.'));
+  box.appendChild(figRow(fig({names: [T.R, T.P, T.Q], hp: a, wq: X, lab: {RP: a + ' cm', RQ: '?', PQ: c + ' cm'}, fx: pick([-1, 1]), fy: pick([-1, 1])}), txt));
+  var it = el('div', 'item');
+  var l1 = el('div', 'ln'); l1.appendChild(el('span', 'lab', 'Le triangle ' + T.name + ' est rectangle en'));
+  var sR = sel(shuffle(T.L.slice())); l1.appendChild(sR); l1.appendChild(el('span', 'lab', ', d’hypoténuse')); var fH = field('num', '[…]'); l1.appendChild(fH); it.appendChild(l1);
+  var fE = line(it, 'Pythagore :', PQ + '² = …² + …²'), fS = line(it, 'Donc', RQ + '² = …² − …²'), fN = line(it, 'Je remplace :', RQ + '² = …² − …²'), fV = line(it, RQ + '² =', 'valeur', 'num'), fX = line(it, RQ + ' =', 'valeur exacte (√…)', 'num'), fA = line(it, RQ + ' ≈', 'au dixième', 'num');
+  var sU = unitSel(); it.lastChild.appendChild(sU);
+  box.appendChild(it);
+  return {box: box, max: 4, fill: function(){ sR.value = T.R; fH.value = '[' + PQ + ']'; fE.value = PQ + '² = ' + RP + '² + ' + RQ + '²'; fS.value = RQ + '² = ' + PQ + '² − ' + RP + '²'; fN.value = RQ + '² = ' + c + '² − ' + a + '²'; fV.value = x2; fX.value = '√' + x2; fA.value = num(r1(X)); sU.value = 'cm'; }, check: function(){
+    var o1 = sR.value === T.R && segOk(fH.value, T.P, T.Q), o2 = isPyth(parseEqP(fE.value), seg(T.P, T.Q), seg(T.R, T.P), seg(T.R, T.Q)), o3 = isDiffN(fS.value, seg(T.R, T.Q), seg(T.P, T.Q), seg(T.R, T.P)), o4 = isDiffN(fN.value, seg(T.R, T.Q), nk(c), nk(a));
+    var v = val(fV.value), o5 = v !== null && eq(v, x2), rx = rootOf(fX.value), o6 = rx !== null && eq(rx, x2), va = val(fA.value), o7 = va !== null && eq(va, r1(X)), o8 = sU.value === 'cm';
+    lock([sR, fH, fE, fS, fN, fV, fX, fA, sU]); mark(sR, sR.value === T.R); mark(fH, segOk(fH.value, T.P, T.Q)); mark(fE, o2); mark(fS, o3); mark(fN, o4); mark(fV, o5); mark(fX, o6); mark(fA, o7); mark(sU, o8);
+    var got = [o1, o2, o3, o4, o5, o6, o7, o8].filter(Boolean).length / 2, why = [];
+    if (!o1) why.push('Angle droit et hypoténuse : rectangle en ' + T.R + ', d’hypoténuse [' + PQ + '].');
+    if (!o2) why.push('L’égalité de Pythagore : ' + PQ + '² = ' + RP + '² + ' + RQ + '².');
+    if (!o3) why.push('On cherche un côté de l’angle droit : on SOUSTRAIT, ' + RQ + '² = ' + PQ + '² − ' + RP + '².');
+    if (!o4) why.push('On remplace : ' + RQ + '² = ' + c + '² − ' + a + '².');
+    if (!o5) why.push(RQ + '² = ' + c * c + ' − ' + a * a + ' = ' + x2 + '.');
+    if (!o6) why.push('Valeur exacte : ' + RQ + ' = √' + x2 + '.');
+    if (!o7) why.push('À la calculatrice, √' + x2 + ' ≈ ' + num(X) + '… donc ' + RQ + ' ≈ ' + num(r1(X)) + ' au dixième.');
+    if (!o8) why.push('La longueur est en cm.');
+    itemState(it, got, 4);
+    corr(it, got, 4, {why: why, sol: ['Le triangle ' + T.name + ' est rectangle en ' + T.R + ', d’hypoténuse [' + PQ + '].', 'D’après le théorème de Pythagore : ' + PQ + '² = ' + RP + '² + ' + RQ + '²',
+      'donc ' + RQ + '² = ' + PQ + '² − ' + RP + '²', RQ + '² = ' + c + '² − ' + a + '² = ' + c * c + ' − ' + a * a + ' = ' + x2, RQ + ' = √' + x2 + ' (valeur exacte)', RQ + ' ≈ ' + num(r1(X)) + ' cm (au dixième)'],
+      tip: 'côté de l’angle droit inconnu : on soustrait. Vérifie : le résultat doit être plus petit que l’hypoténuse.'});
+    return got;
+  }};
+}
+
+/* ============ Exercice 5 : trouver l'erreur (2 points) ============ */
+var TRIPLES = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25], [20, 21, 29], [9, 40, 41], [12, 35, 37]];
+var PRENOMS = ['Léo', 'Emma', 'Tom', 'Chloé', 'Nathan', 'Zoé', 'Lucas', 'Manon', 'Enzo', 'Lola'];
+function exErreur(){
+  var T = triName(), D = fresh(function(){ var t, k, H; do { t = pick(TRIPLES); k = pick([1, 1, 2, 3]); H = t[2] * k; } while (H > 30); var lg = shuffle([t[0] * k, t[1] * k]); return {H: H, L: lg[0], X: lg[1]}; },
+    function(d){ return 'co:' + d.H + '|' + d.L; });
+  var H = D.H, L = D.L, X = D.X, w = H * H + L * L, nm = pick(PRENOMS), RP = T.R + T.P, RQ = T.R + T.Q, PQ = T.P + T.Q;
+  var box = el('div', 'items'), it = el('div', 'item');
+  it.appendChild(el('p', null, T.name + ' est rectangle en ' + T.R + ', avec ' + PQ + ' = ' + H + ' cm et ' + RP + ' = ' + L + ' cm. ' + nm + ' doit calculer ' + RQ + '. Voici sa réponse :'));
+  var cp = el('div', 'cs'); cp.appendChild(el('span', 'cl', 'Copie de ' + nm)); cp.appendChild(el('div', 'sl', RQ + '² = ' + PQ + '² + ' + RP + '² = ' + H + '² + ' + L + '² = ' + H * H + ' + ' + L * L + ' = ' + w + ', donc ' + RQ + ' = √' + w + ' ≈ ' + num(r1(Math.sqrt(w))) + ' cm')); it.appendChild(cp);
+  var GOOD = '[' + RQ + '] n’est pas l’hypoténuse : il fallait soustraire les carrés.';
+  var l1 = el('div', 'ln'); l1.appendChild(el('span', 'lab', 'a) Son erreur :')); var sE = sel(shuffle([GOOD, 'Il fallait additionner les longueurs, pas les carrés.', 'Il fallait diviser par 2 au lieu de prendre la racine carrée.'])); l1.appendChild(sE); it.appendChild(l1);
+  var fV = line(it, 'b) ' + RQ + '² =', 'valeur', 'num'), fX = line(it, RQ + ' =', 'longueur', 'num'); it.lastChild.appendChild(el('span', 'lab', 'cm'));
+  box.appendChild(it);
+  return {box: box, max: 2, fill: function(){ sE.value = GOOD; fV.value = X * X; fX.value = X; }, check: function(){
+    var o1 = sE.value === GOOD, v = val(fV.value), o2 = v !== null && eq(v, X * X), vx = val(fX.value), o3 = vx !== null && eq(vx, X);
+    lock([sE, fV, fX]); mark(sE, o1); mark(fV, o2); mark(fX, o3);
+    var got = (o1 ? 1 : 0) + (o2 ? .5 : 0) + (o3 ? .5 : 0), why = [];
+    if (!o1) why.push('[' + RQ + '] est un côté de l’angle droit (l’hypoténuse est [' + PQ + ']) : il fallait soustraire. D’ailleurs ' + num(r1(Math.sqrt(w))) + ' cm est plus long que l’hypoténuse : impossible !');
+    if (!o2) why.push(RQ + '² = ' + H + '² − ' + L + '² = ' + H * H + ' − ' + L * L + ' = ' + X * X + '.');
+    if (!o3) why.push(RQ + ' = √' + X * X + ' = ' + X + ' cm.');
+    itemState(it, got, 2);
+    corr(it, got, 2, {why: why, sol: [RQ + '² = ' + PQ + '² − ' + RP + '² = ' + H * H + ' − ' + L * L + ' = ' + X * X, RQ + ' = √' + X * X + ' = ' + X + ' cm'], tip: 'un côté de l’angle droit est toujours plus court que l’hypoténuse : c’est un bon moyen de vérifier.'});
+    return got;
+  }};
+}
+
+/* ============ Exercice 6 : problème (5,5 points) ============ */
+// Situations imaginées (jamais celles des vrais sujets). vert : l'inconnue est le côté vertical. q2 : question d'exploitation.
+var CTX = [
+  {t: 'À Yvetot, les pompiers posent une échelle de {H} m contre le mur vertical d’un immeuble. Le pied de l’échelle, sur le plateau horizontal du camion, est à {L} m du mur. À quelle hauteur {x} au-dessus du plateau le haut de l’échelle touche-t-il le mur ?',
+   x: 'h', hyp: 'l’échelle', objs: ['l’échelle', 'le mur', 'le plateau du camion'], why: 'le mur est vertical et le plateau horizontal', hl: 'échelle', vert: true, Hr: [8, 30],
+   q2: {k: [1.5, 2, 2.5], op: '+', t: 'Le plateau du camion est à {k} m du sol. À quelle hauteur au-dessus du sol arrive le haut de l’échelle ?', ph: 'Le haut de l’échelle est à {v} m du sol.'}},
+  {t: 'À Grainville-la-Teinturière, une antenne verticale est retenue par un câble tendu de {H} m, fixé au sol horizontal à {L} m du pied de l’antenne. À quelle hauteur {x} le câble est-il attaché à l’antenne ?',
+   x: 'h', hyp: 'le câble', objs: ['le câble', 'l’antenne', 'le sol'], why: 'l’antenne est verticale et le sol horizontal', hl: 'câble', vert: true, Hr: [10, 40],
+   q2: {k: [2, 3, 4, 5], op: '+', t: 'L’antenne dépasse de {k} m au-dessus du point d’attache du câble. Quelle est la hauteur totale de l’antenne ?', ph: 'L’antenne mesure {v} m de haut.'}},
+  {t: 'Sur la plage de Dieppe, Lou fait voler un cerf-volant au bout d’un fil bien tendu de {H} m. Le cerf-volant est à la verticale d’un galet situé à {L} m de sa main, à la même hauteur que sa main. À quelle hauteur {x} au-dessus de sa main vole-t-il ?',
+   x: 'h', hyp: 'le fil', objs: ['le fil', 'la hauteur', 'la distance au galet'], why: 'la hauteur est verticale et la distance au galet horizontale', hl: 'fil', vert: true, Hr: [10, 60],
+   q2: {k: [1, 1.5], op: '+', t: 'La main de Lou est à {k} m au-dessus du sable. À quelle hauteur au-dessus du sable vole le cerf-volant ?', ph: 'Le cerf-volant vole à {v} m au-dessus du sable.'}},
+  {t: 'À Fécamp, le toit d’un garage a deux pans identiques de {H} m. La moitié de la largeur du garage mesure {L} m, et le faîtage est à la verticale du milieu du garage. Quelle est la hauteur {x} du toit, du haut des murs jusqu’au faîtage ?',
+   x: 'h', hyp: 'le pan du toit', objs: ['le pan du toit', 'la hauteur du toit', 'le haut des murs'], why: 'la hauteur est verticale et le haut des murs horizontal', hl: 'pan', vert: true, Hr: [3, 8],
+   q2: {k: [2.5, 3], op: '+', t: 'Les murs du garage mesurent {k} m de haut. À quelle hauteur du sol se trouve le faîtage ?', ph: 'Le faîtage est à {v} m du sol.'}},
+  {t: 'Dans un skatepark imaginé à Veulettes-sur-Mer, une rampe droite de {H} m monte jusqu’à une plateforme. Son bas touche le sol horizontal à {L} m du mur vertical de la plateforme. Quelle est la hauteur {x} de la plateforme ?',
+   x: 'h', hyp: 'la rampe', objs: ['la rampe', 'le mur de la plateforme', 'le sol'], why: 'le mur est vertical et le sol horizontal', hl: 'rampe', vert: true, Hr: [4, 15],
+   q2: {k: [.5, 1, 1.5], op: '-', t: 'Une seconde plateforme est moins haute de {k} m. Quelle est sa hauteur ?', ph: 'La seconde plateforme mesure {v} m de haut.'}},
+  {t: 'Du haut d’une falaise verticale de {L} m, à Senneville-sur-Fécamp, Inès voit un bateau ; la distance entre Inès et le bateau est de {H} m. On admet que la mer est horizontale, au niveau du pied de la falaise. À quelle distance {x} du pied de la falaise se trouve le bateau ?',
+   x: 'd', hyp: 'la ligne Inès–bateau', objs: ['la ligne Inès–bateau', 'la falaise', 'la mer'], why: 'la falaise est verticale et la mer horizontale', hl: 'Inès–bateau', vert: false, Hr: [60, 200],
+   q2: {k: [10, 20, 30], op: '-', t: 'Le bateau se rapproche de la falaise de {k} m en ligne droite. À quelle distance du pied de la falaise est-il alors ?', ph: 'Le bateau est alors à {v} m du pied de la falaise.'}}
+];
+function exPb(){
+  var C = pick(CTX), V = fresh(function(){ var t, k, H, lg; do { t = pick(TRIPLES); k = pick([.5, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 20]); H = t[2] * k; } while (H < C.Hr[0] || H > C.Hr[1]);
+      lg = shuffle([t[0] * k, t[1] * k]); return {H: H, L: lg[0], X: lg[1]}; }, function(v){ return 'pb:' + num(v.H) + '|' + num(v.L); });
+  var H = V.H, L = V.L, X = V.X, x = C.x, box = el('div', 'items');
+  var k2 = pick(C.q2.k.filter(function(k){ return C.q2.op === '+' || k < X; }).concat(C.q2.op === '+' ? [] : [X / 2 > .5 ? .5 : X / 4]));
+  var ans = C.q2.op === '+' ? X + k2 : X - k2; ans = Math.round(ans * 100) / 100;
+  var txt = C.t.replace('{H}', num(H)).replace('{L}', num(L)).replace('{x}', x);
+  var lab = C.vert ? {RP: x, RQ: num(L) + ' m', PQ: C.hl + ' : ' + num(H) + ' m'} : {RP: num(L) + ' m', RQ: x, PQ: C.hl + ' : ' + num(H) + ' m'};
+  box.appendChild(figRow(fig({hp: C.vert ? X : L, wq: C.vert ? L : X, lab: lab, ground: true, fx: pick([-1, 1])}), 'Situation imaginée. ' + txt));
+  var it = el('div', 'item'); it.appendChild(el('div', 'q', '1. Calcule ' + x + '. Justifie.'));
+  var l1 = el('div', 'ln'); l1.appendChild(el('span', 'lab', 'Le triangle est rectangle car')); var sW = sel(shuffle([C.why, 'les longueurs sont des nombres entiers', 'le triangle a trois côtés'])); l1.appendChild(sW); it.appendChild(l1);
+  var l2 = el('div', 'ln'); l2.appendChild(el('span', 'lab', 'Son hypoténuse est')); var sH = sel(shuffle(C.objs.slice())); l2.appendChild(sH); it.appendChild(l2);
+  var fE = line(it, 'Égalité :', 'ex. a² = b² + ' + x + '²'), fD = line(it, x + '² =', '…² − …²'), fC = line(it, x + '² =', '… − … (les carrés)'), fV = line(it, x + '² =', 'valeur', 'num'), fR = line(it, x + ' =', '√…', 'num');
+  var l8 = el('div', 'ln'); l8.appendChild(el('span', 'lab', x + ' =')); var fN = field('num', 'nombre'); l8.appendChild(fN); var sU = sel(['m', 'm²', 'cm'], 'unité'); l8.appendChild(sU); it.appendChild(l8);
+  box.appendChild(it);
+  var it2 = el('div', 'item'); it2.appendChild(el('div', 'q', '2. ' + C.q2.t.replace('{k}', num(k2))));
+  var fQ = line(it2, 'Calcul :', 'résultat', 'num'); it2.lastChild.appendChild(el('span', 'lab', 'm'));
+  var good = C.q2.ph.replace('{v}', num(ans)), bad1 = C.q2.ph.replace('{v}', num(X)), bad2 = C.q2.ph.replace('{v}', num(Math.round((C.q2.op === '+' ? H + k2 : H - k2) * 100) / 100));
+  var l9 = el('div', 'ln'); l9.appendChild(el('span', 'lab', 'Phrase réponse :')); var sP = sel(shuffle([good, bad1, bad2].filter(function(v, i, a){ return a.indexOf(v) === i; }))); l9.appendChild(sP); it2.appendChild(l9);
+  box.appendChild(it2);
+  var x2 = sq(X), H2 = sq(H), L2 = sq(L);
+  return {box: box, max: 5.5, fill: function(){ sW.value = C.why; sH.value = C.hyp; fE.value = num(H) + '² = ' + num(L) + '² + ' + x + '²'; fD.value = x + '² = ' + num(H) + '² − ' + num(L) + '²'; fC.value = num(H2) + ' − ' + num(L2); fV.value = num(x2); fR.value = '√' + num(x2); fN.value = num(X); sU.value = 'm'; fQ.value = num(ans); sP.value = good; }, check: function(){
+    var o1 = sW.value === C.why, o2 = sH.value === C.hyp, o3 = isPyth(parseEqP(fE.value), nk(H), nk(L), 'V:' + x), o4 = isDiffN(fD.value, 'V:' + x, nk(H), nk(L));
+    var dn = diffNums(fC.value), o5 = !!dn && eq(dn[0], H2) && eq(dn[1], L2), v = val(fV.value), o6 = v !== null && eq(v, x2);
+    var rr = rootOf(fR.value), o7 = rr !== null && eq(rr, x2), nv = val(fN.value), o8 = nv !== null && eq(nv, X) && sU.value === 'm';
+    var q = val(fQ.value), o9 = q !== null && eq(q, ans), o10 = sP.value === good;
+    lock([sW, sH, fE, fD, fC, fV, fR, fN, sU, fQ, sP]); mark(sW, o1); mark(sH, o2); mark(fE, o3); mark(fD, o4); mark(fC, o5); mark(fV, o6); mark(fR, o7); mark(fN, nv !== null && eq(nv, X)); mark(sU, sU.value === 'm'); mark(fQ, o9); mark(sP, o10);
+    var g1 = [o1, o2, o3, o4, o5, o6, o7, o8].filter(Boolean).length / 2, g2 = (o9 ? 1 : 0) + (o10 ? .5 : 0), why = [], why2 = [];
+    if (!o1) why.push('Le triangle est rectangle parce que ' + C.why + ' : ils sont perpendiculaires.');
+    if (!o2) why.push('L’hypoténuse est le côté opposé à l’angle droit : ' + C.hyp + '.');
+    if (!o3) why.push('L’égalité : ' + num(H) + '² = ' + num(L) + '² + ' + x + '² (l’hypoténuse seule d’un côté).');
+    if (!o4) why.push('On cherche un côté de l’angle droit : on SOUSTRAIT, ' + x + '² = ' + num(H) + '² − ' + num(L) + '².');
+    if (!o5) why.push('Les carrés : ' + num(H) + '² = ' + num(H2) + ' et ' + num(L) + '² = ' + num(L2) + ', donc ' + x + '² = ' + num(H2) + ' − ' + num(L2) + '.');
+    if (!o6) why.push(x + '² = ' + num(x2) + '.');
+    if (!o7) why.push(x + ' = √' + num(x2) + '.');
+    if (!o8) why.push('La réponse avec son unité : ' + x + ' = ' + num(X) + ' m.');
+    if (!o9) why2.push(num(X) + (C.q2.op === '+' ? ' + ' : ' − ') + num(k2) + ' = ' + num(ans) + '.');
+    if (!o10) why2.push('La phrase doit donner le résultat du calcul : ' + good);
+    itemState(it, g1, 4); itemState(it2, g2, 1.5);
+    corr(it, g1, 4, {why: why, sol: ['Le triangle est rectangle (' + C.why + ') ; son hypoténuse est ' + C.hyp + '.', 'D’après le théorème de Pythagore : ' + num(H) + '² = ' + num(L) + '² + ' + x + '²',
+      'donc ' + x + '² = ' + num(H) + '² − ' + num(L) + '² = ' + num(H2) + ' − ' + num(L2) + ' = ' + num(x2), x + ' = √' + num(x2) + ' = ' + num(X) + ' : ' + x + ' = ' + num(X) + ' m'],
+      tip: 'hypoténuse inconnue : on additionne les carrés ; côté de l’angle droit inconnu : on soustrait.'});
+    corr(it2, g2, 1.5, {why: why2, sol: [num(X) + (C.q2.op === '+' ? ' + ' : ' − ') + num(k2) + ' = ' + num(ans), good], tip: 'on réutilise le résultat de la question 1 et on termine par une phrase.'});
+    return g1 + g2;
+  }};
+}
+
+/* ============ Bonus (+1) ============ */
+var BON = [
+  function(){ var R = fresh(function(){ var a, b; do { a = rnd(2, 12); b = rnd(2, 12); } while (a === b || !notBorder(Math.sqrt(a * a + b * b))); return {a: Math.max(a, b), b: Math.min(a, b)}; }, function(r){ return 'rc:' + r.b + '|' + r.a; });
+    var d = Math.sqrt(R.a * R.a + R.b * R.b); return {q: 'Un rectangle mesure ' + R.a + ' cm sur ' + R.b + ' cm. Sa diagonale mesure environ :', v: r1(d), u: 'cm', sol: ['d² = ' + R.a + '² + ' + R.b + '² = ' + (R.a * R.a + R.b * R.b), 'd = √' + (R.a * R.a + R.b * R.b) + ' ≈ ' + num(r1(d)) + ' cm'], why: 'La diagonale coupe le rectangle en deux triangles rectangles.'}; },
+  function(){ var c = fresh(function(){ var c; do { c = rnd(2, 12); } while (!notBorder(c * Math.SQRT2)); return c; }, function(c){ return 'ca:' + c; });
+    return {q: 'Un carré a des côtés de ' + c + ' cm. Sa diagonale mesure environ :', v: r1(c * Math.SQRT2), u: 'cm', sol: ['d² = ' + c + '² + ' + c + '² = ' + 2 * c * c, 'd = √' + 2 * c * c + ' ≈ ' + num(r1(c * Math.SQRT2)) + ' cm'], why: 'La diagonale est l’hypoténuse d’un triangle rectangle isocèle.'}; },
+  function(){ var c = fresh(function(){ var c; do { c = rnd(4, 16); } while (!notBorder(c / Math.SQRT2)); return c; }, function(c){ return 'is:' + c; });
+    return {q: 'Un triangle rectangle isocèle a une hypoténuse de ' + c + ' cm. Chaque côté de l’angle droit mesure environ :', v: r1(c / Math.SQRT2), u: 'cm', sol: ['a² + a² = ' + c + '², donc 2a² = ' + c * c, 'a² = ' + num(c * c / 2) + ' et a = √' + num(c * c / 2) + ' ≈ ' + num(r1(c / Math.SQRT2)) + ' cm'], why: 'Les deux côtés de l’angle droit ont la même longueur a.'}; },
+  function(){ var c = fresh(function(){ var c; do { c = rnd(4, 14); } while (!notBorder(c * Math.sqrt(3) / 2)); return c; }, function(c){ return 'eq:' + c; });
+    var h = c * Math.sqrt(3) / 2; return {q: 'Un triangle équilatéral a des côtés de ' + c + ' cm. Sa hauteur mesure environ :', v: r1(h), u: 'cm', sol: ['La hauteur coupe le côté en son milieu : h² = ' + c + '² − ' + num(c / 2) + '² = ' + num(c * c * .75), 'h = √' + num(c * c * .75) + ' ≈ ' + num(r1(h)) + ' cm'], why: 'La hauteur partage le triangle en deux triangles rectangles.'}; },
+  function(){ var D = fresh(function(){ var t = pick(TRIPLES.slice(0, 3)), k = pick([1, 2]); if (t[1] * k > 20) k = 1; return {a: t[0] * k, b: t[1] * k, c: t[2] * k}; }, function(d){ return 'qd:' + d.a + '|' + d.b; });
+    return {q: 'Sur un quadrillage de 1 cm, pour aller de A à B, on avance de ' + D.a + ' carreaux vers la droite puis de ' + D.b + ' carreaux vers le haut. La distance AB est égale à :', v: D.c, u: 'cm', sol: ['AB² = ' + D.a + '² + ' + D.b + '² = ' + D.c * D.c, 'AB = √' + D.c * D.c + ' = ' + D.c + ' cm'], why: 'Les deux déplacements forment un angle droit : AB est l’hypoténuse.'}; },
+  function(){ var D = fresh(function(){ var e, p, d, h1, h2; do { e = rnd(4, 8); p = rnd(1, e - 2); d = pick([.5, 1]); h1 = Math.sqrt(e * e - p * p); h2 = Math.sqrt(e * e - (p + d) * (p + d)); } while (p + d >= e || !notBorder(h1 - h2)); return {e: e, p: p, d: d}; }, function(o){ return 'ec:' + o.e + '|' + o.p + '|' + num(o.d); });
+    var h1 = Math.sqrt(D.e * D.e - D.p * D.p), h2 = Math.sqrt(D.e * D.e - (D.p + D.d) * (D.p + D.d));
+    return {q: 'Une échelle de ' + D.e + ' m est posée contre un mur vertical, son pied à ' + D.p + ' m du mur. On recule le pied de ' + num(D.d) + ' m. Le haut de l’échelle descend d’environ :', v: r1(h1 - h2), u: 'm', sol: ['Avant : h = √(' + D.e + '² − ' + D.p + '²) ≈ ' + num(Math.round(h1 * 1000) / 1000), 'Après : h = √(' + D.e + '² − ' + num(D.p + D.d) + '²) ≈ ' + num(Math.round(h2 * 1000) / 1000), 'Il descend d’environ ' + num(r1(h1 - h2)) + ' m'], why: 'On calcule la hauteur avant et après, puis la différence.'}; }
+];
+function exBonus(){
+  var B = pick(BON)(), box = el('div', 'items'), it = el('div', 'item'); it.appendChild(el('div', 'q', B.q));
+  var f = line(it, null, 'arrondi au dixième si besoin', 'num'); it.lastChild.appendChild(el('span', 'lab', B.u)); box.appendChild(it);
+  return {box: box, max: 1, fill: function(){ f.value = num(B.v); }, check: function(){
+    var v = val(f.value), ok = v !== null && eq(v, B.v); lock([f]); mark(f, ok); itemState(it, ok ? 1 : 0, 1);
+    corr(it, ok ? 1 : 0, 1, {why: [B.why], sol: B.sol}); return ok ? 1 : 0;
+  }};
+}
+
+/* ============ Pour comprendre (non noté) ============ */
+var VARS = [
+  function(){ return {q: 'Dans un triangle rectangle, le plus long côté est toujours…', opts: ['l’hypoténuse', 'un côté de l’angle droit', 'ça dépend du triangle'], good: 'l’hypoténuse', sol: ['L’hypoténuse, opposée à l’angle droit, est le plus long côté : son carré est la somme des deux autres carrés.'], tip: 'l’hypoténuse est le plus grand côté.'}; },
+  function(){ var T = triName(); return {q: T.name + ' est rectangle en ' + T.R + '. Quelle égalité est vraie ?', opts: [egal(T), T.R + T.P + '² = ' + T.P + T.Q + '² + ' + T.R + T.Q + '²', T.R + T.Q + '² = ' + T.R + T.P + '² + ' + T.P + T.Q + '²'], good: egal(T), sol: ['L’hypoténuse est [' + T.P + T.Q + '] (opposée à l’angle droit ' + T.R + ') : ' + egal(T)], tip: 'repère d’abord l’hypoténuse : le côté qui ne touche pas l’angle droit.'}; },
+  function(){ var a = rnd(4, 12); return {q: 'On sait que AC² = ' + a * a + '. Combien mesure AC ?', opts: [String(a), num(a * a / 2), String(a * a * a * a)], good: String(a), sol: ['AC = √' + a * a + ' = ' + a + ' car ' + a + ' × ' + a + ' = ' + a * a + '.'], tip: 'pour passer de AC² à AC, on prend la racine carrée (et non la moitié).'}; },
+  function(){ var t = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13]]); return {q: 'Les côtés de l’angle droit d’un triangle rectangle mesurent ' + t[0] + ' cm et ' + t[1] + ' cm. Son hypoténuse mesure…', opts: [t[2] + ' cm', (t[0] + t[1]) + ' cm', (t[0] * t[0] + t[1] * t[1]) + ' cm'], good: t[2] + ' cm', sol: [t[0] + '² + ' + t[1] + '² = ' + (t[0] * t[0] + t[1] * t[1]) + ' et √' + (t[0] * t[0] + t[1] * t[1]) + ' = ' + t[2] + '.'], tip: 'on n’additionne pas les longueurs, mais leurs carrés.'}; },
+  function(){ return {q: 'On connaît l’hypoténuse et un côté de l’angle droit. Pour trouver l’autre côté…', opts: ['on soustrait les carrés', 'on additionne les carrés', 'on soustrait les longueurs'], good: 'on soustrait les carrés', sol: ['Côté² = hypoténuse² − autre côté², puis on prend la racine carrée.'], tip: 'côté de l’angle droit inconnu : on soustrait.'}; },
+  function(){ var h = rnd(4, 9), c = h + rnd(1, 4); return {q: 'Un triangle rectangle peut-il avoir une hypoténuse de ' + h + ' cm et un côté de l’angle droit de ' + c + ' cm ?', opts: ['non', 'oui'], good: 'non', sol: ['Non : l’hypoténuse est le plus long côté, elle ne peut pas mesurer moins que ' + c + ' cm.'], tip: 'un résultat plus grand que l’hypoténuse pour un côté de l’angle droit est forcément faux : vérifie toujours.'}; }
+];
+function exVar(){
+  var idx = shuffle(VARS.map(function(_, k){ return k; })).slice(0, 2), box = el('div', 'items two'), qs = [];
+  idx.forEach(function(k, n){
+    var V = VARS[k](), it = el('div', 'item'), s = sel(shuffle(V.opts.slice()));
+    it.appendChild(el('div', 'q', (n + 1) + '. ' + V.q)); var ln = el('div', 'ln'); ln.appendChild(s); it.appendChild(ln); qs.push({V: V, s: s, it: it}); box.appendChild(it);
+  });
+  return {box: box, max: 2, fill: function(){ qs.forEach(function(x){ x.s.value = x.V.good; }); }, check: function(){
+    var got = 0;
+    qs.forEach(function(x){ var ok = x.s.value === x.V.good; x.s.disabled = true; mark(x.s, ok); if (ok) got++; itemState(x.it, ok ? 1 : 0, 1);
+      corr(x.it, ok ? 1 : 0, 1, {why: ['La bonne réponse : « ' + x.V.good + ' ».'], sol: x.V.sol, solTitle: 'Explication', noHl: true, tip: x.V.tip, always: true}); });
+    return got;
+  }};
+}
+
+/* ============ menu, entraînement, évaluation blanche ============ */
+var EX = [
+  {id: 'cours', n: 'Exercice 1', t: 'Question de cours', ic: '📖', d: 'Le théorème et l’hypoténuse.', max: 1.5, make: exCours},
+  {id: 'egal', n: 'Exercice 2', t: 'Hypoténuse et égalité', ic: '📐', d: 'Repérer l’hypoténuse et écrire l’égalité de Pythagore.', max: 3, make: exEgal},
+  {id: 'hyp', n: 'Exercice 3', t: 'Calculer l’hypoténuse', ic: '📏', d: 'Rédiger le calcul, valeur exacte et arrondi.', max: 4, make: exHyp},
+  {id: 'cote', n: 'Exercice 4', t: 'Calculer un côté de l’angle droit', ic: '📐', d: 'Soustraire les carrés, valeur exacte et arrondi.', max: 4, make: exCote},
+  {id: 'erreur', n: 'Exercice 5', t: 'Trouver l’erreur', ic: '🔍', d: 'Repérer l’erreur d’un élève et la corriger.', max: 2, make: exErreur},
+  {id: 'pb', n: 'Exercice 6', t: 'Problème', ic: '🪜', d: 'Calculer une longueur dans une situation, puis l’utiliser.', max: 5.5, make: exPb},
+  {id: 'bonus', n: 'Bonus', t: 'Pour aller plus loin', ic: '⭐', d: 'Diagonale, triangle isocèle ou équilatéral, quadrillage, échelle qui glisse.', max: 1, make: exBonus},
+  {id: 'var', n: 'Pour comprendre', t: 'Questions autrement', ic: '🧠', d: 'Des questions posées autrement que dans l’évaluation, pour vérifier que tu as vraiment compris.', max: 2, make: exVar, extra: true}
+];
+function byId(id){ return EX.filter(function(e){ return e.id === id; })[0]; }
+function cls(got, max){ return eq(got, max) ? 'ok' : got >= max * .6 ? 'mid' : 'ko'; }
+function stat(p, t){ if (window.stat) window.stat(p, t); }
+
+function menu(){
+  tomenu.hidden = true; kbar.hidden = true; main.innerHTML = '';
+  var best = store(KEY + 'best');
+  main.appendChild(el('h2', 'cat', 'Le jour J'));
+  var g0 = el('div', 'grid'), t0 = el('button', 'tile big'); t0.type = 'button';
+  t0.appendChild(el('span', 'ic', '📝'));
+  var s0 = el('span'); s0.appendChild(el('b', null, 'Évaluation blanche')); s0.appendChild(el('span', 'd', 'Un sujet complet comme le jour J, noté sur 20 avec le vrai barème, sans limite de temps. Un nouveau sujet à chaque fois (jamais les questions de ton vrai sujet) : recommence autant de fois que tu veux !'));
+  if (best) s0.appendChild(el('span', 'rec', 'Ta meilleure note : ' + best + '/20'));
+  t0.appendChild(s0); t0.onclick = function(){ location.hash = 'blanc'; }; g0.appendChild(t0); main.appendChild(g0);
+  main.appendChild(el('h2', 'cat', 'S’entraîner exercice par exercice'));
+  var g = el('div', 'grid');
+  EX.forEach(function(x){
+    var b = el('button', 'tile'); b.type = 'button'; b.appendChild(el('span', 'ic', x.ic));
+    var s = el('span'); s.appendChild(el('b', null, x.n + ' · ' + x.t)); s.appendChild(el('span', 'd', x.d + (x.extra ? ' (non noté)' : ' (' + pts(x.max) + ' pt' + (x.max > 1 ? 's' : '') + ')')));
+    var rec = store(KEY + x.id); if (rec) s.appendChild(el('span', 'rec', 'Dernier essai : ' + rec + '/' + pts(x.max)));
+    b.appendChild(s); b.onclick = function(){ location.hash = x.id; }; g.appendChild(b);
+  });
+  main.appendChild(g);
+}
+
+function exPanel(x, inst){
+  var p = el('section', 'panel'), h = el('div', 'ph');
+  h.appendChild(el('h2', null, x.ic + ' ' + x.n + ' · ' + x.t)); var sc = el('span', 'pts', pts(x.max) + ' pt' + (x.max > 1 ? 's' : '')); h.appendChild(sc);
+  p.appendChild(h);
+  var c = {cours: 'Choisis le bon mot (0,5 point chacun).', egal: 'Pour chaque triangle : l’hypoténuse (0,5 point) et l’égalité (1 point). Pour les carrés, utilise la touche ² (ou écris AB2).',
+    hyp: 'Une ligne par étape, comme sur ta copie (0,5 point chacune) : angle droit et hypoténuse, théorème, égalité, remplacement, calcul du carré, valeur exacte, arrondi, unité.',
+    cote: 'Une ligne par étape (0,5 point chacune) : angle droit et hypoténuse, égalité, soustraction, remplacement, calcul du carré, valeur exacte, arrondi, unité.',
+    erreur: 'a) l’explication : 1 point ; b) le calcul du carré et la longueur : 0,5 point chacun.',
+    pb: 'Question 1 : une ligne par étape (0,5 point chacune). Question 2 : le calcul (1 point) et la phrase réponse (0,5 point).',
+    bonus: 'Ce point s’ajoute à la note (sans dépasser 20).', var: 'Ces questions ne sont pas comptées dans la note sur 20 : elles servent à vérifier que tu as compris, au-delà des exercices types.'}[x.id];
+  if (c) p.appendChild(el('p', 'consigne', c));
+  p.appendChild(inst.box); if (inst.note) p.appendChild(el('p', 'consigne', inst.note));
+  return {p: p, sc: sc};
+}
+
+function train(id){
+  var x = byId(id); if (!x){ menu(); return; }
+  stat(PATH + id, 'Préparer l’évaluation 4e E01 · ' + x.t);
+  tomenu.hidden = false; main.innerHTML = '';
+  var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p);
+  var row = el('div', 'row'), bv = el('button', 'btn main', 'Corriger'); bv.type = 'button'; row.appendChild(bv); P.p.appendChild(row);
+  bv.onclick = function(){
+    var got = inst.check(); bv.remove(); kbar.hidden = true;
+    P.sc.textContent = pts(got) + ' / ' + pts(x.max); P.sc.className = 'pts ' + cls(got, x.max);
+    store(KEY + id, pts(got));
+    var r = el('div', 'res ' + cls(got, x.max), pts(got) + ' / ' + pts(x.max) + (eq(got, x.max) ? ' : parfait !' : ''));
+    r.appendChild(el('small', null, eq(got, x.max) ? 'Tu es prêt(e) pour cet exercice. Essaie l’évaluation blanche !' : 'Lis la correction sous chaque question, puis recommence : les nombres changent à chaque fois.'));
+    P.p.appendChild(r);
+    var r2 = el('div', 'row'), b1 = el('button', 'btn main', '🔁 Recommencer (nouveaux nombres)'), b2 = el('button', 'btn', 'Menu');
+    b1.onclick = function(){ train(id); window.scrollTo(0, 0); }; b2.onclick = function(){ location.hash = ''; };
+    r2.appendChild(b1); r2.appendChild(b2); P.p.appendChild(r2);
+  };
+  window.scrollTo(0, 0);
+}
+
+function blanc(){
+  stat(PATH + 'blanc', 'Préparer l’évaluation 4e E01 · évaluation blanche');
+  tomenu.hidden = false; main.innerHTML = '';
+  var essai = parseInt(store(KEY + 'essais') || '0', 10) + 1;
+  var bar = el('div', 'timerbar'), tm = el('span', 'timer', 'Sujet n° ' + essai), bend = el('button', 'btn main', 'Rendre ma copie'); bend.type = 'button';
+  bar.appendChild(tm); bar.appendChild(bend); main.appendChild(bar);
+  main.appendChild(el('p', 'consigne', 'Calculatrice autorisée. Prends ton temps : il n’y a pas de limite. Rédige comme sur ta copie, une étape par ligne, puis touche « Rendre ma copie ». Les figures ne sont pas en vraie grandeur.'));
+  var parts = EX.map(function(x){ var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p); return {x: x, inst: inst, P: P}; });
+  if (/[?&]test\b/.test(location.search)) window.__parts = parts;   // tests automatiques (copie parfaite)
+  var done = false, t0 = Date.now();
+  bend.onclick = function(){ finish(); };
+  function finish(){
+    if (done) return; done = true; kbar.hidden = true;
+    var total = 0, bonus = 0, res = [];
+    parts.forEach(function(o){
+      var got = o.inst.check(); o.P.sc.textContent = pts(got) + ' / ' + pts(o.x.max); o.P.sc.className = 'pts ' + cls(got, o.x.max);
+      if (o.x.extra){} else if (o.x.id === 'bonus') bonus = got; else total += got; res.push({x: o.x, got: got});
+    });
+    var note = Math.round(Math.min(20, total + bonus) * 4) / 4;
+    var best = parseFloat((store(KEY + 'best') || '0').replace(',', '.'));
+    if (note > best) store(KEY + 'best', pts(note));
+    store(KEY + 'essais', String(essai));
+    var hist = (store(KEY + 'notes') || '').split(';').filter(Boolean).concat([pts(note)]).slice(-6); store(KEY + 'notes', hist.join(';'));
+    bar.remove();
+    var sum = el('section', 'panel');
+    sum.appendChild(el('div', 'note', pts(note) + '/20'));
+    var used = Math.max(1, Math.round((Date.now() - t0) / 60000));
+    sum.appendChild(el('p', 'consigne', '⏱️ Tu as mis ' + used + ' min' + (used > 35 ? ' : le jour J, tu auras 35 min, entraîne-toi à aller un peu plus vite.' : ' : le jour J, tu auras 35 min, c’est bon !')));
+    sum.lastChild.style.textAlign = 'center';
+    sum.appendChild(el('p', 'consigne', 'Sujet n° ' + essai + '. ' + (note > best && essai > 1 ? '🏆 Ta meilleure note !' : best ? 'Ta meilleure note : ' + pts(Math.max(best, note)) + '/20.' : '') + (hist.length > 1 ? ' Tes dernières notes : ' + hist.join(' → ') + '.' : '')));
+    sum.lastChild.style.textAlign = 'center';
+    var again = el('div', 'row'), ba = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'); ba.type = 'button'; ba.onclick = function(){ blanc(); }; again.appendChild(ba); sum.appendChild(again);
+    var bl = el('div', 'bilan');
+    res.forEach(function(r){
+      var ln = el('div', 'bl'), left = el('span'); left.appendChild(el('b', null, r.x.n + ' · ' + r.x.t + ' : '));
+      left.appendChild(el('span', 'pts ' + cls(r.got, r.x.max), pts(r.got) + '/' + pts(r.x.max) + (r.x.extra ? ' (non noté)' : '')));
+      ln.appendChild(left);
+      if (!eq(r.got, r.x.max) && r.x.id !== 'bonus' && !r.x.extra){ var b = el('button', 'btn', 'À retravailler →'); b.type = 'button'; b.onclick = function(){ location.hash = r.x.id; }; ln.appendChild(b); }
+      bl.appendChild(ln);
+    });
+    sum.appendChild(bl);
+    sum.appendChild(el('p', 'consigne', 'Sur ta vraie copie, rédige chaque étape avec des phrases, comme dans la correction. Les corrections détaillées sont sous chaque exercice.'));
+    var r2 = el('div', 'row'), b2 = el('button', 'btn', 'Menu'); b2.onclick = function(){ location.hash = ''; }; r2.appendChild(b2); sum.appendChild(r2);
+    main.insertBefore(sum, main.firstChild);
+    var foot = el('section', 'panel'); foot.appendChild(el('p', 'consigne', 'Tu as lu toutes les corrections ? Entraîne-toi encore : un nouveau sujet est tiré à chaque fois, tu peux recommencer autant de fois que tu veux.'));
+    var fr = el('div', 'row'), fb1 = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'), fb2 = el('button', 'btn', 'Menu');
+    fb1.onclick = function(){ blanc(); }; fb2.onclick = function(){ location.hash = ''; }; fr.appendChild(fb1); fr.appendChild(fb2); foot.appendChild(fr); main.appendChild(foot);
+    window.scrollTo(0, 0);
+    stat(PATH + 'blanc/note', 'Évaluation blanche 4e E01 rendue');
+  }
+  window.scrollTo(0, 0);
+}
+
+function route(){
+  var id = location.hash.slice(1);
+  if (id === 'blanc') blanc(); else if (id) train(id); else menu();
+}
+tomenu.onclick = function(){ location.hash = ''; };
+window.addEventListener('hashchange', route);
+route();
+})();
+</script>
+<script>
+// « ← Retour » : revient à l'onglet Évaluations de la page de la classe
+(function(){ var a = document.getElementById('home'); if (!a) return;
+  a.textContent = '← Retour';
+  var u = ''; try { u = localStorage.getItem('mp:retour') || ''; } catch(e){}
+  if (u.indexOf(location.origin) !== 0) u = '../';
+  var i = u.indexOf('#'), base = (i < 0 ? u : u.slice(0, i)).split('?')[0], hash = i < 0 ? '' : u.slice(i);
+  a.href = base + '?vue=evals' + hash;
+})();
+</script>
+<script src="../stats.js"></script>
+</body>
+</html>
