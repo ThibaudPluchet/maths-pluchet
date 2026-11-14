@@ -1,0 +1,234 @@
+\documentclass[11pt,a4paper]{article}
+
+%%% ------------------------------------------------------------------
+%%% Compilation : pdflatex (ou latexmk -pdf). Paquets : TeX Live complet.
+%%% ------------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+\DeclareUnicodeCharacter{221A}{\ensuremath{\surd}}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage[dvipsnames,table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+\usepackage{pifont}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{needspace}
+\usepackage{tikz}\usetikzlibrary{babel,calc,patterns,angles,quotes}
+\usepackage[a4paper,top=2.2cm,bottom=1.9cm,left=1.7cm,right=1.7cm,headheight=14pt,headsep=0.45cm,footskip=0.9cm]{geometry}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+\setlength{\jot}{5pt}
+\renewcommand{\arraystretch}{1.3}
+
+%%% ------------------------------ Couleurs ---------------------------
+\definecolor{cbleu}{HTML}{1F5FBF}
+\definecolor{cvert}{HTML}{1E8E5A}
+\definecolor{corange}{HTML}{E67E22}
+\definecolor{crouge}{HTML}{C0392B}
+\definecolor{cviolet}{HTML}{7D3C98}
+\definecolor{crep}{HTML}{D81B60}   % couleur des réponses (corrigé)
+
+%%% -------------------- En-tête et pied de page ----------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\footrulewidth}{0pt}
+
+%%% ----------------- Trous (cours) et réponses (corrigé) -------------
+\newif\ifcorrige
+\newdimen\trouwd
+% \trou[largeur minimale]{formule}   : trou en mode mathématique
+\newcommand{\trou}[2][0pt]{%
+  \ifcorrige
+    \colorbox{black!12}{\ensuremath{#2}}%
+  \else
+    \settowidth{\trouwd}{\ensuremath{#2}}%
+    \ifdim\trouwd<#1\relax\trouwd=#1\relax\fi
+    \makebox[\dimexpr\trouwd+1.2em\relax]{\dotfill}%
+  \fi}
+% \trout[largeur minimale]{texte}    : trou en mode texte
+\newcommand{\trout}[2][0pt]{%
+  \ifcorrige
+    \colorbox{black!12}{\textbf{#2}}%
+  \else
+    \settowidth{\trouwd}{#2}%
+    \ifdim\trouwd<#1\relax\trouwd=#1\relax\fi
+    \makebox[\dimexpr\trouwd+1.2em\relax]{\dotfill}%
+  \fi}
+% \lignes{n}{texte} : n lignes pointillées (élève) / réponse (corrigé)
+\newcommand{\lignes}[2]{%
+  \ifcorrige
+    \par\noindent\hspace{0.5cm}\colorbox{black!12}{\parbox{\dimexpr\linewidth-1.2cm}{\bfseries #2}}\par\vspace{2pt}
+  \else
+    \par\foreach \i in {1,...,#1}{\makebox[\linewidth]{\dotfill}\par\vspace{0.2em}}%
+  \fi}
+% \tll{texte} : une ligne pointillée dans une cellule de tableau
+\newcommand{\tll}[1]{%
+  \ifcorrige\colorbox{black!12}{#1}\else\makebox[\linewidth]{\dotfill}\fi}
+% \coche : case cochée dans le corrigé seulement
+\newcommand{\coche}{\ifcorrige\textbf{\Large\ding{52}}\fi}
+\newcommand{\optok}[1]{\ifcorrige\colorbox{black!12}{$\boxtimes$\ \textbf{#1}}\else $\square$\ #1\fi}
+\newcommand{\optko}[1]{$\square$\ #1}
+% \rep{texte} : réponse visible uniquement dans le corrigé (cellules de tableau)
+\newcommand{\rep}[1]{\ifcorrige\textbf{#1}\fi}
+
+%%% ============ Style moderne, optimisé noir et blanc ============
+\usepackage[scaled=0.95]{helvet}
+\usepackage{sansmath}
+\renewcommand{\familydefault}{\sfdefault}
+\AtBeginDocument{\sansmath}
+
+% Tout en niveaux de gris (aucune information portée par la couleur)
+\definecolor{cbleu}{gray}{0.12}
+\definecolor{cviolet}{gray}{0.12}
+\definecolor{corange}{gray}{0.12}
+\definecolor{cvert}{gray}{0.12}
+\definecolor{crouge}{gray}{0.12}
+\definecolor{cgris}{gray}{0.35}
+\definecolor{crep}{gray}{0}
+\setlength{\fboxsep}{1.6pt}
+
+% En-tête / pied de page
+\renewcommand{\headrule}{\hbox to\headwidth{\color{black}\leaders\hrule height 0.6pt\hfill}}
+
+% Niveaux de difficulté
+\newcommand{\nivun}{\ding{72}\ding{73}\ding{73}\ding{73}}
+\newcommand{\nivdeux}{\ding{72}\ding{72}\ding{73}\ding{73}}
+\newcommand{\nivtrois}{\ding{72}\ding{72}\ding{72}\ding{73}}
+\newcommand{\nivquatre}{\ding{72}\ding{72}\ding{72}\ding{72}}
+
+% Numéros de questions dans des pastilles noires
+\newcommand{\qnum}[1]{\tcbox[on line,enhanced,frame hidden,boxrule=0pt,arc=2.2mm,colback=black,left=3.2pt,right=3.2pt,top=1.2pt,bottom=1.2pt]{\color{white}\bfseries\scriptsize #1}}
+\newlist{qs}{enumerate}{1}
+\setlist[qs]{label=\qnum{\arabic*},leftmargin=*,itemsep=5pt,topsep=2pt,parsep=0pt}
+
+% Tableaux : filets noirs fins, en-tête en gris clair
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+\arrayrulecolor{black}
+\newcommand{\entete}{\rowcolor{black!14}}
+
+% Bloc d'identité (évaluation uniquement)
+\newcommand{\identite}{%
+  \begin{tcolorbox}[enhanced,colback=white,colframe=black,boxrule=0.9pt,arc=2mm,left=9pt,right=9pt,top=8pt,bottom=8pt,before skip=0pt,after skip=8pt]
+    \noindent\textbf{Nom :}\ \makebox[5.6cm]{\hrulefill}\hfill\textbf{Prénom :}\ \makebox[5.6cm]{\hrulefill}\par\vspace{9pt}
+    \noindent\textbf{Classe :}\ \makebox[2.6cm]{\hrulefill}\hfill\textbf{Date :}\ \makebox[3cm]{\hrulefill}\hfill
+    \tcbox[colback=black!8,colframe=black,boxrule=1pt,arc=2mm]{\textbf{Note :}\hspace{2cm}\textbf{/ 20}}
+  \end{tcolorbox}}
+
+% ---------- Pictogrammes de parties ----------
+\newcommand{\icoloupe}{\tikz[scale=0.32,line width=1.3pt,white]{\draw (0,0) circle (0.55); \draw[line width=2.4pt,line cap=round] (0.4,-0.4) -- (0.95,-0.95);}}
+\newcommand{\icoattention}{\tikz[scale=0.36,line width=1.1pt,white]{\draw[line join=round] (0,0.75) -- (0.8,-0.6) -- (-0.8,-0.6) -- cycle; \node[font=\bfseries\scriptsize] at (0,-0.1) {!};}}
+\newcommand{\icoliste}{\tikz[scale=0.32,line width=1.1pt,white]{\draw (-0.6,-0.8) rectangle (0.6,0.8); \foreach \y in {0.35,-0.05,-0.45}{\draw (-0.35,\y) -- (-0.25,\y-0.1) -- (-0.1,\y+0.1); \draw (0.05,\y) -- (0.4,\y);}}}
+\newcommand{\icopiege}{\tikz[scale=0.34,line width=1.3pt,white]{\draw (0,0) circle (0.65); \draw[line width=1.8pt] (-0.35,-0.35) -- (0.35,0.35) (-0.35,0.35) -- (0.35,-0.35);}}
+\newcommand{\icocalcul}{\tikz[scale=0.3,line width=1pt,white]{\draw[rounded corners=1pt] (-0.6,-0.8) rectangle (0.6,0.8); \draw (-0.4,0.25) rectangle (0.4,0.6); \foreach \x in {-0.3,0,0.3}{\foreach \y in {-0.1,-0.4}{\fill (\x,\y) circle (0.08);}}}}
+\newcommand{\icoquestion}{\tikz[scale=0.34,line width=1.2pt,white]{\draw (0,0) circle (0.65); \node[font=\bfseries\scriptsize] at (0,0) {?};}}
+\newcommand{\icoprof}{\tikz[scale=0.32,line width=1.1pt,white]{\draw (-0.8,-0.55) rectangle (0.8,0.55); \draw (-0.5,0.2) -- (0.4,0.2) (-0.5,-0.15) -- (0.2,-0.15);}}
+% Triangle rectangle (hypoténuse épaisse), racine carrée, corde à nœuds, règle
+\newcommand{\icotri}{\tikz[scale=0.34,white,line join=round]{\draw[line width=1pt] (-0.75,0.7) -- (-0.75,-0.6) -- (0.8,-0.6); \draw[line width=2.2pt] (-0.75,0.7) -- (0.8,-0.6); \draw[line width=0.7pt] (-0.75,-0.3) -- (-0.45,-0.3) -- (-0.45,-0.6);}}
+\newcommand{\icoracine}{\tikz[scale=0.34,white,line width=1.4pt,line join=round,line cap=round]{\draw (-0.85,0) -- (-0.6,-0.15) -- (-0.3,-0.65) -- (0.05,0.65) -- (0.85,0.65);}}
+\newcommand{\icocorde}{\tikz[scale=0.34,white,line width=1pt]{\draw (-0.8,-0.6) -- (0.8,-0.6) -- (-0.8,0.6) -- cycle; \foreach \p in {(-0.8,-0.6),(-0.27,-0.6),(0.27,-0.6),(0.8,-0.6),(-0.8,0),(-0.8,0.6),(0,0)}{\fill \p circle (0.11);}}}
+\newcommand{\icoregle}{\tikz[scale=0.32,white,line width=1pt]{\draw[rotate=30] (-0.95,-0.3) rectangle (0.95,0.3); \foreach \x in {-0.6,-0.2,0.2,0.6}{\draw[rotate=30] (\x,0.3) -- (\x,0.05);}}}
+
+% \partie[pictogramme]{titre} : onglet noir arrondi, pictogramme
+\newcommand{\partie}[2][]{%
+  \par\needspace{6\baselineskip}\vspace{3pt}\noindent
+  \tcbox[enhanced,frame hidden,boxrule=0pt,arc=4mm,colback=black,left=6pt,right=9pt,top=2pt,bottom=2pt,on line]
+    {\ifx\relax#1\relax\else#1\hspace{5pt}\fi\color{white}\bfseries\large #2}%
+  \par\vspace{1pt}}
+
+% ---------- Encadrés ----------
+\tcbset{boite/.style={enhanced,breakable,boxrule=1pt,arc=3.5mm,colframe=black,colbacktitle=black,
+  left=10pt,right=10pt,top=8pt,bottom=5pt,
+  fonttitle=\bfseries\small,attach boxed title to top left={yshift=-2.4mm,xshift=5mm},
+  boxed title style={arc=2mm,boxrule=0pt,top=1pt,bottom=1pt},before skip=10pt,after skip=3pt}}
+% Définition : « post-it » avec morceau de scotch
+\newtcolorbox{defbox}[1][Définition]{boite,colback=black!5,sharp corners=southeast,title={\ding{46}\ #1},
+  overlay={\fill[black!22,rotate around={-25:([xshift=-6mm,yshift=-1mm]frame.north east)}]
+    ([xshift=-12mm,yshift=-3mm]frame.north east) rectangle ([xshift=0mm,yshift=1mm]frame.north east);
+    \fill[black!30] ([xshift=-4.5mm]frame.south east) -- ([yshift=4.5mm]frame.south east) -- ([xshift=-4.5mm,yshift=4.5mm]frame.south east) -- cycle;}}
+% Propriété : double cadre épais + étoiles
+\newtcolorbox{propbox}[1][Propriété]{boite,colback=white,boxrule=2.2pt,title={\ding{72}\ #1\ \ding{72}},
+  borderline={0.6pt}{2.2pt}{black}}
+% Attention : bande « chantier » à rayures sur la gauche
+\newtcolorbox{attbox}[1][Attention !]{boite,colback=black!10,boxrule=1.3pt,left=26pt,title={\ding{115}\ #1},
+  underlay={\fill[pattern=north east lines,pattern color=black] ([xshift=1.3pt,yshift=1.3pt]frame.south west) rectangle ([xshift=14pt,yshift=-1.3pt]frame.north west);}}
+% Méthode : fond gris clair
+\newtcolorbox{methbox}[1][Méthode]{boite,colback=black!6,title={\ding{43}\ #1}}
+% Remarque : pointillés
+\newtcolorbox{rembox}[1][Remarque]{boite,colback=white,frame style={dash pattern=on 4pt off 2.5pt},boxrule=1.2pt,title={#1}}
+% Exemples : « feuille de brouillon » à carreaux très légers
+\newtcolorbox{exbox}[1][Exemples]{boite,colback=white,colframe=black!70,colbacktitle=black!70,boxrule=0.9pt,title={\ding{45}\ #1},
+  underlay={\begin{scope}\clip[rounded corners=3.5mm] (frame.south west) rectangle (frame.north east);
+    \draw[black!7,step=4mm] (frame.south west) grid (frame.north east);\end{scope}}}
+
+% Pastilles numérotées
+\newcommand{\pastille}[1]{\tikz[baseline=(n.base)]\node[circle,fill=black,text=white,inner sep=1.4pt,font=\bfseries\scriptsize] (n) {#1};}
+
+% ---------- Figures : code de l'hypoténuse ----------
+% L'hypoténuse est TOUJOURS tracée en trait épais, l'angle droit codé par un petit carré.
+\tikzset{hypo/.style={line width=2.2pt,line cap=round},cote/.style={line width=0.9pt,line cap=round},
+  ad/.style={draw,angle radius=2.6mm,line width=0.6pt},lab/.style={font=\small,inner sep=1pt}}
+% \tri{P}{Q}{R}{nom P}{nom Q}{nom R}{longueur PQ}{longueur PR}{longueur QR}
+% (à placer dans un tikzpicture) : triangle rectangle en P, hypoténuse [QR] ;
+% donner P, Q, R dans le sens inverse des aiguilles d'une montre (étiquettes à l'extérieur)
+\newcommand{\tri}[9]{%
+  \coordinate (P) at (#1); \coordinate (Q) at (#2); \coordinate (R) at (#3);
+  \coordinate (G) at (barycentric cs:P=1,Q=1,R=1);
+  \draw[cote] (Q) -- (P) -- (R); \draw[hypo] (Q) -- (R);
+  \pic[ad]{right angle=Q--P--R};
+  \node[lab,font=\normalsize] at ($(P)!-0.32cm!(G)$) {$#4$};
+  \node[lab,font=\normalsize] at ($(Q)!-0.32cm!(G)$) {$#5$};
+  \node[lab,font=\normalsize] at ($(R)!-0.32cm!(G)$) {$#6$};
+  \node[lab] at ($($(P)!0.5!(Q)$)!0.42cm!-90:(Q)$) {#7};
+  \node[lab] at ($($(R)!0.5!(P)$)!0.42cm!-90:(P)$) {#8};
+  \node[lab] at ($($(Q)!0.5!(R)$)!0.45cm!-90:(R)$) {#9};}
+\newcommand{\legendecode}{\textbf{Code des figures :}\quad l'angle droit est codé par un petit carré ;\quad
+l'hypoténuse est tracée en \textbf{trait épais} ;\quad les figures ne sont pas en vraie grandeur.}
+
+% En-tête d'exercice : pastille noire numérotée + titre + étoiles
+\newcommand{\exo}[3]{%
+  \par\needspace{4\baselineskip}\vspace{2pt}
+  \begin{tcolorbox}[enhanced,arc=3mm,boxrule=0.9pt,colframe=black,colback=black!8,
+    left=4pt,right=8pt,top=2pt,bottom=2pt,before skip=4pt,after skip=3pt]
+    \tcbox[on line,enhanced,frame hidden,boxrule=0pt,arc=2.5mm,colback=black,left=5pt,right=5pt,top=1pt,bottom=1pt]
+      {\color{white}\bfseries Exercice #1}\quad\textbf{#2}\hfill #3
+  \end{tcolorbox}\nopagebreak}
+
+% Ligne d'erreur : croix / coche
+\newcommand{\faux}{\textbf{\ding{56}}\ }
+\newcommand{\vrai}{\textbf{\ding{52}}}
+% Points du barème
+\newcommand{\pts}[1]{\textbf{#1}}
+
+\geometry{top=1.7cm,bottom=1.3cm}\setlength{\jot}{2pt}\setlength{\parskip}{1pt}
+
+
+%%% ================= Annales du brevet : corrigés =================
+\renewcommand{\headrule}{\hbox to\headwidth{\color{black}\leaders\hrule height 0.6pt\hfill}}
+\lhead{\small Mathématiques -- Annales du brevet}
+\chead{}
+\rhead{\small M. Pluchet}
+\lfoot{\small Corrigé}
+\cfoot{\small\thepage}
+\geometry{top=1.7cm,bottom=1.5cm}
+\setlength{\jot}{3pt}
+% \bandeaudnb{titre de la partie}{source}
+\newcommand{\bandeaudnb}[2]{%
+  \begin{tcolorbox}[enhanced,colback=white,colframe=black,boxrule=1.2pt,arc=5mm,
+    borderline south={3.5pt}{0pt}{black},left=10pt,right=10pt,top=5pt,bottom=5pt,before skip=0pt,after skip=6pt]
+    {\bfseries\Large Corrigé\quad\textbullet\quad #1}\\[3pt]
+    {\small #2}
+  \end{tcolorbox}}
+% réponse rédigée (fond gris, comme les corrigés)
+\newtcolorbox{reponse}{enhanced,breakable,frame hidden,boxrule=0pt,colback=black!9,arc=2mm,
+  left=7pt,right=7pt,top=4pt,bottom=4pt,before skip=3pt,after skip=6pt}
+% \q{numéro}{rappel de la question}
+\newcommand{\q}[2]{\par\needspace{3\baselineskip}\vspace{4pt}\noindent\qnum{#1}\ \textit{#2}\par}
+% conclusion encadrée
+\newcommand{\concl}[1]{\par\noindent\fbox{\textbf{#1}}\par}
