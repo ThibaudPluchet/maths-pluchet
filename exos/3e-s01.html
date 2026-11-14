@@ -40,6 +40,9 @@ main{padding:14px 0 70px}
 .notion h2 .code{font:700 14px "Atkinson Hyperlegible",sans-serif;color:var(--accent-ink);background:var(--accent);border-radius:8px;padding:2px 8px}
 .notion p.rap{margin:0 0 10px;color:var(--muted);font-size:15px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.lvl{display:inline-flex;align-items:center;gap:3px;align-self:flex-start;font-size:12.5px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.lvl .st{letter-spacing:1px}
+.lvl.l1{background:var(--oks);color:var(--ok)}.lvl.l2{background:var(--mids);color:var(--mid)}.lvl.l3{background:var(--kos);color:var(--ko)}
 .tile{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;cursor:pointer;color:var(--ink);font:inherit;display:flex;flex-direction:column;gap:4px}
 .tile:hover{border-color:var(--accent);box-shadow:0 6px 20px -14px var(--accent)}
 .tile b{font:700 18px/1.2 "Bricolage Grotesque",system-ui,sans-serif}
@@ -178,44 +181,44 @@ function devN(){
    chaque générateur renvoie {q, P (réponse attendue) | v (nombre) | vf (true/false), steps: [lignes], aide?} */
 var EX = [
  // ===== N01 : simple distributivité =====
- {id: 'n01a', n: 'N01', t: 'Développer k(ax + b)', d: 'Coefficients positifs, pour démarrer.',
+ {id: 'n01a', lv: 1, n: 'N01', t: 'Développer k(ax + b)', d: 'Coefficients positifs, pour démarrer.',
   c: 'Développe puis réduis chaque expression.', a: 'On multiplie le nombre par chaque terme de la parenthèse : k(a + b) = k × a + k × b, et (a + b) × k = a × k + b × k.',
   g: function(){ return dev(rnd(2, 9), 0, [rnd(1, 9), rnd(1, 9)]); }},
- {id: 'n01b', n: 'N01', t: 'Avec des nombres relatifs', d: 'Attention aux signes !',
+ {id: 'n01b', lv: 2, n: 'N01', t: 'Avec des nombres relatifs', d: 'Attention aux signes !',
   c: 'Développe puis réduis chaque expression.', a: 'Règle des signes : (−) × (+) = (−) et (−) × (−) = (+). Par exemple −3(x − 2) = −3x + 6 et (5 − 2x) × (−4) = −20 + 8x.',
   g: function(){ var k = rnz(-9, 9), a = rnz(-9, 9), b = rnz(-9, 9); if ((k > 0 && a > 0 && b > 0) || k === 1) k = -k;
     return dev(k, 0, [a, b]); }},
- {id: 'n01c', n: 'N01', t: 'Multiplier par un facteur en x', d: 'Le facteur contient x : on obtient des x².',
+ {id: 'n01c', lv: 2, n: 'N01', t: 'Multiplier par un facteur en x', d: 'Le facteur contient x : on obtient des x².',
   c: 'Développe puis réduis chaque expression (x × x = x²).', a: 'x × x = x² et 3x × 2x = 6x². Par exemple x(2x + 5) = 2x² + 5x et (4 − x) × (−3x) = −12x + 3x².',
   g: function(){ return dev(pick([1, 1, -1, rnz(-6, 6)]), 1, [rnz(-7, 7), rnz(-9, 9)]); }},
- {id: 'n01d', n: 'N01', t: 'Calculer astucieusement', d: 'La distributivité en calcul mental.',
+ {id: 'n01d', lv: 1, n: 'N01', t: 'Calculer astucieusement', d: 'La distributivité en calcul mental.',
   c: 'Calcule de tête en utilisant la distributivité.', a: 'Par exemple 7 × 102 = 7 × (100 + 2) = 700 + 14 = 714, et 6 × 99 = 6 × (100 − 1) = 600 − 6 = 594.',
   g: function(){ var k = rnd(3, 9), base = pick([10, 100, 1000]), e = rnz(-3, 3), m = base + e;
     return {q: k + ' × ' + m, v: k * m,
       steps: [k + ' × (' + base + (e < 0 ? ' ' + MINUS + ' ' : ' + ') + Math.abs(e) + ')',
               k * base + (e < 0 ? ' ' + MINUS + ' ' : ' + ') + Math.abs(k * e), String(k * m)]}; }},
- {id: 'n01e', n: 'N01', t: 'Pour aller plus loin', d: '3 ou 4 termes dans la parenthèse.',
+ {id: 'n01e', lv: 3, n: 'N01', t: 'Pour aller plus loin', d: '3 ou 4 termes dans la parenthèse.',
   c: 'Développe puis réduis chaque expression.', a: 'On multiplie le facteur par chaque terme de la parenthèse, sans en oublier, puis on regroupe les termes de même nature. Par exemple −2(x² − 3x + 4 + 5x) = −2x² + 6x − 8 − 10x = −2x² − 4x − 8.',
   g: devN},
  // ===== N02 : réduire =====
- {id: 'n02a', n: 'N02', t: 'Réduire une somme', d: 'Des x et des nombres.',
+ {id: 'n02a', lv: 1, n: 'N02', t: 'Réduire une somme', d: 'Des x et des nombres.',
   c: 'Réduis chaque expression.', a: 'On regroupe les termes en x entre eux et les nombres entre eux : 5x + 3 − 2x + 4 = 3x + 7.',
   g: function(){ var T = [[rnz(-9, 9), 1], [rnz(-9, 9), 0], [rnz(-9, 9), 1], [rnz(-9, 9), 0]];
     if (T[0][0] < 0) T[0][0] = -T[0][0];
     var P = sumT(T); if (!P[1]) return this.g();
     return {q: terms(T), P: P, steps: [terms([T[0], T[2], T[1], T[3]]), poly(P)]}; }},
- {id: 'n02b', n: 'N02', t: 'Réduire avec des x²', d: 'Ne pas mélanger x² et x !',
+ {id: 'n02b', lv: 2, n: 'N02', t: 'Réduire avec des x²', d: 'Ne pas mélanger x² et x !',
   c: 'Réduis puis ordonne chaque expression (x², puis x, puis le nombre).', a: 'x² et x ne s\'additionnent pas : 3x² + 2x reste 3x² + 2x. On regroupe les x² entre eux, les x entre eux, les nombres entre eux.',
   g: function(){ var T = [[rnz(1, 7), 2], [rnz(-9, 9), 1], [rnz(-6, 6), 2], [rnz(-9, 9), 0], [rnz(-9, 9), 1]];
     var P = sumT(T); if (!P[2] || !P[1]) return this.g();
     return {q: terms(T), P: P, steps: [terms([T[0], T[2], T[1], T[4], T[3]]), poly(P)]}; }},
- {id: 'n02c', n: 'N02', t: 'Réduire un produit', d: 'Nombres × nombres, x × x.',
+ {id: 'n02c', lv: 2, n: 'N02', t: 'Réduire un produit', d: 'Nombres × nombres, x × x.',
   c: 'Écris chaque produit le plus simplement possible.', a: 'On multiplie les nombres entre eux et les x entre eux : 3x × 4x = 12x² et 5 × 2x = 10x.',
   g: function(){ var a = rnz(-9, 9), b = rnz(-9, 9), f = pick([[1, 1], [0, 1], [1, 0], [1, 1]]);
     var A = mono(a, f[0]), B = mono(b, f[1]), d = f[0] + f[1];
     return {q: A + ' × ' + (b < 0 ? '(' + B + ')' : B), P: sumT([[a * b, d]]),
       steps: [pn(a) + ' × ' + pn(b) + (d ? ' × ' + (d === 2 ? 'x × x' : 'x') : ''), mono(a * b, d)]}; }},
- {id: 'n02d', n: 'N02', t: 'Vrai ou faux ?', d: 'Les pièges classiques.',
+ {id: 'n02d', lv: 2, n: 'N02', t: 'Vrai ou faux ?', d: 'Les pièges classiques.',
   c: 'Pour chaque égalité, dis si elle est vraie pour toutes les valeurs de x.', a: 'x + x = 2x mais x × x = x². 3x + 2 ne se réduit pas : ce ne sont pas des termes de même nature.',
   g: function(){ var a = rnd(2, 9), b = rnd(2, 9), L = [
       [mono(a, 1) + ' + ' + mono(b, 1) + ' = ' + mono(a + b, 1), true, 'On ajoute les coefficients : ' + a + ' + ' + b + ' = ' + (a + b) + '.'],
@@ -230,19 +233,19 @@ var EX = [
       ['2(x + ' + b + ') = 2x + ' + b, false, 'Le 2 multiplie les deux termes : 2(x + ' + b + ') = 2x + ' + 2 * b + '.']];
     var i = rnd(0, L.length - 1), p = L[i]; return {q: p[0], vf: p[1], steps: [p[2]], key: 'vf' + i}; }},
  // ===== N03 : parenthèses =====
- {id: 'n03a', n: 'N03', t: 'Parenthèses précédées de +', d: 'On les enlève sans rien changer.',
+ {id: 'n03a', lv: 1, n: 'N03', t: 'Parenthèses précédées de +', d: 'On les enlève sans rien changer.',
   c: 'Supprime les parenthèses puis réduis.', a: 'Des parenthèses précédées d\'un + s\'enlèvent sans changer les signes : 3x + (2x − 5) = 3x + 2x − 5 = 5x − 5.',
   g: function(){ var A = [[rnz(1, 9), 1], [rnz(-9, 9), 0]], B = [[rnz(-9, 9), 1], [rnz(-9, 9), 0]];
     if (pick([true, false])) B.reverse();
     var all = A.concat(B), P = sumT(all); if (!P[1] && !P[0]) return this.g();
     return {q: terms(A) + ' + (' + terms(B) + ')', P: P, steps: [terms(all), poly(P)]}; }},
- {id: 'n03b', n: 'N03', t: 'Parenthèses précédées de −', d: 'On change tous les signes à l\'intérieur.',
+ {id: 'n03b', lv: 2, n: 'N03', t: 'Parenthèses précédées de −', d: 'On change tous les signes à l\'intérieur.',
   c: 'Supprime les parenthèses puis réduis.', a: 'Des parenthèses précédées d\'un − s\'enlèvent en changeant le signe de chaque terme : 5x − (2x − 3) = 5x − 2x + 3 = 3x + 3.',
   g: function(){ var A = [[rnz(1, 9), 1], [rnz(-9, 9), 0]], B = [[rnz(-9, 9), 1], [rnz(-9, 9), 0]];
     if (pick([true, false])) B.reverse(); if (pick([true, false])) A = [A[0]];
     var opp = B.map(function(t){ return [-t[0], t[1]]; }), all = A.concat(opp), P = sumT(all);
     return {q: terms(A) + ' ' + MINUS + ' (' + terms(B) + ')', P: P, steps: [terms(all), poly(P)]}; }},
- {id: 'n03c', n: 'N03', t: 'Développer et réduire', d: 'Tout ensemble : distributivité et parenthèses.',
+ {id: 'n03c', lv: 3, n: 'N03', t: 'Développer et réduire', d: 'Tout ensemble : distributivité et parenthèses.',
   c: 'Développe, supprime les parenthèses puis réduis.', a: 'On développe d\'abord le produit, puis on supprime les parenthèses (attention au −), puis on réduit.',
   g: function(){ var k = rnd(2, 6), a = rnz(1, 6), b = rnz(-9, 9), c = rnz(-9, 9), d = rnz(-9, 9), s = pick([1, -1]);
     var D = [[k * a, 1], [k * b, 0]], B = [[c, 1], [d, 0]], all = D.concat(B.map(function(t){ return [s * t[0], t[1]]; })), P = sumT(all);
@@ -257,6 +260,9 @@ var NOTIONS = [
 
 /* ---------- affichage ---------- */
 function best(id){ return parseInt(store('s01:' + id) || '0', 10) || 0; }
+var LV = ['', 'Facile', 'Moyen', 'Difficile'];
+function lvl(v){ var e = el('span', 'lvl l' + v); e.title = 'Difficulté : ' + LV[v];
+  e.appendChild(el('span', 'st', '★★★'.slice(0, v) + '☆☆☆'.slice(0, 3 - v))); e.appendChild(document.createTextNode(' ' + LV[v])); return e; }
 function menu(focus){
   main.textContent = ''; tomenu.hidden = true; kbar.hidden = true;
   NOTIONS.forEach(function(no){
@@ -264,9 +270,9 @@ function menu(focus){
     var h = el('h2'); h.appendChild(el('span', 'code', no.n)); h.appendChild(document.createTextNode(no.t)); sec.appendChild(h);
     sec.appendChild(el('p', 'rap', 'À retenir : ' + no.r));
     var g = el('div', 'grid');
-    EX.filter(function(x){ return x.n === no.n; }).forEach(function(x){
+    EX.filter(function(x){ return x.n === no.n; }).sort(function(a, b){ return a.lv - b.lv; }).forEach(function(x){
       var b = el('button', 'tile'); b.type = 'button';
-      b.appendChild(el('b', null, x.t)); b.appendChild(el('span', 'd', x.d));
+      b.appendChild(lvl(x.lv)); b.appendChild(el('b', null, x.t)); b.appendChild(el('span', 'd', x.d));
       var r = best(x.id); if (r) b.appendChild(el('span', 'rec', 'Meilleur score : ' + r + ' / ' + N + (r === N ? ' ✓' : '')));
       b.onclick = function(){ location.hash = x.id; };
       g.appendChild(b);
@@ -292,7 +298,7 @@ function keybar(){
 function run(x){
   main.textContent = ''; tomenu.hidden = false; window.scrollTo(0, 0);
   var p = el('section', 'panel'), ph = el('div', 'ph'), no = NOTIONS.filter(function(z){ return z.n === x.n; })[0];
-  ph.appendChild(el('p', 'kick', x.n + ' · ' + no.t)); ph.appendChild(el('h2', null, x.t)); p.appendChild(ph);
+  ph.appendChild(el('p', 'kick', x.n + ' · ' + no.t)); ph.appendChild(el('h2', null, x.t)); ph.appendChild(lvl(x.lv)); p.appendChild(ph);
   p.appendChild(el('p', 'consigne', x.c)); p.appendChild(el('p', 'aide', '💡 ' + x.a));
   var items = el('div', 'items'), qs = [], seen = {};
   for (var i = 0; i < N; i++){
