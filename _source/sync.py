@@ -223,8 +223,7 @@ def load(page, dbdir, everything=False):
                 items.sort(key=lambda i: (list(TYPES.values()).index(i["type"]), i.pop("_s")))
                 for k in (inter.get(lv, {}).get(str(n["n"])) or []) if show_docs else []:
                     items.append({"type": "exo", "label": k["l"], "href": k["u"], "cls": show_docs})
-                if n.get("alea") and show_docs:
-                    items.append({"type": "alea", "label": "Exercices en ligne (MathALÉA)", "href": n["alea"], "cls": show_docs})
+                # liens MathALÉA : plus publiés sur le site élèves (demande de l'enseignant, 14/11/2026)
                 for k in (links.get(lv, {}).get(str(n["n"])) or []) if show_docs else []:
                     m = ANIM_RE.match(k.get("u", ""))
                     if m:
