@@ -15,12 +15,12 @@
 :root{
   --bg:#f6f4ee; --card:#ffffff; --ink:#1b2333; --muted:#596277; --line:#e2ded3;
   --accent:#2f5bd3; --accent-ink:#ffffff; --soft:#e8eefc; --new:#d6336c;
-  --g1:#2f5bd3; --g1s:#e8eefc; --g2:#b85c00; --g2s:#fbeedd; --g3:#7a3fb8; --g3s:#f1e8fb; --g4:#b3261e; --g4s:#fbe6e4;
+  --g1:#2f5bd3; --g1s:#e8eefc; --g2:#b85c00; --g2s:#fbeedd; --g3:#7a3fb8; --g3s:#f1e8fb; --g4:#b3261e; --g4s:#fbe6e4; --g5:#0e7a6e; --g5s:#dcf3ef;
 }
 @media (prefers-color-scheme: dark){
   :root{ --bg:#13161d; --card:#1b1f28; --ink:#eaedf3; --muted:#a3abbc; --line:#2b313e;
     --accent:#86a4ff; --accent-ink:#0f1320; --soft:#222a3e; --new:#ff7aa5;
-    --g1:#8fa9ff; --g1s:#1f2840; --g2:#f0a050; --g2s:#33261a; --g3:#c49bf0; --g3s:#2a2238; --g4:#ff8a80; --g4s:#3a1f1d; }
+    --g1:#8fa9ff; --g1s:#1f2840; --g2:#f0a050; --g2s:#33261a; --g3:#c49bf0; --g3s:#2a2238; --g4:#ff8a80; --g4s:#3a1f1d; --g5:#5fd3c2; --g5s:#15302c; }
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
@@ -69,7 +69,7 @@ main.wrap{padding-top:22px;padding-bottom:56px;display:flex;flex-direction:colum
 .doc .t{flex:1}
 .doc .ext{color:var(--muted);font-size:13px;font-weight:400}
 .badge{font:700 12px "Atkinson Hyperlegible",sans-serif;color:#fff;background:var(--new);border-radius:999px;padding:2px 8px}
-.g1{--c:var(--g1);--cs:var(--g1s)} .g2{--c:var(--g2);--cs:var(--g2s)} .g3{--c:var(--g3);--cs:var(--g3s)} .g4{--c:var(--g4);--cs:var(--g4s)}
+.g1{--c:var(--g1);--cs:var(--g1s)} .g2{--c:var(--g2);--cs:var(--g2s)} .g3{--c:var(--g3);--cs:var(--g3s)} .g4{--c:var(--g4);--cs:var(--g4s)} .g5{--c:var(--g5);--cs:var(--g5s)}
 details.seq{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 details.seq + details.seq{margin-top:10px}
 details.seq > summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;align-items:center;gap:10px;min-height:52px}
@@ -274,7 +274,8 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 function start(D){
   var picker = document.getElementById('picker'), main = document.getElementById('main');
   var GROUPS = [
-    {key:'comprendre', title:'Comprendre', cls:'g1', types:['activite','cours','anim','video']},
+    {key:'comprendre', title:'Comprendre', cls:'g1', types:['activite','cours','video']},
+    {key:'visualiser', title:'Visualiser', cls:'g5', types:['anim']},
     {key:'entrainer', title:'S’entraîner', cls:'g2', types:['exercices','correction-exo','exo']},
     {key:'reviser', title:'Réviser', cls:'g3', types:['revision','carte']},
     {key:'evaluer', title:'Évaluation', cls:'g4', types:['evaluation','correction']}
@@ -530,7 +531,7 @@ function start(D){
     b.onclick = open; b.onkeydown = function(ev){ if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); open(); } };
     b.appendChild(t); b.appendChild(go); return b;
   }
-  var REV = [['Revoir le cours', 'g1', ['revision', 'carte', 'cours']], ['S’entraîner', 'g2', ['exo', 'correction-exo']], ['Revoir en vidéo', 'g3', ['video']], ['Animations', 'g3', ['anim']]];
+  var REV = [['Revoir le cours', 'g1', ['revision', 'carte', 'cours']], ['S’entraîner', 'g2', ['exo', 'correction-exo']], ['Revoir en vidéo', 'g3', ['video']], ['Visualiser', 'g5', ['anim']]];
   function upCard(e, full){
     var box = el('article', 'notion evcard upcard');
     var k = el('p', 'evkind', 'Évaluation à venir · ' + dayTxt(dOf(e))); k.appendChild(el('span', 'when', whenTxt(dOf(e)))); box.appendChild(k);
