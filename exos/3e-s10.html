@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : triangles semblables (3e, séquence 10) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 3e, séquence 10 : reconnaître des triangles semblables et calculer des longueurs.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">3e · Séquence 10 · Triangles semblables</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, pick = M.pick, shuffle = M.shuffle, fr = M.fr, cl = M.cl, rd = M.rd, ARR = M.ARR, HAT = '̂';
+function tri3(){ var a = rnd(25, 100), b; do { b = rnd(20, 110); } while (a + b >= 165 || a === b); return [a, b, 180 - a - b]; }
+function sides(){ var t = pick([[3, 4, 5], [4, 5, 6], [5, 6, 7], [5, 7, 9], [6, 8, 9], [4, 6, 7], [7, 8, 10], [5, 5, 8], [6, 7, 11]]); var m = pick([1, 1, 2, 0.5, 1.5, 3]); return t.map(function(v){ return cl(v * m); }); }
+var EX = [
+ {id: 'n16a', lv: 1, n: 'N16', t: 'Sont-ils semblables ?', d: 'Avec les angles ou les longueurs.',
+  c: 'Réponds par oui ou par non.', a: 'Deux triangles sont semblables si leurs angles sont deux à deux égaux (deux paires d’angles égaux suffisent), ou si leurs côtés sont proportionnels.',
+  g: function(){ var k = rnd(0, 1), yes = Math.random() < 0.5, q, st, L = M.letters(6);
+    if (k === 0){ var A = tri3(), B = yes ? shuffle(A.slice()) : [A[0], A[1] + pick([-5, 5, 10]), 0]; if (!yes){ B[2] = 180 - B[0] - B[1]; shuffle(B); }
+      q = 'Le triangle ' + L.slice(0, 3).join('') + ' a deux angles de ' + A[0] + '° et ' + A[1] + '°. Le triangle ' + L.slice(3).join('') + ' a deux angles de ' + B[0] + '° et ' + B[1] + '°. Sont-ils semblables ?';
+      var A3 = 180 - A[0] - A[1], B3 = 180 - B[0] - B[1], sa = [A[0], A[1], A3].sort(function(x, y){ return x - y; }), sb = [B[0], B[1], B3].sort(function(x, y){ return x - y; }); yes = sa.join() === sb.join();
+      st = ['3e angle : 180 − ' + A[0] + ' − ' + A[1] + ' = ' + A3 + '° et 180 − ' + B[0] + ' − ' + B[1] + ' = ' + B3 + '°.', 'Angles : ' + sa.join(', ') + ' et ' + sb.join(', ') + (yes ? ' : les mêmes, ils sont semblables.' : ' : différents, ils ne sont pas semblables.')]; }
+    else { var s = sides(), m = pick([2, 3, 1.5, 2.5, 0.5]), t = s.map(function(v){ return cl(v * m); }); if (!yes){ var i = rnd(0, 2); t[i] = cl(t[i] + pick([1, 2, -1]) * (m >= 1 ? 1 : 0.5)); }
+      var ss = s.slice().sort(function(x, y){ return x - y; }), tt = t.slice().sort(function(x, y){ return x - y; }), r = tt.map(function(v, i){ return v / ss[i]; });
+      yes = Math.abs(r[0] - r[1]) < 1e-9 && Math.abs(r[1] - r[2]) < 1e-9;
+      q = 'Un triangle a pour côtés ' + s.map(fr).join(' cm, ') + ' cm. Un autre a pour côtés ' + shuffle(t.slice()).map(fr).join(' cm, ') + ' cm. Sont-ils semblables ?';
+      st = ['On range les côtés et on calcule les rapports : ' + tt.map(function(v, i){ return fr(v) + '/' + fr(ss[i]) + ' = ' + fr(rd(v / ss[i], 3)); }).join(' ; ') + '.', yes ? 'Les rapports sont égaux : côtés proportionnels, triangles semblables.' : 'Les rapports ne sont pas tous égaux : ils ne sont pas semblables.']; }
+    return {type: 'ch', q: q, ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: st, key: q}; }},
+ {id: 'n16b', lv: 1, n: 'N16', t: 'Côtés homologues', d: 'Les côtés qui se correspondent.',
+  c: 'Choisis la bonne réponse.', a: 'Les côtés homologues sont opposés à des angles égaux. Si ABC et DEF sont semblables avec Â = D̂, B̂ = Ê et Ĉ = F̂, alors [AB] et [DE] sont homologues, [BC] et [EF], [AC] et [DF].',
+  g: function(){ var L = M.letters(6), P = L.slice(0, 3), Q = L.slice(3), perm = shuffle([0, 1, 2]), i = rnd(0, 2), j = (i + 1) % 3;
+    var eg = [0, 1, 2].map(function(t){ return P[t] + HAT + ' = ' + Q[perm[t]] + HAT; }).join(', ');
+    var segs = [[Q[0], Q[1]], [Q[1], Q[2]], [Q[0], Q[2]]], ch = shuffle(segs.map(function(z){ return '[' + z[0] + z[1] + ']'; }));
+    var gi = segs.findIndex(function(z){ return z.indexOf(Q[perm[i]]) >= 0 && z.indexOf(Q[perm[j]]) >= 0; }), good = '[' + segs[gi][0] + segs[gi][1] + ']';
+    return {type: 'ch', q: 'Les triangles ' + P.join('') + ' et ' + Q.join('') + ' sont semblables, avec ' + eg + '. Quel côté est homologue à [' + P[i] + P[j] + '] ?', ch: ch, ans: ch.indexOf(good),
+      steps: [P[i] + ' correspond à ' + Q[perm[i]] + ' et ' + P[j] + ' à ' + Q[perm[j]] + ' : [' + P[i] + P[j] + '] est homologue à ' + good + '.'], key: eg + i}; }},
+ {id: 'n16c', lv: 2, n: 'N16', t: 'Coefficient d’agrandissement', d: 'Ou de réduction.',
+  c: 'Calcule le coefficient demandé (valeur exacte, décimale si possible).', a: 'Coefficient = longueur d’un côté du triangle image / longueur du côté homologue du triangle de départ. Plus grand que 1 : agrandissement ; plus petit que 1 : réduction.',
+  g: function(){ var s = sides(), m = pick([2, 3, 4, 1.5, 2.5, 0.5, 0.25, 0.75, 1.2]), t = s.map(function(v){ return cl(v * m); }), L = M.letters(6), i = rnd(0, 2);
+    var q = 'Le triangle ' + L.slice(3).join('') + ' est ' + (m > 1 ? 'un agrandissement' : 'une réduction') + ' du triangle ' + L.slice(0, 3).join('') + '. Le côté ' + L[i] + L[(i + 1) % 3] + ' = ' + fr(s[i]) + ' cm a pour homologue ' + L[3 + i] + L[3 + (i + 1) % 3] + ' = ' + fr(t[i]) + ' cm. Quel est le coefficient ?';
+    return {type: 'num', q: q, lab: 'k =', v: m, x: m, traps: [[cl(1 / m), 'On divise la longueur du triangle IMAGE par celle du triangle de départ.']].filter(function(z){ return Math.abs(z[0] - m) > 1e-9; }),
+      steps: ['k = ' + fr(t[i]) + ' / ' + fr(s[i]) + ' = ' + fr(m) + (m > 1 ? ' (agrandissement)' : ' (réduction)')], key: q}; }},
+ {id: 'n16d', lv: 2, n: 'N16', nq: 4, t: 'Calculer une longueur', d: 'Avec des triangles semblables.',
+  c: 'Calcule la longueur demandée.', a: 'Calcule d’abord le coefficient avec deux côtés homologues connus, puis multiplie (ou divise) la longueur connue par ce coefficient.',
+  g: function(){ var L = M.letters(6), P = L.slice(0, 3), Q = L.slice(3), perm = shuffle([0, 1, 2]), s = sides(), m = pick([2, 3, 1.5, 2.5, 0.5, 1.2, 4, 0.75]), t = s.map(function(v){ return cl(v * m); });
+    var seg = function(T, i){ return T[i] + T[(i + 1) % 3]; }, segQ = function(i){ return Q[perm[i]] + Q[perm[(i + 1) % 3]]; };
+    var i = rnd(0, 2), j = (i + 1 + rnd(0, 1)) % 3, dir = rnd(0, 1);
+    var eg = [0, 1, 2].map(function(z){ return P[z] + HAT + ' = ' + Q[perm[z]] + HAT; }).join(', ');
+    var q = 'Les triangles ' + P.join('') + ' et ' + Q[perm[0]] + Q[perm[1]] + Q[perm[2]] + ' sont semblables (' + eg + '). ' + seg(P, i) + ' = ' + fr(s[i]) + ' cm, ' + segQ(i) + ' = ' + fr(t[i]) + ' cm et ' + (dir ? segQ(j) + ' = ' + fr(t[j]) : seg(P, j) + ' = ' + fr(s[j])) + ' cm. Calcule ' + (dir ? seg(P, j) : segQ(j)) + '.';
+    var v = dir ? s[j] : t[j];
+    return {type: 'num', q: q, lab: (dir ? seg(P, j) : segQ(j)) + ' =', unit: 'cm', v: v, x: v, key: q,
+      traps: [[dir ? cl(t[j] * m) : cl(s[j] / m), 'Le coefficient s’applique dans l’autre sens : vérifie quel triangle est le plus grand.']].filter(function(z){ return Math.abs(z[0] - v) > 1e-9; }),
+      steps: ['[' + seg(P, i) + '] et [' + segQ(i) + '] sont homologues : k = ' + fr(t[i]) + ' / ' + fr(s[i]) + ' = ' + fr(m) + '.', '[' + seg(P, j) + '] et [' + segQ(j) + '] sont homologues : ' + (dir ? seg(P, j) + ' = ' + fr(t[j]) + ' / ' + fr(m) + ' = ' + fr(v) : segQ(j) + ' = ' + fr(s[j]) + ' × ' + fr(m) + ' = ' + fr(v)) + ' cm.']}; }},
+ {id: 'n16e', lv: 2, n: 'N16', t: 'Vrai ou faux ?', d: 'Semblables, égaux, agrandis…',
+  c: 'Chaque affirmation est-elle vraie ou fausse ?', a: 'Semblables = mêmes angles = côtés proportionnels. Deux triangles égaux (superposables) sont semblables avec un coefficient 1.',
+  g: function(){ var k = rnd(2, 4), L = [
+      ['Deux triangles qui ont deux angles égaux deux à deux sont semblables.', true, 'Le troisième angle est alors égal aussi (somme 180°).'],
+      ['Deux triangles rectangles sont toujours semblables.', false, 'Il faut aussi qu’un angle aigu soit égal : un triangle rectangle avec 30° et un autre avec 45° ne le sont pas.'],
+      ['Deux triangles équilatéraux sont toujours semblables.', true, 'Leurs angles valent tous 60°.'],
+      ['Si on agrandit un triangle avec un coefficient ' + k + ', ses angles sont multipliés par ' + k + '.', false, 'Les angles ne changent pas ; seules les longueurs sont multipliées par ' + k + '.'],
+      ['Si on agrandit un triangle avec un coefficient ' + k + ', son périmètre est multiplié par ' + k + '.', true, 'Chaque côté est multiplié par ' + k + ', donc leur somme aussi.'],
+      ['Deux triangles isocèles sont toujours semblables.', false, 'Leurs angles au sommet peuvent être différents.'],
+      ['Un triangle de côtés 3, 4, 5 et un triangle de côtés 6, 8, 10 sont semblables.', true, 'Les rapports valent tous 2.'],
+      ['Un triangle de côtés 3, 4, 5 et un triangle de côtés 4, 5, 6 sont semblables.', false, '4/3, 5/4 et 6/5 ne sont pas égaux.'],
+      ['Un coefficient de 0,5 correspond à un agrandissement.', false, '0,5 < 1 : c’est une réduction (les longueurs sont divisées par 2).'],
+      ['Dans deux triangles semblables, les côtés homologues sont opposés à des angles égaux.', true, 'C’est ainsi qu’on les repère.'],
+      ['Deux triangles semblables ont forcément les mêmes longueurs.', false, 'Ils ont la même forme, mais pas forcément la même taille.'],
+      ['Dans une configuration de Thalès, les deux triangles sont semblables.', true, 'Ils ont les mêmes angles, et leurs côtés sont proportionnels.']];
+    var i = rnd(0, L.length - 1), p = L[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n16f', lv: 3, n: 'N16', nq: 3, t: 'Problèmes', d: 'Maquettes, photos, ombres.',
+  c: 'Repère les deux triangles semblables, calcule le coefficient, puis la longueur cherchée.', a: 'Même forme, tailles différentes : toutes les longueurs sont multipliées par le même coefficient k. Mets les longueurs dans la même unité.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var a, b, c, x, q, st, u = 'cm', dd;
+    function out(lab, d){ var v = d === undefined ? cl(x) : rd(x, d); return {type: 'num', q: q, lab: lab + (d === undefined ? ' =' : ' ≈'), unit: u, v: v, x: x, d: d, steps: st.concat([lab + (d === undefined ? ' = ' : ' ≈ ') + fr(v) + ' ' + u]), key: 'k' + k}; }
+    if (k === 0){ a = pick([10, 15, 20, 25]); b = pick([50, 100, 200]); c = rnd(5, 30); x = c * b / 100; u = 'm';
+      q = 'Une maquette de voilier est à l’échelle 1/' + b + '. Sur la maquette, le mât mesure ' + c + ' cm. Quelle est la hauteur réelle du mât, en mètres ?'; st = ['Coefficient d’agrandissement : ' + b + '.', c + ' × ' + b + ' = ' + (c * b) + ' cm']; return out('hauteur'); }
+    if (k === 1){ a = pick([10, 13, 15]); b = pick([20, 30, 40]); c = rnd(6, 12); x = c * b / a; u = 'cm';
+      q = 'Une photo de ' + a + ' cm de large et ' + c + ' cm de haut est agrandie pour atteindre ' + b + ' cm de large. Quelle est sa nouvelle hauteur ? Arrondis au dixième.'; st = ['k = ' + b + ' / ' + a, 'hauteur = ' + c + ' × ' + b + ' / ' + a]; return out('hauteur', 1); }
+    if (k === 2){ a = cl(rnd(15, 20) / 10); b = cl(rnd(20, 40) / 10); c = rnd(10, 40); x = a * c / b; u = 'm';
+      q = 'Le triangle formé par une personne de ' + fr(a) + ' m et son ombre de ' + fr(b) + ' m est semblable à celui formé par un arbre et son ombre de ' + c + ' m. Quelle est la hauteur de l’arbre ? Arrondis au dixième.'; st = ['k = ' + c + ' / ' + fr(b), 'hauteur = ' + fr(a) + ' × ' + c + ' / ' + fr(b)]; return out('hauteur', 1); }
+    if (k === 3){ var s = sides(); a = pick([2, 3, 4]); x = (s[0] + s[1] + s[2]) * a; u = 'cm';
+      q = 'Un triangle a pour côtés ' + s.map(fr).join(' cm, ') + ' cm. On l’agrandit avec un coefficient ' + a + '. Quel est le périmètre du nouveau triangle ?'; st = ['Périmètre de départ : ' + fr(s[0] + s[1] + s[2]) + ' cm.', 'Il est multiplié par ' + a + '.']; return out('périmètre'); }
+    if (k === 4){ a = rnd(3, 8); b = a * pick([2, 3, 4]); c = rnd(4, 12); x = c * b / a; u = 'cm';
+      q = 'Deux équerres ont la même forme. La petite a un côté de l’angle droit de ' + a + ' cm et une hypoténuse de ' + c + ' cm. Le côté homologue de la grande mesure ' + b + ' cm. Quelle est l’hypoténuse de la grande ?'; st = ['k = ' + b + ' / ' + a + ' = ' + (b / a), 'hypoténuse = ' + c + ' × ' + (b / a)]; return out('hypoténuse'); }
+    if (k === 5){ a = pick([25000, 50000, 100000]); c = cl(rnd(10, 80) / 10); x = c * a / 100000; u = 'km';
+      q = 'Sur une carte au 1/' + fr(a) + ', un chemin triangulaire a un côté de ' + fr(c) + ' cm. Quelle est sa longueur réelle, en km ?'; st = [fr(c) + ' × ' + fr(a) + ' = ' + fr(c * a) + ' cm', '= ' + fr(x) + ' km']; return out('longueur'); }
+    if (k === 6){ a = rnd(4, 9); b = rnd(10, 20); c = rnd(2, 8); x = c * b / a; u = 'cm';
+      q = 'Un logo triangulaire est agrandi : son côté de ' + a + ' cm devient ' + b + ' cm. Un autre côté mesurait ' + c + ' cm. Combien mesure-t-il après agrandissement ? Arrondis au dixième.'; st = ['k = ' + b + ' / ' + a, c + ' × ' + b + ' / ' + a]; return out('longueur', 1); }
+    if (k === 7){ var s2 = sides(); a = pick([0.5, 0.25, 0.75]); x = s2[2] * a; u = 'cm';
+      q = 'On réduit un triangle de côtés ' + s2.map(fr).join(' cm, ') + ' cm avec un coefficient ' + fr(a) + '. Combien mesure l’image du côté de ' + fr(s2[2]) + ' cm ?'; st = [fr(s2[2]) + ' × ' + fr(a)]; return out('longueur'); }
+    if (k === 8){ a = rnd(2, 5); var b8 = a * rnd(2, 4); c = rnd(3, 9); x = c * a / b8; u = 'm';
+      q = 'Le plan d’un jardin triangulaire est une réduction : le côté de ' + b8 + ' m sur le terrain mesure ' + a + ' cm sur le plan. Un autre côté mesure ' + c + ' cm sur le plan. Quelle est sa longueur réelle, en m ? Arrondis au dixième.';
+      x = c * b8 / a; st = ['Sur le plan, ' + a + ' cm représentent ' + b8 + ' m.', c + ' × ' + b8 + ' / ' + a]; return out('longueur', 1); }
+    if (k === 9){ a = rnd(30, 60); b = rnd(2, 4); x = a / b; u = '°';
+      q = 'Un triangle a un angle de ' + a + '°. On le réduit avec un coefficient 1/' + b + '. Combien mesure l’angle homologue dans la réduction ?'; x = a; st = ['Une réduction conserve les angles.']; return out('angle'); }
+    if (k === 10){ a = rnd(3, 6); b = rnd(2, 4); x = a * a * b * b; u = 'cm²';
+      q = 'Un triangle a une aire de ' + (a * a) + ' cm². On l’agrandit avec un coefficient ' + b + '. Quelle est l’aire du triangle agrandi ? (Les aires sont multipliées par k².)'; st = ['Les longueurs sont multipliées par ' + b + ', les aires par ' + b + '² = ' + (b * b) + '.', (a * a) + ' × ' + (b * b)]; return out('aire'); }
+    a = rnd(2, 6); b = a + rnd(1, 4); c = rnd(5, 15); x = c * a / b; u = 'm';
+    q = 'Un toboggan et sa rampe forment un triangle. Un modèle réduit semblable a une hauteur de ' + a + ' dm, et le vrai toboggan ' + b + ' dm… Le modèle a une pente de ' + c + ' m ?';
+    q = 'Deux toboggans ont la même forme. Le petit a une hauteur de ' + a + ' m et une glissière de ' + c + ' m ; le grand a une hauteur de ' + b + ' m. Quelle est la longueur de la glissière du grand ? Arrondis au dixième.';
+    x = c * b / a; st = ['k = ' + b + ' / ' + a, c + ' × ' + b + ' / ' + a]; return out('longueur', 1); }}
+];
+var NOTIONS = [{n: 'N16', t: 'Reconnaître des triangles semblables et calculer des longueurs', r: 'deux triangles sont semblables s’ils ont les mêmes angles, ou des côtés proportionnels ; les longueurs sont alors multipliées par un même coefficient k.'}];
+M.start({key: '3e-s10', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

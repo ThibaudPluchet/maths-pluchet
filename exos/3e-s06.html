@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : coordonnées terrestres (3e, séquence 6) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 3e, séquence 6 : se repérer sur une sphère avec la latitude et la longitude.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">3e · Séquence 6 · Coordonnées terrestres</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, pick = M.pick, shuffle = M.shuffle, fr = M.fr;
+function la(v){ return v === 0 ? '0°' : Math.abs(v) + '° ' + (v > 0 ? 'N' : 'S'); }
+function lo(v){ return v === 0 ? '0°' : Math.abs(v) + '° ' + (v > 0 ? 'E' : 'O'); }
+function co(p){ return '(' + la(p[0]) + ' ; ' + lo(p[1]) + ')'; }
+var VILLES = [['Paris', 49, 2], ['Sydney', -34, 151], ['Quito', 0, -78], ['New York', 41, -74], ['Le Cap', -34, 18], ['Tokyo', 36, 140], ['Rio de Janeiro', -23, -43], ['Moscou', 56, 38],
+  ['Dakar', 15, -17], ['Buenos Aires', -35, -58], ['Reykjavik', 64, -22], ['Le Caire', 30, 31], ['Bombay', 19, 73], ['Los Angeles', 34, -118], ['Nairobi', -1, 37], ['Santiago du Chili', -33, -71], ['Pékin', 40, 116], ['Montréal', 46, -74]];
+// planisphère quadrillé (latitudes −90 à 90, longitudes −180 à 180) avec des points nommés
+function plan(pts){
+  var W = 520, H = 280, x0 = 46, y0 = 14, w = W - 60, h = H - 44;
+  function X(l){ return x0 + (l + 180) / 360 * w; } function Y(l){ return y0 + (90 - l) / 180 * h; }
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Planisphère quadrillé">', v;
+  for (v = -180; v <= 180; v += 30) s += '<line class="' + (v === 0 ? 'ax' : 'gr') + '" x1="' + X(v) + '" y1="' + y0 + '" x2="' + X(v) + '" y2="' + (y0 + h) + '"' + (v === 0 ? ' style="stroke-width:2.2"' : '') + '/>';
+  for (v = -90; v <= 90; v += 15) s += '<line class="' + (v === 0 ? 'ax' : 'gr') + '" x1="' + x0 + '" y1="' + Y(v) + '" x2="' + (x0 + w) + '" y2="' + Y(v) + '"' + (v === 0 ? ' style="stroke-width:2.2"' : '') + (v % 30 ? ' stroke-dasharray="3 4"' : '') + '/>';
+  for (v = -60; v <= 60; v += 30) s += '<text class="sm" x="' + (x0 - 6) + '" y="' + Y(v) + '" text-anchor="end" dominant-baseline="central">' + la(v) + '</text>';
+  for (v = -180; v <= 180; v += 60) s += '<text class="sm" x="' + X(v) + '" y="' + (y0 + h + 14) + '" text-anchor="middle">' + lo(v) + '</text>';
+  s += '<text class="sm" x="' + (X(0) + 4) + '" y="' + (y0 + 10) + '">Greenwich</text><text class="sm" x="' + (x0 + 4) + '" y="' + (Y(0) - 5) + '">équateur</text>';
+  pts.forEach(function(p){ s += '<circle class="pt2" cx="' + X(p[1]) + '" cy="' + Y(p[0]) + '" r="4.5"/><text x="' + (X(p[1]) + 7) + '" y="' + (Y(p[0]) - 8) + '" style="font-size:15px">' + p[2] + '</text>'; });
+  return s + '</svg>';
+}
+function rpt(){ return [pick([-75, -60, -45, -30, -15, 15, 30, 45, 60, 75, 0]), pick([-150, -120, -90, -60, -30, 30, 60, 90, 120, 150, 0])]; }
+var EX = [
+ {id: 'n09a', lv: 1, n: 'N09', t: 'Le vocabulaire du globe', d: 'Équateur, méridiens, parallèles.',
+  c: 'Choisis la bonne réponse.', a: 'La latitude se mesure de 0° (équateur) à 90° N ou 90° S (pôles). La longitude se mesure de 0° (méridien de Greenwich) à 180° E ou 180° O.',
+  g: function(){ var L = [
+      ['Quelle est la latitude de tous les points de l’équateur ?', '0°', ['90° N', '180°', '0°'], 'L’équateur sert de référence pour la latitude : 0°.'],
+      ['Quelle est la longitude de tous les points du méridien de Greenwich ?', '0°', ['0°', '90° E', '180°'], 'Le méridien de Greenwich est la référence des longitudes : 0°.'],
+      ['Quelle est la latitude du pôle Nord ?', '90° N', ['90° N', '0°', '180° N'], 'Le pôle Nord est le point le plus au nord : 90° N.'],
+      ['Quelle est la latitude du pôle Sud ?', '90° S', ['90° S', '180° S', '0°'], 'Le pôle Sud : 90° S.'],
+      ['Comment s’appellent les demi-cercles qui relient les deux pôles ?', 'les méridiens', ['les méridiens', 'les parallèles', 'les équateurs'], 'Les méridiens vont d’un pôle à l’autre ; les parallèles sont parallèles à l’équateur.'],
+      ['Comment s’appellent les cercles parallèles à l’équateur ?', 'les parallèles', ['les parallèles', 'les méridiens', 'les grands cercles'], 'Ce sont les parallèles ; tous les points d’un parallèle ont la même latitude.'],
+      ['Tous les points d’un même parallèle ont la même…', 'latitude', ['latitude', 'longitude', 'altitude'], 'Un parallèle est formé des points de même latitude.'],
+      ['Tous les points d’un même méridien ont la même…', 'longitude', ['longitude', 'latitude', 'altitude'], 'Un méridien est formé des points de même longitude.'],
+      ['Entre quelles valeurs une latitude est-elle comprise ?', 'de 0° à 90° (N ou S)', ['de 0° à 90° (N ou S)', 'de 0° à 180° (N ou S)', 'de 0° à 360°'], 'La latitude va de 0° à l’équateur à 90° aux pôles.'],
+      ['Entre quelles valeurs une longitude est-elle comprise ?', 'de 0° à 180° (E ou O)', ['de 0° à 180° (E ou O)', 'de 0° à 90° (E ou O)', 'de 0° à 360° (E)'], 'La longitude va de 0° (Greenwich) à 180° à l’est ou à l’ouest.'],
+      ['L’équateur partage la Terre en deux…', 'hémisphères Nord et Sud', ['hémisphères Nord et Sud', 'hémisphères Est et Ouest', 'méridiens'], 'Au nord de l’équateur, l’hémisphère Nord ; au sud, l’hémisphère Sud.'],
+      ['Quel est le seul parallèle qui est un grand cercle (même centre que la Terre) ?', 'l’équateur', ['l’équateur', 'le tropique du Cancer', 'le cercle polaire'], 'Seul l’équateur a pour centre le centre de la Terre.']];
+    var i = rnd(0, L.length - 1), p = L[i], ch = shuffle(p[2].slice()); return {type: 'ch', q: p[0], ch: ch, ans: ch.indexOf(p[1]), steps: [p[3]], key: 'v' + i}; }},
+ {id: 'n09b', lv: 1, n: 'N09', t: 'Nord, sud, est ou ouest ?', d: 'Lire les coordonnées d’un lieu.',
+  c: 'Choisis la bonne réponse.', a: 'Dans (34° S ; 151° E), la latitude vient en premier : S = sud de l’équateur ; puis la longitude : E = est du méridien de Greenwich. O se lit ouest (W en anglais).',
+  g: function(){ var p = [rnd(1, 80) * pick([1, -1]), rnd(1, 179) * pick([1, -1])], k = rnd(0, 2), q, ch, good, st;
+    if (k === 0){ q = 'Le point de coordonnées ' + co(p) + ' est situé dans l’hémisphère…'; ch = ['Nord', 'Sud']; good = p[0] > 0 ? 'Nord' : 'Sud'; st = ['La latitude ' + la(p[0]) + ' indique ' + (p[0] > 0 ? 'le nord' : 'le sud') + ' de l’équateur.']; }
+    else if (k === 1){ q = 'Le point de coordonnées ' + co(p) + ' est situé…'; ch = ['à l’est de Greenwich', 'à l’ouest de Greenwich']; good = ch[p[1] > 0 ? 0 : 1]; st = ['La longitude ' + lo(p[1]) + ' indique ' + (p[1] > 0 ? 'l’est' : 'l’ouest') + ' du méridien de Greenwich.']; }
+    else { q = 'Au GPS, un lieu a pour coordonnées (' + fr(p[0]) + ' ; ' + fr(p[1]) + '). Comment les écrit-on avec N, S, E, O ?'; good = co(p); ch = shuffle([good, co([-p[0], p[1]]), co([p[0], -p[1]]), co([-p[0], -p[1]])]); st = ['Latitude positive = Nord, négative = Sud ; longitude positive = Est, négative = Ouest.']; }
+    return {type: 'ch', q: q, ch: ch, ans: ch.indexOf(good), steps: st, key: q}; }},
+ {id: 'n09c', lv: 2, n: 'N09', t: 'Lire sur un planisphère', d: 'Coordonnées d’un point.',
+  c: 'Lis les coordonnées du point sur le planisphère. Les parallèles sont tracés tous les 15°, les méridiens tous les 30°.', a: 'Latitude d’abord : on monte ou on descend depuis l’équateur (N ou S). Puis longitude : on va à droite (E) ou à gauche (O) du méridien de Greenwich.',
+  g: function(){ var p = rpt(), n = pick(['A', 'B', 'C', 'D', 'P', 'M']), good = co(p);
+    var ch = [good, co([-p[0], p[1]]), co([p[0], -p[1]]), co([p[1], p[0]].map(function(v, i){ return i === 0 ? Math.max(-90, Math.min(90, v)) : v; }))];
+    ch = ch.filter(function(c, i){ return ch.indexOf(c) === i; }); while (ch.length < 3) ch.push(co([-p[0], -p[1]])); ch = shuffle(ch.filter(function(c, i, a){ return a.indexOf(c) === i; }));
+    return {type: 'ch', q: 'Quelles sont les coordonnées du point ' + n + ' ?', svg: plan([[p[0], p[1], n]]), wide: true, ch: ch, ans: ch.indexOf(good),
+      steps: [n + ' est ' + (p[0] ? 'sur le parallèle ' + la(p[0]) : 'sur l’équateur') + ' et ' + (p[1] ? 'sur le méridien ' + lo(p[1]) : 'sur le méridien de Greenwich') + ' : ' + good + '.'], key: good}; }},
+ {id: 'n09d', lv: 2, n: 'N09', t: 'Placer un point', d: 'Retrouver le point qui a ces coordonnées.',
+  c: 'Choisis le point qui a les coordonnées demandées.', a: 'Repère d’abord le parallèle (la latitude), puis le méridien (la longitude) : le point est à leur croisement.',
+  g: function(){ var p = rpt(), pts = [p]; [[-p[0], p[1]], [p[0], -p[1]], [-p[0], -p[1]]].forEach(function(o){ if (!pts.some(function(z){ return z[0] === o[0] && z[1] === o[1]; })) pts.push(o); });
+    while (pts.length < 4){ var o = rpt(); if (!pts.some(function(z){ return z[0] === o[0] && z[1] === o[1]; })) pts.push(o); }
+    var names = shuffle(['A', 'B', 'C', 'D']); pts = pts.map(function(z, i){ return [z[0], z[1], names[i]]; });
+    var ch = ['A', 'B', 'C', 'D'];
+    return {type: 'ch', q: 'Quel point a pour coordonnées ' + co(p) + ' ?', svg: plan(pts), wide: true, ch: ch, ans: ch.indexOf(pts[0][2]),
+      steps: ['Le point ' + pts[0][2] + ' est au croisement ' + (p[0] ? 'du parallèle ' + la(p[0]) : 'de l’équateur') + ' et du ' + (p[1] ? 'méridien ' + lo(p[1]) : 'méridien de Greenwich') + '.'], key: co(p)}; }},
+ {id: 'n09e', lv: 2, n: 'N09', t: 'Comparer des lieux', d: 'Plus au nord, plus à l’ouest, écarts.',
+  c: 'Réponds à partir des coordonnées données (arrondies au degré).', a: 'Plus un lieu est au nord, plus sa latitude Nord est grande (ou sa latitude Sud petite). Écart de latitude : on soustrait si les deux lieux sont du même côté de l’équateur, on additionne sinon.',
+  g: function(){ var V = shuffle(VILLES.slice()).slice(0, 3), k = rnd(0, 3), q, ch, good, st;
+    var txt = V.map(function(v){ return v[0] + ' ' + co([v[1], v[2]]); }).join(', ');
+    if (k === 0){ q = 'Quelle ville est la plus au nord : ' + txt + ' ?'; var m = V.slice().sort(function(a, b){ return b[1] - a[1]; }); if (m[0][1] === m[1][1]) return this.g(); good = m[0][0]; ch = V.map(function(v){ return v[0]; }); st = ['La plus au nord a la latitude la plus grande vers le nord : ' + good + ' (' + la(m[0][1]) + ').']; }
+    else if (k === 1){ q = 'Quelle ville est la plus à l’ouest : ' + txt + ' ?'; var w = V.slice().sort(function(a, b){ return a[2] - b[2]; }); if (w[0][2] === w[1][2]) return this.g(); good = w[0][0]; ch = V.map(function(v){ return v[0]; }); st = ['La plus à l’ouest a la longitude Ouest la plus grande (ou Est la plus petite) : ' + good + ' (' + lo(w[0][2]) + ').']; }
+    else { var A = V[0], B = V[1]; if (A[1] === B[1]) return this.g(); var e = Math.abs(A[1] - B[1]);
+      return {type: 'num', q: A[0] + ' a pour latitude ' + la(A[1]) + ' et ' + B[0] + ' ' + la(B[1]) + '. Quel est l’écart de latitude entre ces deux villes ?', lab: 'écart =', unit: '°', v: e, x: e,
+        traps: [[Math.abs(Math.abs(A[1]) - Math.abs(B[1])), 'Les deux villes ne sont pas du même côté de l’équateur : il faut additionner les latitudes.'], [Math.abs(A[1]) + Math.abs(B[1]), 'Les deux villes sont du même côté de l’équateur : il faut soustraire.']].filter(function(t){ return t[0] !== e; }),
+        steps: [(A[1] * B[1] < 0 ? 'Les villes sont de part et d’autre de l’équateur : ' + Math.abs(A[1]) + ' + ' + Math.abs(B[1]) : 'Les villes sont du même côté de l’équateur : ' + Math.max(Math.abs(A[1]), Math.abs(B[1])) + ' ' + M.MINUS + ' ' + Math.min(Math.abs(A[1]), Math.abs(B[1]))) + ' = ' + e + '°'], key: A[0] + B[0]}; }
+    return {type: 'ch', q: q, ch: ch, ans: ch.indexOf(good), steps: st, key: q}; }},
+ {id: 'n09f', lv: 3, n: 'N09', nq: 3, t: 'Problèmes', d: 'Distances, antipodes, fuseaux.',
+  c: 'Lis l’énoncé et réponds. On prend 40 000 km pour la longueur de l’équateur et de chaque grand cercle passant par les pôles.', a: 'Sur un méridien (ou sur l’équateur), la distance est proportionnelle à l’angle : 360° ↔ 40 000 km, donc 1° ↔ 40 000 / 360 ≈ 111 km.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var a, b, e, v, q, st;
+    function dist(e, txt, sAB){ v = Math.round(e * 40000 / 360); return {type: 'num', q: txt + ' Calcule la distance qui les sépare en suivant ' + sAB + ', arrondie au kilomètre.', lab: 'distance ≈', unit: 'km', v: v, x: e * 40000 / 360, d: 0, key: 'k' + k,
+      traps: [[Math.round(e * 111), 'Utilise la proportionnalité exacte : ' + e + ' × 40 000 / 360.']], steps: ['Écart : ' + e + '°.', '360° ↔ 40 000 km, donc ' + e + '° ↔ ' + e + ' × 40 000 / 360 ≈ ' + fr(v) + ' km.']}; }
+    if (k <= 3){ a = rnd(5, 70) * pick([1, -1]); b = rnd(5, 70) * pick([1, -1]); if (a === b) b = -a; var lon = rnd(1, 170) * pick([1, -1]); e = Math.abs(a - b);
+      return dist(e, ['Deux bateaux', 'Deux villes', 'Deux stations météo', 'Deux avions'][k] + ' sont sur le même méridien (' + lo(lon) + '), aux latitudes ' + la(a) + ' et ' + la(b) + '.', 'ce méridien'); }
+    if (k <= 5){ a = rnd(1, 170) * pick([1, -1]); b = rnd(1, 170) * pick([1, -1]); if (a === b) b = -a; e = Math.abs(a - b); if (e > 180) return this.g(k);
+      return dist(e, (k === 4 ? 'Deux îles' : 'Deux phares') + ' sont sur l’équateur, aux longitudes ' + lo(a) + ' et ' + lo(b) + '.', 'l’équateur (par le plus court chemin)'); }
+    if (k === 6){ a = rnd(1, 89); return {type: 'num', q: 'Quelle distance sépare le pôle Nord d’un point de latitude ' + la(a) + ', en suivant un méridien ? Arrondis au kilomètre.', lab: 'distance ≈', unit: 'km', v: Math.round((90 - a) * 40000 / 360), x: (90 - a) * 40000 / 360, d: 0, key: 'k6',
+      steps: ['Le pôle Nord est à 90° N : écart 90 ' + M.MINUS + ' ' + a + ' = ' + (90 - a) + '°.', (90 - a) + ' × 40 000 / 360 ≈ ' + fr(Math.round((90 - a) * 40000 / 360)) + ' km.']}; }
+    if (k === 7){ a = rnd(1, 80) * pick([1, -1]); b = rnd(1, 179) * pick([1, -1]); var anti = co([-a, b > 0 ? b - 180 : b + 180]), good = anti, ch = shuffle([anti, co([-a, b]), co([a, b > 0 ? b - 180 : b + 180]), co([-a, -b])]);
+      return {type: 'ch', q: 'L’antipode d’un lieu est le point diamétralement opposé sur le globe (latitude opposée, et longitude de l’autre côté : 180° ' + M.MINUS + ' longitude). Quelles sont les coordonnées de l’antipode de ' + co([a, b]) + ' ?', ch: ch, ans: ch.indexOf(good), key: 'k7',
+        steps: ['Latitude : ' + la(a) + ' devient ' + la(-a) + '. Longitude : 180 ' + M.MINUS + ' ' + Math.abs(b) + ' = ' + (180 - Math.abs(b)) + '°, de l’autre côté (' + (b > 0 ? 'O' : 'E') + ').']}; }
+    if (k === 8){ a = rnd(1, 11) * 15 * pick([1, -1]); v = Math.abs(a) / 15; return {type: 'num', q: 'La Terre fait un tour (360°) en 24 h. Quel est le décalage horaire « solaire » entre le méridien de Greenwich et le méridien ' + lo(a) + ' ?', lab: 'décalage =', unit: 'h', v: v, x: v, key: 'k8',
+      steps: ['360° ↔ 24 h, donc 15° ↔ 1 h.', Math.abs(a) + ' ÷ 15 = ' + v + ' h.']}; }
+    if (k === 9){ var V = pick(VILLES.filter(function(z){ return z[1] > 0; })); v = Math.round((90 - V[1]) * 40000 / 360);
+      return {type: 'num', q: V[0] + ' est à la latitude ' + la(V[1]) + '. Quelle distance la sépare du pôle Nord, en suivant son méridien ? Arrondis au kilomètre.', lab: 'distance ≈', unit: 'km', v: v, x: (90 - V[1]) * 40000 / 360, d: 0, key: 'k9',
+        steps: ['Écart : 90 ' + M.MINUS + ' ' + V[1] + ' = ' + (90 - V[1]) + '°.', (90 - V[1]) + ' × 40 000 / 360 ≈ ' + fr(v) + ' km.']}; }
+    if (k === 10){ var W = pick(VILLES.filter(function(z){ return z[1] !== 0; })); v = Math.round(Math.abs(W[1]) * 40000 / 360);
+      return {type: 'num', q: W[0] + ' est à la latitude ' + la(W[1]) + '. Quelle distance la sépare de l’équateur, en suivant son méridien ? Arrondis au kilomètre.', lab: 'distance ≈', unit: 'km', v: v, x: Math.abs(W[1]) * 40000 / 360, d: 0, key: 'k10',
+        steps: ['Écart avec l’équateur : ' + Math.abs(W[1]) + '°.', Math.abs(W[1]) + ' × 40 000 / 360 ≈ ' + fr(v) + ' km.']}; }
+    a = rnd(10, 60); b = rnd(41, 139) * pick([1, -1]); e = rnd(5, 40); v = Math.round(e * 40000 / 360);
+    return {type: 'ch', q: 'Un navire part de ' + co([a, b]) + ' et navigue plein sud le long de son méridien sur ' + e + '°. Quelles sont ses nouvelles coordonnées ?', ch: shuffle([co([a - e, b]), co([a + e, b]), co([a, b - e]), co([a, b + e])]), key: 'k11',
+      ans: 0, fix: co([a - e, b]), steps: ['Vers le sud, la latitude Nord diminue : ' + a + ' ' + M.MINUS + ' ' + e + ' = ' + (a - e) + '. La longitude ne change pas sur un méridien.']}; }}
+];
+// la bonne réponse du dernier type de problème est mélangée : on la retrouve
+var g0 = EX[5].g; EX[5].g = function(k){ var Q = g0.call(this, k); if (Q.fix){ Q.ans = Q.ch.indexOf(Q.fix); delete Q.fix; } return Q; };
+var NOTIONS = [{n: 'N09', t: 'Se repérer sur une sphère avec la latitude et la longitude', r: 'un lieu est repéré par sa latitude (0° à 90°, N ou S, depuis l’équateur) puis sa longitude (0° à 180°, E ou O, depuis le méridien de Greenwich).'}];
+M.start({key: '3e-s06', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

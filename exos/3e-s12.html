@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : calcul littéral (3e, séquence 12) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 3e, séquence 12 : double distributivité, troisième identité remarquable.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">3e · Séquence 12 · Calcul littéral (2)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice inutile !</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, MINUS = M.MINUS, terms = M.terms, poly = M.poly, pmul = M.pmul, padd = M.padd;
+function L(a, b){ return {1: a, 0: b}; }                                  // ax + b
+function bin(a, b, swap){ return '(' + (swap ? terms([[b, 0], [a, 1]]) : terms([[a, 1], [b, 0]])) + ')'; }
+function mtxt(c, d){ var m = M.mono(c, d); return c < 0 ? '(' + m + ')' : m; }
+function ex(P){ var Q = {}; for (var k in P) if (P[k]) Q[k] = P[k]; return Q; }
+function dev(q, P, st, traps, lab){ return {type: 'expr', mode: 'dev', q: q, lab: lab || 'A =', P: ex(P), steps: st, traps: traps || [], key: q}; }
+// étapes de la double distributivité (ax + b)(cx + d)
+function dd(a, b, c, d){ var p = [[a * c, 2], [a * d, 1], [b * c, 1], [b * d, 0]];
+  return {P: pmul(L(a, b), L(c, d)), l1: mtxt(a, 1) + ' × ' + mtxt(c, 1) + ' + ' + mtxt(a, 1) + ' × ' + mtxt(d, 0) + ' + ' + mtxt(b, 0) + ' × ' + mtxt(c, 1) + ' + ' + mtxt(b, 0) + ' × ' + mtxt(d, 0), l2: terms(p.filter(function(t){ return t[0]; })), T: p.filter(function(t){ return t[0]; })}; }
+var EX = [
+ {id: 'n18a', lv: 1, n: 'N18', t: 'Développer (x + a)(x + b)', d: 'Pour démarrer.',
+  c: 'Développe puis réduis.', a: '(a + b)(c + d) = ac + ad + bc + bd : chaque terme de la 1re parenthèse multiplie chaque terme de la 2e. Exemple : (x + 2)(x + 5) = x² + 5x + 2x + 10 = x² + 7x + 10.',
+  g: function(){ var b = rnd(1, 9), d = rnd(1, 9), s1 = Math.random() < 0.2, s2 = Math.random() < 0.2, r = dd(1, b, 1, d), q = 'A = ' + bin(1, b, s1) + bin(1, d, s2);
+    return dev(q, r.P, ['A = ' + r.l1, 'A = ' + r.l2, 'A = ' + poly(r.P)], [[{2: 1, 0: b * d}, 'Il manque les « termes croisés » : x × ' + d + ' et ' + b + ' × x.']]); }},
+ {id: 'n18b', lv: 2, n: 'N18', t: 'Avec des nombres relatifs', d: '(ax + b)(cx + d).',
+  c: 'Développe puis réduis.', a: 'Attention aux signes à chaque produit. Exemple : (2x − 3)(x + 4) = 2x² + 8x − 3x − 12 = 2x² + 5x − 12.',
+  g: function(){ var a = pick([1, 1, rnz(-5, 5)]), b = rnz(-9, 9), c = pick([1, rnz(-5, 5)]), d = rnz(-9, 9), r = dd(a, b, c, d), q = 'A = ' + bin(a, b, Math.random() < 0.3) + bin(c, d, Math.random() < 0.3);
+    if (!r.P[1] && Math.random() < 0.5) return this.g();
+    return dev(q, r.P, ['A = ' + r.l1, 'A = ' + r.l2, 'A = ' + poly(r.P)], [[{2: a * c, 0: b * d}, 'Il manque les termes croisés.'], [padd(r.P, {0: 2 * b * d}, -1), 'Attention au signe du produit ' + mtxt(b, 0) + ' × ' + mtxt(d, 0) + '.']]); }},
+ {id: 'n18c', lv: 3, n: 'N18', nq: 4, t: 'Pour aller plus loin', d: 'Sommes, différences, carrés.',
+  c: 'Développe puis réduis.', a: 'Développe chaque produit séparément, entre parenthèses si un signe − le précède, puis réduis. (2x + 1)² = (2x + 1)(2x + 1).',
+  g: function(){ var k = rnd(0, 3), a = rnz(-4, 4), b = rnz(-7, 7), c = rnz(-4, 4), d = rnz(-7, 7), r = dd(a, b, c, d), q, P, st;
+    if (k === 0){ var e = rnz(-6, 6), f = rnz(-9, 9); P = padd(r.P, L(e, e * f), 1); q = 'A = ' + bin(a, b) + bin(c, d) + (e < 0 ? ' ' + MINUS + ' ' + fr(-e) : ' + ' + fr(e)) + '(x' + (f < 0 ? ' ' + MINUS + ' ' + fr(-f) : ' + ' + fr(f)) + ')';
+      st = ['A = ' + terms(r.T.concat([[e, 1], [e * f, 0]])), 'A = ' + poly(P)]; }
+    else if (k === 1){ var s0 = rnd(1, 5); P = padd(r.P, {2: s0}, -1); q = 'A = ' + bin(a, b) + bin(c, d) + ' ' + MINUS + ' ' + (s0 === 1 ? '' : s0) + 'x²'; st = ['A = ' + terms(r.T.concat([[-s0, 2]])), 'A = ' + poly(P)]; }
+    else if (k === 2){ var r2 = dd(a, b, a, b); P = r2.P; q = 'A = ' + bin(a, b) + '²'; st = ['A = ' + bin(a, b) + bin(a, b), 'A = ' + r2.l2, 'A = ' + poly(P)]; return dev(q, P, st, [[{2: a * a, 0: b * b}, '(a + b)² n’est pas a² + b² : développe (a + b)(a + b).']]); }
+    else { var g = rnz(-5, 5), h = rnz(-5, 5), r3 = dd(1, g, 1, h); P = padd(r.P, r3.P, -1); q = 'A = ' + bin(a, b) + bin(c, d) + ' ' + MINUS + ' ' + bin(1, g) + bin(1, h);
+      st = ['A = ' + r.l2 + ' ' + MINUS + ' (' + poly(r3.P) + ')', 'A = ' + terms(r.T.concat([[-1, 2], [-(g + h), 1], [-g * h, 0]].filter(function(t){ return t[0]; }))) + '   (le − change tous les signes)', 'A = ' + poly(P)];
+      return dev(q, P, st, [[padd(r.P, r3.P, 1), 'Le signe − devant la 2e parenthèse change tous ses signes.']]); }
+    return dev(q, P, st); }},
+ {id: 'n19a', lv: 2, n: 'N19', t: 'Développer (a + b)(a − b)', d: 'La troisième identité remarquable.',
+  c: 'Développe en utilisant (a + b)(a − b) = a² − b².', a: '(a + b)(a − b) = a² − b². Exemple : (2x + 5)(2x − 5) = (2x)² − 5² = 4x² − 25.',
+  g: function(){ var a = pick([1, 1, 2, 3, 4, 5]), b = rnd(1, 9), kind = rnd(0, 3), q, P;
+    if (kind === 3){ q = 'A = (' + b + ' ' + MINUS + ' ' + M.mono(a, 1) + ')(' + b + ' + ' + M.mono(a, 1) + ')'; P = {2: -a * a, 0: b * b};
+      return dev(q, P, ['A = ' + b + '² ' + MINUS + ' (' + M.mono(a, 1) + ')²', 'A = ' + poly(P)], [[{2: a * a, 0: -b * b}, 'Ici a = ' + b + ' et b = ' + M.mono(a, 1) + ' : A = ' + b + '² − (' + M.mono(a, 1) + ')².']]); }
+    var sw = kind === 1; q = 'A = ' + (sw ? bin(a, -b) + bin(a, b) : bin(a, b) + bin(a, -b)); P = {2: a * a, 0: -b * b};
+    return dev(q, P, ['A = ' + (a === 1 ? 'x' : '(' + M.mono(a, 1) + ')') + '² ' + MINUS + ' ' + b + '²', 'A = ' + poly(P)], [[{2: a * a, 0: b * b}, '(a + b)(a − b) = a² MOINS b².'], [{2: a, 0: -b * b}, '(' + M.mono(a, 1) + ')² = ' + M.mono(a * a, 2) + ' : on élève aussi le coefficient au carré.']].filter(function(t){ return !M.sameP(t[0], P); })); }},
+ {id: 'n19b', lv: 2, n: 'N19', t: 'Factoriser a² − b²', d: 'Écrire sous forme d’un produit.',
+  c: 'Factorise en utilisant a² − b² = (a + b)(a − b). Écris le produit avec des parenthèses, par exemple (x + 3)(x − 3).', a: 'Repère a et b : 4x² − 25 = (2x)² − 5², donc 4x² − 25 = (2x + 5)(2x − 5).',
+  g: function(){ var a = pick([1, 1, 2, 3, 4, 5, 6]), b = rnd(1, 10), rev = Math.random() < 0.3, q, P, sol, A = M.mono(a, 1);
+    if (rev){ P = {0: b * b, 2: -a * a}; q = 'A = ' + (b * b) + ' ' + MINUS + ' ' + M.mono(a * a, 2); sol = '(' + b + ' + ' + A + ')(' + b + ' − ' + A + ')';
+      return {type: 'expr', mode: 'fact', q: q, lab: 'A =', P: P, sol: sol, key: q, steps: ['A = ' + b + '² ' + MINUS + ' ' + (a === 1 ? 'x' : '(' + A + ')') + '²', 'A = ' + sol.replace(/−/g, MINUS)], traps: [[{2: a * a, 0: -b * b}, 'Attention à l’ordre : ici a = ' + b + ' et b = ' + A + '.']]}; }
+    P = {2: a * a, 0: -b * b}; q = 'A = ' + poly(P); sol = '(' + A + ' + ' + b + ')(' + A + ' − ' + b + ')';
+    return {type: 'expr', mode: 'fact', q: q, lab: 'A =', P: P, sol: sol, key: q, steps: ['A = ' + (a === 1 ? 'x' : '(' + A + ')') + '² ' + MINUS + ' ' + b + '²', 'A = ' + sol.replace(/−/g, MINUS)],
+      traps: [[pmul(L(a, -b), L(a, -b)), '(a − b)² ne donne pas a² − b² : il faut (a + b)(a − b).'], [pmul(L(a, b), L(a, b)), '(a + b)² ne donne pas a² − b² : il faut (a + b)(a − b).']]}; }},
+ {id: 'n19c', lv: 2, n: 'N19', t: 'Vrai ou faux ?', d: 'Les pièges du développement.',
+  c: 'Chaque égalité est-elle vraie pour toutes les valeurs de x ?', a: 'Pour vérifier, développe toi-même, ou teste avec une valeur de x (par exemple x = 1 ou x = 2).',
+  g: function(){ var b = rnd(2, 9), a = rnd(2, 5), L2 = [
+      ['(x + ' + b + ')² = x² + ' + (b * b), false, '(x + ' + b + ')² = (x + ' + b + ')(x + ' + b + ') = x² + ' + (2 * b) + 'x + ' + (b * b) + '.'],
+      ['(x + ' + b + ')(x − ' + b + ') = x² − ' + (b * b), true, 'C’est (a + b)(a − b) = a² − b².'],
+      ['(x + ' + b + ')(x − ' + b + ') = x² + ' + (b * b), false, '(a + b)(a − b) = a² − b² : x² − ' + (b * b) + '.'],
+      ['(' + a + 'x + 1)(' + a + 'x − 1) = ' + (a * a) + 'x² − 1', true, '(' + a + 'x)² − 1² = ' + (a * a) + 'x² − 1.'],
+      ['(' + a + 'x + 1)(' + a + 'x − 1) = ' + a + 'x² − 1', false, '(' + a + 'x)² = ' + (a * a) + 'x², pas ' + a + 'x².'],
+      ['x² − ' + (b * b) + ' = (x − ' + b + ')²', false, '(x − ' + b + ')² = x² − ' + (2 * b) + 'x + ' + (b * b) + ' ; la bonne factorisation est (x + ' + b + ')(x − ' + b + ').'],
+      ['x² − ' + (b * b) + ' = (x + ' + b + ')(x − ' + b + ')', true, 'a² − b² = (a + b)(a − b).'],
+      ['(x + 2)(x + ' + b + ') = x² + ' + (2 * b), false, 'Il manque les termes croisés : x² + ' + (b + 2) + 'x + ' + (2 * b) + '.'],
+      ['(x + 2)(x + ' + b + ') = x² + ' + (b + 2) + 'x + ' + (2 * b), true, 'x² + ' + b + 'x + 2x + ' + (2 * b) + '.'],
+      ['x² + ' + (b * b) + ' = (x + ' + b + ')(x − ' + b + ')', false, '(x + ' + b + ')(x − ' + b + ') = x² − ' + (b * b) + ', avec un signe −.'],
+      ['101 × 99 = 100² − 1 = 9 999', true, '(100 + 1)(100 − 1) = 100² − 1².'],
+      ['(x − ' + b + ')(x − ' + b + ') = x² + ' + (b * b), false, 'x² − ' + (2 * b) + 'x + ' + (b * b) + '.']];
+    var i = rnd(0, L2.length - 1), p = L2[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n19d', lv: 3, n: 'N19', nq: 3, t: 'Problèmes', d: 'Aires, calcul mental astucieux.',
+  c: 'Lis l’énoncé et réponds (expression développée et réduite, ou nombre).', a: 'Écris l’expression avec des parenthèses, puis développe. Pour le calcul mental : 47 × 53 = (50 − 3)(50 + 3) = 50² − 3² = 2 491.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var a, b, c, q, P, v, st;
+    function num(lab){ return {type: 'num', q: q, lab: lab, v: v, x: v, steps: st, key: 'k' + k}; }
+    function ex2(){ return {type: 'expr', mode: 'dev', q: q, lab: 'A =', P: ex(P), steps: st, key: 'k' + k, traps: []}; }
+    if (k <= 2){ a = pick([20, 30, 40, 50, 60, 70, 80, 100]); b = rnd(1, 4); v = a * a - b * b; q = 'Calcule astucieusement ' + (a + b) + ' × ' + (a - b) + '.'; st = [(a + b) + ' × ' + (a - b) + ' = (' + a + ' + ' + b + ')(' + a + ' − ' + b + ')', '= ' + a + '² − ' + b + '² = ' + fr(a * a) + ' − ' + (b * b) + ' = ' + fr(v)]; return num('='); }
+    if (k === 3){ a = rnd(1, 6); b = rnd(1, 6); P = pmul(L(1, a), L(1, b)); q = 'Un rectangle a pour côtés x + ' + a + ' et x + ' + b + ' (en cm). Écris son aire A sous forme développée et réduite.'; st = ['A = (x + ' + a + ')(x + ' + b + ')', 'A = ' + poly(P)]; return ex2(); }
+    if (k === 4){ a = rnd(1, 6); P = pmul(L(1, a), L(1, -a)); q = 'Un rectangle a pour côtés x + ' + a + ' et x − ' + a + ' (x > ' + a + '). Écris son aire A sous forme développée et réduite.'; st = ['A = (x + ' + a + ')(x − ' + a + ') = x² − ' + (a * a)]; return ex2(); }
+    if (k === 5){ a = rnd(1, 5); P = {1: 2 * a, 0: a * a}; q = 'On augmente de ' + a + ' cm le côté x d’un carré. De combien son aire augmente-t-elle ? Donne l’expression développée A de cette augmentation.'; st = ['Nouvelle aire : (x + ' + a + ')² = x² + ' + (2 * a) + 'x + ' + (a * a), 'Augmentation : A = ' + poly(P)]; return ex2(); }
+    if (k === 6){ a = rnd(1, 5); P = {2: 1, 0: -a * a}; q = 'On allonge un côté d’un carré de côté x de ' + a + ' cm et on raccourcit l’autre de ' + a + ' cm. Quelle est l’aire A du rectangle obtenu (forme développée) ?'; st = ['A = (x + ' + a + ')(x − ' + a + ') = x² − ' + (a * a)]; return ex2(); }
+    if (k === 7){ a = pick([10, 20, 30, 50]); b = rnd(1, 4); v = (a + b) * (a + b) - (a - b) * (a - b); q = 'Calcule astucieusement ' + (a + b) + '² − ' + (a - b) + '².'; st = [(a + b) + '² − ' + (a - b) + '² = (' + (a + b) + ' + ' + (a - b) + ')(' + (a + b) + ' − ' + (a - b) + ')', '= ' + (2 * a) + ' × ' + (2 * b) + ' = ' + fr(v)]; return num('='); }
+    if (k === 8){ a = rnd(2, 9); b = rnd(1, a - 1); v = a * a - b * b; q = 'Une plaque carrée de ' + a + ' m de côté est percée d’un trou carré de ' + b + ' m de côté. Quelle est l’aire restante ? (Factorise a² − b² si tu veux.)'; st = [a + '² − ' + b + '² = (' + a + ' + ' + b + ')(' + a + ' − ' + b + ') = ' + (a + b) + ' × ' + (a - b) + ' = ' + v + ' m²']; return {type: 'num', q: q, lab: 'aire =', unit: 'm²', v: v, x: v, steps: st, key: 'k8'}; }
+    if (k === 9){ a = rnd(2, 6); b = rnd(1, 6); P = pmul(L(a, b), L(1, 3)); q = 'Un champ rectangulaire mesure ' + a + 'x + ' + b + ' mètres sur x + 3 mètres. Écris son aire A sous forme développée et réduite.'; st = ['A = (' + a + 'x + ' + b + ')(x + 3)', 'A = ' + poly(P)]; return ex2(); }
+    if (k === 10){ a = rnd(2, 9); P = {2: 1, 1: 0, 0: -1}; var n2 = rnd(5, 30); v = n2 * n2 - 1; q = 'Vérifie que (n + 1)(n − 1) = n² − 1, puis calcule ' + (n2 + 1) + ' × ' + (n2 - 1) + ' sans poser la multiplication.'; st = [(n2 + 1) + ' × ' + (n2 - 1) + ' = ' + n2 + '² − 1 = ' + (n2 * n2) + ' − 1 = ' + v]; return num('='); }
+    a = rnd(1, 6); b = rnd(1, 6); P = padd(pmul(L(1, a), L(1, b)), {2: 1}, -1); q = 'Un rectangle de côtés x + ' + a + ' et x + ' + b + ' contient un carré de côté x. Quelle est l’aire A de la partie restante (forme développée et réduite) ?'; st = ['A = (x + ' + a + ')(x + ' + b + ') − x²', 'A = x² + ' + (a + b) + 'x + ' + (a * b) + ' − x² = ' + poly(P)]; return ex2(); }}
+];
+var NOTIONS = [
+  {n: 'N18', t: 'Développer grâce à la double distributivité', r: '(a + b)(c + d) = ac + ad + bc + bd, puis on réduit.'},
+  {n: 'N19', t: 'Développer et factoriser avec la troisième identité remarquable', r: '(a + b)(a − b) = a² − b², dans les deux sens.'}];
+M.start({key: '3e-s12', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

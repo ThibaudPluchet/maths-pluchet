@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : fractions (3e, séquence 5) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 3e, séquence 5 : opérations sur les fractions et calculs enchaînés.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">3e · Séquence 5 · Fractions</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice inutile !</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, red = M.red, ftx = M.ftx, MINUS = M.MINUS, gcd = M.gcd;
+var add = M.fadd, mul = M.fmul;
+function neg(f){ return [-f[0], f[1]]; }
+function inv(f){ return red(f[1], f[0]); }
+function T(f){ return ftx(f); }                                   // −3/4
+function P(f){ return f[0] < 0 ? '(' + ftx(f) + ')' : ftx(f); }  // (−3/4)
+// fraction irréductible non entière de dénominateur ≤ dm, éventuellement négative
+function rf(dm, negok){ var d, n; do { d = rnd(2, dm); n = rnd(1, 2 * d); } while (gcd(n, d) !== 1 || n % d === 0); if (negok && Math.random() < 0.35) n = -n; return [n, d]; }
+function nt(n){ return n < 0 ? MINUS + Math.abs(n) : String(n); }
+function val(f){ return f[0] / f[1]; }
+function fq(q, f, st, traps, lab){ return {type: 'frac', q: q, lab: lab || '=', f: f, steps: st, traps: (traps || []).filter(function(t){ return Math.abs(t[0] - val(f)) > 1e-9; }), key: q}; }
+function opTxt(a, o, b){ return T(a) + ' ' + o + ' ' + P(b); }
+function addSteps(a, b, s){ // a + s·b, mise au même dénominateur
+  var D = a[1] * b[1] / gcd(a[1], b[1]), ka = D / a[1], kb = D / b[1], n = a[0] * ka + s * b[0] * kb, o = s > 0 ? '+' : MINUS, R = red(n, D), st = [];
+  if (a[1] !== b[1]) st.push(opTxt(a, o, b) + ' = ' + nt(a[0] * ka) + '/' + D + ' ' + o + ' ' + P([b[0] * kb, D]) + '   (même dénominateur ' + D + ')');
+  st.push((a[1] === b[1] ? opTxt(a, o, b) + ' ' : '') + '= (' + nt(a[0] * ka) + (s * b[0] * kb < 0 ? ' ' + MINUS + ' ' : ' + ') + Math.abs(b[0] * kb) + ')/' + D + ' = ' + nt(n) + '/' + D);
+  if (R[0] !== n || R[1] !== D) st.push('= ' + T(R) + '   (on simplifie par ' + gcd(n, D) + ')');
+  return {R: R, st: st};
+}
+var EX = [
+ {id: 'n07a', lv: 1, n: 'N07', t: 'Même dénominateur', d: 'Additionner et soustraire.',
+  c: 'Calcule et donne le résultat sous forme de fraction irréductible (ou d’entier).', a: 'Avec le même dénominateur, on additionne (ou soustrait) les numérateurs et on garde le dénominateur : 3/7 + 2/7 = 5/7. On simplifie si possible.',
+  g: function(){ var d = rnd(3, 15), a = [rnz(-12, 15), d], b = [rnd(1, 15), d], s = pick([1, -1]); var r = addSteps(a, b, s);
+    return fq(nt(a[0]) + '/' + d + ' ' + (s > 0 ? '+' : MINUS) + ' ' + b[0] + '/' + d, r.R, r.st,
+      [[(a[0] + s * b[0]) / (2 * d), 'On n’additionne pas les dénominateurs : on garde ' + d + '.']]); }},
+ {id: 'n07b', lv: 2, n: 'N07', t: 'Dénominateurs différents', d: 'Mettre au même dénominateur.',
+  c: 'Calcule et donne le résultat sous forme de fraction irréductible (ou d’entier).', a: 'On écrit les deux fractions avec le même dénominateur (un multiple commun), puis on additionne les numérateurs : 1/4 + 2/3 = 3/12 + 8/12 = 11/12.',
+  g: function(){ var a = rf(10, true), b, s = pick([1, -1]); do { b = Math.random() < 0.5 ? [rnd(1, 9), a[1] * rnd(2, 3)] : rf(9, false); } while (b[1] === a[1] || gcd(b[0], b[1]) !== 1);
+    if (Math.random() < 0.3) a = [rnz(-5, 5), 1];
+    var r = addSteps(a, b, s);
+    return fq(opTxt(a, s > 0 ? '+' : MINUS, b), r.R, r.st, [[(a[0] + s * b[0]) / (a[1] + b[1]), 'On n’additionne ni les numérateurs ni les dénominateurs entre eux : il faut d’abord le même dénominateur.']]); }},
+ {id: 'n07c', lv: 1, n: 'N07', t: 'Multiplier', d: 'Numérateurs entre eux, dénominateurs entre eux.',
+  c: 'Calcule et donne le résultat sous forme de fraction irréductible (ou d’entier).', a: 'a/b × c/d = (a × c)/(b × d). Pour aller plus vite, on simplifie avant de multiplier : 4/9 × 3/8 = (4 × 3)/(9 × 8) = 12/72 = 1/6.',
+  g: function(){ var a = rf(12, true), b = Math.random() < 0.2 ? [rnz(-9, 9), 1] : rf(12, true), R = mul(a, b), n = a[0] * b[0], d = a[1] * b[1];
+    var st = [opTxt(a, '×', b) + ' = (' + a[0] + ' × ' + P([b[0], 1]) + ') / (' + a[1] + ' × ' + b[1] + ')', '= ' + nt(n) + '/' + d];
+    if (R[0] !== n || R[1] !== d) st.push('= ' + T(R) + '   (on simplifie par ' + gcd(n, d) + ')');
+    return fq(opTxt(a, '×', b), R, st, [[(a[0] * b[1] + b[0] * a[1]) / (a[1] * b[1]), 'C’est une multiplication : pas besoin de dénominateur commun, on multiplie directement.']]); }},
+ {id: 'n07d', lv: 2, n: 'N07', t: 'Diviser', d: 'Multiplier par l’inverse.',
+  c: 'Calcule et donne le résultat sous forme de fraction irréductible (ou d’entier).', a: 'Diviser par une fraction, c’est multiplier par son inverse : a/b ÷ c/d = a/b × d/c. L’inverse de 3/5 est 5/3.',
+  g: function(){ var a = Math.random() < 0.2 ? [rnz(-9, 9), 1] : rf(12, true), b = Math.random() < 0.2 ? [rnd(2, 9), 1] : rf(12, true), R = mul(a, inv(b)), I = inv(b);
+    var st = [opTxt(a, '÷', b) + ' = ' + T(a) + ' × ' + P(I) + '   (inverse de ' + T(b) + ' : ' + T(I) + ')', '= ' + nt(a[0] * I[0]) + '/' + (a[1] * I[1]) + (R[0] !== a[0] * I[0] || R[1] !== a[1] * I[1] ? ' = ' + T(R) : '')];
+    return fq(opTxt(a, '÷', b), R, st, [[val(mul(a, b)), 'Il faut multiplier par l’INVERSE de la deuxième fraction.'], [val(mul(inv(a), b)), 'C’est la deuxième fraction qu’on inverse, pas la première.']]); }},
+ {id: 'n07e', lv: 2, n: 'N07', t: 'Vrai ou faux ?', d: 'Les pièges des fractions.',
+  c: 'Chaque égalité est-elle vraie ou fausse ?', a: 'Pour additionner, il faut le même dénominateur ; pour multiplier, non. Diviser, c’est multiplier par l’inverse.',
+  g: function(){ var a, b, c, d; do { a = rnd(1, 5); b = rnd(2, 7); c = rnd(1, 5); d = rnd(2, 7); } while (d === b || c === d || gcd(a, b) > 1 || gcd(c, d) > 1);
+    var S = add([a, b], [c, d]), Pm = mul([a, b], [c, d]), L = [
+      [a + '/' + b + ' + ' + c + '/' + d + ' = ' + (a + c) + '/' + (b + d), false, 'On ne peut pas additionner les dénominateurs : ' + a + '/' + b + ' + ' + c + '/' + d + ' = ' + T(S) + '.'],
+      [a + '/' + b + ' + ' + c + '/' + d + ' = ' + T(S), true, 'Même dénominateur ' + (b * d / gcd(b, d)) + ', puis on additionne les numérateurs.'],
+      [a + '/' + b + ' × ' + c + '/' + d + ' = ' + (a * c) + '/' + (b * d), true, 'On multiplie les numérateurs entre eux et les dénominateurs entre eux.'],
+      [a + '/' + b + ' × ' + c + '/' + d + ' = ' + (a * d + c * b) + '/' + (b * d), false, 'Pour multiplier, pas de dénominateur commun : ' + a + '/' + b + ' × ' + c + '/' + d + ' = ' + T(Pm) + '.'],
+      [a + '/' + b + ' ÷ ' + c + '/' + d + ' = ' + a + '/' + b + ' × ' + d + '/' + c, true, 'Diviser par ' + c + '/' + d + ', c’est multiplier par son inverse ' + d + '/' + c + '.'],
+      [a + '/' + b + ' ÷ ' + c + '/' + d + ' = ' + b + '/' + a + ' × ' + c + '/' + d, false, 'C’est la deuxième fraction qu’on inverse : ' + a + '/' + b + ' × ' + d + '/' + c + '.'],
+      ['3 × ' + a + '/' + b + ' = ' + (3 * a) + '/' + (3 * b), false, '3 × ' + a + '/' + b + ' = ' + (3 * a) + '/' + b + ' : on ne multiplie que le numérateur.'],
+      ['3 × ' + a + '/' + b + ' = ' + (3 * a) + '/' + b, true, '3 = 3/1, donc 3 × ' + a + '/' + b + ' = ' + (3 * a) + '/' + b + '.'],
+      ['L’inverse de ' + c + '/' + d + ' est ' + MINUS + c + '/' + d + '.', false, MINUS + c + '/' + d + ' est l’opposé ; l’inverse est ' + d + '/' + c + '.'],
+      ['L’inverse de ' + c + '/' + d + ' est ' + d + '/' + c + '.', true, c + '/' + d + ' × ' + d + '/' + c + ' = 1.'],
+      ['1 + ' + a + '/' + b + ' = ' + (1 + a) + '/' + (1 + b), false, '1 = ' + b + '/' + b + ', donc 1 + ' + a + '/' + b + ' = ' + T(add([1, 1], [a, b])) + '.'],
+      [MINUS + a + '/' + b + ' = ' + a + '/' + MINUS + b, true, 'Une fraction négative peut s’écrire avec le signe devant, au numérateur ou au dénominateur.']];
+    var i = rnd(0, L.length - 1), p = L[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n08a', lv: 2, n: 'N08', nq: 4, t: 'Calculs enchaînés', d: 'Priorités opératoires avec des fractions.',
+  c: 'Calcule en respectant les priorités. Donne le résultat sous forme de fraction irréductible (ou d’entier).', a: 'D’abord les parenthèses, puis × et ÷, puis + et −. Exemple : 1/2 + 3/4 × 2/3 = 1/2 + 6/12 = 1/2 + 1/2 = 1.',
+  g: function(){ var a = rf(6, true), b = rf(6, false), c = rf(6, false), k = rnd(0, 3), q, R, st, tr = [];
+    if (k === 0){ var m = mul(b, c), r = addSteps(a, m, 1); q = T(a) + ' + ' + T(b) + ' × ' + T(c); R = r.R; st = ['On commence par la multiplication : ' + T(b) + ' × ' + T(c) + ' = ' + T(m), q + ' = ' + T(a) + ' + ' + T(m)].concat(r.st); tr = [[val(mul(add(a, b), c)), 'La multiplication est prioritaire sur l’addition.']]; }
+    else if (k === 1){ var r1 = addSteps(a, b, -1), m2 = mul(r1.R, c); q = '(' + T(a) + ' ' + MINUS + ' ' + T(b) + ') × ' + T(c); R = m2; st = ['On commence par la parenthèse :'].concat(r1.st, [q + ' = ' + P(r1.R) + ' × ' + T(c) + ' = ' + T(R)]); tr = [[val(add(a, neg(mul(b, c)))), 'La parenthèse se calcule en premier.']]; }
+    else if (k === 2){ var dv = mul(b, inv(c)), r2 = addSteps(dv, a, -1); q = T(b) + ' ÷ ' + T(c) + ' ' + MINUS + ' ' + P(a); R = r2.R; st = ['On commence par la division : ' + T(b) + ' ÷ ' + T(c) + ' = ' + T(b) + ' × ' + T(inv(c)) + ' = ' + T(dv), q + ' = ' + T(dv) + ' ' + MINUS + ' ' + P(a)].concat(r2.st); tr = [[val(mul(b, inv(add(c, neg(a))))), 'La division est prioritaire sur la soustraction.']]; }
+    else { var n = rnd(2, 5), r3 = addSteps([n, 1], b, 1); q = T(a) + ' × (' + n + ' + ' + T(b) + ')'; R = mul(a, r3.R); st = ['On commence par la parenthèse : ' + n + ' = ' + (n * b[1]) + '/' + b[1]].concat(r3.st, [q + ' = ' + T(a) + ' × ' + T(r3.R) + ' = ' + T(R)]); tr = [[val(add(mul(a, [n, 1]), b)), 'Le facteur multiplie toute la parenthèse.']]; }
+    if (Math.abs(R[0]) > 400 || R[1] > 200) return this.g();
+    return fq(q, R, st, tr); }},
+ {id: 'n08b', lv: 3, n: 'N08', nq: 3, t: 'Problèmes', d: 'Fractions d’une quantité, d’un reste.',
+  c: 'Lis l’énoncé, écris le calcul avec des fractions, puis réponds.', a: 'Prendre la fraction d’une quantité, c’est multiplier : les 2/3 de 30 = 2/3 × 30 = 20. « Les 2/5 du reste » : calcule d’abord ce qui reste.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var q, R, st, a, b, n, lab = 'Réponse :';
+    function done(f, unitTxt){ var o = fq(q, f, st, []); o.key = 'k' + k; o.lab = lab; if (unitTxt) o.unit = unitTxt; o.dec = true; return o; }
+    if (k === 0){ a = rf(5, false); while (a[0] >= a[1]) a = rf(5, false); b = rf(5, false); while (b[0] >= b[1]) b = rf(5, false);
+      var reste = add([1, 1], neg(a)), pr = mul(b, reste), tot = add(a, pr), last = add([1, 1], neg(tot));
+      q = 'Léa dépense les ' + T(a) + ' de son argent de poche pour un livre, puis les ' + T(b) + ' du reste pour une place de cinéma. Quelle fraction de son argent lui reste-t-il ?'; R = last;
+      st = ['Après le livre, il reste 1 ' + MINUS + ' ' + T(a) + ' = ' + T(reste) + '.', 'Cinéma : ' + T(b) + ' × ' + T(reste) + ' = ' + T(pr) + '.', 'Dépensé : ' + T(a) + ' + ' + T(pr) + ' = ' + T(tot) + ', il reste 1 ' + MINUS + ' ' + T(tot) + ' = ' + T(last) + '.'];
+      if (last[0] <= 0) return this.g(k); return done(R); }
+    if (k === 1){ n = rnd(2, 6) * 12; a = pick([[2, 3], [3, 4], [5, 12], [5, 6], [3, 8], [7, 12]]); R = [n * a[0] / a[1], 1];
+      q = 'Un collège compte ' + n + ' élèves de 3e ; les ' + T(a) + ' d’entre eux sont demi-pensionnaires. Combien d’élèves de 3e sont demi-pensionnaires ?'; st = [T(a) + ' × ' + n + ' = ' + (a[0] * n) + '/' + a[1] + ' = ' + R[0] + ' élèves']; return done(R, 'élèves'); }
+    if (k === 2){ a = rf(4, false); while (a[0] >= a[1]) a = rf(4, false); b = rf(4, false); while (b[0] >= b[1] || val(add(a, b)) >= 1) b = rf(5, false);
+      var s2 = add(a, b), r2 = add([1, 1], neg(s2)); q = 'Dans une classe, ' + T(a) + ' des élèves viennent à pied, ' + T(b) + ' en bus et les autres en voiture. Quelle fraction des élèves vient en voiture ?'; R = r2;
+      st = [T(a) + ' + ' + T(b) + ' = ' + T(s2), '1 ' + MINUS + ' ' + T(s2) + ' = ' + T(r2)]; return done(R); }
+    if (k === 3){ a = pick([[3, 4], [2, 3], [3, 5], [4, 5], [5, 6]]); b = pick([[2, 3], [3, 4], [2, 5], [3, 5]]); R = mul(b, a);
+      q = 'Une bouteille est remplie aux ' + T(a) + '. On boit les ' + T(b) + ' de son contenu. Quelle fraction de la bouteille a-t-on bue ?'; st = ['Les ' + T(b) + ' de ' + T(a) + ' : ' + T(b) + ' × ' + T(a) + ' = ' + T(R)]; return done(R); }
+    if (k === 4){ a = pick([[3, 4], [2, 3], [1, 2], [3, 2], [5, 4]]); n = pick([4, 6, 8, 12]); R = mul(a, [n, 1]);
+      q = 'Une recette pour 4 personnes demande ' + T(a) + ' L de lait. Quelle quantité de lait faut-il pour ' + n + ' personnes ?'; st = ['Pour 1 personne : ' + T(a) + ' ÷ 4 = ' + T(mul(a, [1, 4])) + ' L', 'Pour ' + n + ' personnes : ' + T(mul(a, [1, 4])) + ' × ' + n + ' = ' + T(R) + ' L']; return done(R, 'L'); }
+    if (k === 5){ a = pick([[3, 4], [1, 2], [1, 4], [3, 2], [5, 2]]); b = pick([[1, 4], [1, 8], [1, 2], [3, 4]]); R = mul(a, inv(b)); if (R[1] !== 1) return this.g(k);
+      q = 'Combien de verres de ' + T(b) + ' L peut-on remplir avec ' + T(a) + ' L de jus de pomme ?'; st = [T(a) + ' ÷ ' + T(b) + ' = ' + T(a) + ' × ' + T(inv(b)) + ' = ' + T(R) + ' verres']; return done(R, 'verres'); }
+    if (k === 6){ n = rnd(2, 8) * 30; a = pick([[1, 3], [2, 5], [1, 6], [1, 2], [3, 10]]); var u1 = n * a[0] / a[1]; if (!M.isInt(u1)) return this.g(k); R = [n - u1, 1];
+      q = 'Un cycliste doit parcourir ' + n + ' km. Il en a déjà fait les ' + T(a) + '. Combien de kilomètres lui reste-t-il ?'; st = ['Déjà fait : ' + T(a) + ' × ' + n + ' = ' + u1 + ' km', 'Reste : ' + n + ' ' + MINUS + ' ' + u1 + ' = ' + R[0] + ' km']; return done(R, 'km'); }
+    if (k === 7){ a = pick([[1, 4], [1, 3], [2, 5], [1, 5]]); n = rnd(3, 12) * a[0]; R = [n * a[1] / a[0], 1];
+      q = 'Les ' + T(a) + ' d’une somme valent ' + n + ' €. Quelle est la somme totale ?'; st = [T(a) + ' de la somme = ' + n + ' €, donc la somme = ' + n + ' ÷ ' + T(a) + ' = ' + n + ' × ' + T(inv(a)) + ' = ' + R[0] + ' €']; return done(R, '€'); }
+    if (k === 8){ a = rf(4, false); while (a[0] >= a[1]) a = rf(4, false); b = rf(6, false); while (b[0] >= b[1]) b = rf(6, false); R = add(a, b); if (val(R) <= 1) return this.g(k);
+      q = 'Un réservoir contient ' + T(a) + ' de sa capacité. On ajoute ' + T(b) + ' de sa capacité. Déborde-t-il ? Calcule la fraction obtenue (plus de 1 : il déborde).'; st = [T(a) + ' + ' + T(b) + ' = ' + T(R) + ', plus grand que 1 : il déborde.']; return done(R); }
+    if (k === 9){ a = pick([[1, 2], [1, 3], [2, 3], [3, 4]]); b = pick([[1, 2], [1, 4], [1, 3]]); R = mul(b, add([1, 1], neg(a)));
+      q = 'Un champ est planté pour ' + T(a) + ' en blé, et les ' + T(b) + ' du reste en colza. Quelle fraction du champ est en colza ?'; st = ['Reste après le blé : 1 ' + MINUS + ' ' + T(a) + ' = ' + T(add([1, 1], neg(a))), 'Colza : ' + T(b) + ' × ' + T(add([1, 1], neg(a))) + ' = ' + T(R)]; return done(R); }
+    if (k === 10){ var h = pick([[1, 4], [3, 4], [1, 3], [2, 3], [1, 2], [5, 6]]); n = rnd(1, 4); R = [n * 60 + 60 * h[0] / h[1], 1];
+      q = 'Combien de minutes y a-t-il dans ' + n + ' h et ' + T(h) + ' d’heure ?'; st = [T(h) + ' × 60 = ' + (60 * h[0] / h[1]) + ' min', n + ' × 60 + ' + (60 * h[0] / h[1]) + ' = ' + R[0] + ' min']; return done(R, 'min'); }
+    a = pick([[2, 3], [3, 4], [3, 5], [5, 6]]); n = rnd(4, 15) * a[1]; R = [n * a[0] / a[1], 1];
+    q = 'Pendant les soldes, un jean à ' + n + ' € est vendu aux ' + T(a) + ' de son prix. Quel est son nouveau prix ?'; st = [T(a) + ' × ' + n + ' = ' + R[0] + ' €']; return done(R, '€'); }}
+];
+var NOTIONS = [
+  {n: 'N07', t: 'Additionner, soustraire, multiplier et diviser des fractions', r: 'pour + et −, même dénominateur d’abord ; a/b × c/d = ac/bd ; diviser, c’est multiplier par l’inverse. On simplifie le résultat.'},
+  {n: 'N08', t: 'Effectuer des calculs enchaînés avec des fractions', r: 'parenthèses d’abord, puis × et ÷, puis + et −. La fraction d’une quantité se calcule par une multiplication.'}];
+M.start({key: '3e-s05', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

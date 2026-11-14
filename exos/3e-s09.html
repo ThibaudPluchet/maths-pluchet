@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : théorème de Thalès (3e, séquence 9) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 3e, séquence 9 : calculer une longueur avec le théorème de Thalès.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">3e · Séquence 9 · Théorème de Thalès (1)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, pick = M.pick, shuffle = M.shuffle, fr = M.fr, cl = M.cl, rd = M.rd, ARR = M.ARR, MINUS = M.MINUS;
+function nm(p, q){ return p + q; }   // le sommet commun est écrit en premier
+// figure de Thalès : A sommet, M sur (AB), N sur (AC), (MN) // (BC) ; k = AM/AB (négatif : configuration papillon)
+function figT(P, k, labs){
+  var th = Math.random() * 2 * Math.PI, a1 = th, a2 = a1 + 0.7 + Math.random() * 0.5, r1 = 1, r2 = 0.8 + Math.random() * 0.6;
+  var A = [0, 0], B = [r1 * Math.cos(a1), r1 * Math.sin(a1)], C = [r2 * Math.cos(a2), r2 * Math.sin(a2)], Mm = [k * B[0], k * B[1]], Nn = [k * C[0], k * C[1]];
+  var pts = {A: A, B: B, C: C, M: Mm, N: Nn}, xs = [A, B, C, Mm, Nn].map(function(p){ return p[0]; }), ys = [A, B, C, Mm, Nn].map(function(p){ return p[1]; });
+  var W = 320, H = 230, pad = 34, mnx = Math.min.apply(0, xs), mxx = Math.max.apply(0, xs), mny = Math.min.apply(0, ys), mxy = Math.max.apply(0, ys);
+  var s = Math.min((W - 2 * pad) / (mxx - mnx), (H - 2 * pad) / (mxy - mny)), ox = (W - s * (mxx - mnx)) / 2 - s * mnx, oy = (H - s * (mxy - mny)) / 2 - s * mny;
+  function m(p){ return [ox + s * p[0], oy + s * p[1]]; } function f(v){ return v.toFixed(1); }
+  var Q = {}; for (var key in pts) Q[key] = m(pts[key]);
+  var G = [(Q.A[0] + Q.B[0] + Q.C[0] + Q.M[0] + Q.N[0]) / 5, (Q.A[1] + Q.B[1] + Q.C[1] + Q.M[1] + Q.N[1]) / 5];
+  function line(p, q, cls){ return '<line class="' + (cls || 'tr2') + '" x1="' + f(p[0]) + '" y1="' + f(p[1]) + '" x2="' + f(q[0]) + '" y2="' + f(q[1]) + '" style="stroke:var(--ink);stroke-width:1.6"/>'; }
+  var h = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Configuration de Thalès">';
+  if (k > 0) h += line(Q.A, Q.B) + line(Q.A, Q.C); else h += line(Q.M, Q.B) + line(Q.N, Q.C);
+  h += line(Q.B, Q.C) + line(Q.M, Q.N);
+  ['A', 'B', 'C', 'M', 'N'].forEach(function(key){ var p = Q[key], dx = p[0] - (key === 'A' ? G[0] : Q.A[0]), dy = p[1] - (key === 'A' ? G[1] : Q.A[1]), l = Math.hypot(dx, dy) || 1;
+    if (key === 'A'){ dx = -(Q.B[0] + Q.C[0] - 2 * p[0]); dy = -(Q.B[1] + Q.C[1] - 2 * p[1]); l = Math.hypot(dx, dy) || 1; }
+    if (key === 'M' || key === 'N'){ var o = key === 'M' ? Q.N : Q.M; dx = p[0] - o[0]; dy = p[1] - o[1]; l = Math.hypot(dx, dy) || 1; }
+    if (key === 'B' || key === 'C'){ var o2 = key === 'B' ? Q.C : Q.B; dx = p[0] - o2[0]; dy = p[1] - o2[1]; l = Math.hypot(dx, dy) || 1; }
+    h += '<circle cx="' + f(p[0]) + '" cy="' + f(p[1]) + '" r="2.5" style="fill:var(--ink)"/><text x="' + f(p[0] + dx / l * 14) + '" y="' + f(p[1] + dy / l * 14) + '" text-anchor="middle" dominant-baseline="central">' + P[key] + '</text>'; });
+  labs.forEach(function(L){ var p = Q[L[0]], q = Q[L[1]], M2 = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], dx = q[0] - p[0], dy = q[1] - p[1], l = Math.hypot(dx, dy), nx = -dy / l, ny = dx / l;
+    var ref = (L[0] + L[1]).indexOf('A') >= 0 ? [(Q.B[0] + Q.C[0] + Q.M[0] + Q.N[0]) / 4, (Q.B[1] + Q.C[1] + Q.M[1] + Q.N[1]) / 4] : Q.A;
+    if ((M2[0] - ref[0]) * nx + (M2[1] - ref[1]) * ny < 0){ nx = -nx; ny = -ny; }
+    if ((L[0] + L[1]).indexOf('A') >= 0){ nx = -nx; ny = -ny; }
+    h += '<text x="' + f(M2[0] + nx * 14) + '" y="' + f(M2[1] + ny * 14) + '" class="' + (L[2] === '?' ? 'qm' : 'ln') + '" text-anchor="middle" dominant-baseline="central">' + L[2] + '</text>'; });
+  return h + '</svg>';
+}
+// données : AB, AC, BC et k ; on connaît 3 longueurs, on en cherche une 4e
+function thales(papillon, figure, u0){
+  var L = M.letters(5), P = {A: L[0], B: L[1], C: L[2], M: L[3], N: L[4]}, u = u0 || pick(['cm', 'cm', 'm', 'mm']);
+  var k = pick([[1, 2], [1, 3], [2, 3], [3, 4], [2, 5], [3, 5], [1, 4], [4, 5], [5, 8], [3, 8]]), kv = k[0] / k[1];
+  var base = pick([1, 2, 3, 4, 5]) * k[1] / M.gcd(k[1], 1), AB = cl(base * rnd(1, 4)), AC = cl(k[1] * rnd(1, 6) / (Math.random() < 0.3 ? 2 : 1)), BC = cl(k[1] * rnd(2, 9) / (Math.random() < 0.3 ? 2 : 1));
+  var AM = cl(AB * kv), AN = cl(AC * kv), MN = cl(BC * kv), S = papillon ? -1 : 1;
+  var big = {AB: AB, AC: AC, BC: BC}, small = {AM: AM, AN: AN, MN: MN}, n = function(a, b){ return nm(P[a], P[b]); };
+  var pairs = [['AM', 'AB'], ['AN', 'AC'], ['MN', 'BC']], known = rnd(0, 2), ask = (known + rnd(1, 2)) % 3, dir = pick([0, 1]);   // dir 0 : on cherche la petite longueur
+  var kp = pairs[known], ap = pairs[ask], target = ap[dir], other = ap[1 - dir], Lval = function(x){ return x in big ? big[x] : small[x]; };
+  var x = Lval(target), d = undefined;
+  var labs = [[kp[0][0], kp[0][1], fr(Lval(kp[0])) + ' ' + u], [kp[1][0], kp[1][1], fr(Lval(kp[1])) + ' ' + u], [other[0], other[1], fr(Lval(other)) + ' ' + u], [target[0], target[1], '?']];
+  // pour AB et AC (grands côtés en configuration triangle) on étiquette le segment A→B entier : placé sur [AB]
+  var nmT = n(target[0], target[1]), names = pairs.map(function(p){ return [n(p[0][0], p[0][1]), n(p[1][0], p[1][1])]; });
+  var hyp = 'Les droites (' + n('M', 'B').replace(/./g, function(c){ return c; }) + ') et (' + n('N', 'C') + ') sont sécantes en ' + P.A + ', et (' + n('M', 'N') + ') // (' + n('B', 'C') + ').';
+  hyp = 'Les points ' + P.A + ', ' + P.M + ', ' + P.B + ' et ' + P.A + ', ' + P.N + ', ' + P.C + ' sont alignés, et les droites (' + n('M', 'N') + ') et (' + n('B', 'C') + ') sont parallèles.';
+  var q = (figure ? 'Sur la figure, ' : '') + hyp.charAt(0).toLowerCase() + hyp.slice(1);
+  q = (figure ? 'Sur la figure, l' : 'L') + hyp.slice(1) + (papillon ? ' (' + P.A + ' est entre ' + P.M + ' et ' + P.B + ', et entre ' + P.N + ' et ' + P.C + '.)' : '');
+  q += ' ' + [kp[0], kp[1], other].map(function(p){ return n(p[0], p[1]) + ' = ' + fr(Lval(p)) + ' ' + u; }).join(', ') + '.';
+  q += ' Calcule ' + nmT + '.';
+  if (!M.isInt(x * 100) || Math.random() < 0.25){ d = pick([1, 2]); if (M.isInt(x * Math.pow(10, d))) d = undefined; }
+  if (d !== undefined) q = q.replace(/\.$/, ', arrondie ' + ARR[d] + '.');
+  var v = d === undefined ? cl(x) : rd(x, d);
+  var eg = n('A', 'M') + '/' + n('A', 'B') + ' = ' + n('A', 'N') + '/' + n('A', 'C') + ' = ' + n('M', 'N') + '/' + n('B', 'C');
+  var st = ['D’après le théorème de Thalès : ' + eg + '.', names[known][0] + '/' + names[known][1] + ' = ' + names[ask][0] + '/' + names[ask][1] + ' donne ' + fr(Lval(kp[0])) + '/' + fr(Lval(kp[1])) + ' = ' + (dir === 0 ? nmT + '/' + fr(Lval(other)) : fr(Lval(other)) + '/' + nmT),
+    nmT + ' = ' + (dir === 0 ? fr(Lval(other)) + ' × ' + fr(Lval(kp[0])) + ' / ' + fr(Lval(kp[1])) : fr(Lval(other)) + ' × ' + fr(Lval(kp[1])) + ' / ' + fr(Lval(kp[0]))) + (d === undefined ? ' = ' : ' ≈ ') + fr(v) + ' ' + u];
+  var wrong = dir === 0 ? Lval(other) * Lval(kp[1]) / Lval(kp[0]) : Lval(other) * Lval(kp[0]) / Lval(kp[1]);
+  var traps = [[d === undefined ? cl(wrong) : rd(wrong, d), 'Les rapports sont inversés : écris d’abord l’égalité ' + eg + ' (petit triangle en haut).']];
+  if (!papillon) traps.push([d === undefined ? cl(Lval(other) - Lval(kp[1]) + Lval(kp[0])) : rd(Lval(other) - Lval(kp[1]) + Lval(kp[0]), d), 'Thalès utilise des rapports (multiplications), pas des différences.']);
+  return {type: 'num', q: q, svg: figure ? figT(P, papillon ? -Math.max(0.45, Math.min(0.8, kv)) : Math.max(0.35, Math.min(0.75, kv)), []) : null, lab: nmT + (d === undefined ? ' =' : ' ≈'), unit: u, v: v, x: x, d: d,
+    traps: traps.filter(function(t){ return Math.abs(t[0] - v) > 1e-9; }), steps: st, key: q};
+}
+var EX = [
+ {id: 'n15a', lv: 1, n: 'N15', t: 'Écrire l’égalité de Thalès', d: 'Les rapports de longueurs.',
+  c: 'Choisis l’égalité juste.', a: 'Dans une configuration de Thalès (A, M, B alignés ; A, N, C alignés ; (MN) // (BC)) : AM/AB = AN/AC = MN/BC. Chaque rapport compare un côté du petit triangle AMN au côté correspondant du grand triangle ABC.',
+  g: function(){ var L = M.letters(5), P = {A: L[0], B: L[1], C: L[2], M: L[3], N: L[4]}, pap = Math.random() < 0.35, n = function(a, b){ return nm(P[a], P[b]); };
+    var good = n('A', 'M') + '/' + n('A', 'B') + ' = ' + n('A', 'N') + '/' + n('A', 'C') + ' = ' + n('M', 'N') + '/' + n('B', 'C');
+    var ch = shuffle([good, n('A', 'M') + '/' + n('M', 'B') + ' = ' + n('A', 'N') + '/' + n('N', 'C') + ' = ' + n('M', 'N') + '/' + n('B', 'C'), n('A', 'M') + '/' + n('A', 'B') + ' = ' + n('A', 'C') + '/' + n('A', 'N') + ' = ' + n('M', 'N') + '/' + n('B', 'C'), n('A', 'M') + '/' + n('A', 'N') + ' = ' + n('A', 'B') + '/' + n('B', 'C') + ' = ' + n('M', 'N') + '/' + n('A', 'C')]);
+    return {type: 'ch', q: 'Sur la figure, les droites (' + n('M', 'N') + ') et (' + n('B', 'C') + ') sont parallèles. Quelle égalité donne le théorème de Thalès ?', svg: figT(P, pap ? -pick([0.5, 0.6, 0.7]) : pick([0.4, 0.5, 0.6, 0.7]), []),
+      ch: ch, ans: ch.indexOf(good), steps: ['Le petit triangle ' + P.A + P.M + P.N + ' et le grand triangle ' + P.A + P.B + P.C + ' ont leurs côtés proportionnels : ' + good + '.'], key: good + pap}; }},
+ {id: 'n15b', lv: 2, n: 'N15', nq: 4, t: 'Calculer une longueur', d: 'Configuration « triangle ».',
+  c: 'Calcule la longueur demandée. Les figures ne sont pas en vraie grandeur.', a: 'Écris l’égalité des trois rapports, garde les deux rapports utiles (celui qui contient la longueur cherchée et celui dont on connaît les deux longueurs), puis fais un produit en croix.',
+  g: function(){ return thales(false, true); }},
+ {id: 'n15c', lv: 2, n: 'N15', nq: 4, t: 'Configuration papillon', d: 'Les triangles opposés par le sommet.',
+  c: 'Calcule la longueur demandée. Les figures ne sont pas en vraie grandeur.', a: 'En papillon, A est entre M et B, et entre N et C. L’égalité est la même : AM/AB = AN/AC = MN/BC.',
+  g: function(){ return thales(true, true); }},
+ {id: 'n15d', lv: 2, n: 'N15', nq: 4, t: 'Sans figure', d: 'Faire d’abord une figure à main levée.',
+  c: 'Fais une figure à main levée, puis calcule la longueur demandée.', a: 'Sur la figure à main levée, place les points alignés et code les droites parallèles. Repère le petit et le grand triangle avant d’écrire l’égalité.',
+  g: function(){ return thales(Math.random() < 0.4, false); }},
+ {id: 'n15e', lv: 2, n: 'N15', t: 'Vrai ou faux ?', d: 'Les conditions et les pièges.',
+  c: 'Chaque affirmation est-elle vraie ou fausse ?', a: 'Pour utiliser le théorème de Thalès, il faut des points alignés dans le même ordre et des droites parallèles. Les rapports s’écrivent petit triangle / grand triangle, dans le même ordre.',
+  g: function(){ var T = M.letters(5), A = T[0], B = T[1], C = T[2], Mm = T[3], Nn = T[4], L = [
+      ['Si (' + nm(Mm, Nn) + ') et (' + nm(B, C) + ') ne sont pas parallèles, on peut quand même utiliser le théorème de Thalès.', false, 'Le théorème de Thalès exige que les droites soient parallèles.'],
+      ['Dans la configuration de Thalès, ' + nm(A, Mm) + '/' + nm(A, B) + ' = ' + nm(Mm, Nn) + '/' + nm(B, C) + '.', true, 'Ce sont deux des trois rapports égaux.'],
+      ['Dans la configuration de Thalès, ' + nm(A, Mm) + '/' + nm(Mm, B) + ' = ' + nm(A, Nn) + '/' + nm(Nn, C) + ' est l’égalité du cours.', false, 'Le cours compare au grand triangle : ' + nm(A, Mm) + '/' + nm(A, B) + ' = ' + nm(A, Nn) + '/' + nm(A, C) + '.'],
+      ['Si ' + nm(A, Mm) + ' = 3, ' + nm(A, B) + ' = 6 et ' + nm(B, C) + ' = 10, alors ' + nm(Mm, Nn) + ' = 5.', true, nm(Mm, Nn) + ' = 10 × 3 / 6 = 5.'],
+      ['Si ' + nm(A, Mm) + ' = 3, ' + nm(A, B) + ' = 6 et ' + nm(B, C) + ' = 10, alors ' + nm(Mm, Nn) + ' = 20.', false, nm(Mm, Nn) + ' est plus petit que ' + nm(B, C) + ' : 10 × 3 / 6 = 5.'],
+      ['Le triangle ' + A + Mm + Nn + ' est un agrandissement du triangle ' + A + B + C + ' quand ' + Mm + ' est sur [' + nm(A, B) + '].', false, 'C’est une réduction : ' + A + Mm + Nn + ' est plus petit.'],
+      ['Dans un papillon, le théorème de Thalès s’écrit comme dans la configuration triangle.', true, 'Les rapports sont les mêmes : ' + nm(A, Mm) + '/' + nm(A, B) + ' = ' + nm(A, Nn) + '/' + nm(A, C) + ' = ' + nm(Mm, Nn) + '/' + nm(B, C) + '.'],
+      ['Si ' + nm(A, Mm) + '/' + nm(A, B) + ' = 2/5, alors le petit triangle a des côtés 2/5 fois plus longs que le grand.', true, 'Le coefficient de réduction est 2/5.'],
+      ['On peut appliquer le théorème de Thalès sans savoir que les points sont alignés.', false, 'Il faut ' + A + ', ' + Mm + ', ' + B + ' alignés et ' + A + ', ' + Nn + ', ' + C + ' alignés.'],
+      ['Si ' + nm(A, Mm) + ' = 4, ' + nm(A, B) + ' = 10 et ' + nm(A, C) + ' = 15, alors ' + nm(A, Nn) + ' = 6.', true, nm(A, Nn) + ' = 15 × 4 / 10 = 6.'],
+      ['Si ' + nm(A, Mm) + ' = 4, ' + nm(A, B) + ' = 10 et ' + nm(A, C) + ' = 15, alors ' + nm(A, Nn) + ' = 9.', false, 'On ne soustrait pas : ' + nm(A, Nn) + ' = 15 × 4 / 10 = 6.'],
+      ['Le théorème de Thalès permet de calculer des longueurs, pas des angles.', true, 'Il donne des rapports de longueurs égaux.']];
+    var i = rnd(0, L.length - 1), p = L[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n15f', lv: 3, n: 'N15', nq: 3, t: 'Problèmes', d: 'Ombres, hauteurs, distances inaccessibles.',
+  c: 'Repère les droites parallèles et les points alignés, écris l’égalité de Thalès, puis calcule.', a: 'Les rayons du soleil sont parallèles, deux objets verticaux sont parallèles : c’est souvent là que se cache la configuration de Thalès.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var q, v, x, st, u = 'm', a, b, c, d;
+    function out(lab, dd){ v = dd === undefined ? cl(x) : rd(x, dd); return {type: 'num', q: q, lab: lab + (dd === undefined ? ' =' : ' ≈'), unit: u, v: v, x: x, d: dd, steps: st.concat([lab + (dd === undefined ? ' = ' : ' ≈ ') + fr(v) + ' ' + u]), key: 'k' + k}; }
+    if (k === 0){ a = cl(rnd(10, 20) / 10); b = cl(rnd(10, 30) / 10); c = rnd(8, 40); x = a * c / b;
+      q = 'Un bâton vertical de ' + fr(a) + ' m a une ombre de ' + fr(b) + ' m. Au même moment, un arbre a une ombre de ' + c + ' m. Quelle est la hauteur de l’arbre ? Arrondis au dixième.'; st = ['Rayons parallèles, bâton et arbre verticaux : configuration de Thalès.', 'hauteur / ' + fr(a) + ' = ' + c + ' / ' + fr(b), 'hauteur = ' + fr(a) + ' × ' + c + ' / ' + fr(b)]; return out('hauteur', 1); }
+    if (k === 1){ a = rnd(15, 30); b = rnd(2, 6) * 10; c = cl(rnd(14, 19) / 10); x = c * (a + b) / b;
+      q = 'Pour mesurer un immeuble, Inès (ses yeux à ' + fr(c) + ' m du sol) se place à ' + a + ' m d’un poteau de ' + fr(c) + ' m… On simplifie : un poteau vertical de ' + fr(c) + ' m est à ' + b + ' m de Inès, l’immeuble à ' + (a + b) + ' m, et le haut du poteau est aligné avec le haut de l’immeuble vu depuis le sol, au niveau des pieds d’Inès. Hauteur de l’immeuble, arrondie au dixième ?';
+      q = 'Un poteau vertical de ' + fr(c) + ' m est planté à ' + b + ' m d’un point O du sol. Un immeuble vertical est à ' + (a + b) + ' m de O, et depuis O, le haut du poteau est aligné avec le haut de l’immeuble. Quelle est la hauteur de l’immeuble, arrondie au dixième ?';
+      st = ['Poteau et immeuble verticaux, donc parallèles ; O, pied du poteau, pied de l’immeuble alignés : Thalès.', 'H / ' + fr(c) + ' = ' + (a + b) + ' / ' + b, 'H = ' + fr(c) + ' × ' + (a + b) + ' / ' + b]; return out('H', 1); }
+    if (k === 2){ a = rnd(3, 8); b = rnd(2, 5) * 10; c = rnd(10, 40); x = c * a / b; u = 'm';
+      q = 'Pour mesurer la largeur d’une rivière, on forme deux triangles en papillon : AB = ' + a + ' m, AD = ' + b + ' m sur la berge et DE = ' + c + ' m, avec (BC) // (DE) et A entre B et D. On cherche BC, la largeur de la rivière. Arrondis au dixième.';
+      if (b <= a) return this.g(k); st = ['Papillon de sommet A, (BC) // (DE) : AB/AD = BC/DE.', a + '/' + b + ' = BC/' + c, 'BC = ' + c + ' × ' + a + ' / ' + b]; return out('BC', 1); }
+    if (k === 3){ a = rnd(2, 5) * 10; b = rnd(4, 9) * 10; c = cl(rnd(20, 60) / 10); x = c * b / a; if (b <= a) return this.g(k);
+      q = 'Le toit d’un abri est soutenu par une poutre horizontale. Sur une pente, à ' + a + ' cm du sommet, la poutre mesure ' + fr(c) + ' m ; la base horizontale de l’abri est à ' + b + ' cm du sommet le long de la même pente. Quelle est la largeur de la base ? Arrondis au dixième.';
+      st = ['Poutre et base horizontales donc parallèles : Thalès.', 'base / ' + fr(c) + ' = ' + b + ' / ' + a, 'base = ' + fr(c) + ' × ' + b + ' / ' + a]; return out('base', 1); }
+    if (k === 4){ a = cl(rnd(15, 25) / 10); b = rnd(2, 5); c = rnd(20, 60); x = a * c / b; u = 'm';
+      q = 'Au soleil, une personne de ' + fr(a) + ' m a une ombre de ' + b + ' m. Au même moment, l’ombre d’un phare vertical mesure ' + c + ' m. Quelle est la hauteur du phare ? Arrondis à l’unité.';
+      st = ['Rayons du soleil parallèles : Thalès.', 'H / ' + fr(a) + ' = ' + c + ' / ' + b, 'H = ' + fr(a) + ' × ' + c + ' / ' + b]; return out('H', 0); }
+    if (k === 5){ a = rnd(2, 6); b = cl(rnd(20, 40) / 10); c = rnd(60, 150); x = b * c / a; u = 'cm';
+      q = 'Sur une carte, deux routes parallèles coupent deux chemins qui partent d’un même carrefour A. Sur un chemin, les routes sont à ' + a + ' km et ' + (a * 2) + ' km de A. Sur la carte, la première route mesure ' + fr(b) + ' cm entre les deux chemins. Combien mesure la seconde sur la carte ?';
+      x = b * 2; st = ['Routes parallèles : Thalès, rapport ' + (2 * a) + '/' + a + ' = 2.', 'longueur = ' + fr(b) + ' × 2']; return out('longueur'); }
+    if (k === 6){ a = rnd(3, 9) * 10; b = rnd(2, 8) * 10; c = rnd(5, 15) * 10; x = c * (a + b) / a; u = 'cm';
+      q = 'Une étagère triangulaire : deux montants partent d’un même point A. Une tablette parallèle au sol mesure ' + c + ' cm et se trouve à ' + a + ' cm de A le long d’un montant ; le sol est à ' + b + ' cm plus bas le long de ce montant. Quelle est la largeur au sol ? Arrondis à l’unité.';
+      st = ['Tablette et sol parallèles : Thalès.', 'largeur / ' + c + ' = ' + (a + b) + ' / ' + a, 'largeur = ' + c + ' × ' + (a + b) + ' / ' + a]; return out('largeur', 0); }
+    if (k === 7){ a = cl(rnd(5, 15) / 10); b = rnd(5, 15); c = cl(rnd(30, 70) / 100); x = c * b / a; u = 'm';
+      q = 'On place une pièce de ' + fr(c * 100) + ' cm de diamètre… On simplifie : un gobelet ouvert de ' + fr(c) + ' m de diamètre, placé à ' + fr(a) + ' m de l’œil, cache exactement la Lune… ';
+      q = 'Un panneau de ' + fr(c) + ' m de large, placé à ' + fr(a) + ' m d’un appareil photo, cache exactement la largeur d’un bâtiment situé à ' + b + ' m de l’appareil (côtés parallèles). Quelle est la largeur du bâtiment ? Arrondis au dixième.';
+      st = ['Panneau et façade parallèles, visés depuis l’appareil : Thalès.', 'L / ' + fr(c) + ' = ' + b + ' / ' + fr(a), 'L = ' + fr(c) + ' × ' + b + ' / ' + fr(a)]; return out('L', 1); }
+    if (k === 8){ a = rnd(4, 12); b = rnd(2, 6); c = rnd(10, 30); x = c * b / a; u = 'm';
+      q = 'Une rampe de skate est renforcée par une barre verticale. La rampe a une hauteur de ' + c + ' dm au bout d’une longueur au sol de ' + a + ' m ; la barre est placée à ' + b + ' m du départ, mesuré au sol. Quelle est la hauteur de la barre, en dm ? Arrondis au dixième.';
+      if (b >= a) return this.g(k); u = 'dm'; st = ['Barre et bout de la rampe verticaux, donc parallèles : Thalès.', 'h / ' + c + ' = ' + b + ' / ' + a, 'h = ' + c + ' × ' + b + ' / ' + a]; return out('h', 1); }
+    if (k === 9){ a = rnd(30, 80); b = rnd(10, 25); c = cl(rnd(10, 25) / 10); x = c * a / b; u = 'm';
+      q = 'Un enfant de ' + fr(c) + ' m se tient à ' + b + ' m d’un lampadaire, dos à lui, et son ombre mesure… Simplifions : l’ombre d’un poteau de ' + fr(c) + ' m mesure ' + b + ' dm ; au même moment, l’ombre d’une tour mesure ' + a + ' dm. Quelle est la hauteur de la tour ? Arrondis au dixième.';
+      q = 'Au même moment, un poteau vertical de ' + fr(c) + ' m a une ombre de ' + b + ' dm, et une tour verticale une ombre de ' + a + ' dm. Quelle est la hauteur de la tour, en mètres ? Arrondis au dixième.';
+      st = ['Rayons parallèles : Thalès (les ombres sont toutes deux en dm, le rapport ne dépend pas de l’unité).', 'H / ' + fr(c) + ' = ' + a + ' / ' + b, 'H = ' + fr(c) + ' × ' + a + ' / ' + b]; return out('H', 1); }
+    if (k === 10){ a = rnd(2, 6); b = rnd(2, 6); c = rnd(3, 12); x = c * (a + b) / a; u = 'km';
+      q = 'Deux routes rectilignes partent d’un même village A. Deux ponts parallèles relient ces routes : le premier, long de ' + c + ' km… ';
+      q = 'Deux routes rectilignes partent d’un village A. Deux chemins parallèles relient ces routes : le premier est à ' + a + ' km de A et mesure ' + c + ' km ; le second est ' + b + ' km plus loin le long de la même route. Quelle est la longueur du second chemin ? Arrondis au dixième.';
+      st = ['Chemins parallèles : Thalès.', 'L / ' + c + ' = ' + (a + b) + ' / ' + a, 'L = ' + c + ' × ' + (a + b) + ' / ' + a]; return out('L', 1); }
+    a = rnd(2, 5); b = rnd(6, 12); c = cl(rnd(15, 40) / 10); x = c * a / b; u = 'm';
+    q = 'Une tente a la forme d’un triangle isocèle de base ' + fr(c) + ' m. Une corde à linge horizontale relie les deux côtés à ' + a + ' dm du sommet, mesurés le long d’un côté de ' + b + ' dm. Quelle est la longueur de la corde, en mètres ? Arrondis au centième.';
+    if (a >= b) return this.g(k); st = ['Corde et base horizontales, donc parallèles : Thalès.', 'corde / ' + fr(c) + ' = ' + a + ' / ' + b, 'corde = ' + fr(c) + ' × ' + a + ' / ' + b]; return out('corde', 2); }}
+];
+var NOTIONS = [{n: 'N15', t: 'Calculer une longueur par le théorème de Thalès', r: 'si A, M, B et A, N, C sont alignés et (MN) // (BC), alors AM/AB = AN/AC = MN/BC.'}];
+M.start({key: '3e-s09', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

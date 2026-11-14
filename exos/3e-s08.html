@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : fonctions (3e, séquence 8) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 3e, séquence 8 : images et antécédents dans un tableau, sur un graphique, par le calcul.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">3e · Séquence 8 · Fonctions (2)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, red = M.red, ftx = M.ftx, MINUS = M.MINUS, cl = M.cl;
+function fl(){ return pick(['f', 'g', 'h', 'k']); }
+// tableau de valeurs en SVG
+function table(f, xs, ys){
+  var cw = 50, W = 70 + cw * xs.length, s = '<svg viewBox="0 0 ' + W + ' 72" class="fig" role="img" aria-label="Tableau de valeurs">';
+  s += '<rect x="1" y="1" width="' + (W - 2) + '" height="70" fill="none" stroke="currentColor" class="ax"/><line class="ax" x1="1" y1="36" x2="' + (W - 1) + '" y2="36"/><line class="ax" x1="70" y1="1" x2="70" y2="71"/>';
+  s += '<text x="35" y="19" text-anchor="middle" dominant-baseline="central">x</text><text x="35" y="54" text-anchor="middle" dominant-baseline="central">' + f + '(x)</text>';
+  xs.forEach(function(x, i){ var cx = 70 + cw * i + cw / 2; if (i) s += '<line class="gr" x1="' + (70 + cw * i) + '" y1="1" x2="' + (70 + cw * i) + '" y2="71"/>';
+    s += '<text class="ln" x="' + cx + '" y="19" text-anchor="middle" dominant-baseline="central">' + fr(x) + '</text><text class="ln" x="' + cx + '" y="54" text-anchor="middle" dominant-baseline="central">' + fr(ys[i]) + '</text>'; });
+  return s + '</svg>';
+}
+// courbe affine par morceaux passant par des points entiers, x de −5 à 5
+function curve(){ var xs = [-5, -3, -1, 1, 3, 5].map(function(v, i){ return i === 0 || i === 5 ? v : v + rnd(-1, 0); }), ys = [], y;
+  for (var i = 0; i < xs.length; i++){ do { y = rnd(-4, 5); } while (i && (y === ys[i - 1] || Math.abs(y - ys[i - 1]) > 6)); ys.push(y); }
+  return {xs: xs, ys: ys}; }
+function cy(C, x){ for (var i = 0; i < C.xs.length - 1; i++) if (x >= C.xs[i] && x <= C.xs[i + 1]) return C.ys[i] + (C.ys[i + 1] - C.ys[i]) * (x - C.xs[i]) / (C.xs[i + 1] - C.xs[i]); return null; }
+function roots(C, k){ var R = []; for (var i = 0; i < C.xs.length - 1; i++){ var a = C.ys[i] - k, b = C.ys[i + 1] - k;
+    if (a === 0){ if (!R.some(function(r){ return Math.abs(r - C.xs[i]) < 1e-9; })) R.push(C.xs[i]); }
+    if (a * b < 0) R.push(C.xs[i] + (C.xs[i + 1] - C.xs[i]) * a / (a - b)); }
+  var L = C.xs.length - 1; if (C.ys[L] === k && !R.some(function(r){ return Math.abs(r - C.xs[L]) < 1e-9; })) R.push(C.xs[L]); return R; }
+function graph(C, f, hl){
+  var W = 340, H = 300, ox = 170, oy = 175, u = 28, s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Courbe de la fonction ' + f + '">', v;
+  for (v = -5; v <= 5; v++) s += '<line class="gr" x1="' + (ox + v * u) + '" y1="' + (oy - 5 * u) + '" x2="' + (ox + v * u) + '" y2="' + (oy + 4 * u) + '"/>';
+  for (v = -4; v <= 5; v++) s += '<line class="gr" x1="' + (ox - 5 * u) + '" y1="' + (oy - v * u) + '" x2="' + (ox + 5 * u) + '" y2="' + (oy - v * u) + '"/>';
+  s += '<line class="ax" style="stroke-width:1.6" x1="' + (ox - 5 * u) + '" y1="' + oy + '" x2="' + (ox + 5 * u + 8) + '" y2="' + oy + '"/><line class="ax" style="stroke-width:1.6" x1="' + ox + '" y1="' + (oy + 4 * u) + '" x2="' + ox + '" y2="' + (oy - 5 * u - 8) + '"/>';
+  s += '<text class="sm" x="' + (ox + u) + '" y="' + (oy + 14) + '" text-anchor="middle">1</text><text class="sm" x="' + (ox - 8) + '" y="' + (oy - u) + '" text-anchor="end" dominant-baseline="central">1</text><text class="sm" x="' + (ox - 8) + '" y="' + (oy + 12) + '" text-anchor="end">0</text>';
+  s += '<text class="sm" x="' + (ox + 5 * u + 6) + '" y="' + (oy - 8) + '">x</text><text class="sm" x="' + (ox + 6) + '" y="' + (oy - 5 * u - 2) + '">y</text>';
+  s += '<polyline class="cv" points="' + C.xs.map(function(x, i){ return (ox + x * u) + ',' + (oy - C.ys[i] * u); }).join(' ') + '"/>';
+  var L = C.xs.length - 1; s += '<text x="' + (ox + C.xs[L] * u - 6) + '" y="' + (oy - C.ys[L] * u - 10) + '" style="fill:var(--accent)">𝒞' + '<tspan style="font-size:11px">' + f + '</tspan></text>';
+  return s + '</svg>';
+}
+function sorted(a){ return a.slice().sort(function(x, y){ return x - y; }); }
+var EX = [
+ {id: 'n12a', lv: 1, n: 'N12', t: 'Lire un tableau de valeurs', d: 'Image ou antécédent ?',
+  c: 'Lis la réponse dans le tableau de valeurs.', a: 'L’image d’un nombre se lit dans la 2e ligne, sous ce nombre. Un antécédent d’un nombre se lit dans la 1re ligne, au-dessus de ce nombre.',
+  g: function(){ var f = fl(), xs = [], ys = [], v, i; var st0 = rnd(-4, 0), step = pick([1, 1, 2]); for (i = 0; i < 7; i++) xs.push(st0 + i * step);
+    xs.forEach(function(){ do { v = rnd(-9, 15); } while (ys.indexOf(v) >= 0); ys.push(v); }); var j = rnd(0, 6), k = rnd(0, 2), q, ans, st;
+    if (k === 0){ q = 'Quelle est l’image de ' + fr(xs[j]) + ' par la fonction ' + f + ' ?'; ans = ys[j]; st = ['Sous ' + fr(xs[j]) + ', on lit ' + fr(ys[j]) + ' : ' + f + '(' + fr(xs[j]) + ') = ' + fr(ys[j]) + '.']; }
+    else if (k === 1){ q = 'Quel est l’antécédent de ' + fr(ys[j]) + ' par la fonction ' + f + ' dans ce tableau ?'; ans = xs[j]; st = ['Au-dessus de ' + fr(ys[j]) + ', on lit ' + fr(xs[j]) + ' : ' + f + '(' + fr(xs[j]) + ') = ' + fr(ys[j]) + '.']; }
+    else { q = 'Complète : ' + f + '(' + fr(xs[j]) + ') = …'; ans = ys[j]; st = ['On lit l’image de ' + fr(xs[j]) + ' : ' + fr(ys[j]) + '.']; }
+    var other = k === 1 ? ys[xs.indexOf(ys[j])] : xs[ys.indexOf(xs[j])];
+    return {type: 'num', q: q, svg: table(f, xs, ys), wide: true, lab: k === 1 ? 'antécédent :' : f + '(' + fr(xs[j]) + ') =', v: ans, x: ans, steps: st, key: q + ys.join(),
+      traps: other !== undefined && other !== ans ? [[other, k === 1 ? 'Tu as lu une image : l’antécédent se lit dans la ligne des x.' : 'Tu as lu un antécédent : l’image se lit dans la ligne des ' + f + '(x).']] : []}; }},
+ {id: 'n12b', lv: 2, n: 'N12', t: 'Tableau : vrai ou faux ?', d: 'Images et antécédents multiples.',
+  c: 'Chaque affirmation est-elle vraie ou fausse, d’après le tableau ?', a: 'Un nombre de la 1re ligne a une seule image. Un nombre de la 2e ligne peut avoir plusieurs antécédents (il apparaît plusieurs fois).',
+  g: function(){ var f = fl(), xs = [-3, -2, -1, 0, 1, 2, 3], ys = xs.map(function(){ return rnd(-5, 8); }), d = ys[rnd(0, 6)]; ys[rnd(0, 6)] = d;
+    var j = rnd(0, 6), n = ys.filter(function(y){ return y === ys[j]; }).length, ants = xs.filter(function(x, i){ return ys[i] === ys[j]; }), L = [
+      [f + '(' + fr(xs[j]) + ') = ' + fr(ys[j]) + '.', true, 'Sous ' + fr(xs[j]) + ' on lit ' + fr(ys[j]) + '.'],
+      [f + '(' + fr(ys[j]) + ') = ' + fr(xs[j]) + '.', ys[j] === xs[j] || (xs.indexOf(ys[j]) >= 0 && ys[xs.indexOf(ys[j])] === xs[j]), 'On a inversé : c’est ' + f + '(' + fr(xs[j]) + ') = ' + fr(ys[j]) + '.'],
+      [fr(ys[j]) + ' a exactement ' + n + ' antécédent' + (n > 1 ? 's' : '') + ' dans ce tableau.', true, 'On le trouve sous ' + ants.map(fr).join(' et ') + '.'],
+      [fr(ys[j]) + ' a exactement ' + (n + 1) + ' antécédents dans ce tableau.', false, 'On le trouve ' + n + ' fois dans la 2e ligne : sous ' + ants.map(fr).join(' et ') + '.'],
+      ['L’image de ' + fr(xs[j]) + ' est ' + fr(ys[(j + 1) % 7]) + '.', ys[(j + 1) % 7] === ys[j], 'L’image de ' + fr(xs[j]) + ' est ' + fr(ys[j]) + '.']];
+    var i = rnd(0, L.length - 1), p = L[i]; if (i === 1 && p[1]) return this.g();
+    return {type: 'ch', q: p[0], svg: table(f, xs, ys), wide: true, ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: p[0] + ys.join()}; }},
+ {id: 'n13a', lv: 2, n: 'N13', t: 'Lire une image sur un graphique', d: 'Du nombre sur l’axe des abscisses à la courbe.',
+  c: 'Lis l’image demandée sur la courbe (les lectures tombent sur les nœuds du quadrillage).', a: 'Pour lire l’image de a : on part de a sur l’axe des abscisses (horizontal), on monte (ou descend) jusqu’à la courbe, puis on lit l’ordonnée sur l’axe vertical.',
+  g: function(){ var f = fl(), C = curve(), x = pick(C.xs), y = cy(C, x);
+    return {type: 'num', q: 'Voici la courbe de la fonction ' + f + '. Quelle est l’image de ' + fr(x) + ' ?', svg: graph(C, f), lab: f + '(' + fr(x) + ') =', v: y, x: y, steps: ['On part de ' + fr(x) + ' sur l’axe des abscisses, on rejoint la courbe, on lit l’ordonnée : ' + f + '(' + fr(x) + ') = ' + fr(y) + '.'],
+      traps: C.ys.indexOf(x) >= 0 && C.xs[C.ys.indexOf(x)] !== y ? [[C.xs[C.ys.indexOf(x)], 'Tu as lu un antécédent de ' + fr(x) + ' : pour l’image, on part de l’axe des abscisses.']] : [], key: C.ys.join() + x}; }},
+ {id: 'n13b', lv: 2, n: 'N13', t: 'Antécédents sur un graphique', d: 'Combien ? Lesquels ?',
+  c: 'Réponds en lisant la courbe.', a: 'Pour les antécédents de b : on trace la droite horizontale y = b ; les antécédents sont les abscisses des points où elle coupe la courbe. Il peut y en avoir 0, 1 ou plusieurs.',
+  g: function(){ var f = fl(), C = curve(), k = rnd(-4, 5), R = roots(C, k), kind = rnd(0, 1);
+    if (kind === 1){ var ints = R.filter(function(r){ return M.isInt(r); }); if (R.length !== 1 || !ints.length) kind = 0; }
+    if (kind === 0) return {type: 'num', q: 'Voici la courbe de la fonction ' + f + '. Combien le nombre ' + fr(k) + ' a-t-il d’antécédents par ' + f + ' ?', svg: graph(C, f), lab: 'nombre :', v: R.length, x: R.length, key: C.ys.join() + 'n' + k,
+      steps: ['La droite horizontale d’ordonnée ' + fr(k) + (R.length ? ' coupe la courbe en ' + R.length + ' point' + (R.length > 1 ? 's' : '') : ' ne coupe pas la courbe : aucun antécédent') + (R.length ? ' (abscisses environ ' + sorted(R).map(function(r){ return fr(M.rd(r, 1)); }).join(' ; ') + ')' : '') + '.']};
+    return {type: 'num', q: 'Voici la courbe de la fonction ' + f + '. Le nombre ' + fr(k) + ' a un seul antécédent. Lequel ?', svg: graph(C, f), lab: 'antécédent :', v: R[0], x: R[0], key: C.ys.join() + 'a' + k,
+      traps: [[cy(C, k) === null ? 1e9 : cy(C, k), 'Tu as lu l’image de ' + fr(k) + ' : pour un antécédent, on part de l’axe des ordonnées.']], steps: ['La droite horizontale d’ordonnée ' + fr(k) + ' coupe la courbe au point d’abscisse ' + fr(R[0]) + ' : ' + f + '(' + fr(R[0]) + ') = ' + fr(k) + '.']}; }},
+ {id: 'n14a', lv: 2, n: 'N14', t: 'Calculer un antécédent', d: 'Résoudre f(x) = b.',
+  c: 'Calcule l’antécédent demandé. Donne-le sous forme d’entier, de décimal ou de fraction irréductible.', a: 'Chercher un antécédent de b par f, c’est résoudre l’équation f(x) = b. Exemple : f(x) = 3x − 2, antécédent de 10 : 3x − 2 = 10, 3x = 12, x = 4.',
+  g: function(){ var f = fl(), a = rnz(-8, 8), b = rnz(-12, 12), c = rnz(-20, 20); if (Math.abs(a) === 1) a = pick([2, -3, 4]); var e = Math.random() < 0.6 ? M.terms([[a, 1], [b, 0]]) : M.terms([[b, 0], [a, 1]]), F = red(c - b, a);
+    return {type: 'frac', q: f + '(x) = ' + e + '. Calcule l’antécédent de ' + fr(c) + ' par ' + f + '.', lab: 'x =', f: F, dec: true, key: e + c,
+      traps: [[a * c + b, 'Tu as calculé l’image de ' + fr(c) + ' : il faut résoudre ' + f + '(x) = ' + fr(c) + '.'], [(c + b) / a, 'Attention au signe en isolant ' + M.mono(a, 1) + '.']].filter(function(t){ return Math.abs(t[0] - F[0] / F[1]) > 1e-9; }),
+      steps: ['On résout ' + e + ' = ' + fr(c), M.mono(a, 1) + ' = ' + fr(c) + (b > 0 ? ' ' + MINUS + ' ' + fr(b) : ' + ' + fr(-b)) + ' = ' + fr(c - b), 'x = ' + fr(c - b) + ' / ' + pf(a) + ' = ' + ftx(F)]}; }},
+ {id: 'n14b', lv: 3, n: 'N14', nq: 3, t: 'Problèmes', d: 'Antécédents dans des situations concrètes.',
+  c: 'Repère la fonction et la valeur connue, écris l’équation, résous-la, puis réponds.', a: 'On connaît le résultat (l’image) et on cherche le nombre de départ : c’est un antécédent, on résout f(x) = valeur connue.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var a, b, x, q, v, st, u = '';
+    function done(lab, e, val){ return {type: 'num', q: q, lab: lab, unit: u, v: v, x: v, key: 'k' + k, steps: st}; }
+    if (k === 0){ a = cl(rnd(16, 25) / 10); b = rnd(3, 6); x = rnd(4, 30); var P = cl(a * x + b); q = 'Le prix d’une course de taxi de x km est P(x) = ' + fr(a) + 'x + ' + b + ' (en €). Une course a coûté ' + fr(P) + ' €. Combien de kilomètres ont été parcourus ?'; v = x; u = 'km';
+      st = [fr(a) + 'x + ' + b + ' = ' + fr(P), fr(a) + 'x = ' + fr(cl(P - b)), 'x = ' + fr(cl(P - b)) + ' / ' + fr(a) + ' = ' + x + ' km']; return done('x ='); }
+    if (k === 1){ a = rnd(8, 15); b = rnd(20, 45); x = rnd(2, 14); q = 'Le coût d’un club pour x mois est C(x) = ' + a + 'x + ' + b + ' (en €). Avec ' + (a * x + b) + ' €, combien de mois peut-on payer ?'; v = x; u = 'mois';
+      st = [a + 'x + ' + b + ' = ' + (a * x + b), a + 'x = ' + (a * x), 'x = ' + x]; return done('x ='); }
+    if (k === 2){ x = rnd(-4, 12) * 5; var F2 = cl(1.8 * x + 32); q = 'On convertit des °C en °F avec F(x) = 1,8x + 32. Quelle température en °C correspond à ' + fr(F2) + ' °F ?'; v = x; u = '°C';
+      st = ['1,8x + 32 = ' + fr(F2), '1,8x = ' + fr(cl(F2 - 32)), 'x = ' + fr(cl(F2 - 32)) + ' / 1,8 = ' + fr(x) + ' °C']; return done('x ='); }
+    if (k === 3){ b = rnd(30, 60) * 10; a = rnd(15, 40); x = rnd(2, Math.floor(b / a) - 1); q = 'Une cuve contient V(t) = ' + b + ' ' + MINUS + ' ' + a + 't litres après t minutes. Au bout de combien de minutes reste-t-il ' + (b - a * x) + ' L ?'; v = x; u = 'min';
+      st = [b + ' ' + MINUS + ' ' + a + 't = ' + (b - a * x), MINUS + a + 't = ' + MINUS + (a * x), 't = ' + x]; return done('t ='); }
+    if (k === 4){ x = rnd(2, 15); q = 'Pour la fonction carré f(x) = x², quel est l’antécédent POSITIF de ' + (x * x) + ' ?'; v = x; st = [x + '² = ' + (x * x) + ' (et aussi (' + MINUS + x + ')² = ' + (x * x) + ')', 'L’antécédent positif est ' + x + '.']; return done('x ='); }
+    if (k === 5){ x = rnd(3, 25); q = 'Le périmètre d’un carré de côté c est P(c) = 4c. Quel est le côté d’un carré de périmètre ' + (4 * x) + ' cm ?'; v = x; u = 'cm'; st = ['4c = ' + (4 * x), 'c = ' + (4 * x) + ' / 4 = ' + x + ' cm']; return done('c ='); }
+    if (k === 6){ a = rnd(40, 110); x = cl(rnd(2, 12) / 2); q = 'Une voiture roule à vitesse constante : la distance parcourue en t heures est d(t) = ' + a + 't (km). Combien de temps faut-il pour parcourir ' + fr(cl(a * x)) + ' km ?'; v = x; u = 'h';
+      st = [a + 't = ' + fr(cl(a * x)), 't = ' + fr(cl(a * x)) + ' / ' + a + ' = ' + fr(x) + ' h']; return done('t ='); }
+    if (k === 7){ x = rnd(2, 12); q = 'Le volume d’un cube d’arête a est V(a) = a³. Quelle est l’arête d’un cube de volume ' + (x * x * x) + ' cm³ ?'; v = x; u = 'cm'; st = ['a³ = ' + (x * x * x), x + ' × ' + x + ' × ' + x + ' = ' + (x * x * x) + ', donc a = ' + x + ' cm']; return done('a ='); }
+    if (k === 8){ a = cl(rnd(10, 30) / 100); b = rnd(5, 15); x = rnd(5, 40) * 10; q = 'Un forfait coûte F(x) = ' + fr(a) + 'x + ' + b + ' € pour x Go. La facture est de ' + fr(cl(a * x + b)) + ' €. Combien de Go ont été utilisés ?'; v = x; u = 'Go';
+      st = [fr(a) + 'x + ' + b + ' = ' + fr(cl(a * x + b)), fr(a) + 'x = ' + fr(cl(a * x)), 'x = ' + x]; return done('x ='); }
+    if (k === 9){ x = rnd(2, 15); q = 'L’aire totale des faces d’un cube d’arête x est A(x) = 6x². Quelle arête donne une aire de ' + (6 * x * x) + ' cm² ?'; v = x; u = 'cm'; st = ['6x² = ' + (6 * x * x), 'x² = ' + (x * x) + ', et x est positif : x = ' + x + ' cm']; return done('x ='); }
+    if (k === 10){ a = rnd(2, 6); b = rnd(1, 9); x = rnz(-9, 9); q = 'Un programme de calcul donne f(x) = ' + a + '(x + ' + b + '). Quel nombre faut-il choisir pour obtenir ' + fr(a * (x + b)) + ' ?'; v = x;
+      st = [a + '(x + ' + b + ') = ' + fr(a * (x + b)), 'x + ' + b + ' = ' + fr(x + b), 'x = ' + fr(x)]; return done('x ='); }
+    a = rnd(2, 5); b = rnd(10, 40); x = rnd(5, 30); q = 'Un téléphone a ' + b + ' % de batterie et se recharge de ' + a + ' % par minute : B(t) = ' + b + ' + ' + a + 't. Au bout de combien de minutes atteint-il ' + (b + a * x) + ' % ?'; if (b + a * x > 100) return this.g(k); v = x; u = 'min';
+    st = [b + ' + ' + a + 't = ' + (b + a * x), a + 't = ' + (a * x), 't = ' + x]; return done('t ='); }}
+];
+var NOTIONS = [
+  {n: 'N12', t: 'Lire les images et antécédents d’une fonction dans un tableau', r: 'l’image se lit sous le nombre (2e ligne), un antécédent au-dessus (1re ligne).'},
+  {n: 'N13', t: 'Lire les images et antécédents d’une fonction dans un graphique', r: 'image : on part de l’axe des abscisses ; antécédents : on part de l’axe des ordonnées, avec une droite horizontale.'},
+  {n: 'N14', t: 'Calculer des antécédents par une fonction', r: 'chercher un antécédent de b par f, c’est résoudre l’équation f(x) = b.'}];
+M.start({key: '3e-s08', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

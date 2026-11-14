@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : fonctions (3e, séquence 3) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 3e, séquence 3 : vocabulaire des fonctions, calculer une image.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">3e · Séquence 3 · Fonctions (1)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, MINUS = M.MINUS;
+function fl(){ return pick(['f', 'g', 'h', 'k', 'p', 'u']); }
+// écriture d'une expression du premier degré ax + b dans le désordre
+function lin(a, b){ return pick([true, false]) ? M.terms([[a, 1], [b, 0]]) : M.terms([[b, 0], [a, 1]]); }
+function xval(){ return pick([rnz(-9, 9), rnz(-9, 9), rnd(0, 12), cl(rnz(-9, 9) / 2), cl(rnd(1, 30) / 10)]); }
+var EX = [
+ {id: 'n05a', lv: 1, n: 'N05', t: 'Le vocabulaire', d: 'Image, antécédent, notation f(x).',
+  c: 'Choisis la bonne réponse.', a: 'f(3) = 7 se lit « f de 3 égale 7 » : 7 est l’image de 3 par f, et 3 est un antécédent de 7 par f. On écrit aussi f : 3 ↦ 7.',
+  g: function(){ var f = fl(), a = rnz(-9, 12), b = rnz(-9, 20); while (b === a) b = rnz(-9, 20); var k = rnd(0, 5), q, ch, good, st;
+    var A = fr(a), B = fr(b);
+    if (k === 0){ q = 'On sait que ' + f + '(' + A + ') = ' + B + '. Quelle phrase est juste ?'; good = B + ' est l’image de ' + A + ' par ' + f;
+      ch = [good, A + ' est l’image de ' + B + ' par ' + f, B + ' est un antécédent de ' + A + ' par ' + f]; st = [f + '(' + A + ') = ' + B + ' : ' + A + ' est le nombre de départ, ' + B + ' son image.']; }
+    else if (k === 1){ q = 'Par la fonction ' + f + ', l’image de ' + A + ' est ' + B + '. Cela s’écrit :'; good = f + '(' + A + ') = ' + B;
+      ch = [good, f + '(' + B + ') = ' + A, f + ' = ' + A + ' × ' + B]; st = ['On écrit le nombre de départ entre parenthèses : ' + good + '.']; }
+    else if (k === 2){ q = 'On sait que ' + f + '(' + A + ') = ' + B + '. Un antécédent de ' + B + ' par ' + f + ' est :'; good = A;
+      ch = [A, B, fr(cl(a * b))]; st = [f + '(' + A + ') = ' + B + ' : ' + A + ' a pour image ' + B + ', donc ' + A + ' est un antécédent de ' + B + '.']; }
+    else if (k === 3){ q = f + ' : ' + A + ' ↦ ' + B + '. Quelle égalité est juste ?'; good = f + '(' + A + ') = ' + B;
+      ch = [good, f + '(' + B + ') = ' + A, f + '(' + A + ' ; ' + B + ') = 0']; st = ['La flèche va du nombre de départ vers son image : ' + good + '.']; }
+    else if (k === 4){ var c = rnd(2, 9); q = 'Pour la fonction ' + f + '(x) = x², combien le nombre ' + (c * c) + ' a-t-il d’antécédents ?'; good = '2 : ' + c + ' et ' + MINUS + c;
+      ch = [good, '1 : ' + c, '1 : ' + (c * c * c * c)]; st = [c + '² = ' + (c * c) + ' et (' + MINUS + c + ')² = ' + (c * c) + ' : deux antécédents. Un nombre n’a qu’une seule image, mais peut avoir plusieurs antécédents.']; }
+    else { q = 'Pour une fonction ' + f + ', un nombre peut-il avoir deux images différentes ?'; good = 'Non, jamais'; ch = [good, 'Oui, toujours', 'Oui, si c’est un nombre négatif'];
+      st = ['Une fonction associe à chaque nombre une seule image. En revanche, un nombre peut avoir plusieurs antécédents.']; }
+    if (ch[0] === ch[1] || ch[0] === ch[2] || ch[1] === ch[2]) return this.g();
+    shuffle(ch); return {type: 'ch', q: q, ch: ch, ans: ch.indexOf(good), steps: st, key: k === 5 ? 'k5' : q}; }},
+ {id: 'n05b', lv: 1, n: 'N05', t: 'Calculer une image', d: 'Expressions du type ax + b.',
+  c: 'Calcule l’image demandée.', a: 'On remplace x par le nombre, entre parenthèses s’il est négatif, puis on calcule en respectant les priorités. Exemple : f(x) = 3x − 5, f(−2) = 3 × (−2) − 5 = −6 − 5 = −11.',
+  g: function(){ var f = fl(), a = rnz(-9, 9), b = rnz(-15, 15), x = pick([rnz(-9, 9), rnz(-9, 9), rnd(0, 12), cl(rnz(-9, 9) / 2)]), xf = Math.random() < 0.6;
+    var e = xf ? M.terms([[a, 1], [b, 0]]) : M.terms([[b, 0], [a, 1]]), v = cl(a * x + b);
+    var ax = (Math.abs(a) === 1 ? '' : fr(Math.abs(a)) + ' × ') + pf(x);
+    var s1 = xf ? (a < 0 ? MINUS : '') + ax + (b < 0 ? ' ' + MINUS + ' ' : ' + ') + fr(Math.abs(b)) : fr(b) + (a < 0 ? ' ' + MINUS + ' ' : ' + ') + ax;
+    var s2 = xf ? fr(cl(a * x)) + (b < 0 ? ' ' + MINUS + ' ' : ' + ') + fr(Math.abs(b)) : fr(b) + (a * x < 0 ? ' ' + MINUS + ' ' : ' + ') + fr(Math.abs(cl(a * x)));
+    return {type: 'num', q: f + '(x) = ' + e + '. Calcule ' + f + '(' + fr(x) + ').', lab: f + '(' + fr(x) + ') =', v: v, x: v,
+      traps: [[cl(-a * x + b), 'Attention au signe : ' + pf(a) + ' × ' + pf(x) + ' = ' + fr(cl(a * x)) + '.'], [cl(a + x + b), 'ax signifie a × x : il faut multiplier, pas additionner.']],
+      steps: [f + '(' + fr(x) + ') = ' + s1, '= ' + s2, '= ' + fr(v)]}; }},
+ {id: 'n05c', lv: 2, n: 'N05', t: 'Images avec des carrés', d: 'x², parenthèses, nombres négatifs.',
+  c: 'Calcule l’image demandée.', a: 'Avec un nombre négatif, mets-le entre parenthèses : si f(x) = x² + 1, f(−3) = (−3)² + 1 = 9 + 1 = 10. Attention : (−3)² = 9, mais −3² = −9.',
+  g: function(){ var f = fl(), x = pick([rnz(-6, 6), rnz(-6, 6), cl(rnz(-5, 5) / 2), 10]), a = rnz(-5, 5), b = rnz(-9, 9), c = rnz(-9, 9), k = rnd(0, 4), e, v, st, xs = pf(x), tr = [];
+    if (k === 0){ e = M.terms([[a, 2], [b, 0]]); v = cl(a * x * x + b); st = [(a === 1 ? '' : a === -1 ? MINUS : fr(a) + ' × ') + xs + '² ' + (b < 0 ? MINUS : '+') + ' ' + fr(Math.abs(b)), (a === 1 || a === -1 ? (a < 0 ? MINUS : '') : fr(a) + ' × ') + fr(cl(x * x)) + ' ' + (b < 0 ? MINUS : '+') + ' ' + fr(Math.abs(b)), fr(v)]; tr = [[cl(-a * x * x + b), 'Attention : (' + fr(x) + ')² est positif.'], [cl(a * 2 * x + b), 'x² = x × x, pas 2 × x.']]; }
+    else if (k === 1){ e = M.terms([[1, 2], [b, 1], [c, 0]]); v = cl(x * x + b * x + c); st = [xs + '² ' + (b < 0 ? MINUS : '+') + ' ' + fr(Math.abs(b)) + ' × ' + xs + ' ' + (c < 0 ? MINUS : '+') + ' ' + fr(Math.abs(c)), fr(cl(x * x)) + ' ' + (b * x < 0 ? MINUS : '+') + ' ' + fr(Math.abs(cl(b * x))) + ' ' + (c < 0 ? MINUS : '+') + ' ' + fr(Math.abs(c)), fr(v)]; tr = [[cl(-x * x + b * x + c), 'Attention : (' + fr(x) + ')² est positif.']]; }
+    else if (k === 2){ e = fr(a === 1 ? 1 : a).replace(/^1$/, '') + '(x ' + (b < 0 ? MINUS : '+') + ' ' + Math.abs(b) + ')'; if (a === -1) e = MINUS + e.replace(/^−1/, ''); v = cl(a * (x + b));
+      st = [(Math.abs(a) === 1 ? (a < 0 ? MINUS : '') : fr(a) + ' × ') + '(' + fr(x) + ' ' + (b < 0 ? MINUS : '+') + ' ' + Math.abs(b) + ')', (Math.abs(a) === 1 ? (a < 0 ? MINUS : '') : fr(a) + ' × ') + pf(cl(x + b)), fr(v)]; tr = [[cl(a * x + b), 'Le facteur ' + fr(a) + ' multiplie toute la parenthèse.']]; }
+    else if (k === 3){ e = '(x ' + (b < 0 ? MINUS : '+') + ' ' + Math.abs(b) + ')(x ' + (c < 0 ? MINUS : '+') + ' ' + Math.abs(c) + ')'; v = cl((x + b) * (x + c));
+      st = ['(' + fr(x) + ' ' + (b < 0 ? MINUS : '+') + ' ' + Math.abs(b) + ') × (' + fr(x) + ' ' + (c < 0 ? MINUS : '+') + ' ' + Math.abs(c) + ')', pf(cl(x + b)) + ' × ' + pf(cl(x + c)), fr(v)]; tr = [[cl(x + b + x + c), 'Les deux parenthèses se multiplient.']]; }
+    else { e = '(x ' + (b < 0 ? MINUS : '+') + ' ' + Math.abs(b) + ')²'; v = cl((x + b) * (x + b)); st = ['(' + fr(x) + ' ' + (b < 0 ? MINUS : '+') + ' ' + Math.abs(b) + ')²', pf(cl(x + b)) + '²', fr(v)]; tr = [[cl(x * x + b * b), '(a + b)² n’est pas a² + b² : calcule d’abord la parenthèse.'], [cl(2 * (x + b)), 'Le carré, c’est multiplier par lui-même, pas par 2.']]; }
+    st = st.map(function(l, i){ return (i === 0 ? f + '(' + fr(x) + ') = ' : '= ') + l; });
+    return {type: 'num', q: f + '(x) = ' + e + '. Calcule ' + f + '(' + fr(x) + ').', lab: f + '(' + fr(x) + ') =', v: v, x: v, traps: tr, steps: st}; }},
+ {id: 'n05d', lv: 2, n: 'N05', nq: 4, t: 'Programme de calcul', d: 'Appliquer un programme à un nombre.',
+  c: 'Applique le programme de calcul au nombre donné.', a: 'Suis les étapes dans l’ordre, en écrivant chaque résultat intermédiaire. Le programme définit une fonction : le résultat est l’image du nombre choisi.',
+  g: function(){ var x = pick([rnz(-6, 9), rnz(-6, 9), cl(rnd(1, 9) / 2)]), ops = [], v = x, st = ['On choisit ' + fr(x) + '.'];
+    var pool = shuffle([['Multiplier par ', function(n){ return n * this.k; }, rnd(2, 6)], ['Ajouter ', function(n){ return n + this.k; }, rnd(1, 9)], ['Soustraire ', function(n){ return n - this.k; }, rnd(1, 9)], ['Prendre le carré', function(n){ return n * n; }, 0], ['Multiplier par ', function(n){ return n * this.k; }, -rnd(2, 5)]]);
+    var n = rnd(2, 4), sqd = false;
+    for (var i = 0; i < pool.length && ops.length < n; i++){ if (pool[i][2] === 0 && (sqd || ops.length === 0 && Math.random() < .5)) continue; if (pool[i][2] === 0) sqd = true; ops.push(pool[i]); }
+    if (ops.filter(function(o){ return o[0] === 'Multiplier par '; }).length > 1) return this.g();
+    var lines = ops.map(function(o){ var lab = o[0] + (o[2] ? fr(o[2]) : ''); v = cl(o[1].call({k: o[2]}, v)); st.push(lab + ' : ' + fr(v)); return lab; });
+    if (Math.abs(v) > 300 || ops.length < 2) return this.g();
+    return {type: 'num', q: 'Programme : « Choisir un nombre ; ' + lines.map(function(l){ return l.charAt(0).toLowerCase() + l.slice(1); }).join(' ; ') + '. » Quel résultat obtient-on en choisissant ' + fr(x) + ' ?', lab: 'Résultat :', v: v, x: v, steps: st}; }},
+ {id: 'n05e', lv: 2, n: 'N05', t: 'Vrai ou faux ?', d: 'Les erreurs classiques.',
+  c: 'Chaque affirmation est-elle vraie ou fausse ?', a: 'Vérifie en calculant toi-même l’image. Pièges : oublier les parenthèses autour d’un nombre négatif, confondre image et antécédent, x² et 2x.',
+  g: function(){ var f = fl(), a = rnd(2, 6), b = rnd(1, 9), x = rnd(2, 6), L = [
+      [f + '(x) = x² + ' + b + ', donc ' + f + '(' + MINUS + x + ') = ' + MINUS + (x * x - b) + '.', false, '(' + MINUS + x + ')² = ' + (x * x) + ', donc ' + f + '(' + MINUS + x + ') = ' + (x * x) + ' + ' + b + ' = ' + (x * x + b) + '.'],
+      [f + '(x) = x² + ' + b + ', donc ' + f + '(' + MINUS + x + ') = ' + (x * x + b) + '.', true, '(' + MINUS + x + ')² = ' + (x * x) + ' et ' + (x * x) + ' + ' + b + ' = ' + (x * x + b) + '.'],
+      [f + '(x) = ' + a + 'x + ' + b + ', donc ' + f + '(' + x + ') = ' + (a + x + b) + '.', false, a + 'x signifie ' + a + ' × x : ' + f + '(' + x + ') = ' + a + ' × ' + x + ' + ' + b + ' = ' + (a * x + b) + '.'],
+      [f + '(x) = ' + a + 'x + ' + b + ', donc ' + f + '(' + x + ') = ' + (a * x + b) + '.', true, a + ' × ' + x + ' + ' + b + ' = ' + (a * x + b) + '.'],
+      [f + '(x) = x², donc ' + f + '(' + x + ') = ' + (2 * x) + '.', false, x + '² = ' + x + ' × ' + x + ' = ' + (x * x) + ' (et non 2 × ' + x + ').'],
+      ['Si ' + f + '(' + x + ') = ' + (a * x) + ', alors ' + x + ' est l’image de ' + (a * x) + ' par ' + f + '.', false, 'C’est l’inverse : ' + (a * x) + ' est l’image de ' + x + ', et ' + x + ' est un antécédent de ' + (a * x) + '.'],
+      ['Si ' + f + '(' + x + ') = ' + (a * x) + ', alors ' + x + ' est un antécédent de ' + (a * x) + ' par ' + f + '.', true, x + ' a pour image ' + (a * x) + ', donc ' + x + ' est un antécédent de ' + (a * x) + '.'],
+      [f + '(x) = ' + a + '(x ' + MINUS + ' ' + b + '), donc ' + f + '(0) = ' + MINUS + (a * b) + '.', true, a + ' × (0 ' + MINUS + ' ' + b + ') = ' + a + ' × (' + MINUS + b + ') = ' + MINUS + (a * b) + '.'],
+      [f + '(x) = ' + a + '(x ' + MINUS + ' ' + b + '), donc ' + f + '(0) = ' + MINUS + b + '.', false, 'Le ' + a + ' multiplie toute la parenthèse : ' + a + ' × (' + MINUS + b + ') = ' + MINUS + (a * b) + '.'],
+      ['Le nombre ' + (x * x) + ' a deux antécédents par la fonction x ↦ x².', true, x + ' et ' + MINUS + x + ', car leurs carrés valent tous les deux ' + (x * x) + '.'],
+      ['Par une fonction, un nombre peut avoir deux images.', false, 'Chaque nombre a une seule image ; c’est un antécédent qui peut ne pas être unique.'],
+      [f + '(x) = ' + MINUS + 'x², donc ' + f + '(' + MINUS + x + ') = ' + (x * x) + '.', false, MINUS + '(' + MINUS + x + ')² = ' + MINUS + (x * x) + ' : on calcule le carré d’abord, puis on prend l’opposé.']];
+    var i = rnd(0, L.length - 1), p = L[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n05f', lv: 3, n: 'N05', nq: 3, t: 'Problèmes', d: 'Des fonctions dans la vie courante.',
+  c: 'Lis l’énoncé, repère la fonction et le nombre de départ, puis calcule.', a: 'Écris la fonction avec la lettre de l’énoncé, remplace la variable par la valeur demandée, et vérifie que le résultat est vraisemblable (unité, ordre de grandeur).',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var q, v, st, u = '', lab, a, b, x;
+    if (k === 0){ a = cl(rnd(16, 25) / 10); b = rnd(3, 6); x = rnd(3, 25); v = cl(a * x + b); u = '€';
+      q = 'Un taxi facture ' + b + ' € de prise en charge puis ' + fr(a) + ' € par kilomètre. Le prix d’une course de x km est P(x) = ' + fr(a) + 'x + ' + b + '. Calcule P(' + x + ').'; lab = 'P(' + x + ') =';
+      st = ['P(' + x + ') = ' + fr(a) + ' × ' + x + ' + ' + b, '= ' + fr(cl(a * x)) + ' + ' + b + ' = ' + fr(v) + ' €']; }
+    else if (k === 1){ x = rnd(2, 15); v = x * x * 6; u = 'cm²';
+      q = 'L’aire totale (en cm²) des 6 faces d’un cube d’arête x cm est A(x) = 6x². Calcule l’aire pour une arête de ' + x + ' cm.'; lab = 'A(' + x + ') =';
+      st = ['A(' + x + ') = 6 × ' + x + '²', '= 6 × ' + (x * x) + ' = ' + fr(v) + ' cm²']; }
+    else if (k === 2){ a = rnd(8, 15); b = rnd(20, 45); x = rnd(2, 12); v = a * x + b; u = '€';
+      q = 'Un club de sport demande ' + b + ' € d’inscription puis ' + a + ' € par mois. Le coût pour x mois est C(x) = ' + a + 'x + ' + b + '. Combien coûtent ' + x + ' mois ?'; lab = 'C(' + x + ') =';
+      st = ['C(' + x + ') = ' + a + ' × ' + x + ' + ' + b, '= ' + (a * x) + ' + ' + b + ' = ' + v + ' €']; }
+    else if (k === 3){ x = rnd(0, 12) * 10; v = cl(1.8 * x + 32); u = '°F';
+      q = 'Pour convertir des degrés Celsius en degrés Fahrenheit, on utilise F(x) = 1,8x + 32. Combien font ' + x + ' °C en °F ?'; lab = 'F(' + x + ') =';
+      st = ['F(' + x + ') = 1,8 × ' + x + ' + 32', '= ' + fr(cl(1.8 * x)) + ' + 32 = ' + fr(v) + ' °F']; }
+    else if (k === 4){ x = rnd(1, 6); v = 5 * x * x; u = 'm';
+      q = 'Un objet lâché sans vitesse tombe de d(t) = 5t² mètres en t secondes (environ). Quelle distance parcourt-il en ' + x + ' s ?'; lab = 'd(' + x + ') =';
+      st = ['d(' + x + ') = 5 × ' + x + '²', '= 5 × ' + (x * x) + ' = ' + v + ' m']; }
+    else if (k === 5){ a = rnd(40, 90); x = cl(rnd(2, 10) / 2); v = cl(a * x); u = 'km';
+      q = 'Une voiture roule à ' + a + ' km/h. La distance parcourue en t heures est d(t) = ' + a + 't. Calcule d(' + fr(x) + ').'; lab = 'd(' + fr(x) + ') =';
+      st = ['d(' + fr(x) + ') = ' + a + ' × ' + fr(x), '= ' + fr(v) + ' km']; }
+    else if (k === 6){ b = rnd(30, 60) * 10; a = rnd(15, 40); x = rnd(2, 12); v = b - a * x; u = 'L';
+      q = 'Une cuve contient ' + b + ' L d’eau et se vide de ' + a + ' L par minute. Le volume restant après t minutes est V(t) = ' + b + ' ' + MINUS + ' ' + a + 't. Calcule V(' + x + ').'; lab = 'V(' + x + ') =';
+      st = ['V(' + x + ') = ' + b + ' ' + MINUS + ' ' + a + ' × ' + x, '= ' + b + ' ' + MINUS + ' ' + (a * x) + ' = ' + v + ' L']; }
+    else if (k === 7){ x = rnd(2, 12); v = cl(Math.PI * x * x); u = 'cm²'; lab = 'A(' + x + ') ≈';
+      q = 'L’aire d’un disque de rayon r cm est A(r) = π × r². Calcule A(' + x + '), arrondi au dixième.';
+      st = ['A(' + x + ') = π × ' + x + '² = ' + (x * x) + 'π', '≈ ' + fr(M.rd(v, 1)) + ' cm²']; return {type: 'num', q: q, lab: lab, unit: u, v: M.rd(v, 1), x: v, d: 1, steps: st, key: 'k' + k}; }
+    else if (k === 8){ x = rnd(3, 20); v = 4 * x; u = 'cm';
+      q = 'Le périmètre d’un carré de côté c cm est P(c) = 4c. Quel est le périmètre d’un carré de côté ' + x + ' cm ?'; lab = 'P(' + x + ') =';
+      st = ['P(' + x + ') = 4 × ' + x + ' = ' + v + ' cm']; }
+    else if (k === 9){ a = rnd(12, 25); x = rnd(2, 9); v = a * x - 3 * x * x; u = 'm';
+      q = 'La hauteur (en m) d’une balle lancée vers le haut est h(t) = ' + a + 't ' + MINUS + ' 3t² après t secondes (modèle simplifié). Calcule h(' + x + ').'; lab = 'h(' + x + ') =';
+      if (v <= 0) return this.g(k === 9 ? 10 : k);
+      st = ['h(' + x + ') = ' + a + ' × ' + x + ' ' + MINUS + ' 3 × ' + x + '²', '= ' + (a * x) + ' ' + MINUS + ' 3 × ' + (x * x) + ' = ' + (a * x) + ' ' + MINUS + ' ' + (3 * x * x) + ' = ' + v + ' m']; }
+    else if (k === 10){ a = cl(rnd(10, 30) / 100); b = rnd(5, 15); x = rnd(50, 400); v = cl(a * x + b); u = '€';
+      q = 'Un forfait de téléphone coûte ' + b + ' € par mois plus ' + fr(a) + ' € par Go de données. Le prix pour x Go est F(x) = ' + fr(a) + 'x + ' + b + '. Calcule F(' + x + ').'; lab = 'F(' + x + ') =';
+      st = ['F(' + x + ') = ' + fr(a) + ' × ' + x + ' + ' + b, '= ' + fr(cl(a * x)) + ' + ' + b + ' = ' + fr(v) + ' €']; }
+    else { x = rnd(2, 10); v = x * x * x; u = 'cm³';
+      q = 'Le volume d’un cube d’arête a cm est V(a) = a³. Quel est le volume d’un cube d’arête ' + x + ' cm ?'; lab = 'V(' + x + ') =';
+      st = ['V(' + x + ') = ' + x + '³ = ' + x + ' × ' + x + ' × ' + x + ' = ' + fr(v) + ' cm³']; }
+    return {type: 'num', q: q, lab: lab, unit: u, v: v, x: v, steps: st, key: 'k' + k}; }}
+];
+var NOTIONS = [{n: 'N05', t: 'Comprendre le vocabulaire des fonctions et calculer une image', r: 'f(3) = 7 : 7 est l’image de 3, et 3 un antécédent de 7. Pour calculer une image, on remplace x par le nombre (entre parenthèses s’il est négatif).'}];
+M.start({key: '3e-s03', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>
