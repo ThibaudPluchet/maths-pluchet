@@ -177,6 +177,31 @@ function devN(){
   if (inner.length > 3) steps.push(poly(P));
   return {q: q, P: P, key: q, steps: steps};
 }
+// somme de n termes (n entre a et b) de degrés pris dans D, dans le désordre, avec au moins un regroupement à faire
+function sumGen(a, b, D, need){
+  var n = rnd(a, b), T = [], i;
+  for (i = 0; i < n; i++) T.push([rnz(-9, 9), i < D.length ? D[i] : pick(D)]);
+  for (i = T.length - 1; i > 0; i--){ var j = rnd(0, i), t = T[i]; T[i] = T[j]; T[j] = t; }
+  if (T[0][0] < 0 && Math.random() < 0.6) T[0][0] = -T[0][0];
+  var P = sumT(T), cnt = {}; T.forEach(function(t){ cnt[t[1]] = (cnt[t[1]] || 0) + 1; });
+  if (!P[need] || !D.some(function(d){ return cnt[d] > 1; })) return sumGen(a, b, D, need);
+  var G = []; [2, 1, 0].forEach(function(d){ T.forEach(function(t){ if (t[1] === d) G.push(t); }); });
+  var st = [terms(G), poly(P)]; if (st[0] === st[1]) st = [st[1]];
+  return {q: terms(T), P: P, key: terms(T), steps: st};
+}
+// produit de 2 ou 3 facteurs (nombres ou termes en x), degré total au plus 2
+function prodGen(){
+  var n = pick([2, 2, 3]), F = [], deg = 0, i;
+  for (i = 0; i < n; i++){ var d = deg < 2 && Math.random() < 0.55 ? 1 : 0, c = rnz(-9, 9);
+    if (n === 3 && Math.abs(c) > 6) c = c > 0 ? rnd(2, 6) : -rnd(2, 6);
+    if (d === 0 && Math.abs(c) === 1) c = c > 0 ? rnd(2, 9) : -rnd(2, 9);
+    F.push([c, d]); deg += d; }
+  if (!deg) { F[rnd(0, n - 1)][1] = 1; deg = 1; }
+  var fx = function(t, k){ var m = mono(t[0], t[1]); return k > 0 && t[0] < 0 ? '(' + m + ')' : m; };
+  var C = F.reduce(function(p, t){ return p * t[0]; }, 1);
+  var s1 = F.map(function(t){ return pn(t[0]); }).join(' × ') + ' × ' + (deg === 2 ? 'x × x' : 'x');
+  return {q: F.map(fx).join(' × '), P: sumT([[C, deg]]), key: F.map(fx).join(' × '), steps: [s1, mono(C, deg)]};
+}
 /* ---------- exercices ----------
    chaque générateur renvoie {q, P (réponse attendue) | v (nombre) | vf (true/false), steps: [lignes], aide?} */
 var EX = [
@@ -203,21 +228,13 @@ var EX = [
  // ===== N02 : réduire =====
  {id: 'n02a', lv: 1, n: 'N02', t: 'Réduire une somme', d: 'Des x et des nombres.',
   c: 'Réduis chaque expression.', a: 'On regroupe les termes en x entre eux et les nombres entre eux : 5x + 3 − 2x + 4 = 3x + 7.',
-  g: function(){ var T = [[rnz(-9, 9), 1], [rnz(-9, 9), 0], [rnz(-9, 9), 1], [rnz(-9, 9), 0]];
-    if (T[0][0] < 0) T[0][0] = -T[0][0];
-    var P = sumT(T); if (!P[1]) return this.g();
-    return {q: terms(T), P: P, steps: [terms([T[0], T[2], T[1], T[3]]), poly(P)]}; }},
+  g: function(){ return sumGen(3, 6, [1, 0], 1); }},
  {id: 'n02b', lv: 2, n: 'N02', t: 'Réduire avec des x²', d: 'Ne pas mélanger x² et x !',
   c: 'Réduis puis ordonne chaque expression (x², puis x, puis le nombre).', a: 'x² et x ne s\'additionnent pas : 3x² + 2x reste 3x² + 2x. On regroupe les x² entre eux, les x entre eux, les nombres entre eux.',
-  g: function(){ var T = [[rnz(1, 7), 2], [rnz(-9, 9), 1], [rnz(-6, 6), 2], [rnz(-9, 9), 0], [rnz(-9, 9), 1]];
-    var P = sumT(T); if (!P[2] || !P[1]) return this.g();
-    return {q: terms(T), P: P, steps: [terms([T[0], T[2], T[1], T[4], T[3]]), poly(P)]}; }},
- {id: 'n02c', lv: 2, n: 'N02', t: 'Réduire un produit', d: 'Nombres × nombres, x × x.',
+  g: function(){ return sumGen(4, 7, [2, 1, 0], 2); }},
+ {id: 'n02c', lv: 2, n: 'N02', t: 'Réduire un produit', d: '2 ou 3 facteurs : nombres × nombres, x × x.',
   c: 'Écris chaque produit le plus simplement possible.', a: 'On multiplie les nombres entre eux et les x entre eux : 3x × 4x = 12x² et 5 × 2x = 10x.',
-  g: function(){ var a = rnz(-9, 9), b = rnz(-9, 9), f = pick([[1, 1], [0, 1], [1, 0], [1, 1]]);
-    var A = mono(a, f[0]), B = mono(b, f[1]), d = f[0] + f[1];
-    return {q: A + ' × ' + (b < 0 ? '(' + B + ')' : B), P: sumT([[a * b, d]]),
-      steps: [pn(a) + ' × ' + pn(b) + (d ? ' × ' + (d === 2 ? 'x × x' : 'x') : ''), mono(a * b, d)]}; }},
+  g: prodGen},
  {id: 'n02d', lv: 2, n: 'N02', t: 'Vrai ou faux ?', d: 'Les pièges classiques.',
   c: 'Pour chaque égalité, dis si elle est vraie pour toutes les valeurs de x.', a: 'x + x = 2x mais x × x = x². 3x + 2 ne se réduit pas : ce ne sont pas des termes de même nature.',
   g: function(){ var a = rnd(2, 9), b = rnd(2, 9), L = [
