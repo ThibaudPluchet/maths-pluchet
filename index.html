@@ -331,7 +331,7 @@ function start(D){
     var a = el('a','doc'); a.target = '_blank'; a.rel = 'noopener';
     // PDF : ouverts dans la visionneuse du site (certains navigateurs du collège n'affichent pas les PDF)
     if (it.enc) a.href = 'voir.html?e=' + encodeURIComponent(it.enc) + '&t=' + encodeURIComponent(it.label) + '#k=' + KEY;
-    else a.href = /\.pdf$/i.test(it.href) ? 'voir.html?f=' + encodeURIComponent(it.href) + '&t=' + encodeURIComponent(it.label) : it.href;
+    else a.href = /\.pdf$/i.test(it.href) ? 'voir.html?v=3&f=' + encodeURIComponent(it.href) + '&t=' + encodeURIComponent(it.label) : it.href;
     a.appendChild(el('span','ic', ICON[it.type] || '•'));
     a.appendChild(el('span','t', it.label));
     if (isNew(it)) a.appendChild(el('span','badge','Nouveau'));
