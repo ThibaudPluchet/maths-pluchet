@@ -1,5 +1,7 @@
 """Construit les énoncés recadrés et les corrigés des parties d'exercices du brevet.
-Usage : python3 build.py <spec.py> [id de partie…]"""
+Usage : python3 build.py <spec.py> [id de partie…]
+Le spec peut définir SOURCE = ('dnb_<centre>_<mois>_<année>.pdf', 'Centre, date année') : il remplace alors SUBJ
+(obligatoire pour les années autres que 2025, dont les codes de centre se répètent)."""
 import pymupdf, sys, os, re, subprocess, json, importlib.util
 D = os.path.dirname(os.path.abspath(__file__)) + '/..'
 SRC, OUT, BLD = D + '/src', D + '/out', D + '/build'
@@ -66,6 +68,8 @@ def corrige(p, path):
     os.replace(base + '.pdf', path)
 if __name__ == '__main__':
     spec = importlib.util.spec_from_file_location('spec', sys.argv[1]); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    if hasattr(m, 'SOURCE'):
+        SUBJ.update({p['s']: m.SOURCE for p in m.PARTS})
     only = set(sys.argv[2:])
     for p in m.PARTS:
         if only and p['id'] not in only: continue

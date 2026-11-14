@@ -682,7 +682,8 @@ function start(D){
     if (sujets.length){ byKey[SK] = {key:SK, nums:[], n:sujets.length, sujets:true}; groups.unshift(byKey[SK]); }
     var curKey = last ? domainOf(titles[last] || ('Séquence ' + last)) : groups[groups.length > 1 && sujets.length ? 1 : 0].key;
     if (!byKey[dnbSel]) dnbSel = curKey;
-    function nums(g){ if (g.sujets) return 'Brevet ' + sujets[0].an; var n = g.nums.filter(Boolean); return n.length ? (n.length > 1 ? 'Séquences ' : 'Séquence ') + n.join(' et ') : 'Scratch'; }
+    var ans = []; sujets.forEach(function(p){ if (ans.indexOf(p.an) < 0) ans.push(p.an); }); ans.sort(function(a, b){ return b - a; });
+    function nums(g){ if (g.sujets) return 'Brevet ' + ans.join(', '); var n = g.nums.filter(Boolean); return n.length ? (n.length > 1 ? 'Séquences ' : 'Séquence ') + n.join(' et ') : 'Scratch'; }
     function count(n, g){ return n + (g && g.sujets ? ' sujet' : ' exercice') + (n > 1 ? 's' : ''); }
     function row(p, title, src, first){
       var row = el('div','dnbrow' + (first ? ' first' : '')), info = el('div','dnbinfo');
@@ -710,7 +711,7 @@ function start(D){
         b.appendChild(icon('brevet','tile'));
         var t2 = el('span','txt');
         t2.appendChild(el('span','sk','Entraînement complet'));
-        t2.appendChild(el('span','st','Sujets complets du brevet ' + sujets[0].an));
+        t2.appendChild(el('span','st','Sujets complets du brevet' + (ans.length > 1 ? '' : ' ' + ans[0])));
         t2.appendChild(el('span','sd', sujets.length + ' sujets entiers, comme le jour de l’épreuve, avec leurs corrigés complets'));
         b.appendChild(t2); b.appendChild(el('span','go','Voir les sujets →'));
         b.onclick = function(){ dnbSel = g.key; render(); var t = document.getElementById('dnb-list'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
@@ -733,9 +734,12 @@ function start(D){
     sec.appendChild(hd);
     if (g.sujets){
       sec.appendChild(el('p','dnbmore','Le sujet entier, comme le jour de l’épreuve (2 h, 100 points). Il peut contenir des notions pas encore vues en classe : passe ces questions.'));
-      var sb = el('section','dnbseq');
-      sujets.forEach(function(p, i){ sb.appendChild(row(p, 'Brevet ' + p.src, 'Sujet officiel complet · corrigé complet rédigé', !i)); });
-      sec.appendChild(sb);
+      ans.forEach(function(an){
+        var sb = el('section','dnbseq'), lst = sujets.filter(function(p){ return p.an === an; });
+        if (ans.length > 1){ var h = el('h3'); h.appendChild(el('span','dnbno','Session')); h.appendChild(document.createTextNode(String(an))); h.appendChild(el('span','dnbn', count(lst.length, {sujets:1}))); sb.appendChild(h); }
+        lst.forEach(function(p, i){ sb.appendChild(row(p, 'Brevet ' + p.src, 'Sujet officiel complet · corrigé complet rédigé', !i && ans.length < 2)); });
+        sec.appendChild(sb);
+      });
     }
     g.nums.forEach(function(s){
       var box = el('section','dnbseq');
