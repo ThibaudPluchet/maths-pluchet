@@ -11,6 +11,7 @@ for f in sorted(glob.glob(specdir + '/spec_*.py')):
     code = os.path.basename(f)[5:-3]; pdf, src = SUBJ[code]
     body, cur = [], None
     for p in m.PARTS:
+        if p.get('extra'): continue   # parties extraites d'une autre (déjà dans le corrigé complet)
         if p['ex'] != cur:
             cur = p['ex']; name = p['titre'].split(',')[0]
             body.append('\\partie{' + name + '}')

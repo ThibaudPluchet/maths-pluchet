@@ -146,6 +146,16 @@ $f(x) = 0{,}5x + 2$ est une fonction affine, mais pas linéaire.
 $f(10) = 0{,}5 \times 10 + 2 = 7$ : l'image de 10 est \textbf{7} (on le lit aussi sur le graphique).
 \end{reponse}
 '''),
+dict(id='2025-mets-4img', s='mets', ex=4, extra=True, titre='Exercice 4 -- La piscine, image de 10', theme='Fonction : calculer une image',
+     consigne="Traite seulement la question 3.b.", regions=[(3, 134, 284), (3, 328, 570), (3, 587, 604)], s3=3, n3=[5], s4=None, n4=None,
+     corr=r'''
+\q{3.b}{Image de 10 par la fonction $f$.}
+\begin{reponse}
+Je remplace $x$ par 10 dans $f(x) = 0{,}5x + 2$ :\\
+$f(10) = 0{,}5 \times 10 + 2 = 5 + 2 = 7$. L'image de 10 par $f$ est \textbf{7}.\\
+\small (On le lit aussi sur la courbe : le point d'abscisse 10 a pour ordonnée 7.)
+\end{reponse}
+'''),
 dict(id='2025-mets-4c', s='mets', ex=4, titre='Exercice 4 -- La piscine, question 4', theme='Équation',
      consigne='Traite la question 4 (le temps de filtration est 0,5x + 2 pour une eau à x °C).', regions=[(3, 134, 284), (3, 604, 618)], s3=7, n3=[], s4=16, n4=[38],
      corr=r'''

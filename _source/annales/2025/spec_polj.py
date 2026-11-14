@@ -165,6 +165,15 @@ Je résous $2x - 8 = 100$ : \quad $2x = 108$ \quad donc \quad $x = 54$.\\
 Il faut choisir \textbf{54}. (Vérification : $58 \times 52 - 54^2 = 3\,016 - 2\,916 = 100$.)
 \end{reponse}
 '''),
+dict(id='2025-polj-4img', s='polj', ex=4, extra=True, titre='Exercice 4 -- La fonction f, image de 4', theme='Fonction : calculer une image',
+     consigne="Traite seulement la question 3.b.", regions=[(4, 509, 529), (4, 772, 792)], s3=3, n3=[5], s4=None, n4=None,
+     corr=r'''
+\q{3.b}{Image de 4 par la fonction $f$.}
+\begin{reponse}
+Je remplace $x$ par 4 dans $f(x) = 2x - 8$ :\\
+$f(4) = 2 \times 4 - 8 = 8 - 8 = 0$. L'image de 4 par la fonction $f$ est \textbf{0}.
+\end{reponse}
+'''),
 dict(id='2025-polj-5a', s='polj', ex=5, titre='Exercice 5 -- Le dé à 12 faces, partie A', theme='Probabilités',
      consigne='Traite la partie A.', regions=[(5, 185, 362)], s3=22, n3=[], s4=20, n4=[13, 47],
      corr=r'''

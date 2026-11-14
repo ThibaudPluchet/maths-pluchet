@@ -39,6 +39,16 @@ Je lis l'abscisse du point de $\mathcal{C}_g$ d'ordonnée 2\,800 : environ \text
 Les deux carreleurs coûtent le même prix pour \textbf{48,5 m²} ($80 \times 48{,}5 = 3\,880$ €).
 \end{reponse}
 '''),
+dict(id='2025-pols-1c', s='pols', ex=1, extra=True, titre='Exercice 1 -- Le carrelage, image de 70', theme='Fonction : calculer une image',
+     consigne="Traite seulement la question 3.a.", regions=[(1, 195, 279), (1, 349, 465)], s3=3, n3=[5], s4=None, n4=None,
+     corr=r'''
+\q{3.a}{Image de 70 par la fonction $f$.}
+\begin{reponse}
+Je remplace $x$ par 70 dans $f(x) = 80x$ :\\
+$f(70) = 80 \times 70 = 5\,600$. L'image de 70 par $f$ est \textbf{5\,600}.\\
+\small (Une surface de 70 m² coûte 5\,600 € avec le carreleur A.)
+\end{reponse}
+'''),
 dict(id='2025-pols-2q1', s='pols', ex=2, titre='Exercice 2 -- QCM, question 1', theme='Formule, expression littérale',
      regions=[QCM, (1, 704, 790)], s3=1, n3=[], s4=8, n4=[18],
      corr=r'''

@@ -115,6 +115,16 @@ Je cherche $x$ tel que $f(x) = g(x)$ : $3x + 12 = 4x - 3 \iff 12 + 3 = 4x - 3x \
 Hugo a choisi \textbf{15} (les deux programmes donnent 57).
 \end{reponse}
 '''),
+dict(id='2025-ncal-3c', s='ncal', ex=3, extra=True, titre='Exercice 3 -- Programmes de calcul, question 2.a', theme='Fonction associée à un programme de calcul',
+     consigne="Traite seulement la question 2.a.", regions=[(2, 728, 790), (3, 128, 240), (3, 287, 337)], s3=3, n3=[5], s4=None, n4=None,
+     corr=r'''
+\q{2.a}{Justifier que $f(x) = 3x + 12$.}
+\begin{reponse}
+Je choisis le nombre $x$ et j'applique le programme A :
+\[ x \longrightarrow x + 4 \longrightarrow (x + 4) \times 3. \]
+Je développe : $f(x) = 3 \times x + 3 \times 4 = 3x + 12$.
+\end{reponse}
+'''),
 dict(id='2025-ncal-4', s='ncal', ex=4, titre='Exercice 4 -- Jeu de hasard', theme='Probabilités',
      regions=[(3, 480, 748)], s3=22, n3=[], s4=20, n4=[47],
      corr=r'''
