@@ -4,7 +4,7 @@ from build import SUBJ, SRC
 for f in sorted(glob.glob(os.path.dirname(__file__) + '/../spec/spec_*.py')):
     spec = importlib.util.spec_from_file_location('s', f); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
     for p in m.PARTS:
-        doc = pymupdf.open(SRC + '/' + SUBJ[p['s']][0])
+        doc = pymupdf.open(SRC + '/' + (getattr(m, 'SOURCE', None) or SUBJ[p['s']])[0])
         for i, (pn, y0, y1) in enumerate(p['regions']):
             page = doc[pn - 1]
             lines = []
