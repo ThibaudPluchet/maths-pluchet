@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : factoriser par un facteur commun (3e, séquence 16) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 3e, séquence 16 : mettre en facteur un nombre, x ou une parenthèse.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">3e · Séquence 16 · Calcul littéral (3)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Sans calculatrice.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var poly = M.poly, pmul = M.pmul, padd = M.padd, mono = M.mono, gcd = M.gcd;
+function L(a, b){ return {1: a, 0: b}; }
+function LF(m){ var a, b; do { a = rnd(1, m); b = rnz(-7, 7); } while (gcd(a, b) > 1); return L(a, b); }
+function pl(a, b){ return poly(L(a, b)); }
+function T4(A, B, op){ return M.terms([[A[1], 1], [A[0], 0], [op * B[1], 1], [op * B[0], 0]].filter(function(t){ return t[0]; })); }
+function par(P){ return '(' + poly(P) + ')'; }
+// vérifie qu'aucune parenthèse ne contient encore un facteur commun (nombre ou x)
+function fullChk(raw){ var s = raw.replace(/\s/g, '').replace(/[−–]/g, '-').replace(/X/g, 'x'), re = /\(([^()]*)\)/g, m;
+  while ((m = re.exec(s))){ var t = m[1].replace(/^\+/, ''), parts = t.split(/(?=[+-])/).filter(Boolean);
+    if (parts.length < 2) continue;
+    var nums = parts.map(function(p){ var n = p.replace(/^[+-]/, '').match(/^\d+/); return n ? +n[0] : (/x/.test(p) ? 1 : 0); });
+    if (nums.every(function(n){ return n > 0; })){ var g = nums.reduce(function(a, b){ return gcd(a, b); }); if (g > 1 && !/[.,]/.test(t)) return 'C’est juste, mais ce n’est pas fini : dans la parenthèse (' + m[1].replace(/-/g, MINUS) + '), on peut encore mettre ' + g + ' en facteur.'; }
+    if (parts.every(function(p){ return /x/.test(p); })) return 'C’est juste, mais ce n’est pas fini : dans la parenthèse (' + m[1].replace(/-/g, MINUS) + '), on peut encore mettre x en facteur.'; }
+  return null; }
+var EX = [
+ {id: 'n25a', lv: 1, n: 'N25', t: 'Un facteur commun numérique', d: '6x + 9 = 3(2x + 3).', c: 'Factorise le plus possible.', a: 'Cherche le plus grand nombre qui divise tous les termes, écris-le devant une parenthèse, puis divise chaque terme par ce nombre. Vérifie en développant.',
+  g: function(){ var k = rnd(2, 9), a = rnz(-6, 9), b = rnz(-9, 9); if (gcd(a, b) !== 1 || a < 0 && b < 0) return this.g(); var P = L(k * a, k * b), q = 'A = ' + poly(P), sol = k + par(L(a, b));
+    return {type: 'expr', mode: 'fact', q: q, lab: 'A =', P: P, sol: sol, full: fullChk, key: q, steps: ['Le facteur commun est ' + k + ' : ' + poly(P) + ' = ' + k + ' × ' + (a < 0 ? '(' + mono(a, 1) + ')' : mono(a, 1)) + (b < 0 ? ' ' + MINUS + ' ' : ' + ') + k + ' × ' + Math.abs(b) + '.', 'A = ' + sol + '.'], traps: []}; }},
+ {id: 'n25b', lv: 1, n: 'N25', t: 'x en facteur', d: 'x² + 5x = x(x + 5).', c: 'Factorise le plus possible.', a: 'Si x est présent dans chaque terme, on peut le mettre en facteur. N’oublie pas le facteur numérique commun s’il y en a un : 6x² − 9x = 3x(2x − 3).',
+  g: function(){ var k = pick([1, 1, 2, 3, 4, 5]), a = rnd(1, 7), b = rnz(-9, 9); if (gcd(a, b) !== 1) return this.g(); var P = {2: k * a, 1: k * b}, q = 'B = ' + poly(P), f = k === 1 ? 'x' : k + 'x', sol = f + par(L(a, b));
+    return {type: 'expr', mode: 'fact', q: q, lab: 'B =', P: P, sol: sol, full: fullChk, key: q, steps: ['Chaque terme contient ' + f + ' : ' + mono(k * a, 2) + ' = ' + f + ' × ' + mono(a, 1) + ' et ' + mono(Math.abs(k * b), 1) + ' = ' + f + ' × ' + Math.abs(b) + '.', 'B = ' + sol + '.']}; }},
+ {id: 'n25c', lv: 2, n: 'N25', t: 'Une parenthèse en facteur', d: '(x + 1)(2x + 3) + (x + 1)(x − 4).', c: 'Factorise, puis réduis l’intérieur de la seconde parenthèse.', a: 'Repère la parenthèse commune aux deux termes, écris-la une fois, puis écris dans une grande parenthèse ce qui reste (avec le signe du milieu). Réduis ensuite.',
+  g: function(){ var F = LF(3), A = L(rnz(-5, 5), rnz(-9, 9)), B = L(rnz(-5, 5), rnz(-9, 9)), op = pick([1, -1]); var S = padd(A, B, op); if (!S[1] || !S[0] || gcd(S[1], S[0]) > 1 || (A[1] === B[1] && A[0] === B[0])) return this.g();
+    var P = padd(pmul(F, A), pmul(F, B), op), q = 'C = ' + par(F) + par(A) + (op > 0 ? ' + ' : ' ' + MINUS + ' ') + par(F) + par(B), sol = par(F) + par(S);
+    return {type: 'expr', mode: 'fact', q: q, lab: 'C =', P: P, sol: sol, key: q, steps: ['Le facteur commun est ' + par(F) + '.', 'C = ' + par(F) + '[' + par(A) + (op > 0 ? ' + ' : ' ' + MINUS + ' ') + par(B) + ']', 'C = ' + par(F) + '(' + T4(A, B, op) + ')', 'C = ' + sol], traps: op < 0 ? [[pmul(F, padd(A, B, 1)), 'Attention au signe −  devant la seconde parenthèse : il change tous ses signes.']] : []}; }},
+ {id: 'n25d', lv: 2, n: 'N25', t: 'Le facteur commun apparaît seul', d: '(x + 3)(x − 2) + (x + 3) : penser au 1.', c: 'Factorise, puis réduis.', a: 'Un terme égal au facteur commun s’écrit facteur × 1 : (x + 3)(x − 2) + (x + 3) = (x + 3)(x − 2) + (x + 3) × 1. Avec un carré : (x + 3)² = (x + 3)(x + 3).',
+  g: function(){ var F = LF(4), A = L(rnz(-4, 5), rnz(-9, 9)), t = rnd(0, 2), P, q, S, st;
+    if (t === 0){ var op = pick([1, -1]); S = padd(A, {0: 1}, op); if (!S[1] || !S[0] || gcd(S[1], S[0]) > 1) return this.g(); P = pmul(F, S); q = 'D = ' + par(F) + par(A) + (op > 0 ? ' + ' : ' ' + MINUS + ' ') + par(F); st = ['D = ' + par(F) + par(A) + (op > 0 ? ' + ' : ' ' + MINUS + ' ') + par(F) + ' × 1', 'D = ' + par(F) + '(' + poly(A) + (op > 0 ? ' + 1' : ' ' + MINUS + ' 1') + ')']; }
+    else { var op2 = pick([1, -1]); S = padd(F, A, op2); if (!S[1] || !S[0] || gcd(S[1], S[0]) > 1) return this.g(); P = pmul(F, S); q = 'D = ' + par(F) + '² ' + (op2 > 0 ? '+ ' : MINUS + ' ') + par(F) + par(A); st = ['D = ' + par(F) + par(F) + (op2 > 0 ? ' + ' : ' ' + MINUS + ' ') + par(F) + par(A), 'D = ' + par(F) + '[' + par(F) + (op2 > 0 ? ' + ' : ' ' + MINUS + ' ') + par(A) + ']', 'D = ' + par(F) + '(' + T4(F, A, op2) + ')']; }
+    if (!S[0] && !S[1]) return this.g();
+    var sol = par(F) + par(S); st.push('D = ' + sol);
+    return {type: 'expr', mode: 'fact', q: q, lab: 'D =', P: P, sol: sol, key: q, steps: st}; }},
+ {id: 'n25e', lv: 2, n: 'N25', t: 'Quel est le facteur commun ?', d: 'Le repérer avant de factoriser.', c: 'Choisis le facteur commun le plus grand.', a: 'Regarde ce qui se trouve dans chaque terme : un nombre, x, ou une parenthèse entière.',
+  g: function(){ var t = rnd(0, 3), q, ch, ans, st;
+    if (t === 0){ var k = rnd(2, 9), a = rnd(2, 9), b = rnd(1, 9); if (gcd(a, b) !== 1) return this.g(); q = k * a + 'x + ' + k * b; ch = [String(k), 'x', String(k * a), 'il n’y en a pas']; ans = 0; st = [k * a + 'x = ' + k + ' × ' + a + 'x et ' + k * b + ' = ' + k + ' × ' + b + '.']; }
+    else if (t === 1){ var k2 = rnd(2, 6), a2 = rnd(1, 5), b2 = rnd(1, 9); if (gcd(a2, b2) !== 1) return this.g(); q = mono(k2 * a2, 2) + ' ' + MINUS + ' ' + mono(k2 * b2, 1); ch = ['x', k2 + 'x', String(k2), 'x²']; ans = 1; st = ['Chaque terme contient ' + k2 + ' et x : le facteur commun est ' + k2 + 'x.']; }
+    else if (t === 2){ var F = L(1, rnz(-8, 8)), A = L(rnd(2, 5), rnz(-9, 9)); q = par(A) + par(F) + ' + ' + par(F) + '²'; ch = [par(F), par(A), par(F) + '²', 'il n’y en a pas']; ans = 0; st = [par(F) + '² = ' + par(F) + par(F) + ' : ' + par(F) + ' est dans les deux termes.']; }
+    else { var F2 = L(rnd(2, 4), rnz(-8, 8)), G = L(1, rnz(-8, 8)); if (F2[0] === G[0]) return this.g(); q = par(F2) + par(G) + ' + ' + par(G) + '(x + 1)'; if (G[0] === 1) return this.g(); ch = [par(G), par(F2), '(x + 1)', 'il n’y en a pas']; ans = 0; st = [par(G) + ' se trouve dans les deux termes.']; }
+    var ord = shuffle([0, 1, 2, 3]); return {type: 'ch', q: q, ch: ord.map(function(i){ return ch[i]; }), ans: ord.indexOf(ans), steps: st}; }},
+ {id: 'n25f', lv: 3, n: 'N25', nq: 4, t: 'Pour aller plus loin', d: 'Signes, carrés et coefficients.', c: 'Factorise le plus possible.', a: 'Repère le facteur commun (parfois un carré cache une parenthèse), mets-le en facteur, réduis la seconde parenthèse, puis regarde s’il reste un facteur numérique commun.',
+  g: function(){ var F = LF(3), t = rnd(0, 2), P, q, S, st;
+    if (t === 0){ var A = L(rnd(1, 4), rnz(-9, 9)); S = padd(F, A, -1); q = 'E = ' + par(F) + '² ' + MINUS + ' ' + par(F) + par(A); st = ['E = ' + par(F) + '[' + par(F) + ' ' + MINUS + ' ' + par(A) + ']', 'E = ' + par(F) + '(' + T4(F, A, -1) + ')']; }
+    else if (t === 1){ var B = L(rnz(-4, 4), rnz(-9, 9)), C = L(rnz(-4, 4), rnz(-9, 9)); S = padd(B, C, -1); q = 'E = ' + par(B) + par(F) + ' ' + MINUS + ' ' + par(F) + par(C); st = ['Le facteur commun ' + par(F) + ' n’est pas à la même place : on peut l’écrire en premier.', 'E = ' + par(F) + '[' + par(B) + ' ' + MINUS + ' ' + par(C) + ']', 'E = ' + par(F) + '(' + T4(B, C, -1) + ')']; }
+    else { var k = rnd(2, 4), D = L(rnz(-4, 4), rnz(-9, 9)); S = padd({0: k}, D, 1); q = 'E = ' + k + par(F) + ' + ' + par(F) + par(D); st = ['E = ' + par(F) + '[' + k + ' + ' + par(D) + ']', 'E = ' + par(F) + '(' + M.terms([[D[1], 1], [D[0], 0], [k, 0]].filter(function(t){ return t[0]; })) + ')']; }
+    if (!S[1] || !S[0]) return this.g();
+    P = pmul(F, S); var g = gcd(S[1], S[0]), sol = g > 1 ? g + par(F) + par(L(S[1] / g, S[0] / g)) : par(F) + par(S); st.push('E = ' + par(F) + par(S) + (g > 1 ? ' = ' + sol : '') + '.');
+    return {type: 'expr', mode: 'fact', q: q, lab: 'E =', P: P, sol: sol, full: fullChk, key: q, steps: st}; }}
+];
+var NOTIONS = [{n: 'N25', t: 'Factoriser par un facteur commun', r: 'ka + kb = k(a + b) : on repère le facteur commun (nombre, x ou parenthèse), on l’écrit une fois devant, et on écrit ce qui reste entre parenthèses.'}];
+
+M.start({key: '3e-s16', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

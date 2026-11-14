@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : calculer une longueur par la trigonométrie (3e, séquence 15) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 3e, séquence 15 : choisir cos, sin ou tan et calculer une longueur dans un triangle rectangle.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">3e · Séquence 15 · Trigonométrie (2)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée (en mode degrés).</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var DEG = 180 / Math.PI, HAT = '̂';
+function tri(){ var t = M.letters(3), r = rnd(0, 2), R = t[r], o = t.filter(function(_, i){ return i !== r; }); shuffle(o); return {name: t.join(''), R: R, P: o[0], Q: o[1]}; }
+function nm(p, q){ return [p, q].sort().join(''); }
+function dg(a){ return fr(a) + '°'; }
+function TF(f){ return f === 'cos' ? 'cosinus' : f === 'sin' ? 'sinus' : 'tangente'; }
+function LE(f){ return f === 'tan' ? 'la tangente' : 'le ' + TF(f); }
+// angle en P : adjacent RP, opposé RQ, hypoténuse PQ
+// cas : known (côté connu : 'a' adj, 'o' opp, 'h' hyp), want (côté cherché)
+var CASES = [['h', 'a', 'cos', 0], ['h', 'o', 'sin', 0], ['a', 'o', 'tan', 0], ['a', 'h', 'cos', 1], ['o', 'h', 'sin', 1], ['o', 'a', 'tan', 1]];
+function lenQ(cs, fig){ var T = tri(), A = T.P + HAT, al = rnd(15, 75), K = cl(Math.random() < 0.6 ? rnd(3, 15) : rnd(30, 150) / 10), u = pick(['cm', 'cm', 'm', 'mm']);
+  var r = al / DEG, s = {}; s[cs[0]] = K;
+  var adj, opp, hyp; if (cs[0] === 'h'){ hyp = K; adj = K * Math.cos(r); opp = K * Math.sin(r); } else if (cs[0] === 'a'){ adj = K; hyp = K / Math.cos(r); opp = K * Math.tan(r); } else { opp = K; hyp = K / Math.sin(r); adj = K / Math.tan(r); }
+  var V = {a: adj, o: opp, h: hyp}, N = {a: nm(T.R, T.P), o: nm(T.R, T.Q), h: nm(T.P, T.Q)}, W = {a: 'côté adjacent', o: 'côté opposé', h: 'hypoténuse'};
+  var f = cs[2], x = V[cs[1]], d = 1, v = rd(x, d), num = f === 'cos' ? 'a' : 'o', den = f === 'tan' ? 'a' : 'h';
+  var lab = {}; var L = {a: 'a', o: 'b', h: 'c'}; lab[L[cs[0]]] = fr(K) + ' ' + u; lab[L[cs[1]]] = '?';
+  var q = 'Le triangle ' + T.name + ' est rectangle en ' + T.R + ', ' + A + ' = ' + dg(al) + (fig ? '' : ' et ' + N[cs[0]] + ' = ' + fr(K) + ' ' + u) + '. Calcule la longueur ' + N[cs[1]] + ', arrondie au dixième.';
+  var eq = f + ' ' + A + ' = ' + N[num] + ' / ' + N[den], st = ['Pour l’angle ' + A + ', on connaît ' + (cs[0] === 'h' ? 'l’' : 'le ') + W[cs[0]] + ' [' + N[cs[0]] + '] et on cherche ' + (cs[1] === 'h' ? 'l’' : 'le ') + W[cs[1]] + ' [' + N[cs[1]] + '] : on utilise ' + LE(f) + '.', eq + ', donc ' + f + '(' + al + '°) = ' + (num === cs[1] ? N[cs[1]] + ' / ' + fr(K) : fr(K) + ' / ' + N[cs[1]]) + '.'];
+  st.push(cs[3] ? N[cs[1]] + ' = ' + fr(K) + ' ÷ ' + f + '(' + al + '°) ≈ ' + fr(v) + ' ' + u + '.' : N[cs[1]] + ' = ' + fr(K) + ' × ' + f + '(' + al + '°) ≈ ' + fr(v) + ' ' + u + '.');
+  var tr = cs[3] ? [[rd(K * (f === 'cos' ? Math.cos(r) : f === 'sin' ? Math.sin(r) : Math.tan(r)), 1), 'Ici le côté cherché est au dénominateur : il faut diviser par ' + f + '(' + al + '°).']] : [[rd(K / (f === 'cos' ? Math.cos(r) : f === 'sin' ? Math.sin(r) : Math.tan(r)), 1), 'Ici le côté cherché est au numérateur : il faut multiplier par ' + f + '(' + al + '°).']];
+  ['cos', 'sin', 'tan'].forEach(function(g){ if (g !== f){ var y = g === 'cos' ? Math.cos(r) : g === 'sin' ? Math.sin(r) : Math.tan(r); tr.push([rd(cs[3] ? K / y : K * y, 1), 'Ce n’est pas le bon rapport : ici on utilise ' + LE(f) + '.']); } });
+  return {type: 'num', q: q, svg: fig ? M.figTri(T, adj, opp, lab, {at: 'P', t: al + '°'}) : null, lab: N[cs[1]] + ' ≈', unit: u, v: v, x: x, d: d, steps: st, traps: tr.filter(function(t){ return Math.abs(t[0] - v) > 0.05; }), key: q}; }
+var EX = [
+ {id: 'n24a', lv: 1, n: 'N24', t: 'Quelle égalité écrire ?', d: 'Choisir le bon rapport.', c: 'Choisis la bonne égalité.', a: 'Repère le côté connu et le côté cherché par rapport à l’angle : adjacent et hypoténuse → cosinus ; opposé et hypoténuse → sinus ; opposé et adjacent → tangente.',
+  g: function(){ var T = tri(), A = T.P + HAT, cs = pick(CASES), N = {a: nm(T.R, T.P), o: nm(T.R, T.Q), h: nm(T.P, T.Q)}, al = rnd(20, 70);
+    var good = cs[2] + ' ' + A + ' = ' + N[cs[2] === 'cos' ? 'a' : 'o'] + ' / ' + N[cs[2] === 'tan' ? 'a' : 'h'];
+    var all = ['cos ' + A + ' = ' + N.a + ' / ' + N.h, 'sin ' + A + ' = ' + N.o + ' / ' + N.h, 'tan ' + A + ' = ' + N.o + ' / ' + N.a, 'cos ' + A + ' = ' + N.o + ' / ' + N.h, 'tan ' + A + ' = ' + N.a + ' / ' + N.o];
+    var ch = shuffle([good].concat(shuffle(all.filter(function(x){ return x !== good; })).slice(0, 2)));
+    var lab = {}, L = {a: 'a', o: 'b', h: 'c'}; lab[L[cs[0]]] = rnd(3, 12) + ' cm'; lab[L[cs[1]]] = '?';
+    return {type: 'ch', q: 'Le triangle ' + T.name + ' est rectangle en ' + T.R + '. On connaît l’angle ' + A + ' et la longueur ' + N[cs[0]] + ', on cherche ' + N[cs[1]] + '. Quelle égalité utiliser ?', svg: M.figTri(T, rnd(4, 10), rnd(4, 10), lab, {at: 'P', t: al + '°'}), ch: ch, ans: ch.indexOf(good), steps: ['[' + N.a + '] est adjacent à ' + A + ', [' + N.o + '] est opposé, [' + N.h + '] est l’hypoténuse. Avec ' + N[cs[0]] + ' et ' + N[cs[1]] + ' : ' + good + '.'], key: T.name + cs.join('')}; }},
+ {id: 'n24b', lv: 2, n: 'N24', nq: 4, t: 'Côté de l’angle droit (cos, sin)', d: 'On connaît l’hypoténuse.', c: 'Calcule la longueur demandée. La figure n’est pas en vraie grandeur.', a: 'On écrit le rapport, puis on multiplie : côté adjacent = hypoténuse × cos ; côté opposé = hypoténuse × sin. Calculatrice en mode degrés.',
+  g: function(){ return lenQ(CASES[rnd(0, 1)], true); }},
+ {id: 'n24c', lv: 2, n: 'N24', nq: 4, t: 'Avec la tangente', d: 'Côté opposé à partir du côté adjacent.', c: 'Calcule la longueur demandée. La figure n’est pas en vraie grandeur.', a: 'tan = opposé / adjacent, donc opposé = adjacent × tan de l’angle.',
+  g: function(){ return lenQ(CASES[2], true); }},
+ {id: 'n24d', lv: 3, n: 'N24', nq: 4, t: 'La longueur cherchée au dénominateur', d: 'Hypoténuse ou côté adjacent : on divise.', c: 'Calcule la longueur demandée (fais une figure à main levée).', a: 'Si la longueur cherchée est au dénominateur du rapport, on divise : par exemple cos Â = AB / AC donne AC = AB ÷ cos Â.',
+  g: function(){ return lenQ(CASES[rnd(3, 5)], false); }},
+ {id: 'n24e', lv: 3, n: 'N24', nq: 3, t: 'Problèmes', d: 'Échelles, rampes, cerfs-volants…', c: 'Lis l’énoncé, repère le triangle rectangle, puis calcule. Arrondis au dixième.', a: 'Fais un schéma : repère l’angle droit, l’angle connu, le côté connu et le côté cherché, puis choisis cos, sin ou tan.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var a = rnd(15, 75), r = a / DEG, L, x, q, st, u = 'm', f, how;
+    var P = [
+     function(){ L = pick([4, 5, 6, 7]); a = rnd(65, 80); r = a / DEG; x = L * Math.sin(r); q = 'Une échelle de ' + L + ' m est appuyée contre un mur vertical ; elle fait un angle de ' + a + '° avec le sol. À quelle hauteur touche-t-elle le mur ?'; f = 'sin'; how = 'hauteur = ' + L + ' × sin(' + a + '°)'; },
+     function(){ L = pick([4, 5, 6, 7]); a = rnd(65, 80); r = a / DEG; x = L * Math.cos(r); q = 'Une échelle de ' + L + ' m est appuyée contre un mur vertical ; elle fait un angle de ' + a + '° avec le sol. À quelle distance du mur est son pied ?'; f = 'cos'; how = 'distance = ' + L + ' × cos(' + a + '°)'; },
+     function(){ L = rnd(20, 60); a = rnd(30, 70); r = a / DEG; x = L * Math.sin(r); q = 'Le fil d’un cerf-volant mesure ' + L + ' m et fait un angle de ' + a + '° avec le sol (supposé horizontal, le fil tendu). À quelle hauteur est le cerf-volant ?'; f = 'sin'; how = 'hauteur = ' + L + ' × sin(' + a + '°)'; },
+     function(){ L = rnd(10, 40); a = rnd(25, 60); r = a / DEG; x = L * Math.tan(r); q = 'Depuis un point situé à ' + L + ' m du pied d’un arbre, on voit son sommet sous un angle de ' + a + '° avec l’horizontale. Hauteur de l’arbre (en partant du sol) ?'; f = 'tan'; how = 'hauteur = ' + L + ' × tan(' + a + '°)'; },
+     function(){ L = cl(rnd(5, 15) / 10); a = rnd(3, 8); r = a / DEG; x = L / Math.sin(r); q = 'Une rampe d’accès doit monter de ' + fr(L) + ' m ; elle fait un angle de ' + a + '° avec le sol. Quelle est la longueur de la rampe ?'; f = 'sin'; how = 'longueur = ' + fr(L) + ' ÷ sin(' + a + '°)'; },
+     function(){ L = rnd(50, 200); a = rnd(5, 20); r = a / DEG; x = L * Math.tan(r); q = 'Une route monte avec un angle de ' + a + '° par rapport à l’horizontale. De combien monte-t-on pour ' + L + ' m parcourus à l’horizontale ?'; f = 'tan'; how = 'dénivelé = ' + L + ' × tan(' + a + '°)'; },
+     function(){ L = rnd(30, 80); a = rnd(40, 70); r = a / DEG; x = L / Math.tan(r); q = 'Un phare de ' + L + ' m de haut. Depuis un bateau, on voit son sommet sous un angle de ' + a + '° avec l’horizontale (niveau de la mer). Distance du bateau au pied du phare ?'; f = 'tan'; how = 'distance = ' + L + ' ÷ tan(' + a + '°)'; },
+     function(){ L = rnd(8, 25); a = rnd(20, 45); r = a / DEG; x = L / Math.cos(r); q = 'Un toboggan rectiligne descend avec un angle de ' + a + '° par rapport au sol et couvre ' + L + ' m à l’horizontale. Quelle est sa longueur ?'; f = 'cos'; how = 'longueur = ' + L + ' ÷ cos(' + a + '°)'; },
+     function(){ L = rnd(2, 6) * 100; a = rnd(10, 30); r = a / DEG; x = L * Math.sin(r); u = 'm'; q = 'Un avion décolle avec un angle de ' + a + '° et parcourt ' + L + ' m en ligne droite. À quelle altitude est-il alors ?'; f = 'sin'; how = 'altitude = ' + L + ' × sin(' + a + '°)'; },
+     function(){ L = cl(rnd(15, 40) / 10); a = rnd(20, 45); r = a / DEG; x = L / Math.tan(r); q = 'Le soleil fait un angle de ' + a + '° avec le sol. Quelle est la longueur de l’ombre d’un poteau vertical de ' + fr(L) + ' m ?'; f = 'tan'; how = 'ombre = ' + fr(L) + ' ÷ tan(' + a + '°)'; },
+     function(){ L = rnd(4, 9); a = rnd(25, 40); r = a / DEG; x = L / 2 * Math.tan(r); q = 'Un toit symétrique a une largeur de ' + L + ' m ; chaque pan fait un angle de ' + a + '° avec l’horizontale. Quelle est la hauteur du toit ?'; f = 'tan'; how = 'hauteur = ' + fr(L / 2) + ' × tan(' + a + '°) (on travaille sur une moitié du toit)'; },
+     function(){ L = rnd(3, 8); a = rnd(50, 70); r = a / DEG; x = L * Math.cos(r); q = 'Un câble de ' + L + ' m relie le haut d’un poteau au sol, avec un angle de ' + a + '° au sol. À quelle distance du pied du poteau est-il fixé au sol ?'; f = 'cos'; how = 'distance = ' + L + ' × cos(' + a + '°)'; }];
+    P[k](); var v = rd(x, 1);
+    return {type: 'num', q: q, v: v, x: x, d: 1, unit: u, steps: ['Le triangle formé est rectangle : on utilise ' + LE(f) + '.', how + ' ≈ ' + fr(v) + ' ' + u + '.'], key: 'k' + k}; }}
+];
+var NOTIONS = [{n: 'N24', t: 'Calculer une longueur par la trigonométrie', r: 'dans un triangle rectangle, cos = adjacent / hypoténuse, sin = opposé / hypoténuse, tan = opposé / adjacent ; on écrit le rapport puis on isole la longueur cherchée.'}];
+
+M.start({key: '3e-s15', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

@@ -153,7 +153,7 @@ function checkQ(Q, raw){
     if (!sameP(R.P, Q.P)){
       for (i = 0; i < tr.length; i++) if (sameP(R.P, tr[i][0])) return {why: tr[i][1]};
       return {why: 'Ce n’est pas le bon résultat.'}; }
-    if (Q.mode === 'fact'){ if (!R.prod) return {why: 'C’est égal, mais ce n’est pas factorisé : il faut un produit.'}; return {ok: true}; }
+    if (Q.mode === 'fact'){ if (!R.prod) return {why: 'C’est égal, mais ce n’est pas factorisé : il faut un produit.'}; var cw = Q.full ? Q.full(raw) : null; if (cw) return {why: cw}; return {ok: true}; }
     if (R.paren) return {why: 'Il reste des parenthèses : il faut les supprimer.'};
     if (!R.reduit) return {why: 'Le résultat est juste, mais il n’est pas réduit au maximum' + (R.fois ? ' (il reste un ×)' : '') + '.'};
     return {ok: true};

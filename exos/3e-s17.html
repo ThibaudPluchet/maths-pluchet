@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : fonctions linéaires et affines (3e, séquence 17) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 3e, séquence 17 : reconnaître, calculer, représenter et utiliser des fonctions linéaires et affines.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">3e · Séquence 17 · Fonctions linéaires et affines</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+// ---- outils communs 4e : tableau et repère en SVG ----
+function f1(v){ return (Math.round(v * 10) / 10).toString(); }
+function esc(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+// tableau : rows = [[titre, v1, v2, …], …] (chaînes)
+function tableSvg(rows){ var nc = rows[0].length, cw = [], i, j, H = 36;
+  for (j = 0; j < nc; j++){ var m = 0; for (i = 0; i < rows.length; i++) m = Math.max(m, String(rows[i][j]).length); cw.push(Math.max(46, m * 9 + 18)); }
+  var W = cw.reduce(function(a, b){ return a + b; }, 0), s = '<svg viewBox="-1 -1 ' + (W + 2) + ' ' + (H * rows.length + 2) + '" class="fig tab" role="img" aria-label="Tableau">', x;
+  for (i = 0; i < rows.length; i++){ x = 0; for (j = 0; j < nc; j++){ var t = String(rows[i][j]);
+    s += '<rect x="' + x + '" y="' + i * H + '" width="' + cw[j] + '" height="' + H + '" style="fill:' + (j === 0 ? 'var(--soft)' : 'none') + ';stroke:currentColor;stroke-width:1"/>';
+    s += '<text x="' + (x + cw[j] / 2) + '" y="' + (i * H + H / 2) + '" text-anchor="middle" dominant-baseline="central"' + (t === '?' ? ' class="qm"' : ' class="ln" style="font-size:15px"') + '>' + esc(t) + '</text>'; x += cw[j]; } }
+  return s + '</svg>'; }
+// repère : o = {xm, ym, sx, sy (pas des graduations), xl, yl (légendes), items: [{type:'line'|'seg'|'pts'|'curve', …}]}
+function graphSvg(o){ var W = 320, H = 230, L = 42, B = 30, T = 12, R = 14, w = W - L - R, h = H - T - B;
+  var X = function(x){ return L + x / o.xm * w; }, Y = function(y){ return T + h - y / o.ym * h; };
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Graphique">', x, y;
+  for (x = 0; x <= o.xm + 1e-9; x += o.sx){ s += '<line x1="' + f1(X(x)) + '" y1="' + T + '" x2="' + f1(X(x)) + '" y2="' + (T + h) + '" style="stroke:currentColor;opacity:.15"/><text x="' + f1(X(x)) + '" y="' + (T + h + 14) + '" text-anchor="middle" style="font-size:11px;font-weight:400">' + fr(cl(x)) + '</text>'; }
+  for (y = 0; y <= o.ym + 1e-9; y += o.sy){ s += '<line x1="' + L + '" y1="' + f1(Y(y)) + '" x2="' + (L + w) + '" y2="' + f1(Y(y)) + '" style="stroke:currentColor;opacity:.15"/><text x="' + (L - 5) + '" y="' + f1(Y(y)) + '" text-anchor="end" dominant-baseline="central" style="font-size:11px;font-weight:400">' + fr(cl(y)) + '</text>'; }
+  s += '<line x1="' + L + '" y1="' + (T + h) + '" x2="' + (L + w) + '" y2="' + (T + h) + '" style="stroke:currentColor;stroke-width:1.4"/><line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + (T + h) + '" style="stroke:currentColor;stroke-width:1.4"/>';
+  if (o.xl) s += '<text x="' + (L + w) + '" y="' + (H - 2) + '" text-anchor="end" style="font-size:11px;font-weight:700">' + esc(o.xl) + '</text>';
+  if (o.yl) s += '<text x="' + (L + 4) + '" y="' + (T + 2) + '" dominant-baseline="hanging" style="font-size:11px;font-weight:700">' + esc(o.yl) + '</text>';
+  (o.items || []).forEach(function(it){ var col = it.col || 'var(--accent)';
+    if (it.type === 'line'){ // y = a x + b sur [0, xm], coupée au cadre
+      var x2 = o.xm, y2 = it.a * x2 + (it.b || 0); if (y2 > o.ym){ x2 = (o.ym - (it.b || 0)) / it.a; y2 = o.ym; }
+      s += '<line x1="' + f1(X(it.x0 || 0)) + '" y1="' + f1(Y(it.a * (it.x0 || 0) + (it.b || 0))) + '" x2="' + f1(X(x2)) + '" y2="' + f1(Y(y2)) + '" style="stroke:' + col + ';stroke-width:2.4"/>'; }
+    else if (it.type === 'poly'){ s += '<polyline points="' + it.p.map(function(p){ return f1(X(p[0])) + ',' + f1(Y(p[1])); }).join(' ') + '" style="fill:none;stroke:' + col + ';stroke-width:2.4"/>'; }
+    else if (it.type === 'pts'){ it.p.forEach(function(p){ s += '<circle cx="' + f1(X(p[0])) + '" cy="' + f1(Y(p[1])) + '" r="3.5" style="fill:' + col + '"/>'; }); }
+    else if (it.type === 'lab'){ s += '<text x="' + f1(X(it.x)) + '" y="' + f1(Y(it.y)) + '" style="font-size:13px;fill:' + col + '" dominant-baseline="central">' + esc(it.t) + '</text>'; }
+  });
+  return s + '</svg>'; }
+var poly = M.poly, mono = M.mono, gcd = M.gcd;
+function fl(){ return pick(['f', 'g', 'h', 'k']); }
+function aff(a, b){ return poly({1: a, 0: b}); }
+function frq(n, d){ return M.isInt(n / d) ? fr(n / d) : null; }
+// repère de −5 à 5, droites y = a x + b
+var COL = ['var(--accent)', '#c2410c', '#1d8a5a', '#8a3ab9'];
+function rep(lines, names){ var W = 330, H = 330, o = 165, u = 28, s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Droites dans un repère">', v;
+  for (v = -5; v <= 5; v++){ s += '<line class="gr" x1="' + (o + v * u) + '" y1="' + (o - 5 * u) + '" x2="' + (o + v * u) + '" y2="' + (o + 5 * u) + '"/><line class="gr" x1="' + (o - 5 * u) + '" y1="' + (o - v * u) + '" x2="' + (o + 5 * u) + '" y2="' + (o - v * u) + '"/>'; }
+  s += '<line class="ax" style="stroke-width:1.6" x1="' + (o - 5 * u) + '" y1="' + o + '" x2="' + (o + 5 * u + 8) + '" y2="' + o + '"/><line class="ax" style="stroke-width:1.6" x1="' + o + '" y1="' + (o + 5 * u) + '" x2="' + o + '" y2="' + (o - 5 * u - 8) + '"/>';
+  s += '<text class="sm" x="' + (o + u) + '" y="' + (o + 14) + '" text-anchor="middle">1</text><text class="sm" x="' + (o - 8) + '" y="' + (o - u) + '" text-anchor="end" dominant-baseline="central">1</text><text class="sm" x="' + (o - 8) + '" y="' + (o + 12) + '" text-anchor="end">0</text>';
+  lines.forEach(function(Ln, i){ var a = Ln[0], b = Ln[1], P = [];
+    [-5, 5].forEach(function(x){ var y = a * x + b; if (y >= -5 && y <= 5) P.push([x, y]); });
+    if (a){ [-5, 5].forEach(function(y){ var x = (y - b) / a; if (x > -5 && x < 5) P.push([x, y]); }); }
+    P.sort(function(p, q){ return p[0] - q[0]; }); if (P.length < 2) return; var p = P[0], q = P[P.length - 1];
+    s += '<line x1="' + (o + p[0] * u).toFixed(1) + '" y1="' + (o - p[1] * u).toFixed(1) + '" x2="' + (o + q[0] * u).toFixed(1) + '" y2="' + (o - q[1] * u).toFixed(1) + '" style="stroke:' + COL[i] + ';stroke-width:2.4"/>';
+    if (names){ var t = [0.86, 0.6, 0.34][i], lx = p[0] + (q[0] - p[0]) * t, ly = p[1] + (q[1] - p[1]) * t; s += '<text x="' + (o + lx * u + 8).toFixed(1) + '" y="' + (o - ly * u - 8).toFixed(1) + '" style="fill:' + COL[i] + ';font-weight:700">' + names[i] + '</text>'; } });
+  return s + '</svg>'; }
+var EX = [
+ {id: 'n26a', lv: 1, n: 'N26', t: 'Linéaire, affine ou ni l’un ni l’autre ?', d: 'Reconnaître la forme ax + b.', c: 'Choisis la bonne réponse.', a: 'Une fonction affine s’écrit f(x) = ax + b. Si b = 0, f(x) = ax : elle est linéaire (et aussi affine). x², 1/x… ne sont pas affines.',
+  g: function(k){ if (k === undefined) k = rnd(0, 15); var a = rnd(2, 9), b = rnd(1, 9), f = fl();
+    var D = [[a + 'x', 0], [aff(a, b), 1], [aff(-a, b), 1], [b + ' ' + MINUS + ' ' + a + 'x', 1], ['x² + ' + b, 2], [a + 'x²', 2], ['1/x', 2], [MINUS + a + 'x', 0], ['x/' + a, 0], [String(b), 1], [a + '(x + ' + b + ')', 1], ['x(x + ' + b + ')', 2], [a + '/x + ' + b, 2], [fr(a / 10) + 'x', 0], ['x', 0], ['(x + ' + b + ')²', 2]][k];
+    var CH = ['linéaire', 'affine, mais pas linéaire', 'ni affine ni linéaire'], E = ['De la forme ax, avec a = ', 'De la forme ax + b avec b ≠ 0', 'Elle ne s’écrit pas sous la forme ax + b'];
+    var why = D[1] === 0 ? 'Elle s’écrit ax (b = 0) : elle est linéaire (donc aussi affine).' : D[1] === 1 ? (k === 9 ? 'Elle s’écrit 0x + ' + b + ' : c’est une fonction affine constante.' : k === 10 ? a + '(x + ' + b + ') = ' + a + 'x + ' + a * b + ' : affine, pas linéaire.' : 'Elle s’écrit ax + b avec b ≠ 0 : affine, pas linéaire.') : 'Elle contient un x², un x au dénominateur… : elle ne s’écrit pas ax + b.';
+    return {type: 'ch', q: f + '(x) = ' + D[0], ch: CH, ans: D[1], steps: [why], key: 'k' + k}; }},
+ {id: 'n26b', lv: 1, n: 'N26', t: 'Trouver a et b', d: 'Coefficient et ordonnée à l’origine.', c: 'Donne la valeur demandée.', a: 'Dans f(x) = ax + b, a est le nombre qui multiplie x (coefficient directeur) et b le nombre seul (ordonnée à l’origine). Attention à l’ordre d’écriture et aux signes.',
+  g: function(){ var a = rnz(-9, 9), b = rnz(-9, 9), f = fl(), w = rnd(0, 1), sw = Math.random() < 0.4, ex = sw ? fr(b) + (a < 0 ? ' ' + MINUS + ' ' : ' + ') + mono(Math.abs(a), 1) : aff(a, b);
+    return {type: 'num', q: f + '(x) = ' + ex + '. Que vaut ' + (w ? 'b' : 'a') + ' ?', lab: (w ? 'b' : 'a') + ' =', v: w ? b : a, steps: [f + '(x) = ' + aff(a, b) + ' : a = ' + fr(a) + ' et b = ' + fr(b) + '.'], traps: [[w ? a : b, 'Tu as donné ' + (w ? 'a' : 'b') + '.'], [-(w ? b : a), 'Attention au signe.']].filter(function(t){ return t[0] !== (w ? b : a); })}; }},
+ {id: 'n26c', lv: 2, n: 'N26', t: 'Quelle fonction pour la situation ?', d: 'Proportionnalité ou non.', c: 'La situation est-elle modélisée par une fonction linéaire, ou affine non linéaire ?', a: 'Une situation de proportionnalité (pas de « partie fixe ») est modélisée par une fonction linéaire. S’il y a une partie fixe (abonnement, frais d’inscription…), la fonction est affine.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var p = fr(rnd(11, 49) / 10), F = rnd(5, 30);
+    var D = [['Prix payé pour x kg de pommes à ' + p + ' € le kg.', 0, p + 'x'], ['Prix d’un taxi : ' + F + ' € de prise en charge, puis ' + p + ' € par km. Prix pour x km.', 1, p + 'x + ' + F], ['Périmètre d’un carré de côté x.', 0, '4x'], ['Abonnement de ' + F + ' € par an, puis ' + p + ' € par entrée. Prix pour x entrées.', 1, p + 'x + ' + F], ['Distance parcourue en x heures à ' + F * 3 + ' km/h.', 0, F * 3 + 'x'], ['Hauteur d’une bougie de ' + F + ' cm qui diminue de ' + p + ' cm par heure, après x heures.', 1, F + ' − ' + p + 'x'], ['Masse de x litres d’eau (1 L pèse 1 kg).', 0, 'x'], ['Salaire : ' + F * 50 + ' € fixes plus 2 % des ventes. Salaire pour x € de ventes.', 1, '0,02x + ' + F * 50], ['Prix de x places de cinéma à ' + p + ' € la place.', 0, p + 'x'], ['Réservoir contenant ' + F + ' L, rempli à ' + p + ' L par minute. Volume après x minutes.', 1, p + 'x + ' + F], ['Prix après une réduction de 20 % d’un article de prix x.', 0, '0,8x'], ['Location d’un vélo : ' + F + ' € de caution non rendue, puis ' + p + ' € l’heure. Prix pour x heures.', 1, p + 'x + ' + F]][k];
+    return {type: 'ch', q: D[0], ch: ['fonction linéaire', 'fonction affine non linéaire'], ans: D[1], steps: ['La fonction est x ↦ ' + D[2] + (D[1] ? ' : il y a une partie fixe, elle est affine non linéaire.' : ' : c’est une situation de proportionnalité, la fonction est linéaire.')], key: 'k' + k}; }}
+];
+EX.push(
+ {id: 'n27a', lv: 1, n: 'N27', t: 'Calculer une image', d: 'Remplacer x par un nombre.', c: 'Calcule.', a: 'Remplace x par le nombre dans l’expression, en mettant des parenthèses autour des nombres négatifs, puis respecte les priorités.',
+  g: function(){ var a = rnz(-9, 9), b = rnd(-9, 9), x = rnz(-10, 10), f = fl(), v = a * x + b;
+    return {type: 'num', q: f + '(x) = ' + aff(a, b) + '. Calcule ' + f + '(' + fr(x) + ').', lab: f + '(' + fr(x) + ') =', v: v, steps: [f + '(' + fr(x) + ') = ' + fr(a) + ' × ' + M.pf(x) + (b ? (b < 0 ? ' ' + MINUS + ' ' + fr(-b) : ' + ' + b) : '') + ' = ' + fr(a * x) + (b ? (b < 0 ? ' ' + MINUS + ' ' + fr(-b) : ' + ' + b) + ' = ' + fr(v) : '') + '.'], traps: [[a + x + b, 'a' + 'x signifie a × x.']].filter(function(t){ return t[0] !== v; })}; }},
+ {id: 'n27b', lv: 2, n: 'N27', t: 'Calculer un antécédent', d: 'Résoudre ax + b = y.', c: 'Calcule l’antécédent.', a: 'Chercher l’antécédent de y, c’est résoudre l’équation ax + b = y : on enlève b, puis on divise par a.',
+  g: function(){ var a = rnz(-8, 8), b = rnd(-9, 9), x = rnz(-10, 10) / pick([1, 1, 1, 2]), f = fl(), y = cl(a * x + b); if (!M.isInt(y) || Math.abs(a) === 1 && Math.random() < 0.6) return this.g();
+    return {type: 'num', q: f + '(x) = ' + aff(a, b) + '. Quel est l’antécédent de ' + fr(y) + ' par ' + f + ' ?', lab: 'x =', v: x, steps: ['On résout ' + aff(a, b) + ' = ' + fr(y) + '.', mono(a, 1) + ' = ' + fr(y) + (b ? (b > 0 ? ' ' + MINUS + ' ' + b : ' + ' + fr(-b)) + ' = ' + fr(y - b) : ''), 'x = ' + fr(y - b) + ' ÷ ' + M.pf(a) + ' = ' + fr(x) + '.'], traps: [[cl(a * y + b), 'Tu as calculé l’image de ' + fr(y) + ', pas son antécédent.']].filter(function(t){ return t[0] !== x; })}; }},
+ {id: 'n27c', lv: 2, n: 'N27', t: 'Compléter un tableau', d: 'Images et antécédents.', c: 'Trouve le nombre manquant du tableau.', a: 'Sur la ligne des x, on cherche un antécédent ; sur la ligne f(x), une image.',
+  g: function(){ var a = rnz(-5, 6), b = rnd(-8, 8), f = fl(), xs = shuffle([-3, -2, -1, 0, 1, 2, 3, 4, 5]).slice(0, 3).sort(function(p, q){ return p - q; }), i = rnd(0, 2), up = Math.random() < 0.5;
+    var row1 = ['x'].concat(xs.map(function(x, j){ return up && j === i ? '?' : fr(x); })), row2 = [f + '(x)'].concat(xs.map(function(x, j){ return !up && j === i ? '?' : fr(a * x + b); }));
+    var v = up ? xs[i] : a * xs[i] + b;
+    return {type: 'num', q: f + '(x) = ' + aff(a, b) + '. Complète le tableau.', svg: tableSvg([row1, row2]), lab: '? =', v: v, steps: [up ? 'On résout ' + aff(a, b) + ' = ' + fr(a * xs[i] + b) + ' : x = ' + fr(xs[i]) + '.' : f + '(' + fr(xs[i]) + ') = ' + fr(a) + ' × ' + M.pf(xs[i]) + (b ? (b < 0 ? ' ' + MINUS + ' ' + fr(-b) : ' + ' + b) : '') + ' = ' + fr(v) + '.'], key: aff(a, b) + xs + i + up}; }}
+);
+EX.push(
+ {id: 'n28a', lv: 2, n: 'N28', t: 'Lire a et b sur le graphique', d: 'Ordonnée à l’origine et coefficient.', c: 'Donne l’expression de la fonction représentée, sous la forme ax + b.', a: 'b se lit sur l’axe des ordonnées (là où la droite le coupe). a : quand x augmente de 1, y augmente de a (ou diminue si a < 0).',
+  g: function(){ var a = pick([-3, -2, -1, 1, 2, 3, 0.5, -0.5]), b = rnd(-3, 3), f = fl(); if (a === 0) return this.g();
+    return {type: 'expr', mode: 'dev', q: 'La droite représente la fonction ' + f + '. ' + f + '(x) = ?', svg: rep([[a, b]]), lab: f + '(x) =', P: {1: a, 0: b}, sol: aff(a, b), steps: ['La droite coupe l’axe des ordonnées en ' + fr(b) + ' : b = ' + fr(b) + '.', (Math.abs(a) < 1 ? 'Quand x augmente de 2, y ' + (a > 0 ? 'augmente' : 'diminue') + ' de 1' : 'Quand x augmente de 1, y ' + (a > 0 ? 'augmente' : 'diminue') + ' de ' + fr(Math.abs(a))) + ' : a = ' + fr(a) + '.', f + '(x) = ' + aff(a, b) + '.'], key: a + '/' + b, traps: [[{1: b, 0: a}, 'Tu as inversé a et b.'], [{1: -a, 0: b}, 'Attention au signe de a : la droite ' + (a > 0 ? 'monte' : 'descend') + '.']]}; }},
+ {id: 'n28b', lv: 2, n: 'N28', t: 'Fonction linéaire : trouver a', d: 'À partir d’une image.', c: 'Détermine l’expression de la fonction linéaire.', a: 'Une fonction linéaire s’écrit f(x) = ax. Si f(m) = p, alors a × m = p, donc a = p ÷ m.',
+  g: function(){ var a = rnz(-9, 9) / pick([1, 1, 2]), m = rnz(-8, 9), f = fl(), p = cl(a * m); if (!M.isInt(p) || Math.abs(m) === 1) return this.g();
+    return {type: 'expr', mode: 'dev', q: f + ' est une fonction linéaire telle que ' + f + '(' + fr(m) + ') = ' + fr(p) + '. ' + f + '(x) = ?', lab: f + '(x) =', P: {1: a}, sol: mono(a, 1), steps: [f + '(x) = ax avec a × ' + M.pf(m) + ' = ' + fr(p) + '.', 'a = ' + fr(p) + ' ÷ ' + M.pf(m) + ' = ' + fr(a) + ', donc ' + f + '(x) = ' + mono(a, 1) + '.'], traps: [[{1: cl(m / p)}, 'a = image ÷ nombre de départ, pas l’inverse.']]}; }},
+ {id: 'n28c', lv: 3, n: 'N28', nq: 4, t: 'Fonction affine : deux images', d: 'Calculer a puis b.', c: 'Détermine l’expression de la fonction affine.', a: 'a = (f(x₂) − f(x₁)) ÷ (x₂ − x₁). Puis on trouve b en remplaçant dans f(x₁) = a × x₁ + b.',
+  g: function(){ var a = rnz(-6, 6), b = rnd(-9, 9), x1 = rnd(-5, 4), x2 = rnd(x1 + 1, 8), f = fl(), y1 = a * x1 + b, y2 = a * x2 + b; if (!x1 || !y1 || !y2) return this.g();
+    return {type: 'expr', mode: 'dev', q: f + ' est une fonction affine telle que ' + f + '(' + fr(x1) + ') = ' + fr(y1) + ' et ' + f + '(' + fr(x2) + ') = ' + fr(y2) + '. ' + f + '(x) = ?', lab: f + '(x) =', P: {1: a, 0: b}, sol: aff(a, b), key: f + x1 + x2 + y1 + y2,
+      steps: ['a = (' + fr(y2) + ' ' + MINUS + ' ' + M.pf(y1) + ') ÷ (' + fr(x2) + ' ' + MINUS + ' ' + M.pf(x1) + ') = ' + fr(y2 - y1) + ' ÷ ' + fr(x2 - x1) + ' = ' + fr(a) + '.', f + '(' + fr(x1) + ') = ' + fr(a) + ' × ' + M.pf(x1) + ' + b = ' + fr(y1) + ', donc b = ' + fr(y1) + ' ' + MINUS + ' ' + M.pf(a * x1) + ' = ' + fr(b) + '.', f + '(x) = ' + aff(a, b) + '.'], traps: [[{1: cl((x2 - x1) / (y2 - y1)), 0: b}, 'a = différence des images ÷ différence des x.']]}; }},
+ {id: 'n28d', lv: 2, n: 'N28', t: 'Quelle droite ?', d: 'Associer fonction et représentation.', c: 'Quelle droite représente la fonction donnée ?', a: 'Repère d’abord b (où la droite coupe l’axe des ordonnées), puis le signe de a (la droite monte si a > 0, descend si a < 0). Une fonction linéaire passe par l’origine.',
+  g: function(){ var L = [], tries = 0; while (L.length < 3 && tries++ < 100){ var c = [pick([-3, -2, -1, 1, 2, 3, 0.5, -0.5]), rnd(-3, 3)]; if (!L.some(function(d){ return d[0] === c[0] && d[1] === c[1] || d[1] === c[1] && Math.sign(d[0]) === Math.sign(c[0]); })) L.push(c); }
+    var i = rnd(0, 2), f = fl(), nm = ['(d₁)', '(d₂)', '(d₃)'];
+    return {type: 'ch', q: f + '(x) = ' + aff(L[i][0], L[i][1]), svg: rep(L, nm), ch: nm, ans: i, steps: ['b = ' + fr(L[i][1]) + ' : la droite coupe l’axe des ordonnées en ' + fr(L[i][1]) + ', et a = ' + fr(L[i][0]) + ' ' + (L[i][0] > 0 ? '> 0 : elle monte.' : '< 0 : elle descend.') + ' C’est ' + nm[i] + '.'], key: JSON.stringify(L) + i}; }}
+);
+var SIT = [
+ ['Un club de sport propose : formule A, ', ' € par séance ; formule B, abonnement de ', ' € puis ', ' € par séance.', 'séances'],
+ ['Location de voiture : agence A, ', ' € par km ; agence B, forfait de ', ' € puis ', ' € par km.', 'km'],
+ ['Cinéma : sans carte, ', ' € la place ; avec la carte à ', ' € par an, la place coûte ', ' €.', 'places'],
+ ['Piscine : entrée simple à ', ' € ; ou carte annuelle de ', ' € plus ', ' € par entrée.', 'entrées']];
+EX.push(
+ {id: 'n29a', lv: 2, n: 'N29', t: 'Modéliser une situation', d: 'Écrire la fonction.', c: 'Écris le prix en fonction de x, sous la forme ax + b.', a: 'La partie qui dépend de x (prix unitaire × x) donne a ; la partie fixe donne b.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var p = cl(rnd(5, 40) / 2), F = rnd(2, 30) * 5, S = SIT[k % 4], u = [['séance', 'Formule B'], ['km', 'Agence B'], ['place', 'Avec la carte'], ['entrée', 'Avec la carte']][k % 4], km = k % 4 === 1;
+    if (km) p = cl(rnd(2, 9) / 10);
+    var q = S[0] + fr(p + (km ? 0.3 : 3)) + S[1] + F + S[2] + fr(p) + S[3] + ' Exprime le prix ' + u[1].replace('Formule', 'de la formule').replace('Agence', 'de l’agence').replace('Avec la carte', 'avec la carte') + ' pour x ' + S[4] + '.';
+    return {type: 'expr', mode: 'dev', q: q, lab: 'prix =', P: {1: p, 0: F}, sol: aff(p, F), steps: ['Partie fixe : ' + F + ' € ; ' + fr(p) + ' € par ' + u[0] + '.', 'Prix = ' + aff(p, F) + '.'], key: 'k' + k + p + F, traps: [[{1: F, 0: p}, 'Inversion : la partie fixe est le nombre seul.']]}; }},
+ {id: 'n29b', lv: 3, n: 'N29', nq: 3, t: 'Comparer deux offres', d: 'À partir de quand B est-elle plus avantageuse ?', c: 'Lis l’énoncé et réponds.', a: 'Écris les deux fonctions, puis résous l’égalité (prix égaux). Au-delà de cette valeur, l’offre avec le plus petit coefficient a devient la moins chère.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var S = SIT[k % 4], km = k % 4 === 1, pA, pB, F, n;
+    do { if (km){ pA = cl(rnd(4, 9) / 10); pB = cl(pA - rnd(1, 3) / 10); n = rnd(2, 8) * 50; } else { pA = rnd(6, 15); pB = rnd(2, pA - 2); n = rnd(5, 30); } F = cl((pA - pB) * n); } while (pB <= 0 || !M.isInt(F));
+    var q = S[0] + fr(pA) + S[1] + fr(F) + S[2] + fr(pB) + S[3] + ' À partir de combien ' + (/^[aeiou]/.test(S[4]) ? 'd’' : 'de ') + S[4] + ' la seconde offre est-elle plus avantageuse ?';
+    return {type: 'num', q: q, lab: 'à partir de', v: n + 1, unit: S[4], steps: ['Offre 1 : ' + aff(pA, 0) + ' ; offre 2 : ' + aff(pB, F) + '.', 'Prix égaux : ' + mono(pA, 1) + ' = ' + aff(pB, F) + ' ⇔ ' + mono(cl(pA - pB), 1) + ' = ' + fr(F) + ' ⇔ x = ' + fr(n) + '.', 'Pour ' + n + ' ' + S[4] + ', les prix sont égaux ; à partir de ' + (n + 1) + ', la seconde est moins chère.'], traps: [[n, 'Pour ' + n + ', les deux offres coûtent exactement pareil : la seconde n’est pas encore plus avantageuse.']], key: 'k' + k + n + pA}; }},
+ {id: 'n29c', lv: 3, n: 'N29', nq: 3, t: 'Problèmes', d: 'Lire, calculer, interpréter.', c: 'Lis l’énoncé et calcule.', a: 'Écris la fonction affine qui modélise la situation, puis calcule une image (on connaît x) ou un antécédent (on connaît le résultat).',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var a = cl(rnd(3, 30) / 2), b = rnd(2, 20), x = rnd(3, 25), y = cl(a * x + b), q, v, st, u;
+    var C = [['Un plombier facture ' + b + ' € de déplacement plus ' + fr(a) + ' € par heure.', 'heures', '€', 'le prix pour ', 'Combien d’heures a-t-il travaillé si la facture est de '],
+      ['Une bougie mesure ' + (b + 20) + ' cm et raccourcit de ' + fr(cl(a / 10)) + ' cm par heure.', 'heures', 'cm', '', ''],
+      ['Un taxi demande ' + b + ' € de prise en charge et ' + fr(cl(a / 5)) + ' € par km.', 'km', '€', 'le prix pour ', 'Combien de km a-t-on parcourus pour payer '],
+      ['Un réservoir contient ' + b * 10 + ' L ; on le remplit à ' + fr(a) + ' L par minute.', 'minutes', 'L', 'le volume au bout de ', 'Au bout de combien de minutes contient-il ']][k % 4];
+    var image = k < 8;
+    if (k % 4 === 1){ var aa = cl(a / 10), h0 = b + 20, t = rnd(2, Math.floor(h0 / aa) - 1); if (t < 2) return this.g(k); q = C[0] + ' Quelle est sa hauteur après ' + t + ' heures ?'; v = cl(h0 - aa * t); u = 'cm'; st = ['h(t) = ' + h0 + ' ' + MINUS + ' ' + fr(aa) + 't', 'h(' + t + ') = ' + h0 + ' ' + MINUS + ' ' + fr(aa) + ' × ' + t + ' = ' + fr(v) + ' cm.']; }
+    else { var aa2 = k % 4 === 2 ? cl(a / 5) : a, b2 = k % 4 === 3 ? b * 10 : b, yy = cl(aa2 * x + b2);
+      if (image){ q = C[0] + ' Calcule ' + C[3] + x + ' ' + C[1] + '.'; v = yy; u = C[2]; st = ['f(x) = ' + aff(aa2, b2), 'f(' + x + ') = ' + fr(aa2) + ' × ' + x + ' + ' + b2 + ' = ' + fr(yy) + ' ' + u + '.']; }
+      else { q = C[0] + ' ' + C[4] + fr(yy) + ' ' + C[2] + ' ?'; v = x; u = C[1]; st = ['On résout ' + aff(aa2, b2) + ' = ' + fr(yy) + '.', mono(aa2, 1) + ' = ' + fr(cl(yy - b2)) + ', donc x = ' + fr(cl(yy - b2)) + ' ÷ ' + fr(aa2) + ' = ' + x + '.']; } }
+    return {type: 'num', q: q, v: v, unit: u, steps: st, key: 'k' + k + q}; }}
+);
+var NOTIONS = [
+ {n: 'N26', t: 'Utiliser la définition des fonctions linéaires et affines', r: 'f est affine si f(x) = ax + b ; linéaire si f(x) = ax (b = 0) : c’est la proportionnalité.'},
+ {n: 'N27', t: 'Calculer images et antécédents par une fonction linéaire ou affine', r: 'image : on remplace x ; antécédent : on résout ax + b = y.'},
+ {n: 'N28', t: 'Déterminer ou représenter graphiquement une fonction linéaire ou affine', r: 'la représentation est une droite ; b est l’ordonnée à l’origine, a = (f(x₂) − f(x₁)) ÷ (x₂ − x₁).'},
+ {n: 'N29', t: 'Résoudre des problèmes avec des fonctions affines', r: 'on modélise par f(x) = ax + b (b : partie fixe, a : prix ou vitesse par unité), puis on calcule ou on compare.'}
+];
+
+M.start({key: '3e-s17', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>
