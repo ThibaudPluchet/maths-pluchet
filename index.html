@@ -95,6 +95,8 @@ summary .badge{margin-left:4px}
 .dnbacts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .dnbbtn{font:inherit;font-size:14px;padding:8px 12px;border-radius:10px;border:1px dashed var(--line);background:transparent;color:var(--ink);cursor:pointer}
 .dnbbtn:hover{border-color:currentColor}
+.dnbview{display:flex;flex-direction:column;gap:14px;scroll-margin-top:84px}
+.dnbrow.first{border-top:0;padding-top:2px}
 .dnbacts .doc{border:1px solid var(--line);border-radius:10px;padding:7px 12px;text-decoration:none}
 .empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:28px;text-align:center;color:var(--muted)}
 .intro{color:var(--muted);margin:-8px 0 0;font-size:15px}
@@ -295,7 +297,7 @@ function start(D){
   // Adresse de la page (avec la classe) gardée pour le bouton « Retour » des exerciseurs
   try { localStorage.setItem('mp:retour', location.href); } catch(e){}
   window.addEventListener('hashchange', function(){ location.reload(); });
-  var view = 'cours', seen = null, firstVisit = false, seqSel = null;
+  var view = 'cours', seen = null, firstVisit = false, seqSel = null, dnbSel = null;
   // ?vue=evals : ouvre directement l'onglet Évaluations (bouton « Retour » des exerciseurs d'évaluation)
   if (/[?&]vue=evals\b/.test(location.search)){ view = 'evals'; try { history.replaceState(null, '', location.pathname + location.hash); } catch(e){} }
 
@@ -305,7 +307,7 @@ function start(D){
     // accès enseignant : « Toutes les 4e » / « Toutes les 3e » montre tout le niveau, toutes classes confondues
     (D.prof ? [l] : []).concat(D.classes[l]).forEach(function(c){
       var b = el('button','pill' + (c === l ? ' allpill' : ''), c === l ? 'Toutes les ' + l : c); b.dataset.c = c;
-      b.onclick = function(){ current = c; store('classe', c); seqSel = null; view = 'cours'; loadSeen(); render(); };
+      b.onclick = function(){ current = c; store('classe', c); seqSel = null; dnbSel = null; view = 'cours'; loadSeen(); render(); };
       g.appendChild(b);
     });
     picker.appendChild(g);
@@ -651,17 +653,52 @@ function start(D){
     if (total > mine.length) intro.appendChild(el('p','dnbmore', '🔒 ' + (total - mine.length) + ' autre' + (total - mine.length > 1 ? 's parties apparaîtront' : ' partie apparaîtra') + ' au fil de l’année, quand vous aurez fait en classe les notions qu’elles demandent.'));
     main.appendChild(intro);
     if (!mine.length){ main.appendChild(el('div','empty','Pas encore d’exercice de brevet pour la ' + current + ' : ils arrivent quand les notions sont faites en classe.')); return; }
-    var bySeq = {};
-    mine.forEach(function(p){ (bySeq[p[sk]] = bySeq[p[sk]] || []).push(p); });
     var titles = (B.seqs || {})[lv] || {}, seen = {};
     try { seen = JSON.parse(localStorage.getItem('mp:dnbvu') || '{}'); } catch(e){}
+    // Séquences de même nom (« Fonctions (1) », « Fonctions (2) »…) regroupées en un seul bloc, comme dans Mes cours
+    var bySeq = {}, groups = [], byKey = {}, last = 0;
+    mine.forEach(function(p){ (bySeq[p[sk]] = bySeq[p[sk]] || []).push(p); });
     Object.keys(bySeq).map(Number).sort(function(a, b){ return (a || 99) - (b || 99); }).forEach(function(s){
+      var k = s ? domainOf(titles[s] || ('Séquence ' + s)) : 'Algorithmique';
+      if (!byKey[k]){ byKey[k] = {key:k, nums:[], n:0}; groups.push(byKey[k]); }
+      byKey[k].nums.push(s); byKey[k].n += bySeq[s].length;
+      if (s > last) last = s;
+    });
+    var curKey = last ? domainOf(titles[last] || ('Séquence ' + last)) : groups[0].key;
+    if (!byKey[dnbSel]) dnbSel = curKey;
+    function nums(g){ var n = g.nums.filter(Boolean); return n.length ? (n.length > 1 ? 'Séquences ' : 'Séquence ') + n.join(' et ') : 'Scratch'; }
+    function count(n){ return n + ' exercice' + (n > 1 ? 's' : ''); }
+
+    var nav = el('nav','seqnav'); nav.setAttribute('aria-label','Séquences');
+    nav.appendChild(el('p','kicker','Choisis une séquence'));
+    var list = el('div','seqlist');
+    groups.forEach(function(g){
+      var b = el('button','seqbtn withico'); b.type = 'button';
+      b.setAttribute('aria-pressed', g.key === dnbSel);
+      b.appendChild(seqIcon(g.key));
+      var tx = el('span','txt');
+      tx.appendChild(el('span','sn', nums(g) + ' · ' + count(g.n)));
+      tx.appendChild(el('span','st', g.key)); b.appendChild(tx);
+      b.onclick = function(){ dnbSel = g.key; render(); var t = document.getElementById('dnb-list'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
+      list.appendChild(b);
+    });
+    nav.appendChild(list); main.appendChild(nav);
+
+    var g = byKey[dnbSel];
+    var sec = el('section','dnbview'); sec.id = 'dnb-list';
+    var hd = el('div','seqhead withico');
+    hd.appendChild(seqIcon(g.key));
+    var hx = el('div'); hx.appendChild(el('p','seqname', nums(g) + ' · ' + count(g.n))); hx.appendChild(el('h2', null, g.key)); hd.appendChild(hx);
+    sec.appendChild(hd);
+    g.nums.forEach(function(s){
       var box = el('section','dnbseq');
-      var h = el('h3'); h.appendChild(el('span','dnbno', s ? 'Séquence ' + s : 'Algorithmique')); h.appendChild(document.createTextNode(s ? (titles[s] || '') : 'Scratch'));
-      h.appendChild(el('span','dnbn', bySeq[s].length + ' exercice' + (bySeq[s].length > 1 ? 's' : '')));
-      box.appendChild(h);
-      bySeq[s].forEach(function(p){
-        var row = el('div','dnbrow'), info = el('div','dnbinfo');
+      if (g.nums.length > 1){
+        var h = el('h3'); h.appendChild(el('span','dnbno', 'Séquence ' + s)); h.appendChild(document.createTextNode(titles[s] || ''));
+        h.appendChild(el('span','dnbn', count(bySeq[s].length)));
+        box.appendChild(h);
+      }
+      bySeq[s].forEach(function(p, i){
+        var row = el('div','dnbrow' + (i || g.nums.length > 1 ? '' : ' first')), info = el('div','dnbinfo');
         info.appendChild(el('b', null, p.titre));
         info.appendChild(el('span','dnbsrc', 'Brevet ' + p.src + ' · ' + p.theme));
         row.appendChild(info);
@@ -674,8 +711,9 @@ function start(D){
         if (seen[p.id]) showC();
         row.appendChild(acts); box.appendChild(row);
       });
-      main.appendChild(box);
+      sec.appendChild(box);
     });
+    main.appendChild(sec);
   }
 
   if (current) loadSeen();
