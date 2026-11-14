@@ -187,5 +187,117 @@
 "src": "Nouvelle-Calédonie, 7 décembre 2023",
 "e": "annales/2023/2023-ncal-sujet-complet.pdf",
 "c": "annales/2023/2023-ncal-corrige-complet.pdf"
+},
+{
+"id": "2026-anor",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"e": "annales/2026/2026-anor-sujet-complet.pdf",
+"c": "annales/2026/2026-anor-corrige-complet.pdf"
+},
+{
+"id": "2026-asie",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"e": "annales/2026/2026-asie-sujet-complet.pdf",
+"c": "annales/2026/2026-asie-corrige-complet.pdf"
+},
+{
+"id": "2026-cetr",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"e": "annales/2026/2026-cetr-sujet-complet.pdf",
+"c": "annales/2026/2026-cetr-corrige-complet.pdf"
+},
+{
+"id": "2026-polj",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"e": "annales/2026/2026-polj-sujet-complet.pdf",
+"c": "annales/2026/2026-polj-corrige-complet.pdf"
+},
+{
+"id": "2026-antj",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"e": "annales/2026/2026-antj-sujet-complet.pdf",
+"c": "annales/2026/2026-antj-corrige-complet.pdf"
+},
+{
+"id": "2026-metj",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"e": "annales/2026/2026-metj-sujet-complet.pdf",
+"c": "annales/2026/2026-metj-corrige-complet.pdf"
+},
+{
+"id": "2022-anor",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"e": "annales/2022/2022-anor-sujet-complet.pdf",
+"c": "annales/2022/2022-anor-corrige-complet.pdf"
+},
+{
+"id": "2022-asie",
+"an": 2022,
+"src": "Asie, juin 2022",
+"e": "annales/2022/2022-asie-sujet-complet.pdf",
+"c": "annales/2022/2022-asie-corrige-complet.pdf"
+},
+{
+"id": "2022-polj",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"e": "annales/2022/2022-polj-sujet-complet.pdf",
+"c": "annales/2022/2022-polj-corrige-complet.pdf"
+},
+{
+"id": "2022-mets",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"e": "annales/2022/2022-mets-sujet-complet.pdf",
+"c": "annales/2022/2022-mets-corrige-complet.pdf"
+},
+{
+"id": "2022-cetr",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"e": "annales/2022/2022-cetr-sujet-complet.pdf",
+"c": "annales/2022/2022-cetr-corrige-complet.pdf"
+},
+{
+"id": "2022-metj",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"e": "annales/2022/2022-metj-sujet-complet.pdf",
+"c": "annales/2022/2022-metj-corrige-complet.pdf"
+},
+{
+"id": "2022-pols",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"e": "annales/2022/2022-pols-sujet-complet.pdf",
+"c": "annales/2022/2022-pols-corrige-complet.pdf"
+},
+{
+"id": "2022-msep",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"e": "annales/2022/2022-msep-sujet-complet.pdf",
+"c": "annales/2022/2022-msep-corrige-complet.pdf"
+},
+{
+"id": "2022-asud",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"e": "annales/2022/2022-asud-sujet-complet.pdf",
+"c": "annales/2022/2022-asud-corrige-complet.pdf"
+},
+{
+"id": "2022-ncal",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"e": "annales/2022/2022-ncal-sujet-complet.pdf",
+"c": "annales/2022/2022-ncal-corrige-complet.pdf"
 }
 ]

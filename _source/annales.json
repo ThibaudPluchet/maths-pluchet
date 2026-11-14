@@ -5593,5 +5593,3692 @@
 "n4": [],
 "e": "annales/2023/2023-ncal-6.pdf",
 "c": "annales/2023/2023-ncal-6-corrige.pdf"
+},
+{
+"id": "2026-anor-a1",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 1",
+"theme": "Addition de fractions",
+"s3": 5,
+"n3": [],
+"s4": 12,
+"n4": [
+28
+],
+"e": "annales/2026/2026-anor-a1.pdf",
+"c": "annales/2026/2026-anor-a1-corrige.pdf"
+},
+{
+"id": "2026-anor-a2",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 2",
+"theme": "Pourcentage de réduction",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2026/2026-anor-a2.pdf",
+"c": "annales/2026/2026-anor-a2-corrige.pdf"
+},
+{
+"id": "2026-anor-a3",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 3",
+"theme": "Nature d’un quadrilatère",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [],
+"e": "annales/2026/2026-anor-a3.pdf",
+"c": "annales/2026/2026-anor-a3-corrige.pdf"
+},
+{
+"id": "2026-anor-a4",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 4",
+"theme": "Équation du premier degré",
+"s3": 7,
+"n3": [],
+"s4": 16,
+"n4": [
+38
+],
+"e": "annales/2026/2026-anor-a4.pdf",
+"c": "annales/2026/2026-anor-a4-corrige.pdf"
+},
+{
+"id": "2026-anor-a5",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 5",
+"theme": "Repérage dans le plan",
+"s3": 8,
+"n3": [],
+"s4": 9,
+"n4": [],
+"e": "annales/2026/2026-anor-a5.pdf",
+"c": "annales/2026/2026-anor-a5-corrige.pdf"
+},
+{
+"id": "2026-anor-a6",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 6",
+"theme": "Médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2026/2026-anor-a6.pdf",
+"c": "annales/2026/2026-anor-a6-corrige.pdf"
+},
+{
+"id": "2026-anor-a7",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 7",
+"theme": "Trigonométrie (longueur)",
+"s3": 15,
+"n3": [
+24
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-anor-a7.pdf",
+"c": "annales/2026/2026-anor-a7-corrige.pdf"
+},
+{
+"id": "2026-anor-a8",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 8",
+"theme": "Diviseurs",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+13
+],
+"e": "annales/2026/2026-anor-a8.pdf",
+"c": "annales/2026/2026-anor-a8-corrige.pdf"
+},
+{
+"id": "2026-anor-1",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Deux triangles",
+"theme": "Réciproque de Pythagore, aire, parallélisme, Thalès, angles",
+"s3": 13,
+"n3": [],
+"s4": 19,
+"n4": [
+22,
+32
+],
+"e": "annales/2026/2026-anor-1.pdf",
+"c": "annales/2026/2026-anor-1-corrige.pdf"
+},
+{
+"id": "2026-anor-2a",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Les fonctions f et g, questions 1 à 4",
+"theme": "Image, antécédent, tableur, lecture graphique",
+"s3": 17,
+"n3": [
+5,
+13,
+14,
+26
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-anor-2a.pdf",
+"c": "annales/2026/2026-anor-2a-corrige.pdf"
+},
+{
+"id": "2026-anor-2b",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Les fonctions f et g, question 5",
+"theme": "Double distributivité, équation x² = a",
+"s3": 19,
+"n3": [
+18,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-anor-2b.pdf",
+"c": "annales/2026/2026-anor-2b-corrige.pdf"
+},
+{
+"id": "2026-anor-3a",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – L’intelligence artificielle, partie A",
+"theme": "Pourcentages, probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+34,
+47
+],
+"e": "annales/2026/2026-anor-3a.pdf",
+"c": "annales/2026/2026-anor-3a-corrige.pdf"
+},
+{
+"id": "2026-anor-3b",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – L’intelligence artificielle, partie B",
+"theme": "Puissances de 10, écriture scientifique",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+30,
+31
+],
+"e": "annales/2026/2026-anor-3b.pdf",
+"c": "annales/2026/2026-anor-3b-corrige.pdf"
+},
+{
+"id": "2026-anor-4",
+"an": 2026,
+"src": "Amérique du Nord, 3 juin 2026",
+"ex": 4,
+"titre": "Exercice 4 – Carrés et triangles (Scratch), questions 1 et 2",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2026/2026-anor-4.pdf",
+"c": "annales/2026/2026-anor-4-corrige.pdf"
+},
+{
+"id": "2026-asie-a1",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 1",
+"theme": "Écriture scientifique",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+31
+],
+"e": "annales/2026/2026-asie-a1.pdf",
+"c": "annales/2026/2026-asie-a1-corrige.pdf"
+},
+{
+"id": "2026-asie-a2",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 2",
+"theme": "Identité remarquable",
+"s3": 12,
+"n3": [
+19
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-asie-a2.pdf",
+"c": "annales/2026/2026-asie-a2-corrige.pdf"
+},
+{
+"id": "2026-asie-a3",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 3",
+"theme": "Volume du pavé droit",
+"s3": 21,
+"n3": [],
+"s4": 2,
+"n4": [],
+"e": "annales/2026/2026-asie-a3.pdf",
+"c": "annales/2026/2026-asie-a3-corrige.pdf"
+},
+{
+"id": "2026-asie-a4",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 4",
+"theme": "Divisibilité par 9",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+13
+],
+"e": "annales/2026/2026-asie-a4.pdf",
+"c": "annales/2026/2026-asie-a4-corrige.pdf"
+},
+{
+"id": "2026-asie-a5",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 5",
+"theme": "Vitesse moyenne",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35
+],
+"e": "annales/2026/2026-asie-a5.pdf",
+"c": "annales/2026/2026-asie-a5-corrige.pdf"
+},
+{
+"id": "2026-asie-a6",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 6",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2026/2026-asie-a6.pdf",
+"c": "annales/2026/2026-asie-a6-corrige.pdf"
+},
+{
+"id": "2026-asie-a7",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 7",
+"theme": "Pourcentage de baisse",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2026/2026-asie-a7.pdf",
+"c": "annales/2026/2026-asie-a7-corrige.pdf"
+},
+{
+"id": "2026-asie-a8",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 8",
+"theme": "Angles d’un triangle",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [],
+"e": "annales/2026/2026-asie-a8.pdf",
+"c": "annales/2026/2026-asie-a8-corrige.pdf"
+},
+{
+"id": "2026-asie-a9",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 9",
+"theme": "Effectif, médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2026/2026-asie-a9.pdf",
+"c": "annales/2026/2026-asie-a9-corrige.pdf"
+},
+{
+"id": "2026-asie-1a",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Les forfaits, question 1",
+"theme": "Calculs de prix",
+"s3": 14,
+"n3": [],
+"s4": 9,
+"n4": [
+21
+],
+"e": "annales/2026/2026-asie-1a.pdf",
+"c": "annales/2026/2026-asie-1a-corrige.pdf"
+},
+{
+"id": "2026-asie-1b",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Les forfaits, question 2",
+"theme": "Fonctions affines, équation",
+"s3": 17,
+"n3": [
+26
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-asie-1b.pdf",
+"c": "annales/2026/2026-asie-1b-corrige.pdf"
+},
+{
+"id": "2026-asie-2a",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Le gobelet, questions 1 à 3",
+"theme": "Théorème de Pythagore, théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+10,
+22
+],
+"e": "annales/2026/2026-asie-2a.pdf",
+"c": "annales/2026/2026-asie-2a-corrige.pdf"
+},
+{
+"id": "2026-asie-2b",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Le gobelet, question 4",
+"theme": "Volume du cône",
+"s3": 21,
+"n3": [
+35
+],
+"s4": 17,
+"n4": [
+40
+],
+"e": "annales/2026/2026-asie-2b.pdf",
+"c": "annales/2026/2026-asie-2b-corrige.pdf"
+},
+{
+"id": "2026-asie-3a",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Deux programmes, questions 1 à 4",
+"theme": "Programme de calcul, tableur, expression littérale",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+18,
+19,
+20
+],
+"e": "annales/2026/2026-asie-3a.pdf",
+"c": "annales/2026/2026-asie-3a-corrige.pdf"
+},
+{
+"id": "2026-asie-3b",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Deux programmes, questions 5 à 8",
+"theme": "Double distributivité, équation produit",
+"s3": 19,
+"n3": [
+18,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-asie-3b.pdf",
+"c": "annales/2026/2026-asie-3b-corrige.pdf"
+},
+{
+"id": "2026-asie-4a",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 4,
+"titre": "Exercice 4 – Triangle et carré, question 1",
+"theme": "Angles (triangle équilatéral, carré)",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [],
+"e": "annales/2026/2026-asie-4a.pdf",
+"c": "annales/2026/2026-asie-4a-corrige.pdf"
+},
+{
+"id": "2026-asie-4b",
+"an": 2026,
+"src": "Asie, 15 juin 2026",
+"ex": 4,
+"titre": "Exercice 4 – Triangle et carré, questions 2 et 3",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2026/2026-asie-4b.pdf",
+"c": "annales/2026/2026-asie-4b-corrige.pdf"
+},
+{
+"id": "2026-cetr-a1",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 1",
+"theme": "Médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2026/2026-cetr-a1.pdf",
+"c": "annales/2026/2026-cetr-a1-corrige.pdf"
+},
+{
+"id": "2026-cetr-a2",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 2",
+"theme": "Translation",
+"s3": 11,
+"n3": [],
+"s4": 7,
+"n4": [
+16
+],
+"e": "annales/2026/2026-cetr-a2.pdf",
+"c": "annales/2026/2026-cetr-a2-corrige.pdf"
+},
+{
+"id": "2026-cetr-a3",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 3",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2026/2026-cetr-a3.pdf",
+"c": "annales/2026/2026-cetr-a3-corrige.pdf"
+},
+{
+"id": "2026-cetr-a4",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 4",
+"theme": "Cosinus",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-cetr-a4.pdf",
+"c": "annales/2026/2026-cetr-a4-corrige.pdf"
+},
+{
+"id": "2026-cetr-a5",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 5",
+"theme": "Écriture scientifique",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+31
+],
+"e": "annales/2026/2026-cetr-a5.pdf",
+"c": "annales/2026/2026-cetr-a5-corrige.pdf"
+},
+{
+"id": "2026-cetr-a6",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 6",
+"theme": "Vitesse, distance",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35
+],
+"e": "annales/2026/2026-cetr-a6.pdf",
+"c": "annales/2026/2026-cetr-a6-corrige.pdf"
+},
+{
+"id": "2026-cetr-a7",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 7",
+"theme": "Factoriser",
+"s3": 16,
+"n3": [
+25
+],
+"s4": 3,
+"n4": [
+7
+],
+"e": "annales/2026/2026-cetr-a7.pdf",
+"c": "annales/2026/2026-cetr-a7-corrige.pdf"
+},
+{
+"id": "2026-cetr-a8",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 8",
+"theme": "Pourcentage de baisse",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2026/2026-cetr-a8.pdf",
+"c": "annales/2026/2026-cetr-a8-corrige.pdf"
+},
+{
+"id": "2026-cetr-a9",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 9",
+"theme": "Lecture graphique",
+"s3": 8,
+"n3": [
+12
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-cetr-a9.pdf",
+"c": "annales/2026/2026-cetr-a9-corrige.pdf"
+},
+{
+"id": "2026-cetr-1a",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Deux triangles rectangles, questions 1 et 2",
+"theme": "Construction, théorème de Pythagore",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [
+10
+],
+"e": "annales/2026/2026-cetr-1a.pdf",
+"c": "annales/2026/2026-cetr-1a-corrige.pdf"
+},
+{
+"id": "2026-cetr-1b",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Deux triangles rectangles, questions 3 à 5",
+"theme": "Théorème de Thalès, périmètres",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2026/2026-cetr-1b.pdf",
+"c": "annales/2026/2026-cetr-1b-corrige.pdf"
+},
+{
+"id": "2026-cetr-2a",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Les bonbons, partie A",
+"theme": "Volumes du cylindre et de la boule, conversion",
+"s3": 21,
+"n3": [
+34,
+36
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-cetr-2a.pdf",
+"c": "annales/2026/2026-cetr-2a-corrige.pdf"
+},
+{
+"id": "2026-cetr-2b",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Les bonbons, partie B",
+"theme": "Comparaison de prix",
+"s3": 14,
+"n3": [],
+"s4": 5,
+"n4": [
+11
+],
+"e": "annales/2026/2026-cetr-2b.pdf",
+"c": "annales/2026/2026-cetr-2b-corrige.pdf"
+},
+{
+"id": "2026-cetr-3a",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Deux programmes, questions 1 et 2",
+"theme": "Programmes de calcul",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+2,
+18
+],
+"e": "annales/2026/2026-cetr-3a.pdf",
+"c": "annales/2026/2026-cetr-3a-corrige.pdf"
+},
+{
+"id": "2026-cetr-3b",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Deux programmes, question 3",
+"theme": "Équation x² = a",
+"s3": 19,
+"n3": [
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-cetr-3b.pdf",
+"c": "annales/2026/2026-cetr-3b-corrige.pdf"
+},
+{
+"id": "2026-cetr-3c",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Deux programmes, question 4",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2026/2026-cetr-3c.pdf",
+"c": "annales/2026/2026-cetr-3c-corrige.pdf"
+},
+{
+"id": "2026-cetr-3d",
+"an": 2026,
+"src": "Centres étrangers, 18 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Deux programmes, questions 5 et 6",
+"theme": "Double distributivité, équation",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-cetr-3d.pdf",
+"c": "annales/2026/2026-cetr-3d-corrige.pdf"
+},
+{
+"id": "2026-polj-a1",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 1",
+"theme": "Médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2026/2026-polj-a1.pdf",
+"c": "annales/2026/2026-polj-a1-corrige.pdf"
+},
+{
+"id": "2026-polj-a2",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 2",
+"theme": "Écriture scientifique",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+31
+],
+"e": "annales/2026/2026-polj-a2.pdf",
+"c": "annales/2026/2026-polj-a2-corrige.pdf"
+},
+{
+"id": "2026-polj-a3",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 3",
+"theme": "Aire d’un triangle rectangle",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [],
+"e": "annales/2026/2026-polj-a3.pdf",
+"c": "annales/2026/2026-polj-a3-corrige.pdf"
+},
+{
+"id": "2026-polj-a4",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 4",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2026/2026-polj-a4.pdf",
+"c": "annales/2026/2026-polj-a4-corrige.pdf"
+},
+{
+"id": "2026-polj-a5",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 5",
+"theme": "Pourcentage de baisse",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2026/2026-polj-a5.pdf",
+"c": "annales/2026/2026-polj-a5-corrige.pdf"
+},
+{
+"id": "2026-polj-a6",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 6",
+"theme": "Développer et réduire",
+"s3": 1,
+"n3": [],
+"s4": 3,
+"n4": [
+6,
+8
+],
+"e": "annales/2026/2026-polj-a6.pdf",
+"c": "annales/2026/2026-polj-a6-corrige.pdf"
+},
+{
+"id": "2026-polj-a7",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 7",
+"theme": "Conversion de volumes",
+"s3": 21,
+"n3": [],
+"s4": 15,
+"n4": [
+36
+],
+"e": "annales/2026/2026-polj-a7.pdf",
+"c": "annales/2026/2026-polj-a7-corrige.pdf"
+},
+{
+"id": "2026-polj-a8",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 8",
+"theme": "Fonction : calculer une image",
+"s3": 3,
+"n3": [
+5
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-polj-a8.pdf",
+"c": "annales/2026/2026-polj-a8-corrige.pdf"
+},
+{
+"id": "2026-polj-a9",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 9",
+"theme": "Quadrilatères",
+"s3": 11,
+"n3": [],
+"s4": 7,
+"n4": [],
+"e": "annales/2026/2026-polj-a9.pdf",
+"c": "annales/2026/2026-polj-a9-corrige.pdf"
+},
+{
+"id": "2026-polj-1a",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Périmètres, partie A",
+"theme": "Expression littérale, périmètre",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+18,
+20
+],
+"e": "annales/2026/2026-polj-1a.pdf",
+"c": "annales/2026/2026-polj-1a-corrige.pdf"
+},
+{
+"id": "2026-polj-1b",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Périmètres, partie B, question 1",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2026/2026-polj-1b.pdf",
+"c": "annales/2026/2026-polj-1b-corrige.pdf"
+},
+{
+"id": "2026-polj-1c",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Périmètres, partie B, questions 2 et 3",
+"theme": "Tableur, équation",
+"s3": 7,
+"n3": [],
+"s4": 16,
+"n4": [
+19,
+38
+],
+"e": "annales/2026/2026-polj-1c.pdf",
+"c": "annales/2026/2026-polj-1c-corrige.pdf"
+},
+{
+"id": "2026-polj-2a",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Points alignés ?, questions 1 et 2",
+"theme": "Angles d’un triangle isocèle, réciproque de Pythagore",
+"s3": 13,
+"n3": [],
+"s4": 14,
+"n4": [
+32
+],
+"e": "annales/2026/2026-polj-2a.pdf",
+"c": "annales/2026/2026-polj-2a-corrige.pdf"
+},
+{
+"id": "2026-polj-2b",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Points alignés ?, questions 3 et 4",
+"theme": "Trigonométrie (cosinus), angles",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-polj-2b.pdf",
+"c": "annales/2026/2026-polj-2b-corrige.pdf"
+},
+{
+"id": "2026-polj-3a",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Les Jeux olympiques à Tahiti, question 1",
+"theme": "Latitude et longitude",
+"s3": 6,
+"n3": [
+9
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-polj-3a.pdf",
+"c": "annales/2026/2026-polj-3a-corrige.pdf"
+},
+{
+"id": "2026-polj-3b",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Les Jeux olympiques à Tahiti, question 2",
+"theme": "Durées",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+36
+],
+"e": "annales/2026/2026-polj-3b.pdf",
+"c": "annales/2026/2026-polj-3b-corrige.pdf"
+},
+{
+"id": "2026-polj-3c",
+"an": 2026,
+"src": "Polynésie, 26 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Les Jeux olympiques à Tahiti, question 3",
+"theme": "Volume du cylindre, masse volumique",
+"s3": 21,
+"n3": [
+34
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-polj-3c.pdf",
+"c": "annales/2026/2026-polj-3c-corrige.pdf"
+},
+{
+"id": "2026-antj-a1",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 1",
+"theme": "Repérage dans le plan",
+"s3": 8,
+"n3": [],
+"s4": 9,
+"n4": [],
+"e": "annales/2026/2026-antj-a1.pdf",
+"c": "annales/2026/2026-antj-a1-corrige.pdf"
+},
+{
+"id": "2026-antj-a2",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 2",
+"theme": "Symétrie centrale",
+"s3": 11,
+"n3": [],
+"s4": 7,
+"n4": [],
+"e": "annales/2026/2026-antj-a2.pdf",
+"c": "annales/2026/2026-antj-a2-corrige.pdf"
+},
+{
+"id": "2026-antj-a3",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 3",
+"theme": "Aire d’un triangle",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [],
+"e": "annales/2026/2026-antj-a3.pdf",
+"c": "annales/2026/2026-antj-a3-corrige.pdf"
+},
+{
+"id": "2026-antj-a4",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 4",
+"theme": "Fréquence",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+48
+],
+"e": "annales/2026/2026-antj-a4.pdf",
+"c": "annales/2026/2026-antj-a4-corrige.pdf"
+},
+{
+"id": "2026-antj-a5",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 5",
+"theme": "Expression littérale",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+20
+],
+"e": "annales/2026/2026-antj-a5.pdf",
+"c": "annales/2026/2026-antj-a5-corrige.pdf"
+},
+{
+"id": "2026-antj-a6",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 6",
+"theme": "Durées",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+36
+],
+"e": "annales/2026/2026-antj-a6.pdf",
+"c": "annales/2026/2026-antj-a6-corrige.pdf"
+},
+{
+"id": "2026-antj-a7",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 7",
+"theme": "Moyenne",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2026/2026-antj-a7.pdf",
+"c": "annales/2026/2026-antj-a7-corrige.pdf"
+},
+{
+"id": "2026-antj-a8",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 8",
+"theme": "Angles d’un triangle isocèle",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [],
+"e": "annales/2026/2026-antj-a8.pdf",
+"c": "annales/2026/2026-antj-a8-corrige.pdf"
+},
+{
+"id": "2026-antj-a9",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 9",
+"theme": "Vitesse, durée",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35
+],
+"e": "annales/2026/2026-antj-a9.pdf",
+"c": "annales/2026/2026-antj-a9-corrige.pdf"
+},
+{
+"id": "2026-antj-1a",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Les triangles, questions 1 et 2",
+"theme": "Longueurs, théorème de Pythagore",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [
+10
+],
+"e": "annales/2026/2026-antj-1a.pdf",
+"c": "annales/2026/2026-antj-1a-corrige.pdf"
+},
+{
+"id": "2026-antj-1b",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Les triangles, questions 3 à 5",
+"theme": "Trigonométrie, réciproque de Thalès, homothétie",
+"s3": 18,
+"n3": [
+6,
+30
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-antj-1b.pdf",
+"c": "annales/2026/2026-antj-1b-corrige.pdf"
+},
+{
+"id": "2026-antj-1rec",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Les triangles, question 4",
+"theme": "Réciproque du théorème de Thalès",
+"s3": 20,
+"n3": [],
+"s4": 19,
+"n4": [
+45
+],
+"e": "annales/2026/2026-antj-1rec.pdf",
+"c": "annales/2026/2026-antj-1rec-corrige.pdf"
+},
+{
+"id": "2026-antj-2",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Deux programmes de calcul",
+"theme": "Programme de calcul, expression littérale, équation, Scratch",
+"s3": 7,
+"n3": [],
+"s4": 16,
+"n4": [
+6,
+19,
+38
+],
+"e": "annales/2026/2026-antj-2.pdf",
+"c": "annales/2026/2026-antj-2-corrige.pdf"
+},
+{
+"id": "2026-antj-3",
+"an": 2026,
+"src": "Antilles-Guyane, 30 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Le centre de loisirs",
+"theme": "Fonctions linéaires et affines, tableur",
+"s3": 17,
+"n3": [
+26
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-antj-3.pdf",
+"c": "annales/2026/2026-antj-3-corrige.pdf"
+},
+{
+"id": "2026-metj-a1",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 1",
+"theme": "Écriture fractionnaire",
+"s3": 5,
+"n3": [],
+"s4": 12,
+"n4": [],
+"e": "annales/2026/2026-metj-a1.pdf",
+"c": "annales/2026/2026-metj-a1-corrige.pdf"
+},
+{
+"id": "2026-metj-a2",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 2",
+"theme": "Nombres relatifs",
+"s3": 1,
+"n3": [],
+"s4": 1,
+"n4": [
+1
+],
+"e": "annales/2026/2026-metj-a2.pdf",
+"c": "annales/2026/2026-metj-a2-corrige.pdf"
+},
+{
+"id": "2026-metj-a3",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 3",
+"theme": "Quatrième proportionnelle",
+"s3": 14,
+"n3": [],
+"s4": 5,
+"n4": [
+11
+],
+"e": "annales/2026/2026-metj-a3.pdf",
+"c": "annales/2026/2026-metj-a3-corrige.pdf"
+},
+{
+"id": "2026-metj-a4",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 4",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2026/2026-metj-a4.pdf",
+"c": "annales/2026/2026-metj-a4-corrige.pdf"
+},
+{
+"id": "2026-metj-a5",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 5",
+"theme": "Équation du premier degré",
+"s3": 7,
+"n3": [],
+"s4": 16,
+"n4": [
+38
+],
+"e": "annales/2026/2026-metj-a5.pdf",
+"c": "annales/2026/2026-metj-a5-corrige.pdf"
+},
+{
+"id": "2026-metj-a6",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 6",
+"theme": "Notation scientifique",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+31
+],
+"e": "annales/2026/2026-metj-a6.pdf",
+"c": "annales/2026/2026-metj-a6-corrige.pdf"
+},
+{
+"id": "2026-metj-a7",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 7",
+"theme": "Diagramme circulaire",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+23
+],
+"e": "annales/2026/2026-metj-a7.pdf",
+"c": "annales/2026/2026-metj-a7-corrige.pdf"
+},
+{
+"id": "2026-metj-a8",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 8",
+"theme": "Périmètre",
+"s3": 21,
+"n3": [],
+"s4": 17,
+"n4": [],
+"e": "annales/2026/2026-metj-a8.pdf",
+"c": "annales/2026/2026-metj-a8-corrige.pdf"
+},
+{
+"id": "2026-metj-a9",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 0,
+"titre": "Automatismes, question 9",
+"theme": "Cosinus",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-metj-a9.pdf",
+"c": "annales/2026/2026-metj-a9-corrige.pdf"
+},
+{
+"id": "2026-metj-1",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 1,
+"titre": "Exercice 1 – Les Jeux paralympiques",
+"theme": "Tableau, pourcentages, médiane",
+"s3": 23,
+"n3": [],
+"s4": 15,
+"n4": [
+24,
+34
+],
+"e": "annales/2026/2026-metj-1.pdf",
+"c": "annales/2026/2026-metj-1-corrige.pdf"
+},
+{
+"id": "2026-metj-2a",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Les deux triangles, questions 1 et 2",
+"theme": "Réciproque de Pythagore, théorème de Thalès",
+"s3": 13,
+"n3": [],
+"s4": 19,
+"n4": [
+22,
+32
+],
+"e": "annales/2026/2026-metj-2a.pdf",
+"c": "annales/2026/2026-metj-2a-corrige.pdf"
+},
+{
+"id": "2026-metj-2b",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 2,
+"titre": "Exercice 2 – Les deux triangles, questions 3 à 5",
+"theme": "Angles alternes-internes, triangles semblables, aire",
+"s3": 10,
+"n3": [
+16
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-metj-2b.pdf",
+"c": "annales/2026/2026-metj-2b-corrige.pdf"
+},
+{
+"id": "2026-metj-3a",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Le volume d’une boule, partie A",
+"theme": "Lecture graphique (image, antécédent)",
+"s3": 8,
+"n3": [
+13
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-metj-3a.pdf",
+"c": "annales/2026/2026-metj-3a-corrige.pdf"
+},
+{
+"id": "2026-metj-3b",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 3,
+"titre": "Exercice 3 – Le volume d’une boule, partie B",
+"theme": "Volume de la boule, masse volumique",
+"s3": 21,
+"n3": [
+36
+],
+"s4": null,
+"n4": null,
+"e": "annales/2026/2026-metj-3b.pdf",
+"c": "annales/2026/2026-metj-3b-corrige.pdf"
+},
+{
+"id": "2026-metj-4",
+"an": 2026,
+"src": "Métropole, 30 juin 2026",
+"ex": 4,
+"titre": "Exercice 4 – Les sachets de bonbons",
+"theme": "Diviseurs, décomposition, répartition",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14,
+15
+],
+"e": "annales/2026/2026-metj-4.pdf",
+"c": "annales/2026/2026-metj-4-corrige.pdf"
+},
+{
+"id": "2022-anor-1a",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Deux triangles, questions 1 et 2",
+"theme": "Théorème de Pythagore, théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+10,
+22
+],
+"e": "annales/2022/2022-anor-1a.pdf",
+"c": "annales/2022/2022-anor-1a-corrige.pdf"
+},
+{
+"id": "2022-anor-1b",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Deux triangles, question 3",
+"theme": "Trigonométrie",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-anor-1b.pdf",
+"c": "annales/2022/2022-anor-1b-corrige.pdf"
+},
+{
+"id": "2022-anor-1c",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Deux triangles, questions 4 et 5",
+"theme": "Homothétie, agrandissement et aires",
+"s3": 21,
+"n3": [
+30,
+37
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-anor-1c.pdf",
+"c": "annales/2022/2022-anor-1c-corrige.pdf"
+},
+{
+"id": "2022-anor-1hom",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Deux triangles, question 4",
+"theme": "Homothétie",
+"s3": 18,
+"n3": [
+30
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-anor-1hom.pdf",
+"c": "annales/2022/2022-anor-1hom-corrige.pdf"
+},
+{
+"id": "2022-anor-2q1",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 1",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2022/2022-anor-2q1.pdf",
+"c": "annales/2022/2022-anor-2q1-corrige.pdf"
+},
+{
+"id": "2022-anor-2q2",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 2",
+"theme": "Ratio",
+"s3": 14,
+"n3": [
+22
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-anor-2q2.pdf",
+"c": "annales/2022/2022-anor-2q2-corrige.pdf"
+},
+{
+"id": "2022-anor-2q3",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 3",
+"theme": "Fonction linéaire",
+"s3": 17,
+"n3": [
+26
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-anor-2q3.pdf",
+"c": "annales/2022/2022-anor-2q3-corrige.pdf"
+},
+{
+"id": "2022-anor-2q4",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 4",
+"theme": "Décomposition en facteurs premiers",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14
+],
+"e": "annales/2022/2022-anor-2q4.pdf",
+"c": "annales/2022/2022-anor-2q4-corrige.pdf"
+},
+{
+"id": "2022-anor-2q5",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 5",
+"theme": "Volume d’un prisme",
+"s3": 21,
+"n3": [],
+"s4": 2,
+"n4": [],
+"e": "annales/2022/2022-anor-2q5.pdf",
+"c": "annales/2022/2022-anor-2q5-corrige.pdf"
+},
+{
+"id": "2022-anor-3a",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – La pratique physique, question 1",
+"theme": "Pourcentage",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2022/2022-anor-3a.pdf",
+"c": "annales/2022/2022-anor-3a-corrige.pdf"
+},
+{
+"id": "2022-anor-3b",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – La pratique physique, questions 2 et 3",
+"theme": "Étendue, médiane, moyenne, durées",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24,
+36
+],
+"e": "annales/2022/2022-anor-3b.pdf",
+"c": "annales/2022/2022-anor-3b-corrige.pdf"
+},
+{
+"id": "2022-anor-4a",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Le jeu de hasard, questions 1 et 2",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2022/2022-anor-4a.pdf",
+"c": "annales/2022/2022-anor-4a-corrige.pdf"
+},
+{
+"id": "2022-anor-4b",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Le jeu de hasard, questions 3 à 6",
+"theme": "Probabilités (deux épreuves), Scratch",
+"s3": 22,
+"n3": [
+39
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-anor-4b.pdf",
+"c": "annales/2022/2022-anor-4b-corrige.pdf"
+},
+{
+"id": "2022-anor-5a",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – Le programme de calcul, partie A",
+"theme": "Programme de calcul, tableur, expression littérale",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+18,
+19,
+20
+],
+"e": "annales/2022/2022-anor-5a.pdf",
+"c": "annales/2022/2022-anor-5a-corrige.pdf"
+},
+{
+"id": "2022-anor-5b",
+"an": 2022,
+"src": "Amérique du Nord, 3 juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – Le programme de calcul, partie B",
+"theme": "Factorisation, preuve, nombres pairs",
+"s3": 16,
+"n3": [
+25
+],
+"s4": 8,
+"n4": [
+7,
+20
+],
+"e": "annales/2022/2022-anor-5b.pdf",
+"c": "annales/2022/2022-anor-5b-corrige.pdf"
+},
+{
+"id": "2022-asie-1a",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Trois situations, situation 1",
+"theme": "Programme de calcul, expression littérale",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+2,
+19,
+20
+],
+"e": "annales/2022/2022-asie-1a.pdf",
+"c": "annales/2022/2022-asie-1a-corrige.pdf"
+},
+{
+"id": "2022-asie-1b",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Trois situations, situation 2",
+"theme": "Fonction linéaire, lecture graphique",
+"s3": 17,
+"n3": [
+26,
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-asie-1b.pdf",
+"c": "annales/2022/2022-asie-1b-corrige.pdf"
+},
+{
+"id": "2022-asie-1c",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Trois situations, situation 3",
+"theme": "Volume d’une pyramide, conversion",
+"s3": 21,
+"n3": [
+35
+],
+"s4": 17,
+"n4": [
+36,
+40
+],
+"e": "annales/2022/2022-asie-1c.pdf",
+"c": "annales/2022/2022-asie-1c-corrige.pdf"
+},
+{
+"id": "2022-asie-2a",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – Le papillon, questions 1 et 2",
+"theme": "Théorème de Thalès, réciproque de Pythagore",
+"s3": 13,
+"n3": [],
+"s4": 14,
+"n4": [
+22,
+32
+],
+"e": "annales/2022/2022-asie-2a.pdf",
+"c": "annales/2022/2022-asie-2a-corrige.pdf"
+},
+{
+"id": "2022-asie-2b",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – Le papillon, questions 3 et 4",
+"theme": "Homothétie, agrandissement et aires",
+"s3": 21,
+"n3": [
+30,
+37
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-asie-2b.pdf",
+"c": "annales/2022/2022-asie-2b-corrige.pdf"
+},
+{
+"id": "2022-asie-3a",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – Les Jeux paralympiques, questions 1 à 3",
+"theme": "Lecture d’un tableau, tableur",
+"s3": 1,
+"n3": [],
+"s4": 1,
+"n4": [
+1
+],
+"e": "annales/2022/2022-asie-3a.pdf",
+"c": "annales/2022/2022-asie-3a-corrige.pdf"
+},
+{
+"id": "2022-asie-3b",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – Les Jeux paralympiques, questions 4 et 5",
+"theme": "Pourcentages, médiane",
+"s3": 23,
+"n3": [],
+"s4": 15,
+"n4": [
+24,
+34
+],
+"e": "annales/2022/2022-asie-3b.pdf",
+"c": "annales/2022/2022-asie-3b-corrige.pdf"
+},
+{
+"id": "2022-asie-4a",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Les photos, question 1",
+"theme": "Calculs de prix",
+"s3": 14,
+"n3": [],
+"s4": 5,
+"n4": [
+11
+],
+"e": "annales/2022/2022-asie-4a.pdf",
+"c": "annales/2022/2022-asie-4a-corrige.pdf"
+},
+{
+"id": "2022-asie-4b",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Les photos, question 2",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2022/2022-asie-4b.pdf",
+"c": "annales/2022/2022-asie-4b-corrige.pdf"
+},
+{
+"id": "2022-asie-4c",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Les photos, question 3",
+"theme": "Pourcentage de réduction",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2022/2022-asie-4c.pdf",
+"c": "annales/2022/2022-asie-4c-corrige.pdf"
+},
+{
+"id": "2022-asie-5a",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – L’ISS, question 1",
+"theme": "Latitude et longitude",
+"s3": 6,
+"n3": [
+9
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-asie-5a.pdf",
+"c": "annales/2022/2022-asie-5a-corrige.pdf"
+},
+{
+"id": "2022-asie-5b",
+"an": 2022,
+"src": "Asie, juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – L’ISS, questions 2 et 3",
+"theme": "Périmètre du cercle, vitesse, durées",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35,
+36
+],
+"e": "annales/2022/2022-asie-5b.pdf",
+"c": "annales/2022/2022-asie-5b-corrige.pdf"
+},
+{
+"id": "2022-polj-1q1",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 1",
+"theme": "Calculs avec des fractions",
+"s3": 5,
+"n3": [],
+"s4": 18,
+"n4": [
+42,
+43
+],
+"e": "annales/2022/2022-polj-1q1.pdf",
+"c": "annales/2022/2022-polj-1q1-corrige.pdf"
+},
+{
+"id": "2022-polj-1q2",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 2",
+"theme": "Réciproque du théorème de Thalès",
+"s3": 20,
+"n3": [],
+"s4": 19,
+"n4": [
+45
+],
+"e": "annales/2022/2022-polj-1q2.pdf",
+"c": "annales/2022/2022-polj-1q2-corrige.pdf"
+},
+{
+"id": "2022-polj-1q3",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 3",
+"theme": "Décomposition en facteurs premiers",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14
+],
+"e": "annales/2022/2022-polj-1q3.pdf",
+"c": "annales/2022/2022-polj-1q3-corrige.pdf"
+},
+{
+"id": "2022-polj-1q4",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 4",
+"theme": "Ratio",
+"s3": 14,
+"n3": [
+22
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-polj-1q4.pdf",
+"c": "annales/2022/2022-polj-1q4-corrige.pdf"
+},
+{
+"id": "2022-polj-2a",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – La salle de sport, questions 1 et 2",
+"theme": "Proportionnalité, image et antécédent graphiques",
+"s3": 8,
+"n3": [
+12
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-polj-2a.pdf",
+"c": "annales/2022/2022-polj-2a-corrige.pdf"
+},
+{
+"id": "2022-polj-2b",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – La salle de sport, questions 3 et 4",
+"theme": "Lecture graphique, fonction linéaire",
+"s3": 17,
+"n3": [
+26
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-polj-2b.pdf",
+"c": "annales/2022/2022-polj-2b-corrige.pdf"
+},
+{
+"id": "2022-polj-3a",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – Les briques de jus, partie A",
+"theme": "Médiane, étendue, probabilité, pourcentage",
+"s3": 23,
+"n3": [],
+"s4": 20,
+"n4": [
+24,
+34,
+47
+],
+"e": "annales/2022/2022-polj-3a.pdf",
+"c": "annales/2022/2022-polj-3a-corrige.pdf"
+},
+{
+"id": "2022-polj-3b",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – Les briques de jus, partie B",
+"theme": "Aire, volume du pavé droit",
+"s3": 21,
+"n3": [],
+"s4": 2,
+"n4": [],
+"e": "annales/2022/2022-polj-3b.pdf",
+"c": "annales/2022/2022-polj-3b-corrige.pdf"
+},
+{
+"id": "2022-polj-4a",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Le programme de calcul, question 1",
+"theme": "Programme de calcul, nombres relatifs",
+"s3": 1,
+"n3": [],
+"s4": 1,
+"n4": [
+1,
+2
+],
+"e": "annales/2022/2022-polj-4a.pdf",
+"c": "annales/2022/2022-polj-4a-corrige.pdf"
+},
+{
+"id": "2022-polj-4b",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Le programme de calcul, question 2",
+"theme": "Double distributivité, preuve",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-polj-4b.pdf",
+"c": "annales/2022/2022-polj-4b-corrige.pdf"
+},
+{
+"id": "2022-polj-5a",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – La chenille du centre Pompidou, question 1",
+"theme": "Équations, longueurs",
+"s3": 7,
+"n3": [],
+"s4": 16,
+"n4": [
+38,
+39
+],
+"e": "annales/2022/2022-polj-5a.pdf",
+"c": "annales/2022/2022-polj-5a-corrige.pdf"
+},
+{
+"id": "2022-polj-5b",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – La chenille du centre Pompidou, question 2",
+"theme": "Théorème de Pythagore, trigonométrie",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-polj-5b.pdf",
+"c": "annales/2022/2022-polj-5b-corrige.pdf"
+},
+{
+"id": "2022-polj-5c",
+"an": 2022,
+"src": "Polynésie, juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – La chenille du centre Pompidou, question 3",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2022/2022-polj-5c.pdf",
+"c": "annales/2022/2022-polj-5c-corrige.pdf"
+},
+{
+"id": "2022-mets-1q1",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 1",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2022/2022-mets-1q1.pdf",
+"c": "annales/2022/2022-mets-1q1-corrige.pdf"
+},
+{
+"id": "2022-mets-1q2",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 2",
+"theme": "Réciproque du théorème de Pythagore",
+"s3": 13,
+"n3": [],
+"s4": 14,
+"n4": [
+32
+],
+"e": "annales/2022/2022-mets-1q2.pdf",
+"c": "annales/2022/2022-mets-1q2-corrige.pdf"
+},
+{
+"id": "2022-mets-1q3",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 3",
+"theme": "Addition de fractions",
+"s3": 5,
+"n3": [],
+"s4": 12,
+"n4": [
+28
+],
+"e": "annales/2022/2022-mets-1q3.pdf",
+"c": "annales/2022/2022-mets-1q3-corrige.pdf"
+},
+{
+"id": "2022-mets-1q4",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 4",
+"theme": "Double distributivité",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-mets-1q4.pdf",
+"c": "annales/2022/2022-mets-1q4-corrige.pdf"
+},
+{
+"id": "2022-mets-1q5",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 5",
+"theme": "Angles d’un triangle",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [],
+"e": "annales/2022/2022-mets-1q5.pdf",
+"c": "annales/2022/2022-mets-1q5-corrige.pdf"
+},
+{
+"id": "2022-mets-2",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – Les tapisseries",
+"theme": "Médiane, moyenne, tableur, pourcentage",
+"s3": 23,
+"n3": [],
+"s4": 15,
+"n4": [
+24,
+34
+],
+"e": "annales/2022/2022-mets-2.pdf",
+"c": "annales/2022/2022-mets-2-corrige.pdf"
+},
+{
+"id": "2022-mets-3a",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – La salle de sport, questions 1 et 2",
+"theme": "Calculs de prix",
+"s3": 14,
+"n3": [],
+"s4": 5,
+"n4": [
+11
+],
+"e": "annales/2022/2022-mets-3a.pdf",
+"c": "annales/2022/2022-mets-3a-corrige.pdf"
+},
+{
+"id": "2022-mets-3b",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – La salle de sport, question 3",
+"theme": "Fonction affine, image",
+"s3": 17,
+"n3": [
+27,
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-mets-3b.pdf",
+"c": "annales/2022/2022-mets-3b-corrige.pdf"
+},
+{
+"id": "2022-mets-3c",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – La salle de sport, question 4",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2022/2022-mets-3c.pdf",
+"c": "annales/2022/2022-mets-3c-corrige.pdf"
+},
+{
+"id": "2022-mets-4a",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Le contre-la-montre, questions 1, 2 et 4",
+"theme": "Lecture graphique, vitesse moyenne",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+21,
+35
+],
+"e": "annales/2022/2022-mets-4a.pdf",
+"c": "annales/2022/2022-mets-4a-corrige.pdf"
+},
+{
+"id": "2022-mets-4lec",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Le contre-la-montre, questions 1 et 2",
+"theme": "Lecture graphique",
+"s3": 8,
+"n3": [],
+"s4": 9,
+"n4": [
+21
+],
+"e": "annales/2022/2022-mets-4lec.pdf",
+"c": "annales/2022/2022-mets-4lec-corrige.pdf"
+},
+{
+"id": "2022-mets-4b",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Le contre-la-montre, question 3",
+"theme": "Fonction linéaire : représentation graphique",
+"s3": 17,
+"n3": [
+26,
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-mets-4b.pdf",
+"c": "annales/2022/2022-mets-4b-corrige.pdf"
+},
+{
+"id": "2022-mets-5a",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – La tour de la Vade, question 1",
+"theme": "Droites parallèles, théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2022/2022-mets-5a.pdf",
+"c": "annales/2022/2022-mets-5a-corrige.pdf"
+},
+{
+"id": "2022-mets-5b",
+"an": 2022,
+"src": "Métropole (secours), juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – La tour de la Vade, questions 2 à 4",
+"theme": "Volume du cylindre, réduction, aire latérale",
+"s3": 21,
+"n3": [
+34,
+37
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-mets-5b.pdf",
+"c": "annales/2022/2022-mets-5b-corrige.pdf"
+},
+{
+"id": "2022-cetr-1a",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Fonction et calcul, partie A",
+"theme": "Fonction affine : image, représentation, tableur",
+"s3": 17,
+"n3": [
+27,
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-cetr-1a.pdf",
+"c": "annales/2022/2022-cetr-1a-corrige.pdf"
+},
+{
+"id": "2022-cetr-1b",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Fonction et calcul, partie B, question 1",
+"theme": "Double distributivité",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-cetr-1b.pdf",
+"c": "annales/2022/2022-cetr-1b-corrige.pdf"
+},
+{
+"id": "2022-cetr-1c",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – Fonction et calcul, partie B, question 2",
+"theme": "Réciproque du théorème de Pythagore",
+"s3": 13,
+"n3": [],
+"s4": 14,
+"n4": [
+32
+],
+"e": "annales/2022/2022-cetr-1c.pdf",
+"c": "annales/2022/2022-cetr-1c-corrige.pdf"
+},
+{
+"id": "2022-cetr-2a",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – Paris–Nice, question 1",
+"theme": "Moyenne, médiane, étendue",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2022/2022-cetr-2a.pdf",
+"c": "annales/2022/2022-cetr-2a-corrige.pdf"
+},
+{
+"id": "2022-cetr-2b",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – Paris–Nice, questions 2 à 4",
+"theme": "Pourcentage, durées, vitesse",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34,
+35,
+36
+],
+"e": "annales/2022/2022-cetr-2b.pdf",
+"c": "annales/2022/2022-cetr-2b-corrige.pdf"
+},
+{
+"id": "2022-cetr-3a",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – Deux triangles, question 1",
+"theme": "Trigonométrie (cosinus)",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-cetr-3a.pdf",
+"c": "annales/2022/2022-cetr-3a-corrige.pdf"
+},
+{
+"id": "2022-cetr-3b",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – Deux triangles, questions 2 à 4",
+"theme": "Réciproque de Thalès, théorème de Pythagore, aire",
+"s3": 20,
+"n3": [],
+"s4": 19,
+"n4": [
+10,
+45
+],
+"e": "annales/2022/2022-cetr-3b.pdf",
+"c": "annales/2022/2022-cetr-3b-corrige.pdf"
+},
+{
+"id": "2022-cetr-4a",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Les motifs, partie A",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2022/2022-cetr-4a.pdf",
+"c": "annales/2022/2022-cetr-4a-corrige.pdf"
+},
+{
+"id": "2022-cetr-4b",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Les motifs, partie B",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2022/2022-cetr-4b.pdf",
+"c": "annales/2022/2022-cetr-4b-corrige.pdf"
+},
+{
+"id": "2022-cetr-5a",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – Les truffes, question 1",
+"theme": "Décomposition, diviseurs communs, répartition",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14,
+15
+],
+"e": "annales/2022/2022-cetr-5a.pdf",
+"c": "annales/2022/2022-cetr-5a-corrige.pdf"
+},
+{
+"id": "2022-cetr-5b",
+"an": 2022,
+"src": "Centres étrangers, juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – Les truffes, question 2",
+"theme": "Volumes de la boule, de la pyramide et du pavé",
+"s3": 21,
+"n3": [
+35,
+36
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-cetr-5b.pdf",
+"c": "annales/2022/2022-cetr-5b-corrige.pdf"
+},
+{
+"id": "2022-metj-1a",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – La rivière, questions 1 et 2",
+"theme": "Droites parallèles, théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2022/2022-metj-1a.pdf",
+"c": "annales/2022/2022-metj-1a-corrige.pdf"
+},
+{
+"id": "2022-metj-1b",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 1,
+"titre": "Exercice 1 – La rivière, questions 3 et 4",
+"theme": "Théorème de Pythagore, vitesse",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+10,
+35
+],
+"e": "annales/2022/2022-metj-1b.pdf",
+"c": "annales/2022/2022-metj-1b-corrige.pdf"
+},
+{
+"id": "2022-metj-2q1",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 1",
+"theme": "Translation",
+"s3": 11,
+"n3": [],
+"s4": 7,
+"n4": [
+16
+],
+"e": "annales/2022/2022-metj-2q1.pdf",
+"c": "annales/2022/2022-metj-2q1-corrige.pdf"
+},
+{
+"id": "2022-metj-2q2",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 2",
+"theme": "Antécédent, lecture graphique",
+"s3": 8,
+"n3": [
+12
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-metj-2q2.pdf",
+"c": "annales/2022/2022-metj-2q2-corrige.pdf"
+},
+{
+"id": "2022-metj-2q3",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 3",
+"theme": "Fonction : calculer une image",
+"s3": 3,
+"n3": [
+5
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-metj-2q3.pdf",
+"c": "annales/2022/2022-metj-2q3-corrige.pdf"
+},
+{
+"id": "2022-metj-2q4",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 4",
+"theme": "Médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2022/2022-metj-2q4.pdf",
+"c": "annales/2022/2022-metj-2q4-corrige.pdf"
+},
+{
+"id": "2022-metj-2q5",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 5",
+"theme": "Triangles semblables, aires",
+"s3": 21,
+"n3": [
+16,
+37
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-metj-2q5.pdf",
+"c": "annales/2022/2022-metj-2q5-corrige.pdf"
+},
+{
+"id": "2022-metj-3a",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – Les cartes Pokémon, questions 1 et 2",
+"theme": "Décomposition en facteurs premiers, répartition",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14,
+15
+],
+"e": "annales/2022/2022-metj-3a.pdf",
+"c": "annales/2022/2022-metj-3a-corrige.pdf"
+},
+{
+"id": "2022-metj-3b",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 3,
+"titre": "Exercice 3 – Les cartes Pokémon, question 3",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2022/2022-metj-3b.pdf",
+"c": "annales/2022/2022-metj-3b-corrige.pdf"
+},
+{
+"id": "2022-metj-4a",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Rectangle et carré, questions 1 et 2",
+"theme": "Aire, double distributivité",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-metj-4a.pdf",
+"c": "annales/2022/2022-metj-4a-corrige.pdf"
+},
+{
+"id": "2022-metj-4b",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Rectangle et carré, questions 3 et 4",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2022/2022-metj-4b.pdf",
+"c": "annales/2022/2022-metj-4b-corrige.pdf"
+},
+{
+"id": "2022-metj-4c",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 4,
+"titre": "Exercice 4 – Rectangle et carré, question 5",
+"theme": "Équation",
+"s3": 7,
+"n3": [],
+"s4": 16,
+"n4": [
+38
+],
+"e": "annales/2022/2022-metj-4c.pdf",
+"c": "annales/2022/2022-metj-4c-corrige.pdf"
+},
+{
+"id": "2022-metj-5a",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – La fuite d’eau, questions 1 à 4",
+"theme": "Durées, conversions, volume du cylindre",
+"s3": 21,
+"n3": [
+34
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-metj-5a.pdf",
+"c": "annales/2022/2022-metj-5a-corrige.pdf"
+},
+{
+"id": "2022-metj-5b",
+"an": 2022,
+"src": "Métropole Antilles-Guyane, 30 juin 2022",
+"ex": 5,
+"titre": "Exercice 5 – La fuite d’eau, question 5",
+"theme": "Pourcentage d’évolution",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2022/2022-metj-5b.pdf",
+"c": "annales/2022/2022-metj-5b-corrige.pdf"
+},
+{
+"id": "2022-pols-1q1",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Six questions, question 1",
+"theme": "Addition de fractions",
+"s3": 5,
+"n3": [],
+"s4": 12,
+"n4": [
+26,
+28
+],
+"e": "annales/2022/2022-pols-1q1.pdf",
+"c": "annales/2022/2022-pols-1q1-corrige.pdf"
+},
+{
+"id": "2022-pols-1q2",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Six questions, question 2",
+"theme": "Décomposition, fraction irréductible",
+"s3": 24,
+"n3": [
+43,
+44
+],
+"s4": 12,
+"n4": [
+14,
+25
+],
+"e": "annales/2022/2022-pols-1q2.pdf",
+"c": "annales/2022/2022-pols-1q2-corrige.pdf"
+},
+{
+"id": "2022-pols-1q3",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Six questions, question 3",
+"theme": "Développer et réduire",
+"s3": 1,
+"n3": [],
+"s4": 3,
+"n4": [
+6,
+8
+],
+"e": "annales/2022/2022-pols-1q3.pdf",
+"c": "annales/2022/2022-pols-1q3-corrige.pdf"
+},
+{
+"id": "2022-pols-1q4",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Six questions, question 4",
+"theme": "Périmètre, équation",
+"s3": 7,
+"n3": [],
+"s4": 16,
+"n4": [
+38,
+39
+],
+"e": "annales/2022/2022-pols-1q4.pdf",
+"c": "annales/2022/2022-pols-1q4-corrige.pdf"
+},
+{
+"id": "2022-pols-1q5",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Six questions, question 5",
+"theme": "Volume d’une pyramide",
+"s3": 21,
+"n3": [
+35
+],
+"s4": 17,
+"n4": [
+40
+],
+"e": "annales/2022/2022-pols-1q5.pdf",
+"c": "annales/2022/2022-pols-1q5-corrige.pdf"
+},
+{
+"id": "2022-pols-1q6",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Six questions, question 6",
+"theme": "Pourcentage d’augmentation",
+"s3": 14,
+"n3": [
+21
+],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2022/2022-pols-1q6.pdf",
+"c": "annales/2022/2022-pols-1q6-corrige.pdf"
+},
+{
+"id": "2022-pols-2a",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 2,
+"titre": "Exercice 2 – Les araignées, questions 1 et 2",
+"theme": "Théorème de Pythagore, trigonométrie",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-pols-2a.pdf",
+"c": "annales/2022/2022-pols-2a-corrige.pdf"
+},
+{
+"id": "2022-pols-2b",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 2,
+"titre": "Exercice 2 – Les araignées, questions 3 à 5",
+"theme": "Théorème de Thalès, vitesse, durée",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+22,
+35
+],
+"e": "annales/2022/2022-pols-2b.pdf",
+"c": "annales/2022/2022-pols-2b-corrige.pdf"
+},
+{
+"id": "2022-pols-3a",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 3,
+"titre": "Exercice 3 – Les motifs, questions 1 à 3",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2022/2022-pols-3a.pdf",
+"c": "annales/2022/2022-pols-3a-corrige.pdf"
+},
+{
+"id": "2022-pols-3b",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 3,
+"titre": "Exercice 3 – Les motifs, question 4",
+"theme": "Translation, symétries",
+"s3": 11,
+"n3": [],
+"s4": 7,
+"n4": [
+16
+],
+"e": "annales/2022/2022-pols-3b.pdf",
+"c": "annales/2022/2022-pols-3b-corrige.pdf"
+},
+{
+"id": "2022-pols-4a",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 4,
+"titre": "Exercice 4 – Trois fonctions, questions 1 et 2",
+"theme": "Images, antécédents, programme de calcul",
+"s3": 8,
+"n3": [
+5,
+12
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-pols-4a.pdf",
+"c": "annales/2022/2022-pols-4a-corrige.pdf"
+},
+{
+"id": "2022-pols-4b",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 4,
+"titre": "Exercice 4 – Trois fonctions, questions 3 et 4",
+"theme": "Images, antécédents, équation x² = a, courbes",
+"s3": 19,
+"n3": [
+12,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-pols-4b.pdf",
+"c": "annales/2022/2022-pols-4b-corrige.pdf"
+},
+{
+"id": "2022-pols-5a",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 5,
+"titre": "Exercice 5 – L’urne, questions 1 et 3",
+"theme": "Probabilités, fréquence",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47,
+48
+],
+"e": "annales/2022/2022-pols-5a.pdf",
+"c": "annales/2022/2022-pols-5a-corrige.pdf"
+},
+{
+"id": "2022-pols-5b",
+"an": 2022,
+"src": "Polynésie, septembre 2022",
+"ex": 5,
+"titre": "Exercice 5 – L’urne, question 2",
+"theme": "Moyenne, médiane, fréquence",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2022/2022-pols-5b.pdf",
+"c": "annales/2022/2022-pols-5b-corrige.pdf"
+},
+{
+"id": "2022-msep-1q1",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 1",
+"theme": "Puissances",
+"s3": 25,
+"n3": [
+46
+],
+"s4": 13,
+"n4": [
+29
+],
+"e": "annales/2022/2022-msep-1q1.pdf",
+"c": "annales/2022/2022-msep-1q1-corrige.pdf"
+},
+{
+"id": "2022-msep-1q2",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 2",
+"theme": "Fraction irréductible",
+"s3": 24,
+"n3": [
+44
+],
+"s4": 12,
+"n4": [
+25
+],
+"e": "annales/2022/2022-msep-1q2.pdf",
+"c": "annales/2022/2022-msep-1q2-corrige.pdf"
+},
+{
+"id": "2022-msep-1q3",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 3",
+"theme": "Double distributivité",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-msep-1q3.pdf",
+"c": "annales/2022/2022-msep-1q3-corrige.pdf"
+},
+{
+"id": "2022-msep-1q4",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 4",
+"theme": "Équation produit",
+"s3": 19,
+"n3": [
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-msep-1q4.pdf",
+"c": "annales/2022/2022-msep-1q4-corrige.pdf"
+},
+{
+"id": "2022-msep-1q5",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 5",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2022/2022-msep-1q5.pdf",
+"c": "annales/2022/2022-msep-1q5-corrige.pdf"
+},
+{
+"id": "2022-msep-2a",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 2,
+"titre": "Exercice 2 – La location de voiture, questions 1 et 2",
+"theme": "Calculs de prix",
+"s3": 14,
+"n3": [],
+"s4": 5,
+"n4": [
+11
+],
+"e": "annales/2022/2022-msep-2a.pdf",
+"c": "annales/2022/2022-msep-2a-corrige.pdf"
+},
+{
+"id": "2022-msep-2b",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 2,
+"titre": "Exercice 2 – La location de voiture, questions 3 et 4",
+"theme": "Fonctions linéaires et affines, équation, lecture graphique",
+"s3": 17,
+"n3": [
+26,
+28,
+29
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-msep-2b.pdf",
+"c": "annales/2022/2022-msep-2b-corrige.pdf"
+},
+{
+"id": "2022-msep-3a",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 3,
+"titre": "Exercice 3 – Les cerfs-volants, partie A",
+"theme": "Angles, symétries",
+"s3": 11,
+"n3": [],
+"s4": 7,
+"n4": [],
+"e": "annales/2022/2022-msep-3a.pdf",
+"c": "annales/2022/2022-msep-3a-corrige.pdf"
+},
+{
+"id": "2022-msep-3b",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 3,
+"titre": "Exercice 3 – Les cerfs-volants, partie B",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2022/2022-msep-3b.pdf",
+"c": "annales/2022/2022-msep-3b-corrige.pdf"
+},
+{
+"id": "2022-msep-4a",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 4,
+"titre": "Exercice 4 – Le pont de l’île de Ré, questions 1 à 3",
+"theme": "Tableur, moyenne, étendue",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2022/2022-msep-4a.pdf",
+"c": "annales/2022/2022-msep-4a-corrige.pdf"
+},
+{
+"id": "2022-msep-4b",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 4,
+"titre": "Exercice 4 – Le pont de l’île de Ré, questions 4 et 5",
+"theme": "Pourcentage d’évolution, vitesse",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34,
+35
+],
+"e": "annales/2022/2022-msep-4b.pdf",
+"c": "annales/2022/2022-msep-4b-corrige.pdf"
+},
+{
+"id": "2022-msep-5a",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 5,
+"titre": "Exercice 5 – La tyrolienne, questions 1 à 3",
+"theme": "Trigonométrie, théorème de Pythagore",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-msep-5a.pdf",
+"c": "annales/2022/2022-msep-5a-corrige.pdf"
+},
+{
+"id": "2022-msep-5b",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 5,
+"titre": "Exercice 5 – La tyrolienne, question 4",
+"theme": "Théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2022/2022-msep-5b.pdf",
+"c": "annales/2022/2022-msep-5b-corrige.pdf"
+},
+{
+"id": "2022-msep-5c",
+"an": 2022,
+"src": "Métropole, septembre 2022",
+"ex": 5,
+"titre": "Exercice 5 – La tyrolienne, question 5",
+"theme": "Volume du pavé droit",
+"s3": 21,
+"n3": [],
+"s4": 2,
+"n4": [],
+"e": "annales/2022/2022-msep-5c.pdf",
+"c": "annales/2022/2022-msep-5c-corrige.pdf"
+},
+{
+"id": "2022-asud-1q1",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 1",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2022/2022-asud-1q1.pdf",
+"c": "annales/2022/2022-asud-1q1-corrige.pdf"
+},
+{
+"id": "2022-asud-1q2",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 2",
+"theme": "Médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2022/2022-asud-1q2.pdf",
+"c": "annales/2022/2022-asud-1q2-corrige.pdf"
+},
+{
+"id": "2022-asud-1q3",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 3",
+"theme": "Vitesse moyenne",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35,
+36
+],
+"e": "annales/2022/2022-asud-1q3.pdf",
+"c": "annales/2022/2022-asud-1q3-corrige.pdf"
+},
+{
+"id": "2022-asud-1q4",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 4",
+"theme": "Images par deux fonctions",
+"s3": 8,
+"n3": [
+5,
+12
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-asud-1q4.pdf",
+"c": "annales/2022/2022-asud-1q4-corrige.pdf"
+},
+{
+"id": "2022-asud-1q5",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 5",
+"theme": "Double distributivité",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-asud-1q5.pdf",
+"c": "annales/2022/2022-asud-1q5-corrige.pdf"
+},
+{
+"id": "2022-asud-1q6",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 6",
+"theme": "Théorème de Pythagore",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [
+9,
+10
+],
+"e": "annales/2022/2022-asud-1q6.pdf",
+"c": "annales/2022/2022-asud-1q6-corrige.pdf"
+},
+{
+"id": "2022-asud-2a",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 2,
+"titre": "Exercice 2 – L’énergie solaire, questions 1 et 2",
+"theme": "Lecture graphique, pourcentages",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2022/2022-asud-2a.pdf",
+"c": "annales/2022/2022-asud-2a-corrige.pdf"
+},
+{
+"id": "2022-asud-2b",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 2,
+"titre": "Exercice 2 – L’énergie solaire, question 3",
+"theme": "Tableur, comparaison de décimaux",
+"s3": 1,
+"n3": [],
+"s4": 1,
+"n4": [],
+"e": "annales/2022/2022-asud-2b.pdf",
+"c": "annales/2022/2022-asud-2b-corrige.pdf"
+},
+{
+"id": "2022-asud-3a",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 3,
+"titre": "Exercice 3 – Le triangle rectangle, questions 1 et 4",
+"theme": "Angles, triangle isocèle, triangle équilatéral",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [],
+"e": "annales/2022/2022-asud-3a.pdf",
+"c": "annales/2022/2022-asud-3a-corrige.pdf"
+},
+{
+"id": "2022-asud-3b",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 3,
+"titre": "Exercice 3 – Le triangle rectangle, questions 2 et 3",
+"theme": "Trigonométrie (calcul de longueurs)",
+"s3": 15,
+"n3": [
+24
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-asud-3b.pdf",
+"c": "annales/2022/2022-asud-3b-corrige.pdf"
+},
+{
+"id": "2022-asud-4",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 4,
+"titre": "Exercice 4 – Le logo",
+"theme": "Algorithmique (Scratch), rotation",
+"s3": 0,
+"n3": [
+17
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-asud-4.pdf",
+"c": "annales/2022/2022-asud-4-corrige.pdf"
+},
+{
+"id": "2022-asud-5a",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 5,
+"titre": "Exercice 5 – Le carré potager, question 1",
+"theme": "Calculs de prix",
+"s3": 14,
+"n3": [],
+"s4": 5,
+"n4": [
+11
+],
+"e": "annales/2022/2022-asud-5a.pdf",
+"c": "annales/2022/2022-asud-5a-corrige.pdf"
+},
+{
+"id": "2022-asud-5b",
+"an": 2022,
+"src": "Amérique du Sud, novembre 2022",
+"ex": 5,
+"titre": "Exercice 5 – Le carré potager, question 2",
+"theme": "Volume du pavé droit, conversions",
+"s3": 21,
+"n3": [],
+"s4": 15,
+"n4": [
+36
+],
+"e": "annales/2022/2022-asud-5b.pdf",
+"c": "annales/2022/2022-asud-5b-corrige.pdf"
+},
+{
+"id": "2022-ncal-1q1",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 1",
+"theme": "Vitesse, conversion",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35,
+36
+],
+"e": "annales/2022/2022-ncal-1q1.pdf",
+"c": "annales/2022/2022-ncal-1q1-corrige.pdf"
+},
+{
+"id": "2022-ncal-1q2",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 2",
+"theme": "Développer et réduire",
+"s3": 1,
+"n3": [],
+"s4": 3,
+"n4": [
+6,
+8
+],
+"e": "annales/2022/2022-ncal-1q2.pdf",
+"c": "annales/2022/2022-ncal-1q2-corrige.pdf"
+},
+{
+"id": "2022-ncal-1q3",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 3",
+"theme": "Décomposition en facteurs premiers",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14
+],
+"e": "annales/2022/2022-ncal-1q3.pdf",
+"c": "annales/2022/2022-ncal-1q3-corrige.pdf"
+},
+{
+"id": "2022-ncal-2q1",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 1",
+"theme": "Tableur",
+"s3": 1,
+"n3": [],
+"s4": 1,
+"n4": [],
+"e": "annales/2022/2022-ncal-2q1.pdf",
+"c": "annales/2022/2022-ncal-2q1-corrige.pdf"
+},
+{
+"id": "2022-ncal-2q2",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 2",
+"theme": "Moyenne",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2022/2022-ncal-2q2.pdf",
+"c": "annales/2022/2022-ncal-2q2-corrige.pdf"
+},
+{
+"id": "2022-ncal-2q3",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 3",
+"theme": "Repérage sur la sphère",
+"s3": 6,
+"n3": [
+9
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-ncal-2q3.pdf",
+"c": "annales/2022/2022-ncal-2q3-corrige.pdf"
+},
+{
+"id": "2022-ncal-2q4",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 4",
+"theme": "Volume de la boule",
+"s3": 21,
+"n3": [
+36
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-ncal-2q4.pdf",
+"c": "annales/2022/2022-ncal-2q4-corrige.pdf"
+},
+{
+"id": "2022-ncal-3",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 3,
+"titre": "Exercice 3 – Le vent",
+"theme": "Effectifs, fréquences, pourcentage, médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+23,
+24
+],
+"e": "annales/2022/2022-ncal-3.pdf",
+"c": "annales/2022/2022-ncal-3-corrige.pdf"
+},
+{
+"id": "2022-ncal-4a",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 4,
+"titre": "Exercice 4 – Construction, questions 1 et 2",
+"theme": "Construction, réciproque de Pythagore",
+"s3": 13,
+"n3": [],
+"s4": 14,
+"n4": [
+32
+],
+"e": "annales/2022/2022-ncal-4a.pdf",
+"c": "annales/2022/2022-ncal-4a-corrige.pdf"
+},
+{
+"id": "2022-ncal-4b",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 4,
+"titre": "Exercice 4 – Construction, question 3",
+"theme": "Trigonométrie",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-ncal-4b.pdf",
+"c": "annales/2022/2022-ncal-4b-corrige.pdf"
+},
+{
+"id": "2022-ncal-4c",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 4,
+"titre": "Exercice 4 – Construction, questions 4 à 6",
+"theme": "Théorème de Thalès, longueurs",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2022/2022-ncal-4c.pdf",
+"c": "annales/2022/2022-ncal-4c-corrige.pdf"
+},
+{
+"id": "2022-ncal-5a",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 5,
+"titre": "Exercice 5 – Le club de planche à voile, questions 1 et 2",
+"theme": "Calculs de prix, expression littérale",
+"s3": 14,
+"n3": [],
+"s4": 8,
+"n4": [
+11,
+20
+],
+"e": "annales/2022/2022-ncal-5a.pdf",
+"c": "annales/2022/2022-ncal-5a-corrige.pdf"
+},
+{
+"id": "2022-ncal-5b",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 5,
+"titre": "Exercice 5 – Le club de planche à voile, questions 3 et 4",
+"theme": "Fonctions affines, lecture graphique, équation",
+"s3": 17,
+"n3": [
+28,
+29
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-ncal-5b.pdf",
+"c": "annales/2022/2022-ncal-5b-corrige.pdf"
+},
+{
+"id": "2022-ncal-6",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 6,
+"titre": "Exercice 6 – Les dés",
+"theme": "Probabilités (deux épreuves)",
+"s3": 22,
+"n3": [
+39
+],
+"s4": null,
+"n4": null,
+"e": "annales/2022/2022-ncal-6.pdf",
+"c": "annales/2022/2022-ncal-6-corrige.pdf"
+},
+{
+"id": "2022-ncal-7",
+"an": 2022,
+"src": "Nouvelle-Calédonie, décembre 2022",
+"ex": 7,
+"titre": "Exercice 7 – Le drapeau",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2022/2022-ncal-7.pdf",
+"c": "annales/2022/2022-ncal-7-corrige.pdf"
 }
 ]
