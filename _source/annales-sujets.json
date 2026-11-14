@@ -61,5 +61,68 @@
 "src": "Nouvelle-Calédonie, décembre 2025",
 "e": "annales/2025/2025-ncal-sujet-complet.pdf",
 "c": "annales/2025/2025-ncal-corrige-complet.pdf"
+},
+{
+"id": "2024-anor",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"e": "annales/2024/2024-anor-sujet-complet.pdf",
+"c": "annales/2024/2024-anor-corrige-complet.pdf"
+},
+{
+"id": "2024-asie",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"e": "annales/2024/2024-asie-sujet-complet.pdf",
+"c": "annales/2024/2024-asie-corrige-complet.pdf"
+},
+{
+"id": "2024-cetr",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"e": "annales/2024/2024-cetr-sujet-complet.pdf",
+"c": "annales/2024/2024-cetr-corrige-complet.pdf"
+},
+{
+"id": "2024-metj",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"e": "annales/2024/2024-metj-sujet-complet.pdf",
+"c": "annales/2024/2024-metj-corrige-complet.pdf"
+},
+{
+"id": "2024-mart",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"e": "annales/2024/2024-mart-sujet-complet.pdf",
+"c": "annales/2024/2024-mart-corrige-complet.pdf"
+},
+{
+"id": "2024-polj",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"e": "annales/2024/2024-polj-sujet-complet.pdf",
+"c": "annales/2024/2024-polj-corrige-complet.pdf"
+},
+{
+"id": "2024-mets",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"e": "annales/2024/2024-mets-sujet-complet.pdf",
+"c": "annales/2024/2024-mets-corrige-complet.pdf"
+},
+{
+"id": "2024-pols",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"e": "annales/2024/2024-pols-sujet-complet.pdf",
+"c": "annales/2024/2024-pols-corrige-complet.pdf"
+},
+{
+"id": "2024-asud",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"e": "annales/2024/2024-asud-sujet-complet.pdf",
+"c": "annales/2024/2024-asud-corrige-complet.pdf"
 }
 ]

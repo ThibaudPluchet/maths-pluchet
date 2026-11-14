@@ -2040,5 +2040,1824 @@
 "n4": [],
 "e": "annales/2025/2025-ncal-6.pdf",
 "c": "annales/2025/2025-ncal-6-corrige.pdf"
+},
+{
+"id": "2024-anor-1a",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmations A et B",
+"theme": "Moyenne, médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2024/2024-anor-1a.pdf",
+"c": "annales/2024/2024-anor-1a-corrige.pdf"
+},
+{
+"id": "2024-anor-1b",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation C",
+"theme": "Vitesse",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35
+],
+"e": "annales/2024/2024-anor-1b.pdf",
+"c": "annales/2024/2024-anor-1b-corrige.pdf"
+},
+{
+"id": "2024-anor-1c",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation D",
+"theme": "Probabilités, nombres premiers",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+14,
+47
+],
+"e": "annales/2024/2024-anor-1c.pdf",
+"c": "annales/2024/2024-anor-1c-corrige.pdf"
+},
+{
+"id": "2024-anor-1d",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation E",
+"theme": "Homothétie, aires",
+"s3": 18,
+"n3": [
+30
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-anor-1d.pdf",
+"c": "annales/2024/2024-anor-1d-corrige.pdf"
+},
+{
+"id": "2024-anor-2a",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 2,
+"titre": "Exercice 2 – Programme de calcul, questions 1 à 3",
+"theme": "Programme de calcul, expression littérale",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+2,
+6,
+19
+],
+"e": "annales/2024/2024-anor-2a.pdf",
+"c": "annales/2024/2024-anor-2a-corrige.pdf"
+},
+{
+"id": "2024-anor-2b",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 2,
+"titre": "Exercice 2 – Programme de calcul, questions 4 et 5",
+"theme": "Équation produit, double distributivité",
+"s3": 19,
+"n3": [
+18,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-anor-2b.pdf",
+"c": "annales/2024/2024-anor-2b-corrige.pdf"
+},
+{
+"id": "2024-anor-3a",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 3,
+"titre": "Exercice 3 – Le cinéma, questions 1 et 2",
+"theme": "Calculs de prix",
+"s3": 17,
+"n3": [],
+"s4": 9,
+"n4": [
+21
+],
+"e": "annales/2024/2024-anor-3a.pdf",
+"c": "annales/2024/2024-anor-3a-corrige.pdf"
+},
+{
+"id": "2024-anor-3b",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 3,
+"titre": "Exercice 3 – Le cinéma, questions 3 à 5",
+"theme": "Fonctions affines, lecture graphique",
+"s3": 17,
+"n3": [
+13,
+26
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-anor-3b.pdf",
+"c": "annales/2024/2024-anor-3b-corrige.pdf"
+},
+{
+"id": "2024-anor-4a",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 4,
+"titre": "Exercice 4 – La terrasse, questions 1 et 2",
+"theme": "Théorème de Pythagore, périmètre",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [
+10
+],
+"e": "annales/2024/2024-anor-4a.pdf",
+"c": "annales/2024/2024-anor-4a-corrige.pdf"
+},
+{
+"id": "2024-anor-4b",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 4,
+"titre": "Exercice 4 – La terrasse, questions 3.a et 3.b",
+"theme": "Volume d’un prisme, proportionnalité",
+"s3": 21,
+"n3": [],
+"s4": 17,
+"n4": [],
+"e": "annales/2024/2024-anor-4b.pdf",
+"c": "annales/2024/2024-anor-4b-corrige.pdf"
+},
+{
+"id": "2024-anor-4c",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 4,
+"titre": "Exercice 4 – La terrasse, question 3.c",
+"theme": "Ratio",
+"s3": 14,
+"n3": [
+22
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-anor-4c.pdf",
+"c": "annales/2024/2024-anor-4c-corrige.pdf"
+},
+{
+"id": "2024-anor-4d",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 4,
+"titre": "Exercice 4 – La terrasse, question 4",
+"theme": "Aire, pourcentages, coût minimum",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2024/2024-anor-4d.pdf",
+"c": "annales/2024/2024-anor-4d-corrige.pdf"
+},
+{
+"id": "2024-anor-5a",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 5,
+"titre": "Exercice 5 – La figure, partie A",
+"theme": "Triangle équilatéral, angles, parallélisme",
+"s3": 20,
+"n3": [],
+"s4": 19,
+"n4": [
+45
+],
+"e": "annales/2024/2024-anor-5a.pdf",
+"c": "annales/2024/2024-anor-5a-corrige.pdf"
+},
+{
+"id": "2024-anor-5b",
+"an": 2024,
+"src": "Amérique du Nord, 29 mai 2024",
+"ex": 5,
+"titre": "Exercice 5 – Le programme, partie B (Scratch)",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2024/2024-anor-5b.pdf",
+"c": "annales/2024/2024-anor-5b-corrige.pdf"
+},
+{
+"id": "2024-asie-1q1",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 1",
+"theme": "Nombres premiers",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14
+],
+"e": "annales/2024/2024-asie-1q1.pdf",
+"c": "annales/2024/2024-asie-1q1-corrige.pdf"
+},
+{
+"id": "2024-asie-1q2",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 2",
+"theme": "Patron d’un cube, aire",
+"s3": 21,
+"n3": [],
+"s4": 2,
+"n4": [
+5
+],
+"e": "annales/2024/2024-asie-1q2.pdf",
+"c": "annales/2024/2024-asie-1q2-corrige.pdf"
+},
+{
+"id": "2024-asie-1q3",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 3",
+"theme": "Factorisation (identité remarquable)",
+"s3": 12,
+"n3": [
+19
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-asie-1q3.pdf",
+"c": "annales/2024/2024-asie-1q3-corrige.pdf"
+},
+{
+"id": "2024-asie-1q4",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 4",
+"theme": "Ratio",
+"s3": 14,
+"n3": [
+22
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-asie-1q4.pdf",
+"c": "annales/2024/2024-asie-1q4-corrige.pdf"
+},
+{
+"id": "2024-asie-1q5",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 5",
+"theme": "Médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2024/2024-asie-1q5.pdf",
+"c": "annales/2024/2024-asie-1q5-corrige.pdf"
+},
+{
+"id": "2024-asie-2a",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 2,
+"titre": "Exercice 2 – Vrai ou faux, affirmation 1",
+"theme": "Vues d’un assemblage de cubes",
+"s3": 21,
+"n3": [],
+"s4": 2,
+"n4": [
+5
+],
+"e": "annales/2024/2024-asie-2a.pdf",
+"c": "annales/2024/2024-asie-2a-corrige.pdf"
+},
+{
+"id": "2024-asie-2b",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 2,
+"titre": "Exercice 2 – Vrai ou faux, affirmation 2",
+"theme": "Réciproque du théorème de Thalès",
+"s3": 20,
+"n3": [],
+"s4": 19,
+"n4": [
+45
+],
+"e": "annales/2024/2024-asie-2b.pdf",
+"c": "annales/2024/2024-asie-2b-corrige.pdf"
+},
+{
+"id": "2024-asie-2c",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 2,
+"titre": "Exercice 2 – Vrai ou faux, affirmation 3",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2024/2024-asie-2c.pdf",
+"c": "annales/2024/2024-asie-2c-corrige.pdf"
+},
+{
+"id": "2024-asie-3a",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 3,
+"titre": "Exercice 3 – Les trois pièces, questions 1 et 2",
+"theme": "Théorème de Pythagore, aire d’un triangle",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [
+9,
+10
+],
+"e": "annales/2024/2024-asie-3a.pdf",
+"c": "annales/2024/2024-asie-3a-corrige.pdf"
+},
+{
+"id": "2024-asie-3b",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 3,
+"titre": "Exercice 3 – Les trois pièces, questions 3 à 5",
+"theme": "Trigonométrie, angles, aire d’un disque",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-asie-3b.pdf",
+"c": "annales/2024/2024-asie-3b-corrige.pdf"
+},
+{
+"id": "2024-asie-4a",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 4,
+"titre": "Exercice 4 – Les vacances, partie A",
+"theme": "Proportionnalité, consommation, budget",
+"s3": 14,
+"n3": [],
+"s4": 5,
+"n4": [
+11
+],
+"e": "annales/2024/2024-asie-4a.pdf",
+"c": "annales/2024/2024-asie-4a-corrige.pdf"
+},
+{
+"id": "2024-asie-4b",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 4,
+"titre": "Exercice 4 – Les vacances, partie B",
+"theme": "Fonctions linéaires et affines, équation",
+"s3": 17,
+"n3": [
+13,
+26,
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-asie-4b.pdf",
+"c": "annales/2024/2024-asie-4b-corrige.pdf"
+},
+{
+"id": "2024-asie-5",
+"an": 2024,
+"src": "Asie, 18 juin 2024",
+"ex": 5,
+"titre": "Exercice 5 – Le motif (Scratch)",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2024/2024-asie-5.pdf",
+"c": "annales/2024/2024-asie-5-corrige.pdf"
+},
+{
+"id": "2024-cetr-1q1",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 1",
+"theme": "Écriture scientifique",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+31
+],
+"e": "annales/2024/2024-cetr-1q1.pdf",
+"c": "annales/2024/2024-cetr-1q1-corrige.pdf"
+},
+{
+"id": "2024-cetr-1q2",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 2",
+"theme": "Vitesse moyenne",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35
+],
+"e": "annales/2024/2024-cetr-1q2.pdf",
+"c": "annales/2024/2024-cetr-1q2-corrige.pdf"
+},
+{
+"id": "2024-cetr-1q3",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 3",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2024/2024-cetr-1q3.pdf",
+"c": "annales/2024/2024-cetr-1q3-corrige.pdf"
+},
+{
+"id": "2024-cetr-1q4",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 4",
+"theme": "Médiane, étendue, moyenne",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2024/2024-cetr-1q4.pdf",
+"c": "annales/2024/2024-cetr-1q4-corrige.pdf"
+},
+{
+"id": "2024-cetr-1q5",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 5",
+"theme": "Fractions",
+"s3": 5,
+"n3": [],
+"s4": 18,
+"n4": [
+42,
+44
+],
+"e": "annales/2024/2024-cetr-1q5.pdf",
+"c": "annales/2024/2024-cetr-1q5-corrige.pdf"
+},
+{
+"id": "2024-cetr-2",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 2,
+"titre": "Exercice 2 – Les circuits d’entraînement",
+"theme": "Décomposition en facteurs premiers, multiples communs",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14,
+15
+],
+"e": "annales/2024/2024-cetr-2.pdf",
+"c": "annales/2024/2024-cetr-2-corrige.pdf"
+},
+{
+"id": "2024-cetr-3a",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 3,
+"titre": "Exercice 3 – Programme de calcul, partie A",
+"theme": "Programme de calcul, fractions, Scratch",
+"s3": 1,
+"n3": [],
+"s4": 18,
+"n4": [
+2,
+19,
+42
+],
+"e": "annales/2024/2024-cetr-3a.pdf",
+"c": "annales/2024/2024-cetr-3a-corrige.pdf"
+},
+{
+"id": "2024-cetr-3b",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 3,
+"titre": "Exercice 3 – La fonction g, partie B",
+"theme": "Double distributivité, équation produit, antécédents",
+"s3": 19,
+"n3": [
+13,
+14,
+18,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-cetr-3b.pdf",
+"c": "annales/2024/2024-cetr-3b-corrige.pdf"
+},
+{
+"id": "2024-cetr-4a",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 4,
+"titre": "Exercice 4 – Triangles, questions 1 et 3",
+"theme": "Réciproque de Pythagore, théorème de Thalès",
+"s3": 13,
+"n3": [],
+"s4": 19,
+"n4": [
+22,
+32
+],
+"e": "annales/2024/2024-cetr-4a.pdf",
+"c": "annales/2024/2024-cetr-4a-corrige.pdf"
+},
+{
+"id": "2024-cetr-4b",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 4,
+"titre": "Exercice 4 – Triangles, questions 2 et 4",
+"theme": "Trigonométrie, homothétie",
+"s3": 18,
+"n3": [
+6,
+30
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-cetr-4b.pdf",
+"c": "annales/2024/2024-cetr-4b-corrige.pdf"
+},
+{
+"id": "2024-cetr-5a",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 5,
+"titre": "Exercice 5 – Le chapeau de sorcier, partie A",
+"theme": "Théorème de Pythagore, périmètre du cercle, proportionnalité",
+"s3": 2,
+"n3": [],
+"s4": 5,
+"n4": [
+10,
+11
+],
+"e": "annales/2024/2024-cetr-5a.pdf",
+"c": "annales/2024/2024-cetr-5a-corrige.pdf"
+},
+{
+"id": "2024-cetr-5b",
+"an": 2024,
+"src": "Centres étrangers, juin 2024",
+"ex": 5,
+"titre": "Exercice 5 – Le chapeau de sorcier, partie B",
+"theme": "Volume du cône, réduction, pourcentages",
+"s3": 21,
+"n3": [],
+"s4": 17,
+"n4": [
+34,
+40,
+41
+],
+"e": "annales/2024/2024-cetr-5b.pdf",
+"c": "annales/2024/2024-cetr-5b-corrige.pdf"
+},
+{
+"id": "2024-metj-1",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 1,
+"titre": "Exercice 1 – La roulette, questions 1 et 3",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2024/2024-metj-1.pdf",
+"c": "annales/2024/2024-metj-1-corrige.pdf"
+},
+{
+"id": "2024-metj-2a",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 2,
+"titre": "Exercice 2 – Deux programmes, questions 1 et 2",
+"theme": "Programme de calcul, Scratch, expression littérale",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+2,
+19,
+20
+],
+"e": "annales/2024/2024-metj-2a.pdf",
+"c": "annales/2024/2024-metj-2a-corrige.pdf"
+},
+{
+"id": "2024-metj-2b",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 2,
+"titre": "Exercice 2 – Deux programmes, question 3",
+"theme": "Double distributivité, preuve",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-metj-2b.pdf",
+"c": "annales/2024/2024-metj-2b-corrige.pdf"
+},
+{
+"id": "2024-metj-3a",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 3,
+"titre": "Exercice 3 – Le cercle, questions 1 à 3",
+"theme": "Réciproque de Pythagore, théorème de Thalès",
+"s3": 13,
+"n3": [],
+"s4": 19,
+"n4": [
+22,
+32
+],
+"e": "annales/2024/2024-metj-3a.pdf",
+"c": "annales/2024/2024-metj-3a-corrige.pdf"
+},
+{
+"id": "2024-metj-3b",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 3,
+"titre": "Exercice 3 – Le cercle, questions 4 et 5",
+"theme": "Aires, pourcentage",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2024/2024-metj-3b.pdf",
+"c": "annales/2024/2024-metj-3b-corrige.pdf"
+},
+{
+"id": "2024-metj-4q1",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 4,
+"titre": "Exercice 4 – QCM, question 1",
+"theme": "Fonction : calculer une image",
+"s3": 3,
+"n3": [
+5
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-metj-4q1.pdf",
+"c": "annales/2024/2024-metj-4q1-corrige.pdf"
+},
+{
+"id": "2024-metj-4q2",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 4,
+"titre": "Exercice 4 – QCM, question 2",
+"theme": "Puissances, nombres relatifs",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+2,
+29
+],
+"e": "annales/2024/2024-metj-4q2.pdf",
+"c": "annales/2024/2024-metj-4q2-corrige.pdf"
+},
+{
+"id": "2024-metj-4q3",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 4,
+"titre": "Exercice 4 – QCM, question 3",
+"theme": "Translation",
+"s3": 11,
+"n3": [],
+"s4": 7,
+"n4": [
+17
+],
+"e": "annales/2024/2024-metj-4q3.pdf",
+"c": "annales/2024/2024-metj-4q3-corrige.pdf"
+},
+{
+"id": "2024-metj-4q4",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 4,
+"titre": "Exercice 4 – QCM, question 4",
+"theme": "Antécédent, lecture graphique",
+"s3": 8,
+"n3": [
+13
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-metj-4q4.pdf",
+"c": "annales/2024/2024-metj-4q4-corrige.pdf"
+},
+{
+"id": "2024-metj-4q5",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 4,
+"titre": "Exercice 4 – QCM, question 5",
+"theme": "Médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2024/2024-metj-4q5.pdf",
+"c": "annales/2024/2024-metj-4q5-corrige.pdf"
+},
+{
+"id": "2024-metj-4q6",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 4,
+"titre": "Exercice 4 – QCM, question 6",
+"theme": "Trigonométrie (cosinus)",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-metj-4q6.pdf",
+"c": "annales/2024/2024-metj-4q6-corrige.pdf"
+},
+{
+"id": "2024-metj-5a",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 5,
+"titre": "Exercice 5 – Le club de natation, partie A",
+"theme": "Diviseurs, décomposition, répartition",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14,
+15
+],
+"e": "annales/2024/2024-metj-5a.pdf",
+"c": "annales/2024/2024-metj-5a-corrige.pdf"
+},
+{
+"id": "2024-metj-5b",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 1er juillet 2024",
+"ex": 5,
+"titre": "Exercice 5 – La piscine, partie B",
+"theme": "Volume du pavé, fraction, prix",
+"s3": 21,
+"n3": [],
+"s4": 18,
+"n4": [
+42
+],
+"e": "annales/2024/2024-metj-5b.pdf",
+"c": "annales/2024/2024-metj-5b-corrige.pdf"
+},
+{
+"id": "2024-mart-1a",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 1,
+"titre": "Exercice 1 – Les dragées, question 1",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2024/2024-mart-1a.pdf",
+"c": "annales/2024/2024-mart-1a-corrige.pdf"
+},
+{
+"id": "2024-mart-1b",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 1,
+"titre": "Exercice 1 – Les ballotins, question 2",
+"theme": "Diviseurs, décomposition, répartition",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14,
+15
+],
+"e": "annales/2024/2024-mart-1b.pdf",
+"c": "annales/2024/2024-mart-1b-corrige.pdf"
+},
+{
+"id": "2024-mart-2q1",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 1",
+"theme": "Écriture scientifique",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+31
+],
+"e": "annales/2024/2024-mart-2q1.pdf",
+"c": "annales/2024/2024-mart-2q1-corrige.pdf"
+},
+{
+"id": "2024-mart-2q2",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 2",
+"theme": "Médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2024/2024-mart-2q2.pdf",
+"c": "annales/2024/2024-mart-2q2-corrige.pdf"
+},
+{
+"id": "2024-mart-2q3",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 2,
+"titre": "Exercice 2 – QCM, questions 3 et 4",
+"theme": "Symétrie axiale, rotation",
+"s3": 11,
+"n3": [
+17
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-mart-2q3.pdf",
+"c": "annales/2024/2024-mart-2q3-corrige.pdf"
+},
+{
+"id": "2024-mart-2q5",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 2,
+"titre": "Exercice 2 – QCM, questions 5 et 6",
+"theme": "Lecture graphique, coefficient directeur",
+"s3": 17,
+"n3": [
+13,
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-mart-2q5.pdf",
+"c": "annales/2024/2024-mart-2q5-corrige.pdf"
+},
+{
+"id": "2024-mart-3a",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 3,
+"titre": "Exercice 3 – La course d’Oscar, questions 1 à 5",
+"theme": "Réciproque de Pythagore, parallélisme, Thalès",
+"s3": 13,
+"n3": [],
+"s4": 19,
+"n4": [
+22,
+32
+],
+"e": "annales/2024/2024-mart-3a.pdf",
+"c": "annales/2024/2024-mart-3a-corrige.pdf"
+},
+{
+"id": "2024-mart-3b",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 3,
+"titre": "Exercice 3 – La course d’Oscar, question 6",
+"theme": "Trigonométrie",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-mart-3b.pdf",
+"c": "annales/2024/2024-mart-3b-corrige.pdf"
+},
+{
+"id": "2024-mart-4a",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 4,
+"titre": "Exercice 4 – Programme de calcul, questions 1, 2 et 5",
+"theme": "Programme de calcul, expression littérale, Scratch",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+18,
+20
+],
+"e": "annales/2024/2024-mart-4a.pdf",
+"c": "annales/2024/2024-mart-4a-corrige.pdf"
+},
+{
+"id": "2024-mart-4b",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 4,
+"titre": "Exercice 4 – Programme de calcul, questions 3 et 4",
+"theme": "Double distributivité, équation produit",
+"s3": 19,
+"n3": [
+18,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-mart-4b.pdf",
+"c": "annales/2024/2024-mart-4b-corrige.pdf"
+},
+{
+"id": "2024-mart-5",
+"an": 2024,
+"src": "Martinique, 3 juillet 2024",
+"ex": 5,
+"titre": "Exercice 5 – La piscine octogonale",
+"theme": "Aires, volume, débit",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+36
+],
+"e": "annales/2024/2024-mart-5.pdf",
+"c": "annales/2024/2024-mart-5-corrige.pdf"
+},
+{
+"id": "2024-polj-1q1",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 1",
+"theme": "Réciproque du théorème de Pythagore",
+"s3": 13,
+"n3": [],
+"s4": 14,
+"n4": [
+32
+],
+"e": "annales/2024/2024-polj-1q1.pdf",
+"c": "annales/2024/2024-polj-1q1-corrige.pdf"
+},
+{
+"id": "2024-polj-1q2",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 2",
+"theme": "Fonction affine : expression",
+"s3": 17,
+"n3": [
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-polj-1q2.pdf",
+"c": "annales/2024/2024-polj-1q2-corrige.pdf"
+},
+{
+"id": "2024-polj-1q3",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 3",
+"theme": "Homothétie",
+"s3": 18,
+"n3": [
+30
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-polj-1q3.pdf",
+"c": "annales/2024/2024-polj-1q3-corrige.pdf"
+},
+{
+"id": "2024-polj-1q4",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 4",
+"theme": "Ratio",
+"s3": 14,
+"n3": [
+22
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-polj-1q4.pdf",
+"c": "annales/2024/2024-polj-1q4-corrige.pdf"
+},
+{
+"id": "2024-polj-1q5",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 5",
+"theme": "Diviseurs communs, répartition",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14,
+15
+],
+"e": "annales/2024/2024-polj-1q5.pdf",
+"c": "annales/2024/2024-polj-1q5-corrige.pdf"
+},
+{
+"id": "2024-polj-2",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 2,
+"titre": "Exercice 2 – Le coût des jeux Olympiques",
+"theme": "Lecture de graphique, pourcentage, moyenne",
+"s3": 23,
+"n3": [],
+"s4": 15,
+"n4": [
+24,
+34
+],
+"e": "annales/2024/2024-polj-2.pdf",
+"c": "annales/2024/2024-polj-2-corrige.pdf"
+},
+{
+"id": "2024-polj-3a",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 3,
+"titre": "Exercice 3 – Le centre aquatique, question 1",
+"theme": "Théorème de Pythagore, théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 19,
+"n4": [
+10,
+22
+],
+"e": "annales/2024/2024-polj-3a.pdf",
+"c": "annales/2024/2024-polj-3a-corrige.pdf"
+},
+{
+"id": "2024-polj-3b",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 3,
+"titre": "Exercice 3 – Le centre aquatique, question 2",
+"theme": "Trigonométrie (tangente)",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-polj-3b.pdf",
+"c": "annales/2024/2024-polj-3b-corrige.pdf"
+},
+{
+"id": "2024-polj-3c",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 3,
+"titre": "Exercice 3 – Le centre aquatique, questions 3 et 4",
+"theme": "Aire, volume, proportionnalité",
+"s3": 14,
+"n3": [],
+"s4": 5,
+"n4": [
+11
+],
+"e": "annales/2024/2024-polj-3c.pdf",
+"c": "annales/2024/2024-polj-3c-corrige.pdf"
+},
+{
+"id": "2024-polj-4",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 4,
+"titre": "Exercice 4 – Les boules numérotées",
+"theme": "Probabilités, tableau à double entrée, décomposition",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+14,
+47
+],
+"e": "annales/2024/2024-polj-4.pdf",
+"c": "annales/2024/2024-polj-4-corrige.pdf"
+},
+{
+"id": "2024-polj-5a",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 5,
+"titre": "Exercice 5 – Les fonctions f et g, partie A",
+"theme": "Image, antécédent",
+"s3": 8,
+"n3": [
+5,
+14
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-polj-5a.pdf",
+"c": "annales/2024/2024-polj-5a-corrige.pdf"
+},
+{
+"id": "2024-polj-5b",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 5,
+"titre": "Exercice 5 – Les fonctions f et g, partie B",
+"theme": "Tableur, Scratch, identité remarquable, équation produit",
+"s3": 19,
+"n3": [
+5,
+18,
+25,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-polj-5b.pdf",
+"c": "annales/2024/2024-polj-5b-corrige.pdf"
+},
+{
+"id": "2024-polj-5fac",
+"an": 2024,
+"src": "Polynésie, juin 2024",
+"ex": 5,
+"titre": "Exercice 5 – Factoriser x² − 4x",
+"theme": "Factoriser par un facteur commun",
+"s3": 16,
+"n3": [
+25
+],
+"s4": 3,
+"n4": [
+7
+],
+"e": "annales/2024/2024-polj-5fac.pdf",
+"c": "annales/2024/2024-polj-5fac-corrige.pdf"
+},
+{
+"id": "2024-mets-1a",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 1",
+"theme": "Décomposition en facteurs premiers",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14
+],
+"e": "annales/2024/2024-mets-1a.pdf",
+"c": "annales/2024/2024-mets-1a-corrige.pdf"
+},
+{
+"id": "2024-mets-1b",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 2",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2024/2024-mets-1b.pdf",
+"c": "annales/2024/2024-mets-1b-corrige.pdf"
+},
+{
+"id": "2024-mets-1c",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 3",
+"theme": "Équation du premier degré",
+"s3": 7,
+"n3": [],
+"s4": 16,
+"n4": [
+38
+],
+"e": "annales/2024/2024-mets-1c.pdf",
+"c": "annales/2024/2024-mets-1c-corrige.pdf"
+},
+{
+"id": "2024-mets-1d",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 4",
+"theme": "Volume du cylindre",
+"s3": 21,
+"n3": [
+34
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-mets-1d.pdf",
+"c": "annales/2024/2024-mets-1d-corrige.pdf"
+},
+{
+"id": "2024-mets-1e",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Vrai ou faux, affirmation 5",
+"theme": "Vitesses, conversion",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35,
+36
+],
+"e": "annales/2024/2024-mets-1e.pdf",
+"c": "annales/2024/2024-mets-1e-corrige.pdf"
+},
+{
+"id": "2024-mets-2a",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 2,
+"titre": "Exercice 2 – Le champ de blé, questions 1 et 2",
+"theme": "Théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2024/2024-mets-2a.pdf",
+"c": "annales/2024/2024-mets-2a-corrige.pdf"
+},
+{
+"id": "2024-mets-2b",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 2,
+"titre": "Exercice 2 – Le champ de blé, questions 3 et 4",
+"theme": "Aire, proportionnalité, théorème de Pythagore",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [
+10,
+11
+],
+"e": "annales/2024/2024-mets-2b.pdf",
+"c": "annales/2024/2024-mets-2b-corrige.pdf"
+},
+{
+"id": "2024-mets-3a",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 3,
+"titre": "Exercice 3 – Les panneaux solaires, questions 1 et 2",
+"theme": "Étendue, moyenne, pourcentage",
+"s3": 23,
+"n3": [],
+"s4": 15,
+"n4": [
+24,
+34
+],
+"e": "annales/2024/2024-mets-3a.pdf",
+"c": "annales/2024/2024-mets-3a-corrige.pdf"
+},
+{
+"id": "2024-mets-3b",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 3,
+"titre": "Exercice 3 – Les panneaux solaires, question 3",
+"theme": "Trigonométrie (sinus)",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-mets-3b.pdf",
+"c": "annales/2024/2024-mets-3b-corrige.pdf"
+},
+{
+"id": "2024-mets-4a",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 4,
+"titre": "Exercice 4 – La fonction f, questions 1 et 2",
+"theme": "Image, tableur, antécédent",
+"s3": 8,
+"n3": [
+5,
+12
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-mets-4a.pdf",
+"c": "annales/2024/2024-mets-4a-corrige.pdf"
+},
+{
+"id": "2024-mets-4b",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 4,
+"titre": "Exercice 4 – La fonction f, question 3",
+"theme": "Double distributivité, équation produit",
+"s3": 19,
+"n3": [
+14,
+18,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-mets-4b.pdf",
+"c": "annales/2024/2024-mets-4b-corrige.pdf"
+},
+{
+"id": "2024-mets-5",
+"an": 2024,
+"src": "Métropole – Antilles-Guyane, 19 septembre 2024",
+"ex": 5,
+"titre": "Exercice 5 – Le losange, questions 1 et 2 (Scratch)",
+"theme": "Losange, angles, Scratch",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2024/2024-mets-5.pdf",
+"c": "annales/2024/2024-mets-5-corrige.pdf"
+},
+{
+"id": "2024-pols-1q1",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Questions indépendantes, question 1",
+"theme": "Divisibilité, facteurs premiers",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+13,
+14
+],
+"e": "annales/2024/2024-pols-1q1.pdf",
+"c": "annales/2024/2024-pols-1q1-corrige.pdf"
+},
+{
+"id": "2024-pols-1q2",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Questions indépendantes, question 2",
+"theme": "Écriture scientifique",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+31
+],
+"e": "annales/2024/2024-pols-1q2.pdf",
+"c": "annales/2024/2024-pols-1q2-corrige.pdf"
+},
+{
+"id": "2024-pols-1q3",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Questions indépendantes, question 3",
+"theme": "Conversion de vitesse",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+36
+],
+"e": "annales/2024/2024-pols-1q3.pdf",
+"c": "annales/2024/2024-pols-1q3-corrige.pdf"
+},
+{
+"id": "2024-pols-1q4",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Questions indépendantes, question 4",
+"theme": "Équation produit",
+"s3": 19,
+"n3": [
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-pols-1q4.pdf",
+"c": "annales/2024/2024-pols-1q4-corrige.pdf"
+},
+{
+"id": "2024-pols-1q5",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Questions indépendantes, question 5",
+"theme": "Fonction : calculer une image",
+"s3": 3,
+"n3": [
+5
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-pols-1q5.pdf",
+"c": "annales/2024/2024-pols-1q5-corrige.pdf"
+},
+{
+"id": "2024-pols-1q6",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – Questions indépendantes, question 6",
+"theme": "Théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2024/2024-pols-1q6.pdf",
+"c": "annales/2024/2024-pols-1q6-corrige.pdf"
+},
+{
+"id": "2024-pols-2a",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 2,
+"titre": "Exercice 2 – Les températures, questions 1 à 4",
+"theme": "Tableur, moyenne, médiane, étendue",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2024/2024-pols-2a.pdf",
+"c": "annales/2024/2024-pols-2a-corrige.pdf"
+},
+{
+"id": "2024-pols-2b",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 2,
+"titre": "Exercice 2 – Les températures, question 5",
+"theme": "Probabilités, pourcentage",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+34,
+47
+],
+"e": "annales/2024/2024-pols-2b.pdf",
+"c": "annales/2024/2024-pols-2b-corrige.pdf"
+},
+{
+"id": "2024-pols-3a",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 3,
+"titre": "Exercice 3 – Les triangles, question 1",
+"theme": "Trigonométrie (tangente)",
+"s3": 15,
+"n3": [
+24
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-pols-3a.pdf",
+"c": "annales/2024/2024-pols-3a-corrige.pdf"
+},
+{
+"id": "2024-pols-3b",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 3,
+"titre": "Exercice 3 – Les triangles, questions 2 à 4",
+"theme": "Théorème de Pythagore, agrandissement et aires",
+"s3": 21,
+"n3": [],
+"s4": 17,
+"n4": [
+10,
+41
+],
+"e": "annales/2024/2024-pols-3b.pdf",
+"c": "annales/2024/2024-pols-3b-corrige.pdf"
+},
+{
+"id": "2024-pols-4",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 4,
+"titre": "Exercice 4 – Les pentagones (Scratch)",
+"theme": "Algorithmique (Scratch), transformations",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2024/2024-pols-4.pdf",
+"c": "annales/2024/2024-pols-4-corrige.pdf"
+},
+{
+"id": "2024-pols-5a",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 5,
+"titre": "Exercice 5 – La piscine du camping, questions 1 et 2",
+"theme": "Volume du cylindre, débit",
+"s3": 21,
+"n3": [
+34
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-pols-5a.pdf",
+"c": "annales/2024/2024-pols-5a-corrige.pdf"
+},
+{
+"id": "2024-pols-5b",
+"an": 2024,
+"src": "Polynésie, septembre 2024",
+"ex": 5,
+"titre": "Exercice 5 – La piscine du camping, questions 3 et 4",
+"theme": "Fonction affine, équation, lecture graphique",
+"s3": 17,
+"n3": [
+13,
+26
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-pols-5b.pdf",
+"c": "annales/2024/2024-pols-5b-corrige.pdf"
+},
+{
+"id": "2024-asud-1q1",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 1",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2024/2024-asud-1q1.pdf",
+"c": "annales/2024/2024-asud-1q1-corrige.pdf"
+},
+{
+"id": "2024-asud-1q3",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 3",
+"theme": "Théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2024/2024-asud-1q3.pdf",
+"c": "annales/2024/2024-asud-1q3-corrige.pdf"
+},
+{
+"id": "2024-asud-1q4",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 4",
+"theme": "Multiples (engrenage)",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+13
+],
+"e": "annales/2024/2024-asud-1q4.pdf",
+"c": "annales/2024/2024-asud-1q4-corrige.pdf"
+},
+{
+"id": "2024-asud-1q5",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 5",
+"theme": "Homothétie",
+"s3": 18,
+"n3": [
+30
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-asud-1q5.pdf",
+"c": "annales/2024/2024-asud-1q5-corrige.pdf"
+},
+{
+"id": "2024-asud-2a",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"ex": 2,
+"titre": "Exercice 2 – Les fonctions f et g, question 1",
+"theme": "Image, antécédent, tableur",
+"s3": 8,
+"n3": [
+5,
+12,
+14
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-asud-2a.pdf",
+"c": "annales/2024/2024-asud-2a-corrige.pdf"
+},
+{
+"id": "2024-asud-2b",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"ex": 2,
+"titre": "Exercice 2 – Les fonctions f et g, question 2",
+"theme": "Double distributivité, équation produit",
+"s3": 19,
+"n3": [
+18,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-asud-2b.pdf",
+"c": "annales/2024/2024-asud-2b-corrige.pdf"
+},
+{
+"id": "2024-asud-3",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"ex": 3,
+"titre": "Exercice 3 – Les félins, questions 1 et 2",
+"theme": "Probabilités, vitesse, pourcentage",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34,
+35,
+47
+],
+"e": "annales/2024/2024-asud-3.pdf",
+"c": "annales/2024/2024-asud-3-corrige.pdf"
+},
+{
+"id": "2024-asud-4a",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"ex": 4,
+"titre": "Exercice 4 – Le terrain en pente, questions 1 et 3",
+"theme": "Théorème de Pythagore, volume d’un prisme",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [
+10
+],
+"e": "annales/2024/2024-asud-4a.pdf",
+"c": "annales/2024/2024-asud-4a-corrige.pdf"
+},
+{
+"id": "2024-asud-4b",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"ex": 4,
+"titre": "Exercice 4 – Le terrain en pente, question 2",
+"theme": "Trigonométrie",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2024/2024-asud-4b.pdf",
+"c": "annales/2024/2024-asud-4b-corrige.pdf"
+},
+{
+"id": "2024-asud-5",
+"an": 2024,
+"src": "Amérique du Sud, 2 décembre 2024",
+"ex": 5,
+"titre": "Exercice 5 – Les losanges (Scratch)",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2024/2024-asud-5.pdf",
+"c": "annales/2024/2024-asud-5-corrige.pdf"
 }
 ]
