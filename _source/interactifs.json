@@ -1,5 +1,25 @@
 {
   "_doc": "Exercices interactifs hébergés sur le site (dossier exos/), publiés avec les documents élèves de la notion (case Élèves). Clé : niveau puis numéro de notion.",
+  "3e": {
+    "1": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/3e-s01.html#n01"
+      }
+    ],
+    "2": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/3e-s01.html#n02"
+      }
+    ],
+    "3": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/3e-s01.html#n03"
+      }
+    ]
+  },
   "4e": {
     "1": [
       {
