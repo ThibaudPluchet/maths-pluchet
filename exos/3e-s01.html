@@ -202,6 +202,35 @@ function prodGen(){
   var s1 = F.map(function(t){ return pn(t[0]); }).join(' × ') + ' × ' + (deg === 2 ? 'x × x' : 'x');
   return {q: F.map(fx).join(' × '), P: sumT([[C, deg]]), key: F.map(fx).join(' × '), steps: [s1, mono(C, deg)]};
 }
+// expressions avec parenthèses de formats variés : termes isolés et groupes K(…) placés dans le désordre
+function shuffle(a){ for (var i = a.length - 1; i > 0; i--){ var j = rnd(0, i), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function grp(sq){ var D = sq && Math.random() < 0.3 ? [2, 1, 0] : [1, 0], n = rnd(2, D.length === 3 ? 3 : 2);
+  if (D.length === 2 && Math.random() < 0.25) n = 3;
+  var T = shuffle(D.slice()).slice(0, Math.min(n, D.length)).map(function(d){ return [rnz(-9, 9), d]; });
+  if (T.length < n) T.push([rnz(-9, 9), 1]);
+  return shuffle(T); }
+function parenGen(mode){
+  var B = [], i, nl;
+  if (mode === 'plus'){ var ng = pick([1, 1, 2]); for (i = 0; i < ng; i++) B.push({K: 1, T: grp(true)}); nl = rnd(ng > 1 ? 0 : 1, 2); }
+  else if (mode === 'moins'){ B.push({K: -1, T: grp(true)}); if (Math.random() < 0.4) B.push({K: pick([1, -1]), T: grp(false)}); nl = rnd(B.length > 1 ? 0 : 1, 2); }
+  else { B.push({K: pick([1, -1]) * rnd(2, 7), T: grp(false)});
+    var r = Math.random(); if (r < 0.45) B.push({K: pick([1, -1]) * rnd(2, 6), T: grp(false)}); else if (r < 0.8) B.push({K: pick([1, -1]), T: grp(false)});
+    nl = rnd(B.length > 1 ? 0 : 1, 1); }
+  for (i = 0; i < nl; i++) B.push({t: [rnz(-9, 9), pick([1, 0])]});
+  shuffle(B);
+  if (mode === 'moins' && B[0].K === -1 && B.length > 1 && Math.random() < 0.5) B.push(B.shift());   // le −( ) plus souvent au milieu ou à la fin
+  var q = '', all = [], s1 = [], afterDone = false;
+  B.forEach(function(b, k){
+    if (b.t){ var m = mono(Math.abs(b.t[0]), b.t[1]); q += k === 0 ? (b.t[0] < 0 ? MINUS : '') + m : (b.t[0] < 0 ? ' ' + MINUS + ' ' : ' + ') + m; all.push(b.t); return; }
+    var a = Math.abs(b.K), num = a === 1 ? '' : String(a), inn = '(' + terms(b.T) + ')';
+    if (k === 0 && b.K > 1 && Math.random() < 0.3) { q += inn + ' × ' + a; afterDone = true; }
+    else q += k === 0 ? (b.K < 0 ? MINUS : '') + num + inn : (b.K < 0 ? ' ' + MINUS + ' ' : ' + ') + num + inn;
+    b.T.forEach(function(t){ all.push([b.K * t[0], t[1]]); });
+  });
+  var P = sumT(all); if (!P[2] && !P[1] && !P[0]) return parenGen(mode);
+  var st = [terms(all), poly(P)]; if (st[0] === st[1]) st = [st[0]];
+  return {q: q, P: P, key: q, steps: st};
+}
 /* ---------- exercices ----------
    chaque générateur renvoie {q, P (réponse attendue) | v (nombre) | vf (true/false), steps: [lignes], aide?} */
 var EX = [
@@ -251,23 +280,14 @@ var EX = [
     var i = rnd(0, L.length - 1), p = L[i]; return {q: p[0], vf: p[1], steps: [p[2]], key: 'vf' + i}; }},
  // ===== N03 : parenthèses =====
  {id: 'n03a', lv: 1, n: 'N03', t: 'Parenthèses précédées de +', d: 'On les enlève sans rien changer.',
-  c: 'Supprime les parenthèses puis réduis.', a: 'Des parenthèses précédées d\'un + s\'enlèvent sans changer les signes : 3x + (2x − 5) = 3x + 2x − 5 = 5x − 5.',
-  g: function(){ var A = [[rnz(1, 9), 1], [rnz(-9, 9), 0]], B = [[rnz(-9, 9), 1], [rnz(-9, 9), 0]];
-    if (pick([true, false])) B.reverse();
-    var all = A.concat(B), P = sumT(all); if (!P[1] && !P[0]) return this.g();
-    return {q: terms(A) + ' + (' + terms(B) + ')', P: P, steps: [terms(all), poly(P)]}; }},
+  c: 'Supprime les parenthèses puis réduis.', a: 'Des parenthèses précédées d\'un + (ou en début de calcul) s\'enlèvent sans changer les signes : 3x + (2x − 5) = 3x + 2x − 5 = 5x − 5.',
+  g: function(){ return parenGen('plus'); }},
  {id: 'n03b', lv: 2, n: 'N03', t: 'Parenthèses précédées de −', d: 'On change tous les signes à l\'intérieur.',
   c: 'Supprime les parenthèses puis réduis.', a: 'Des parenthèses précédées d\'un − s\'enlèvent en changeant le signe de chaque terme : 5x − (2x − 3) = 5x − 2x + 3 = 3x + 3.',
-  g: function(){ var A = [[rnz(1, 9), 1], [rnz(-9, 9), 0]], B = [[rnz(-9, 9), 1], [rnz(-9, 9), 0]];
-    if (pick([true, false])) B.reverse(); if (pick([true, false])) A = [A[0]];
-    var opp = B.map(function(t){ return [-t[0], t[1]]; }), all = A.concat(opp), P = sumT(all);
-    return {q: terms(A) + ' ' + MINUS + ' (' + terms(B) + ')', P: P, steps: [terms(all), poly(P)]}; }},
+  g: function(){ return parenGen('moins'); }},
  {id: 'n03c', lv: 3, n: 'N03', t: 'Développer et réduire', d: 'Tout ensemble : distributivité et parenthèses.',
-  c: 'Développe, supprime les parenthèses puis réduis.', a: 'On développe d\'abord le produit, puis on supprime les parenthèses (attention au −), puis on réduit.',
-  g: function(){ var k = rnd(2, 6), a = rnz(1, 6), b = rnz(-9, 9), c = rnz(-9, 9), d = rnz(-9, 9), s = pick([1, -1]);
-    var D = [[k * a, 1], [k * b, 0]], B = [[c, 1], [d, 0]], all = D.concat(B.map(function(t){ return [s * t[0], t[1]]; })), P = sumT(all);
-    return {q: k + '(' + terms([[a, 1], [b, 0]]) + ') ' + (s > 0 ? '+' : MINUS) + ' (' + terms(B) + ')', P: P,
-      steps: [terms(D) + ' ' + (s > 0 ? '+' : MINUS) + ' (' + terms(B) + ')', terms(all), poly(P)]}; }}
+  c: 'Développe, supprime les parenthèses puis réduis.', a: 'On développe d\'abord les produits, on supprime les parenthèses (attention au −), puis on réduit. Par exemple 3(x + 2) − 2(x − 1) = 3x + 6 − 2x + 2 = x + 8.',
+  g: function(){ return parenGen('dev'); }}
 ];
 var NOTIONS = [
   {n: 'N01', t: 'Développer grâce à la simple distributivité', r: 'k(a + b) = ka + kb et k(a − b) = ka − kb.'},
