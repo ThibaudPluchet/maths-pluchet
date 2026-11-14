@@ -457,7 +457,7 @@ function start(D){
     var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(dms.length ? [['dm','DM']] : []).concat((D.dnb && D.dnb.parts && D.dnb.parts.length) ? [['brevet','Exercices DNB']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes'], ['curio','Curiosités']]);
     if (!tlist.some(function(t){ return t[0] === view; })) view = 'cours';
     document.body.setAttribute('data-view', view);
-    classSeq = full.length ? full[0].num : 0;
+    var ec0 = enCours(seqs); classSeq = ec0 ? ec0.s.num : (full.length ? full[0].num : 0);
     // point rouge : documents nouveaux depuis la dernière visite (cours), évaluation à venir ou nouvelle (évaluations), DM nouveau
     tlist.forEach(function(t){
       if (t[0] === 'cours') t[2] = seqs.some(function(s){ return s.notions.some(function(n){ return n.items.some(isNew); }); });
@@ -531,8 +531,18 @@ function start(D){
   function keepVisible(list){ setTimeout(function(){ var a = list.querySelector('[aria-pressed="true"]'); if (a && list.scrollWidth > list.clientWidth + 4) list.scrollLeft += a.getBoundingClientRect().left - list.getBoundingClientRect().left - 16; }, 0); }
   function codeOf(num){ return typeof num === 'string' ? num : 'N' + num; }
   function domainOf(t){ return String(t).replace(/\s*\(\d+\)\s*$/, ''); }
+  // Notion en cours de la classe : celle de la page enseignant (première notion pas encore « Fait en classe »),
+  // ou, si elle n'est pas encore publiée, la plus avancée publiée avant elle ; à défaut, la plus récente.
+  function enCours(seqs){
+    var E = D.encours || {}, lv = levelOf(current), t = allMode() ? Math.max.apply(null, (D.classes[lv] || []).map(function(c){ return E[c] || 0; }).concat([0])) : E[current];
+    var best = null;
+    seqs.forEach(function(s){ s.notions.forEach(function(n){ if (typeof n.num !== 'number') return;
+      if (t ? n.num <= t && (!best || n.num > best.n.num) : !best) best = {n: n, s: s}; }); });
+    if (!best && seqs.length) best = {s: seqs[0], n: seqs[0].notions.filter(function(n){ return typeof n.num === 'number'; })[0] || seqs[0].notions[0]};
+    return best;
+  }
   function renderCours(seqs){
-    var latest = seqs[0], cur = latest.notions.filter(function(n){ return typeof n.num === 'number'; })[0] || latest.notions[0];
+    var ec = enCours(seqs), latest = ec.s, cur = ec.n;
     var doms = [], byKey = {};
     seqs.slice().reverse().forEach(function(s){            // ordre chronologique
       var k = domainOf(s.titre);
@@ -872,6 +882,7 @@ function addSecret(D){
               n.items.splice(at, 0, it); } }); }); });
         }); }); });
         // catalogue du brevet (parties, sujets complets) : toujours celui du data.json public, le plus récent
+        if (D.encours) got.encours = D.encours;
         if (D.dnb && D.dnb.parts){ got.dnb = got.dnb || {}; got.dnb.parts = D.dnb.parts; got.dnb.seqs = got.dnb.seqs || D.dnb.seqs; if (D.dnb.sujets) got.dnb.sujets = D.dnb.sujets; }
         return got; }
       got.forEach(function(it){

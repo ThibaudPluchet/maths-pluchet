@@ -122,6 +122,7 @@ def load(page, dbdir, everything=False):
     evals = js_const_opt(html, "EVALS")
     ANIMS.clear()
     classes, data, wanted = {}, {"niveaux": {}}, {}
+    encours = {}
     global SECRET
     SECRET = {}
     global BUNDLE
@@ -141,6 +142,12 @@ def load(page, dbdir, everything=False):
         state = {}
         for f in glob.glob(f"{dbdir}/{suivi}/*.json"):
             state[os.path.basename(f)[:-5]] = json.load(open(f))
+        # notion en cours de chaque classe, comme dans la page enseignant : la première notion pas encore « Fait en classe »
+        order = [x["n"] for sq in levels[lv]["seqs"] for x in sq["notions"]]
+        for k, nm in enumerate(noms):
+            cur = next((x for x in order if not state.get("n%02d" % x, {}).get(f"c{k + 1}")), None)
+            if cur is not None:
+                encours[nm] = cur
         # évaluations déclarées : classes où le sujet (faite) et la correction sont publiés, par document relié (N12, E01)
         on = lambda p, fld, k: bool((p.get(fld) or {}).get(str(k + 1)) or (p.get(fld) or {}).get(k + 1))
         suj, cor = {}, {}
@@ -250,6 +257,7 @@ def load(page, dbdir, everything=False):
                 seqs.append({"num": seq["n"], "titre": seq["t"], "notions": notions})
         data["niveaux"][lv] = seqs
     data["classes"] = classes
+    data["encours"] = encours
     data["planned"] = planned_evals(dbdir, levels, classes, inter)
     data["dm"] = dm_items(html, dbdir, levels, classes)
     data["dnb"] = dnb_items(dbdir, levels, classes, everything)
