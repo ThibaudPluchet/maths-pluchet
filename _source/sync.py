@@ -42,6 +42,11 @@ MASTER = os.environ.get("SITE_KEY", "")
 PRIVATE = {"correction-exo"}
 
 
+def profkey():
+    """Clé de l'adresse enseignant (#prof/<clé>) : tous les documents, cochés ou non."""
+    return hmac.new(bytes.fromhex(MASTER), b"prof", hashlib.sha256).digest()[:16]
+
+
 def classkey(c):
     return hmac.new(bytes.fromhex(MASTER), ("classe:" + c).encode(), hashlib.sha256).digest()[:16]
 
@@ -104,7 +109,9 @@ ANIM_RE = re.compile(r"^https://claude\.ai/artifact/([A-Za-z0-9]+)(#.*)?$")
 ANIMS = set()
 
 
-def load(page, dbdir):
+def load(page, dbdir, everything=False):
+    """everything=True : version enseignant, comme si toutes les cases étaient cochées pour toutes les classes
+    (seulement les documents présents dans la page enseignant, pas ceux hors fenêtre)."""
     html = open(page, encoding="utf-8").read()
     levels, docs = js_const(html, "LEVELS"), js_const(html, "DOCS")
     links = js_const_opt(html, "LINKS")
@@ -145,6 +152,12 @@ def load(page, dbdir):
                     suj.setdefault(p["doc"], set()).add(noms[k])
                     if on(p, "r", k):
                         cor.setdefault(p["doc"], set()).add(noms[k])
+        if everything:
+            for e in evals.get(lv, []):
+                suj[e["id"]] = cor[e["id"]] = set(noms)
+            for sq in levels[lv]["seqs"]:
+                for x in sq["notions"]:
+                    suj["N%d" % x["n"]] = cor["N%d" % x["n"]] = set(noms)
         seqs = []
         for seq in levels[lv]["seqs"]:
             notions = []
@@ -157,7 +170,7 @@ def load(page, dbdir):
                 show = sorted(suj.get(e["id"], ()))
                 if not show:
                     continue
-                items = eval_items(e["docs"], show, sorted(cor.get(e["id"], ())), wanted)
+                items = eval_items(e["docs"], show, sorted(cor.get(e["id"], ())), wanted, everything)
                 if items:
                     titres = {x["n"]: x["t"] for sq in levels[lv]["seqs"] for x in sq["notions"]}
                     seq.setdefault("_ev", []).append((last, {"num": e["id"], "titre": "Évaluation commune · " + ", ".join("N%02d" % x for x in e["ns"]),
@@ -166,7 +179,7 @@ def load(page, dbdir):
             for n in seq["notions"]:
                 s = state.get("n%02d" % n["n"], {})
                 # document distribué (jauge ≥ 2) à la classe k : publié pour elle, même sans la case « Élèves » (d<k>)
-                dist = lambda k, key: s.get(f"d{k+1}") or (s.get(f"pd{k+1}{key}") or 0) >= 2
+                dist = (lambda k, key: True) if everything else (lambda k, key: s.get(f"d{k+1}") or (s.get(f"pd{k+1}{key}") or 0) >= 2)
                 by_type = {t: [noms[k] for k in range(len(noms)) if dist(k, key)] for t, key in PDKEY.items()}
                 # autres ressources (carte mentale, vidéos, MathALÉA, animations) : avec le cours
                 show_docs = by_type["cours"]
@@ -174,7 +187,7 @@ def load(page, dbdir):
                 show_eval = sorted(suj.get("N%d" % n["n"], ()))          # sujet : évaluation déclarée cochée « Faite »
                 show_corr = sorted(cor.get("N%d" % n["n"], ()))          # correction : cochée « Correction »
                 # Correction de la fiche d'exercices : quand la notion est « Fait en classe » (et la fiche publiée)
-                show_fait = [noms[k] for k in range(len(noms)) if s.get(f"c{k+1}") and dist(k, "e")]
+                show_fait = [noms[k] for k in range(len(noms)) if (everything or s.get(f"c{k+1}")) and dist(k, "e")]
                 if not show_any and not show_eval:
                     continue
                 items = []
@@ -201,9 +214,11 @@ def load(page, dbdir):
                         continue
                     if t in PRIVATE:
                         for c in cls:
-                            SECRET.setdefault(c, []).append({"lv": lv, "num": n["n"], "type": t, "label": label, "src": d["p"], "b": d.get("b")})
+                            SECRET.setdefault(c, []).append({"lv": lv, "num": n["n"], "type": t, "label": label, "src": d["p"], "b": d.get("b"), "x": d.get("x")})
                         continue
                     items.append({"type": t, "label": label, "href": d["p"], "cls": cls, "_s": d.get("s") or ""})
+                    if everything and d.get("x"):
+                        items[-1]["_x"] = 1             # hors fenêtre de la page enseignant : gardé seulement s'il est déjà en ligne
                     wanted[d["p"]] = d.get("b")
                 items.sort(key=lambda i: (list(TYPES.values()).index(i["type"]), i.pop("_s")))
                 for k in (inter.get(lv, {}).get(str(n["n"])) or []) if show_docs else []:
@@ -213,8 +228,11 @@ def load(page, dbdir):
                 for k in (links.get(lv, {}).get(str(n["n"])) or []) if show_docs else []:
                     m = ANIM_RE.match(k.get("u", ""))
                     if m:
-                        ANIMS.add(m.group(1))
+                        if not everything:
+                            ANIMS.add(m.group(1))
                         href = f"anim/{m.group(1)}.html" + (m.group(2) or "")
+                        if everything:
+                            href = k["u"]                # version enseignant : l'animation claude.ai elle-même
                     elif k.get("u", "").startswith("https://"):
                         href = k["u"]
                     else:
@@ -330,7 +348,7 @@ BUNDLE = {}
 SECRET = {}
 
 
-def eval_items(docs, show_eval, show_corr, wanted):
+def eval_items(docs, show_eval, show_corr, wanted, everything=False):
     """Sujets ÉLÈVE (classes show_eval) et corrections PROF (classes show_corr) d'une évaluation commune,
     chacun pour sa classe (jamais les PAP ni le préambule)."""
     items = []
@@ -348,6 +366,8 @@ def eval_items(docs, show_eval, show_corr, wanted):
             continue
         label = LABELS.get(lab, lab) + (" (sujet " + d["s"] + ")" if d.get("s") else "")
         items.append({"type": TYPES[lab], "label": label, "href": d["p"], "cls": cls, "_s": d.get("s") or ""})
+        if everything and d.get("x"):
+            items[-1]["_x"] = 1
         wanted[d["p"]] = d.get("b")
     items.sort(key=lambda i: (list(TYPES.values()).index(i["type"]), i.pop("_s")))
     return items
@@ -366,18 +386,86 @@ def secret_plan():
     return out
 
 
+def prof_plan(tdata, twanted, tsecret, wanted):
+    """Version enseignant : chaque PDF non publié pour les élèves devient un fichier chiffré avec la clé enseignant ;
+    les liens de tdata sont réécrits (href = enc = fichier chiffré). Renvoie [(source, fichier chiffré)]."""
+    tk, plan, done = profkey(), [], {}
+    def enc_of(src, b):
+        if src not in done:
+            done[src] = encname(tk, f"prof:{src}:{b}")
+            plan.append((src, done[src]))
+        return done[src]
+    for lv, seqs in tdata["niveaux"].items():
+        for sq in seqs:
+            for n in sq["notions"]:
+                # hors fenêtre de la page enseignant et pas en ligne : introuvable dans le cloud, laissé de côté
+                n["items"] = [it for it in n["items"] if not (it.pop("_x", None) and it["href"] not in wanted)]
+                for it in n["items"]:
+                    if it["href"].startswith("docs/") and it["href"] not in wanted:
+                        it["href"] = it["enc"] = enc_of(it["href"], twanted.get(it["href"]))
+            sq["notions"] = [n for n in sq["notions"] if n["items"]]
+    # corrections de fiches d'exercices (chiffrées par classe pour les élèves) : une seule fois chacune
+    for c, its in tsecret.items():
+        for it in its:
+            if it.get("x") and it["src"] not in SRC_ENC:
+                continue                        # hors fenêtre et jamais publiée pour une classe : introuvable
+            e = enc_of(it["src"], it["b"])
+            for sq in tdata["niveaux"].get(it["lv"], []):
+                for n in sq["notions"]:
+                    if n["num"] == it["num"] and not any(x.get("enc") == e for x in n["items"]):
+                        n["items"].append({"type": it["type"], "label": it["label"], "href": e, "enc": e,
+                                           "cls": sorted({c2 for c2, l2 in tsecret.items() if any(y["src"] == it["src"] for y in l2)})})
+    return plan
+
+
+SRC_ENC = {}          # source -> (clé de classe, fichier chiffré déjà en ligne) : corrections publiées pour une classe
+
+
+def read_pdf(src, pdfdir, bundles, repo=""):
+    """PDF de la page enseignant récupéré dans W/pdf (fichier seul ou paquet evaluations.json), ou à défaut
+    déchiffré depuis la copie déjà publiée pour une classe."""
+    f = os.path.join(pdfdir, src)
+    if os.path.exists(f):
+        raw = open(f, "rb").read()
+    elif src in SRC_ENC and os.path.exists(os.path.join(repo, SRC_ENC[src][1])):
+        k, e = SRC_ENC[src]
+        buf = open(os.path.join(repo, e), "rb").read()
+        raw = AESGCM(k).decrypt(buf[:12], buf[12:], None)
+    else:
+        z = BUNDLE.get(src)
+        if not z or not os.path.exists(os.path.join(pdfdir, z)):
+            sys.exit(f"PDF manquant : {src}")
+        if z not in bundles:
+            bundles[z] = json.load(open(os.path.join(pdfdir, z), encoding="utf-8"))
+        if src not in bundles[z]:
+            sys.exit(f"PDF manquant : {src} (absent de {z})")
+        raw = base64.b64decode(bundles[z][src])
+    if raw[:5] != b"%PDF-":
+        sys.exit(f"Contenu invalide : {src}")
+    return raw
+
+
 def main():
     if sys.argv[1] == "collections":
         levels = js_const(open(sys.argv[2], encoding="utf-8").read(), "LEVELS")
         print(json.dumps([c for lv in level_list(levels) for c in (suivi_of(lv), evals_of(lv))] + ["config", "evaluations", "dm"]))
         return
     mode, page, dbdir, repo = sys.argv[1:5]
+    # version enseignant (adresse #prof/<clé>) : calculée d'abord, la version élèves (publique) ensuite
+    tdata, twanted = load(page, dbdir, everything=True) if re.fullmatch(r"[0-9a-f]{64}", MASTER) else (None, {})
+    tsecret = SECRET
     data, wanted = load(page, dbdir)
+    for c, lst in secret_plan().items():
+        for it, e in lst:
+            SRC_ENC.setdefault(it["src"], (classkey(c), e))
+    tplan = prof_plan(tdata, twanted, tsecret, wanted) if tdata else []
     if mode == "plan":
         missing = [p for p, b in wanted.items() if not os.path.exists(os.path.join(repo, p)) or (b and os.path.getsize(os.path.join(repo, p)) != b)]
         # PDF rangés dans un paquet evaluations.json : on demande le paquet (une seule fois) plutôt que le PDF
         for c, lst in secret_plan().items():
             missing += [it["src"] for it, e in lst if not os.path.exists(os.path.join(repo, e))]
+        missing += [src for src, e in tplan if not os.path.exists(os.path.join(repo, e))
+                    and not (src in SRC_ENC and os.path.exists(os.path.join(repo, SRC_ENC[src][1])))]
         need = list(dict.fromkeys([BUNDLE.get(p, p) for p in missing] + dm_need(data, repo)))
         print(f"{len(missing)} PDF à mettre à jour")
         json.dump(need, open(f"{dbdir}/need.json", "w"), ensure_ascii=False)
@@ -385,7 +473,7 @@ def main():
         json.dump(anim_need, open(f"{dbdir}/need_anim.json", "w"), ensure_ascii=False)
         print(f"{len(ANIMS)} animation(s) publiée(s), {len(anim_need)} à récupérer (need_anim.json)")
         print(f"{len(data['dm'])} DM publié(s)")
-        print(f"{len(wanted)} PDF publiés au total, {len(need)} fichier(s) à récupérer")
+        print(f"{len(wanted)} PDF publiés au total, {len(tplan)} de plus pour l'adresse enseignant, {len(need)} fichier(s) à récupérer")
         return
     pdfdir = sys.argv[5]
     bundles = {}
@@ -464,6 +552,20 @@ def main():
             os.makedirs(os.path.join(repo, "enc"), exist_ok=True)
             open(os.path.join(repo, e), "wb").write(encrypt(k, json.dumps(man, ensure_ascii=False, sort_keys=True).encode()))
             keep.add(e)
+        # adresse enseignant : documents non publiés chiffrés avec la clé enseignant, données complètes chiffrées
+        tk = profkey()
+        for src, e in (tplan if tdata else []):
+            dst = os.path.join(repo, e)
+            if not os.path.exists(dst):
+                raw = read_pdf(src, pdfdir, bundles, repo)
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                open(dst, "wb").write(encrypt(tk, raw))
+            keep.add(e)
+        if tdata:
+            tdata["dm"], tdata["planned"] = data["dm"], data["planned"]
+            e = encname(tk, "manifest")
+            open(os.path.join(repo, e), "wb").write(encrypt(tk, json.dumps(tdata, ensure_ascii=False, sort_keys=True).encode()))
+            keep.add(e)
     else:
         secret_plan()
     removed = 0
@@ -481,6 +583,7 @@ def main():
     if len(sys.argv) > 6 and sys.argv[6] == "--liens":
         for c in [c for l in data["classes"].values() for c in l]:
             print(f"{c} : https://thibaudpluchet.github.io/maths-pluchet/#{c}/{b64u(classkey(c))}")
+        print(f"Enseignant (tous les documents) : https://thibaudpluchet.github.io/maths-pluchet/#prof/{b64u(profkey())}")
 
 
 if __name__ == "__main__":

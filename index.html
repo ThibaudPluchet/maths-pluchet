@@ -194,6 +194,8 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
   .seqlist{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.profnote{margin:0 0 10px;padding:8px 12px;border-radius:10px;background:#fff4d6;color:#6b4a00;font-size:14px;border:1px solid #f0d27a}
+@media (prefers-color-scheme:dark){ .profnote{background:#3a2f12;color:#f3d98b;border-color:#6b5a26} }
 </style>
 </head>
 <body>
@@ -271,6 +273,11 @@ function start(D){
   var locked = find(hashParts[0]);
   var current = locked || find(store('classe'));
   if (locked){ picker.parentNode.hidden = true; document.title = 'Maths ' + locked + ' – M. Pluchet'; }
+  if (D.prof){
+    document.title = 'Maths – accès enseignant';
+    var pn = el('p', 'profnote', 'Accès enseignant : tous les documents de la page enseignant, que les cases soient cochées ou non. Choisissez une classe pour voir ses sujets d’évaluation.');
+    picker.parentNode.insertBefore(pn, picker);
+  }
   // Adresse de la page (avec la classe) gardée pour le bouton « Retour » des exerciseurs
   try { localStorage.setItem('mp:retour', location.href); } catch(e){}
   window.addEventListener('hashchange', function(){ location.reload(); });
@@ -639,7 +646,10 @@ function addSecret(D){
     })
     .then(function(plain){
       var c = find0(D, decodeURIComponent(location.hash.slice(1)).split('/')[0]);
-      JSON.parse(new TextDecoder().decode(plain)).forEach(function(it){
+      var got = JSON.parse(new TextDecoder().decode(plain));
+      // adresse enseignant (#prof/<clé>) : données complètes, tous les documents de la page enseignant
+      if (!Array.isArray(got)) { got.prof = true; return got; }
+      got.forEach(function(it){
         (D.niveaux[it.lv] || []).forEach(function(s){ s.notions.forEach(function(n){
           if (n.num === it.num) n.items.push({type:it.type, label:it.label, href:it.e, enc:it.e, cls:[c]});
         }); });
