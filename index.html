@@ -195,7 +195,7 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .pill.allpill{font-weight:700}
-.profnote{margin:0 0 10px;padding:8px 12px;border-radius:10px;background:#fff4d6;color:#6b4a00;font-size:14px;border:1px solid #f0d27a}
+.profnote{flex-basis:100%;margin:0 0 2px;padding:8px 12px;border-radius:10px;background:#fff4d6;color:#6b4a00;font-size:14px;border:1px solid #f0d27a}
 @media (prefers-color-scheme:dark){ .profnote{background:#3a2f12;color:#f3d98b;border-color:#6b5a26} }
 </style>
 </head>
@@ -277,7 +277,7 @@ function start(D){
   if (D.prof){
     document.title = 'Maths – accès enseignant';
     var pn = el('p', 'profnote', 'Accès enseignant : tous les documents de la page enseignant, que les cases soient cochées ou non. « Toutes les 4e / 3e » montre tout le niveau ; une classe montre ses propres sujets d’évaluation.');
-    picker.parentNode.insertBefore(pn, picker);
+    picker.insertBefore(pn, picker.firstChild);   // dans la colonne du site (même largeur que le reste)
   }
   // Adresse de la page (avec la classe) gardée pour le bouton « Retour » des exerciseurs
   try { localStorage.setItem('mp:retour', location.href); } catch(e){}
