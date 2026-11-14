@@ -97,6 +97,17 @@ summary .badge{margin-left:4px}
 .dnbbtn:hover{border-color:currentColor}
 .dnbview{display:flex;flex-direction:column;gap:14px;scroll-margin-top:84px}
 .dnbview > .dnbmore{margin:0;color:var(--muted);font-size:15px}
+.seqbtn.sujbtn{grid-column:1/-1;flex-wrap:wrap;gap:12px 16px!important;padding:16px 18px;min-height:0;border:2px solid var(--accent);background:linear-gradient(120deg,var(--soft),var(--card) 75%);box-shadow:0 4px 14px rgba(47,91,211,.14)}
+.seqbtn.sujbtn .tile{width:52px;height:52px;flex:0 0 52px;background:var(--accent);color:var(--accent-ink);border-radius:14px}
+.seqbtn.sujbtn .tile svg{width:30px;height:30px}
+.seqbtn.sujbtn .txt{flex:1 1 200px}
+.seqbtn.sujbtn .sk{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--new)}
+.seqbtn.sujbtn .st{font-size:20px!important}
+.seqbtn.sujbtn .sd{font-size:14px;color:var(--muted)}
+.seqbtn.sujbtn .go{margin-left:auto;align-self:center;font-weight:700;font-size:15px;padding:9px 14px;border-radius:10px;background:var(--accent);color:var(--accent-ink);white-space:nowrap}
+.seqbtn.sujbtn[aria-pressed="true"] .sk,.seqbtn.sujbtn[aria-pressed="true"] .sd{color:var(--accent-ink);opacity:.9}
+.seqbtn.sujbtn[aria-pressed="true"] .go{background:var(--accent-ink);color:var(--accent)}
+.seqbtn.sujbtn[aria-pressed="true"] .tile{background:var(--accent-ink);color:var(--accent)}
 .dnbrow.first{border-top:0;padding-top:2px}
 .dnbacts .doc{border:1px solid var(--line);border-radius:10px;padding:7px 12px;text-decoration:none}
 .empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:28px;text-align:center;color:var(--muted)}
@@ -654,8 +665,8 @@ function start(D){
     intro.appendChild(el('p', null, 'De vrais exercices tombés au brevet, découpés en parties et rangés par séquence. Cherche d’abord sur ton cahier, puis ouvre le corrigé pour comparer ta rédaction.'));
     if (total > mine.length) intro.appendChild(el('p','dnbmore', '🔒 ' + (total - mine.length) + ' autre' + (total - mine.length > 1 ? 's parties apparaîtront' : ' partie apparaîtra') + ' au fil de l’année, quand vous aurez fait en classe les notions qu’elles demandent.'));
     main.appendChild(intro);
-    // Sujets complets et corrigés complets : 3e uniquement (en 4e, seules les parties déjà au programme)
-    var sujets = lv === '3e' ? (B.sujets || []) : [], SK = 'Sujets complets';
+    // Sujets complets et corrigés complets : 3e (et vue enseignant) ; en 4e, élèves : seules les parties déjà au programme
+    var sujets = (lv === '3e' || D.prof) ? (B.sujets || []) : [], SK = 'Sujets complets';
     if (!mine.length && !sujets.length){ main.appendChild(el('div','empty','Pas encore d’exercice de brevet pour la ' + current + ' : ils arrivent quand les notions sont faites en classe.')); return; }
     var titles = (B.seqs || {})[lv] || {}, seen = {};
     try { seen = JSON.parse(localStorage.getItem('mp:dnbvu') || '{}'); } catch(e){}
@@ -693,8 +704,18 @@ function start(D){
     nav.appendChild(el('p','kicker','Choisis une séquence'));
     var list = el('div','seqlist');
     groups.forEach(function(g){
-      var b = el('button','seqbtn withico'); b.type = 'button';
+      var b = el('button','seqbtn withico' + (g.sujets ? ' sujbtn' : '')); b.type = 'button';
       b.setAttribute('aria-pressed', g.key === dnbSel);
+      if (g.sujets){
+        b.appendChild(icon('brevet','tile'));
+        var t2 = el('span','txt');
+        t2.appendChild(el('span','sk','Entraînement complet'));
+        t2.appendChild(el('span','st','Sujets complets du brevet ' + sujets[0].an));
+        t2.appendChild(el('span','sd', sujets.length + ' sujets entiers, comme le jour de l’épreuve, avec leurs corrigés complets'));
+        b.appendChild(t2); b.appendChild(el('span','go','Voir les sujets →'));
+        b.onclick = function(){ dnbSel = g.key; render(); var t = document.getElementById('dnb-list'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
+        list.appendChild(b); return;
+      }
       b.appendChild(seqIcon(g.key));
       var tx = el('span','txt');
       tx.appendChild(el('span','sn', nums(g) + ' · ' + count(g.n, g)));
@@ -707,7 +728,7 @@ function start(D){
     var g = byKey[dnbSel];
     var sec = el('section','dnbview'); sec.id = 'dnb-list';
     var hd = el('div','seqhead withico');
-    hd.appendChild(seqIcon(g.key));
+    hd.appendChild(g.sujets ? icon('brevet','tile') : seqIcon(g.key));
     var hx = el('div'); hx.appendChild(el('p','seqname', nums(g) + ' · ' + count(g.n, g))); hx.appendChild(el('h2', null, g.key)); hd.appendChild(hx);
     sec.appendChild(hd);
     if (g.sujets){
