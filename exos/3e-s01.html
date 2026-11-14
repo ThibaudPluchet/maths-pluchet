@@ -160,6 +160,20 @@ function dev(k, kd, ab){
   var s1 = inner.map(function(t){ return after ? tp(t) + ' × ' + Fp : Fp + ' × ' + tp(t); }).join(' + ');
   return {q: q, P: sumT(T), key: q, steps: [s1, terms(T)]};
 }
+// facteur k (nombre) × parenthèse de 3 ou 4 termes dans le désordre ; avec 4 termes, il faut réduire à la fin
+function devN(){
+  var k = rnz(-9, 9); if (k === 1) k = -1; if (k === -1 && Math.random() < 0.7) k = pick([-2, -3, 2, 3]);
+  var inner = [[rnz(-6, 6), 2], [rnz(-9, 9), 1], [rnz(-9, 9), 0]];
+  if (Math.random() < 0.5) inner.push(pick([[rnz(-9, 9), 1], [rnz(-9, 9), 0]]));
+  for (var i = inner.length - 1; i > 0; i--){ var j = rnd(0, i), t = inner[i]; inner[i] = inner[j]; inner[j] = t; }
+  var after = Math.random() < 0.35, F = mono(k, 0), Fp = k < 0 ? '(' + F + ')' : F;
+  var tp = function(t){ var m = mono(t[0], t[1]); return t[0] < 0 ? '(' + m + ')' : m; };
+  var q = after ? '(' + terms(inner) + ') × ' + Fp : (k === -1 ? MINUS : F) + '(' + terms(inner) + ')';
+  var T = inner.map(function(t){ return [k * t[0], t[1]]; }), P = sumT(T);
+  var steps = [inner.map(function(t){ return after ? tp(t) + ' × ' + Fp : Fp + ' × ' + tp(t); }).join(' + '), terms(T)];
+  if (inner.length > 3) steps.push(poly(P));
+  return {q: q, P: P, key: q, steps: steps};
+}
 /* ---------- exercices ----------
    chaque générateur renvoie {q, P (réponse attendue) | v (nombre) | vf (true/false), steps: [lignes], aide?} */
 var EX = [
@@ -180,6 +194,9 @@ var EX = [
     return {q: k + ' × ' + m, v: k * m,
       steps: [k + ' × (' + base + (e < 0 ? ' ' + MINUS + ' ' : ' + ') + Math.abs(e) + ')',
               k * base + (e < 0 ? ' ' + MINUS + ' ' : ' + ') + Math.abs(k * e), String(k * m)]}; }},
+ {id: 'n01e', n: 'N01', t: 'Pour aller plus loin', d: '3 ou 4 termes dans la parenthèse.',
+  c: 'Développe puis réduis chaque expression.', a: 'On multiplie le facteur par chaque terme de la parenthèse, sans en oublier, puis on regroupe les termes de même nature. Par exemple −2(x² − 3x + 4 + 5x) = −2x² + 6x − 8 − 10x = −2x² − 4x − 8.',
+  g: devN},
  // ===== N02 : réduire =====
  {id: 'n02a', n: 'N02', t: 'Réduire une somme', d: 'Des x et des nombres.',
   c: 'Réduis chaque expression.', a: 'On regroupe les termes en x entre eux et les nombres entre eux : 5x + 3 − 2x + 4 = 3x + 7.',
