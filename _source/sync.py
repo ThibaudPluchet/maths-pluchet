@@ -267,7 +267,8 @@ def load(page, dbdir, everything=False):
 def dnb_items(dbdir, levels, classes, everything=False):
     """Exercices du brevet (_source/annales.json, découpés en parties) : une partie est proposée à une classe
     dès que toutes les notions qu'elle demande sont cochées « Fait en classe » (n3 : notions de 3e hors programme
-    de 4e ; n4 : notions de 4e, None = jamais proposée en 4e). Version enseignant : tout le niveau."""
+    de 4e ; n4 : notions de 4e, None = jamais proposée en 4e) et que sa séquence (s3 / s4) est faite en classe
+    jusqu'à ces notions (entièrement si la partie ne demande aucune notion). Version enseignant : tout le niveau."""
     try:
         cat = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "annales.json"), encoding="utf-8"))
     except FileNotFoundError:
@@ -286,9 +287,21 @@ def dnb_items(dbdir, levels, classes, everything=False):
         for f in glob.glob(f"{dbdir}/{suivi_of(lv)}/*.json"):
             d = json.load(open(f))
             state[os.path.basename(f)[:-5]] = d.get("data", d) if isinstance(d, dict) else {}
+        sk = {"3e": "s3", "4e": "s4"}[lv]
+        seqn = {s["n"]: [x["n"] for x in s["notions"]] for s in levels[lv]["seqs"]}
+        out.setdefault("seqn", {})[lv] = {str(k): v for k, v in seqn.items()}   # repris par annales/publish.py
         for k, c in enumerate(noms):
             done = lambda n: everything or bool(state.get("n%02d" % n, {}).get(f"c{k + 1}"))
-            out["cls"][c] = [p["id"] for p in cat if p.get(key) is not None and all(done(n) for n in p[key])]
+            # une partie n'apparaît que lorsque sa séquence est faite en classe : toutes les notions de la séquence
+            # jusqu'à la plus avancée qu'elle demande (toute la séquence si elle ne demande que des notions déjà connues)
+            def seq_ok(p):
+                s = p.get(sk) or 0
+                if not s or s not in seqn:
+                    return True
+                need = [n for n in p[key] if n in seqn[s]]
+                upto = max(need) if need else max(seqn[s])
+                return all(done(n) for n in seqn[s] if n <= upto)
+            out["cls"][c] = [p["id"] for p in cat if p.get(key) is not None and all(done(n) for n in p[key]) and seq_ok(p)]
     return out
 
 

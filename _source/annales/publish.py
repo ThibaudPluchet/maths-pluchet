@@ -42,7 +42,16 @@ for f in ('data.json', 'data.js'):
     for lv, key in (('3e', 'n3'), ('4e', 'n4')):
         for k, c in enumerate(d['classes'].get(lv, [])):
             L = [x for x in d['dnb']['cls'].get(c, []) if not x.startswith(f'{Y}-')]
-            L += [p['id'] for p in new if p[key] is not None and all((S[lv].get('n%02d' % n) or {}).get(f'c{k + 1}') for n in p[key])]
+            done = lambda n: bool((S[lv].get('n%02d' % n) or {}).get(f'c{k + 1}'))
+            seqn = {int(a): b for a, b in ((d['dnb'].get('seqn') or {}).get(lv) or {}).items()}
+            sk = 's3' if lv == '3e' else 's4'
+            # même règle que sync.py : la séquence de la partie doit être faite en classe jusqu'aux notions demandées
+            def seq_ok(p):
+                s = p.get(sk) or 0
+                if not s or s not in seqn: return True
+                need = [n for n in p[key] if n in seqn[s]]; upto = max(need) if need else max(seqn[s])
+                return all(done(n) for n in seqn[s] if n <= upto)
+            L += [p['id'] for p in new if p[key] is not None and all(done(n) for n in p[key]) and seq_ok(p)]
             d['dnb']['cls'][c] = L
             if f == 'data.json': print(c, sum(1 for x in L if x.startswith(f'{Y}-')), f'parties {Y} visibles')
     open(R(f), 'w', encoding='utf-8').write(m.group(1) + json.dumps(d, ensure_ascii=False, separators=(',', ':')) + m.group(3))
