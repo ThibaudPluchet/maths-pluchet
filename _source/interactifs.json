@@ -143,14 +143,290 @@
   "4e": {
     "1": [
       {
-        "l": "Préparer l’évaluation (exerciseur + évaluation blanche)",
-        "u": "exos/4e-n01-eval.html"
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s01.html#n01"
+      }
+    ],
+    "2": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s01.html#n02"
+      }
+    ],
+    "3": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s01.html#n03"
+      }
+    ],
+    "4": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s01.html#n04"
+      }
+    ],
+    "5": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s02.html#n05"
+      }
+    ],
+    "6": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s03.html#n06"
+      }
+    ],
+    "7": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s03.html#n07"
+      }
+    ],
+    "8": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s03.html#n08"
+      }
+    ],
+    "9": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s04.html#n09"
       }
     ],
     "10": [
       {
-        "l": "Préparer l’évaluation (exerciseur + évaluation blanche)",
-        "u": "exos/4e-e01-eval.html"
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s04.html#n10"
+      }
+    ],
+    "11": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s05.html#n11"
+      }
+    ],
+    "12": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s05.html#n12"
+      }
+    ],
+    "13": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s06.html#n13"
+      }
+    ],
+    "14": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s06.html#n14"
+      }
+    ],
+    "15": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s06.html#n15"
+      }
+    ],
+    "16": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s07.html#n16"
+      }
+    ],
+    "17": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s07.html#n17"
+      }
+    ],
+    "18": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s08.html#n18"
+      }
+    ],
+    "19": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s08.html#n19"
+      }
+    ],
+    "20": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s08.html#n20"
+      }
+    ],
+    "21": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s09.html#n21"
+      }
+    ],
+    "22": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s10.html#n22"
+      }
+    ],
+    "23": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s11.html#n23"
+      }
+    ],
+    "24": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s11.html#n24"
+      }
+    ],
+    "25": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s12.html#n25"
+      }
+    ],
+    "26": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s12.html#n26"
+      }
+    ],
+    "27": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s12.html#n27"
+      }
+    ],
+    "28": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s12.html#n28"
+      }
+    ],
+    "29": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s13.html#n29"
+      }
+    ],
+    "30": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s13.html#n30"
+      }
+    ],
+    "31": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s13.html#n31"
+      }
+    ],
+    "32": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s14.html#n32"
+      }
+    ],
+    "33": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s14.html#n33"
+      }
+    ],
+    "34": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s15.html#n34"
+      }
+    ],
+    "35": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s15.html#n35"
+      }
+    ],
+    "36": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s15.html#n36"
+      }
+    ],
+    "37": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s16.html#n37"
+      }
+    ],
+    "38": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s16.html#n38"
+      }
+    ],
+    "39": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s16.html#n39"
+      }
+    ],
+    "40": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s17.html#n40"
+      }
+    ],
+    "41": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s17.html#n41"
+      }
+    ],
+    "42": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s18.html#n42"
+      }
+    ],
+    "43": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s18.html#n43"
+      }
+    ],
+    "44": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s18.html#n44"
+      }
+    ],
+    "45": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s19.html#n45"
+      }
+    ],
+    "46": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s19.html#n46"
+      }
+    ],
+    "47": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s20.html#n47"
+      }
+    ],
+    "48": [
+      {
+        "l": "S’entraîner (exercices interactifs)",
+        "u": "exos/4e-s20.html#n48"
       }
     ]
   },
