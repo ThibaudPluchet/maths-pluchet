@@ -742,7 +742,16 @@ function addSecret(D){
       var c = find0(D, decodeURIComponent(location.hash.slice(1)).split('/')[0]);
       var got = JSON.parse(new TextDecoder().decode(plain));
       // adresse enseignant (#prof/<clé>) : données complètes, tous les documents de la page enseignant
-      if (!Array.isArray(got)) { got.prof = true; return got; }
+      if (!Array.isArray(got)) { got.prof = true;
+        // les exercices interactifs ajoutés depuis la dernière synchro (data.json public) sont repris tout de suite ; plus de liens MathALÉA
+        Object.keys(got.niveaux || {}).forEach(function(lv){ (got.niveaux[lv] || []).forEach(function(s){ s.notions.forEach(function(n){
+          n.items = n.items.filter(function(it){ return it.type !== 'alea'; });
+          (D.niveaux[lv] || []).forEach(function(s2){ s2.notions.forEach(function(n2){ if (n2.num !== n.num) return;
+            n2.items.forEach(function(it){ if (it.type === 'exo' && !n.items.some(function(o){ return o.href === it.href; })){
+              var k = n.items.map(function(o){ return o.type; }).indexOf('anim'), v = n.items.map(function(o){ return o.type; }).indexOf('video'), at = k > -1 ? k : v > -1 ? v : n.items.length;
+              n.items.splice(at, 0, it); } }); }); });
+        }); }); });
+        return got; }
       got.forEach(function(it){
         (D.niveaux[it.lv] || []).forEach(function(s){ s.notions.forEach(function(n){
           if (n.num === it.num) n.items.push({type:it.type, label:it.label, href:it.e, enc:it.e, cls:[c]});
