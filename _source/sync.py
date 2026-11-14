@@ -289,15 +289,24 @@ def dm_items(html, dbdir, levels, classes):
     return out
 
 
-def prof_dm(html, levels, classes, public):
-    """Version enseignant de l'onglet DM : tous les DM de la page enseignant, donnés ou non, PDF complet chiffré."""
+def prof_dm(html, levels, classes, public, dbdir):
+    """Version enseignant de l'onglet DM : tous les DM de la page enseignant cochés « DM relu et validé » (ok), donnés
+    ou non, PDF complet chiffré."""
     dms, tk, out = js_const_opt(html, "DMS"), profkey(), []
+    valid = set()
+    for f in glob.glob(f"{dbdir}/dm/*.json"):
+        x = json.load(open(f, encoding="utf-8"))
+        x = x.get("data", x) if isinstance(x, dict) else {}
+        if x.get("ok") is True:
+            valid.add((x.get("lv"), x.get("f")))
     given = {(d["lv"], d["f"]): d for d in public}
     for lv in level_list(levels):
         for meta in dms.get(lv, []):
             slug = meta.get("f")
             if not isinstance(slug, str) or not re.fullmatch(r"[a-z0-9-]+", slug):
                 continue
+            if (lv, slug) not in valid:
+                continue                          # pas encore relu et validé : absent de l'adresse enseignant
             pub = given.get((lv, slug), {})
             src = f"dm/{lv}/{slug}.pdf"
             e = encname(tk, f"prof:{src}:{meta.get('b')}")
@@ -540,7 +549,7 @@ def main():
             SRC_ENC.setdefault(it["src"], (classkey(c), e))
     tplan = prof_plan(tdata, twanted, tsecret, wanted, repo) if tdata else []
     if tdata:
-        tdata["dm"] = prof_dm(open(page, encoding="utf-8").read(), js_const(open(page, encoding="utf-8").read(), "LEVELS"), data["classes"], data["dm"])
+        tdata["dm"] = prof_dm(open(page, encoding="utf-8").read(), js_const(open(page, encoding="utf-8").read(), "LEVELS"), data["classes"], data["dm"], dbdir)
         tplan += [(d["src"], d["enc"]) for d in tdata["dm"]]
     if mode == "plan":
         missing = [p for p, b in wanted.items() if not os.path.exists(os.path.join(repo, p)) or (b and os.path.getsize(os.path.join(repo, p)) != b)]
