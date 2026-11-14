@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : carrés, racines carrées et théorème de Pythagore (4e, séquence 4) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 4 : carrés parfaits, racines carrées, calculer une longueur avec le théorème de Pythagore.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 4 · Triangle rectangle (1)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée pour les racines carrées.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var fn = fr, isInt = M.isInt, RAC = M.RAC, ARR = M.ARR;
+function letters(){ var L = 'ABCDEFGHIJKLMNPRSTUVWXYZ'.split(''); shuffle(L); return L.slice(0, 3); }
+function seg(p, q){ return '[' + [p, q].sort().join('') + ']'; }
+function nm(p, q){ return [p, q].sort().join(''); }
+var ARR = {0: 'à l’unité', 1: 'au dixième', 2: 'au centième'};
+function tri(){ var t = letters(), r = rnd(0, 2); var R = t[r], o = t.filter(function(_, i){ return i !== r; }); shuffle(o);
+  return {name: t.join(''), R: R, P: o[0], Q: o[1]}; }
+// figure SVG : RP = a, RQ = b (longueurs affichées : labels), "?" sur le côté cherché
+function fig(T, a, b, lab){ return M.figTri(T, a, b, lab); }
+var TRIP = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25], [6, 8, 10], [9, 12, 15], [20, 21, 29], [12, 16, 20], [15, 20, 25], [9, 40, 41]];
+// en mm : longueurs entières seulement ; en cm, dm, m : décimaux possibles
+function triple(u){ var t = pick(TRIP), k = pick(u === 'mm' ? [1, 2, 3, 10] : t[2] > 20 ? [1, 1, 0.5, 0.1] : [1, 1, 2, 0.5, 3, 10, 0.1]); return t.map(function(v){ return cl(v * k); }); }
+function len(u){ return u === 'mm' ? rnd(3, 40) : Math.random() < 0.7 ? rnd(2, 15) : cl(rnd(15, 120) / 10); }
+function unit(){ return pick(['cm', 'cm', 'cm', 'm', 'mm', 'dm']); }
+function sqrtTxt(s){ return RAC + fn(s); }
+// réponse numérique : v attendu (exact ou arrondi d décimales), x valeur exacte, pièges à reconnaître
+function numQ(o){ o.type = 'num'; return o; }
+function pyth(hyp, figure, opts){
+  opts = opts || {};
+  var T = tri(), u = unit(), a, b, c, exact = Math.random() < 0.5, d = 1;
+  if (exact){ var t = triple(u); if (Math.random() < 0.5) t = [t[1], t[0], t[2]]; a = t[0]; b = t[1]; c = t[2]; }
+  else if (hyp){ do { a = len(u); b = len(u); } while (isInt(Math.sqrt(sq(a) + sq(b))) || a === b && Math.random() < 0.7); c = Math.sqrt(sq(a) + sq(b)); }
+  else { do { c = len(u); b = len(u); } while (b >= c || c - b < 0.8 || isInt(Math.sqrt(sq(c) - sq(b)))); a = Math.sqrt(sq(c) - sq(b)); }
+  if (!exact) d = pick([1, 1, 1, 0, 2]);
+  var RP = nm(T.R, T.P), RQ = nm(T.R, T.Q), PQ = nm(T.P, T.Q);
+  var q = 'Le triangle ' + T.name + ' est rectangle en ' + T.R + '. ', lab = {}, ask, x, st = [], traps = [];
+  st.push('Le triangle ' + T.name + ' est rectangle en ' + T.R + ', d’après le théorème de Pythagore :', PQ + SQ + ' = ' + RP + SQ + ' + ' + RQ + SQ);
+  if (hyp){
+    ask = PQ; x = Math.sqrt(sq(a) + sq(b)); lab = {a: fn(a) + ' ' + u, b: fn(b) + ' ' + u, c: '?'};
+    q += figure ? 'Calcule ' + PQ : RP + ' = ' + fn(a) + ' ' + u + ' et ' + RQ + ' = ' + fn(b) + ' ' + u + '. Calcule ' + PQ;
+    st.push(PQ + SQ + ' = ' + fn(a) + SQ + ' + ' + fn(b) + SQ, PQ + SQ + ' = ' + fn(sq(a)) + ' + ' + fn(sq(b)) + ' = ' + fn(sq(a) + sq(b)));
+    traps = [[cl(a + b), 'On additionne les carrés des longueurs, pas les longueurs elles-mêmes.'], [cl(sq(a) + sq(b)), 'Tu as trouvé ' + PQ + SQ + ' : il reste à prendre la racine carrée.']];
+    var s2 = cl(sq(a) + sq(b));
+  } else {
+    ask = RP; x = Math.sqrt(sq(c) - sq(b)); lab = {a: '?', b: fn(b) + ' ' + u, c: fn(c) + ' ' + u};
+    q += figure ? 'Calcule ' + RP : PQ + ' = ' + fn(c) + ' ' + u + ' et ' + RQ + ' = ' + fn(b) + ' ' + u + '. Calcule ' + RP;
+    st.push(fn(c) + SQ + ' = ' + RP + SQ + ' + ' + fn(b) + SQ, RP + SQ + ' = ' + fn(c) + SQ + ' − ' + fn(b) + SQ + ' = ' + fn(sq(c)) + ' − ' + fn(sq(b)) + ' = ' + fn(sq(c) - sq(b)));
+    traps = [[Math.sqrt(sq(c) + sq(b)), RP + ' n’est pas l’hypoténuse : il faut soustraire les carrés, pas les additionner.'], [cl(c - b), 'On soustrait les carrés des longueurs, pas les longueurs elles-mêmes.'], [cl(sq(c) - sq(b)), 'Tu as trouvé ' + RP + SQ + ' : il reste à prendre la racine carrée.'], [cl(sq(c) + sq(b)), RP + ' n’est pas l’hypoténuse : il faut soustraire les carrés.']];
+    var s2 = cl(sq(c) - sq(b));
+  }
+  var v = exact ? cl(x) : rd(x, d);
+  if (exact) st.push(ask + ' = ' + sqrtTxt(s2) + ' = ' + fn(v) + ' ' + u);
+  else st.push(ask + ' = ' + sqrtTxt(s2) + ' ≈ ' + fn(v) + ' ' + u + ' (' + ARR[d] + ')');
+  q += exact ? '.' : ', arrondi ' + ARR[d] + '.';
+  if (!figure && Math.random() < 0.5) q += ' (Fais d’abord une figure à main levée.)';
+  return numQ({q: q, svg: figure ? fig(T, a, b, lab) : null, lab: ask + ' ' + (exact ? '=' : '≈'), unit: u, v: v, x: x, d: exact ? undefined : d, traps: traps, steps: st, key: q});
+}
+var EX = [
+ {id: 'n10a', lv: 1, n: 'N10', t: 'Repérer l’hypoténuse', d: 'L’hypoténuse et l’égalité de Pythagore.',
+  c: 'Choisis la bonne réponse.', a: 'L’hypoténuse est le côté en face de l’angle droit : c’est le seul côté qui ne touche pas le sommet de l’angle droit. Dans l’égalité, elle est seule d’un côté du signe =.',
+  g: function(){ var T = tri(), RP = nm(T.R, T.P), RQ = nm(T.R, T.Q), PQ = nm(T.P, T.Q), kind = rnd(0, 2), fg = Math.random() < 0.6;
+    var lab = {}, ch, ans, q, st;
+    if (kind === 0){ q = 'Le triangle ' + T.name + ' est rectangle en ' + T.R + '. Quelle est son hypoténuse ?';
+      ch = shuffle([seg(T.P, T.Q), seg(T.R, T.P), seg(T.R, T.Q)]); ans = ch.indexOf(seg(T.P, T.Q));
+      st = ['L’angle droit est en ' + T.R + ' : le côté en face de ' + T.R + ' est ' + seg(T.P, T.Q) + '. C’est l’hypoténuse.']; }
+    else if (kind === 1){ q = 'Le triangle ' + T.name + ' est rectangle en ' + T.R + '. Quelle égalité est vraie ?';
+      var good = PQ + SQ + ' = ' + RP + SQ + ' + ' + RQ + SQ;
+      ch = shuffle([good, RP + SQ + ' = ' + PQ + SQ + ' + ' + RQ + SQ, pick([PQ + ' = ' + RP + ' + ' + RQ, RQ + SQ + ' = ' + RP + SQ + ' + ' + PQ + SQ])]); ans = ch.indexOf(good);
+      st = ['L’hypoténuse est ' + seg(T.P, T.Q) + ' (en face de l’angle droit), elle est seule d’un côté du = : ' + good + '.']; }
+    else { var lens = shuffle([rnd(3, 9), rnd(10, 14), rnd(15, 20)]); fg = true;
+      q = 'Sur la figure, le triangle ' + T.name + ' est rectangle en ' + T.R + '. Quel est le plus long côté ?';
+      ch = shuffle([seg(T.P, T.Q), seg(T.R, T.P), seg(T.R, T.Q)]); ans = ch.indexOf(seg(T.P, T.Q));
+      st = ['Le plus long côté d’un triangle rectangle est toujours l’hypoténuse, en face de l’angle droit : ' + seg(T.P, T.Q) + '.']; }
+    return {type: 'ch', q: q, svg: fg ? fig(T, rnd(3, 9), rnd(3, 9), {}) : null, ch: ch, ans: ans, steps: st, key: kind + q}; }},
+ {id: 'n09b', lv: 1, n: 'N09', t: 'Carrés et racines carrées', d: 'Les calculs de base, de tête ou à la calculatrice.',
+  c: 'Calcule. Quand on te demande un arrondi, utilise la calculatrice.', a: 'Le carré de a est a² = a × a. La racine carrée de a (a positif) est le nombre positif dont le carré est a : √49 = 7 car 7² = 49.',
+  g: function(){ var k = rnd(0, 4), n, q, v, st, d, x, traps = [];
+    if (k === 0){ n = pick([rnd(2, 15), rnd(2, 15), 20, 30, 0.5, 1.5, 2.5, 0.1, 1.2, 0.3]); q = fn(n) + SQ; v = sq(n); st = [fn(n) + SQ + ' = ' + fn(n) + ' × ' + fn(n) + ' = ' + fn(v)]; traps = [[cl(2 * n), 'a² = a × a, pas 2 × a.']]; }
+    else if (k <= 2){ n = pick([rnd(1, 15), rnd(1, 15), 20, 30, 0.5, 1.5, 1.2, 0.3]); var s = sq(n); q = sqrtTxt(s); v = n; st = [sqrtTxt(s) + ' = ' + fn(n) + ' car ' + fn(n) + SQ + ' = ' + fn(s)]; traps = [[cl(s / 2), 'La racine carrée n’est pas la moitié : cherche le nombre dont le carré vaut ' + fn(s) + '.']]; }
+    else { do { n = rnd(2, 150); } while (isInt(Math.sqrt(n))); d = pick([1, 1, 2, 0]); x = Math.sqrt(n); v = rd(x, d); q = sqrtTxt(n) + ' (arrondi ' + ARR[d] + ')';
+      st = [sqrtTxt(n) + ' ≈ ' + fn(rd(x, 4)) + '… ≈ ' + fn(v) + ' (' + ARR[d] + ')']; traps = [[cl(n / 2), 'La racine carrée n’est pas la moitié du nombre.']]; }
+    return numQ({q: q, lab: q.split(' (')[0] + (d === undefined ? ' =' : ' ≈'), v: v, x: x === undefined ? v : x, d: d, traps: traps, steps: st, key: q}); }},
+ {id: 'n10c', lv: 2, nq: 4, n: 'N10', t: 'Calculer l’hypoténuse', d: 'On additionne les carrés.',
+  c: 'Calcule la longueur demandée (valeur exacte, ou arrondie si c’est demandé). Calculatrice autorisée. Les figures ne sont pas en vraie grandeur.', a: 'Le triangle est rectangle : l’hypoténuse au carré est égale à la somme des carrés des deux autres côtés. Exemple : EG² = 6² + 8² = 100, donc EG = √100 = 10 cm.',
+  g: function(){ return pyth(true, Math.random() < 0.7); }},
+ {id: 'n10d', lv: 2, nq: 4, n: 'N10', t: 'Calculer un côté de l’angle droit', d: 'On soustrait les carrés.',
+  c: 'Calcule la longueur demandée (valeur exacte, ou arrondie si c’est demandé). Calculatrice autorisée. Les figures ne sont pas en vraie grandeur.', a: 'On écrit l’égalité avec l’hypoténuse seule, puis on soustrait. Exemple : KM² = KL² + LM² donne 13² = 5² + LM², donc LM² = 169 − 25 = 144 et LM = 12 cm.',
+  g: function(){ return pyth(false, Math.random() < 0.7); }},
+ {id: 'n10e', lv: 2, n: 'N10', t: 'Vrai ou faux ?', d: 'Trouver les erreurs classiques.',
+  c: 'Chaque phrase est-elle vraie ou fausse ?', a: 'Pièges fréquents : additionner les longueurs au lieu des carrés, oublier la racine carrée, additionner au lieu de soustraire quand on cherche un côté de l’angle droit, mélanger les unités.',
+  g: function(){ var T = tri(), RP = nm(T.R, T.P), RQ = nm(T.R, T.Q), PQ = nm(T.P, T.Q), t = pick(TRIP.slice(0, 6)), a = t[0], b = t[1], c = t[2];
+    var pre = T.name + ' est rectangle en ' + T.R + ', ' + RP + ' = ' + a + ' et ' + RQ + ' = ' + b + ' : ';
+    var L = [
+      [pre + PQ + ' = ' + a + ' + ' + b + ' = ' + (a + b) + '.', false, 'On additionne les carrés : ' + PQ + SQ + ' = ' + a + SQ + ' + ' + b + SQ + ' = ' + (c * c) + ', donc ' + PQ + ' = ' + c + '.'],
+      [pre + PQ + SQ + ' = ' + (c * c) + ' donc ' + PQ + ' = ' + (c * c) + '.', false, 'On a oublié la racine carrée : ' + PQ + ' = √' + (c * c) + ' = ' + c + '.'],
+      [pre + PQ + ' = ' + c + '.', true, PQ + SQ + ' = ' + a + SQ + ' + ' + b + SQ + ' = ' + (a * a + b * b) + ' et √' + (a * a + b * b) + ' = ' + c + '.'],
+      [T.name + ' est rectangle en ' + T.R + ', ' + PQ + ' = ' + c + ' et ' + RP + ' = ' + a + ' : ' + RQ + SQ + ' = ' + c + SQ + ' + ' + a + SQ + '.', false, seg(T.R, T.Q) + ' n’est pas l’hypoténuse : ' + RQ + SQ + ' = ' + c + SQ + ' − ' + a + SQ + ' = ' + (b * b) + '.'],
+      [T.name + ' est rectangle en ' + T.R + ', ' + PQ + ' = ' + c + ' et ' + RP + ' = ' + a + ' : ' + RQ + ' = ' + b + '.', true, RQ + SQ + ' = ' + c + SQ + ' − ' + a + SQ + ' = ' + (b * b) + ' et √' + (b * b) + ' = ' + b + '.'],
+      [T.name + ' est rectangle en ' + T.R + ' donc ' + PQ + SQ + ' = ' + RP + SQ + ' + ' + RQ + SQ + '.', true, 'L’hypoténuse ' + seg(T.P, T.Q) + ', en face de l’angle droit, est seule d’un côté du =.'],
+      [T.name + ' est rectangle en ' + T.R + ' donc ' + RP + SQ + ' = ' + PQ + SQ + ' + ' + RQ + SQ + '.', false, 'L’hypoténuse est ' + seg(T.P, T.Q) + ' (en face de ' + T.R + ') : ' + PQ + SQ + ' = ' + RP + SQ + ' + ' + RQ + SQ + '.'],
+      ['Dans un triangle rectangle, l’hypoténuse est le plus long des trois côtés.', true, 'Son carré est la somme des deux autres carrés, il est donc plus grand que chacun d’eux.'],
+      ['√(' + (a * a) + ' + ' + (b * b) + ') = √' + (a * a) + ' + √' + (b * b) + ' = ' + (a + b) + '.', false, 'On ne peut pas séparer la racine d’une somme : √(' + (a * a) + ' + ' + (b * b) + ') = √' + (a * a + b * b) + ' = ' + c + '.'],
+      ['Un triangle rectangle a deux côtés de l’angle droit de ' + a + ' m et ' + (b * 10) + ' cm. Son hypoténuse au carré vaut ' + a + SQ + ' + ' + (b * 10) + SQ + '.', false, 'Il faut d’abord tout mettre dans la même unité : ' + (a * 100) + ' cm et ' + (b * 10) + ' cm.'],
+      [pre + 'l’hypoténuse peut mesurer ' + (b - 1) + '.', false, 'L’hypoténuse est le plus long côté : elle mesure plus que ' + b + '.'],
+      ['Si ' + PQ + SQ + ' = 74, alors ' + PQ + ' ≈ 8,6.', true, '√74 ≈ 8,602… ≈ 8,6.'],
+      ['Si ' + PQ + SQ + ' = 74, alors ' + PQ + ' = 37.', false, '37 est la moitié de 74, pas sa racine carrée : ' + PQ + ' = √74 ≈ 8,6.']];
+    var i = rnd(0, L.length - 1), p = L[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n10f', lv: 3, nq: 3, n: 'N10', t: 'Problèmes', d: '3 situations concrètes par série, unités à convertir.',
+  c: 'Lis l’énoncé, fais une figure à main levée, repère le triangle rectangle, puis calcule. Calculatrice autorisée.', a: 'Repère l’angle droit (mur vertical et sol horizontal, côtés d’un rectangle…), puis l’hypoténuse. Mets toutes les longueurs dans la même unité avant de calculer, et contrôle que l’hypoténuse reste le plus long côté.',
+  g: function(k){ if (k === undefined) k = rnd(0, 12); var q, ask, u, v, x, d = 1, st = [], traps = [], A, B, C;
+    function hyp(a, b){ x = Math.sqrt(sq(a) + sq(b)); return x; }
+    function leg(c, b){ x = Math.sqrt(sq(c) - sq(b)); return x; }
+    if (k === 0){ do { C = cl(rnd(30, 80) / 10); B = cl(rnd(8, 20) / 10); } while (B >= C / 2); leg(C, B); u = 'm';
+      q = 'Une échelle de ' + fn(C) + ' m est posée contre un mur vertical, sur un sol horizontal. Son pied est à ' + fn(B) + ' m du mur. À quelle hauteur l’échelle touche-t-elle le mur ? Arrondis au dixième.'; ask = 'h';
+      st = ['Le mur et le sol forment un angle droit : l’échelle est l’hypoténuse.', fn(C) + SQ + ' = h' + SQ + ' + ' + fn(B) + SQ, 'h' + SQ + ' = ' + fn(sq(C)) + ' − ' + fn(sq(B)) + ' = ' + fn(sq(C) - sq(B))];
+      traps = [[Math.sqrt(sq(C) + sq(B)), 'L’échelle est l’hypoténuse : il faut soustraire les carrés.'], [cl(C - B), 'On soustrait les carrés, pas les longueurs.']]; }
+    else if (k === 1){ A = pick([16, 32, 48, 64, 80, 100, 120]); B = cl(A * 9 / 16); if (!isInt(B)) B = Math.round(B); hyp(A, B); u = 'cm'; d = 0;
+      q = 'Un écran rectangulaire mesure ' + fn(A) + ' cm de large et ' + fn(B) + ' cm de haut. Calcule la longueur de sa diagonale, arrondie au centimètre.'; ask = 'd';
+      st = ['Les côtés d’un rectangle sont perpendiculaires : la diagonale est l’hypoténuse.', 'd' + SQ + ' = ' + fn(A) + SQ + ' + ' + fn(B) + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[cl(A + B), 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 2){ A = rnd(90, 120); B = rnd(45, 90); hyp(A, B); u = 'm'; d = 0;
+      q = 'Un terrain de football rectangulaire mesure ' + A + ' m sur ' + B + ' m. Un joueur le traverse en diagonale, d’un coin au coin opposé. Quelle distance parcourt-il, arrondie au mètre ?'; ask = 'd';
+      st = ['Les côtés du terrain sont perpendiculaires : la diagonale est l’hypoténuse.', 'd' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[A + B, 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 3){ A = pick([1, 2, 3, 4, 5, 6, 7, 8, 10, 1.5, 2.5]); hyp(A, A); u = pick(['cm', 'm', 'dm']); d = pick([1, 2]);
+      q = 'Calcule la longueur de la diagonale d’un carré de côté ' + fn(A) + ' ' + u + ', arrondie ' + ARR[d] + '.'; ask = 'd';
+      st = ['Les côtés d’un carré sont perpendiculaires : la diagonale est l’hypoténuse.', 'd' + SQ + ' = ' + fn(A) + SQ + ' + ' + fn(A) + SQ + ' = ' + fn(2 * sq(A))];
+      traps = [[cl(2 * A), 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 4){ var t = pick(TRIP.slice(0, 6)); A = t[0] * 10; B = t[1] * 10; d = undefined; x = t[2] * 10; u = 'cm';
+      var am = cl(A / 100); q = 'Un triangle ABC est rectangle en A, avec AB = ' + fn(am) + ' m et AC = ' + B + ' cm. Calcule BC en centimètres.'; ask = 'BC';
+      st = ['Même unité d’abord : AB = ' + fn(am) + ' m = ' + A + ' cm.', 'ABC est rectangle en A : BC' + SQ + ' = AB' + SQ + ' + AC' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(A * A) + ' + ' + fn(B * B) + ' = ' + fn(A * A + B * B)];
+      traps = [[Math.sqrt(am * am + B * B), 'Les deux longueurs doivent être dans la même unité : convertis ' + fn(am) + ' m en cm.'], [A + B, 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 5){ A = cl(rnd(10, 60) / 10); B = cl(rnd(10, 60) / 10); hyp(A, B); u = 'km';
+      q = 'Un bateau quitte le port et parcourt ' + fn(A) + ' km vers l’est, puis ' + fn(B) + ' km vers le nord. À quelle distance du port est-il, à vol d’oiseau ? Arrondis au dixième.'; ask = 'd';
+      st = ['L’est et le nord sont perpendiculaires : la distance cherchée est l’hypoténuse.', 'd' + SQ + ' = ' + fn(A) + SQ + ' + ' + fn(B) + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[cl(A + B), 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 6){ do { C = rnd(20, 60); B = rnd(8, 30); } while (B >= C - 5); leg(C, B); u = 'm';
+      q = 'Le fil d’un cerf-volant, bien tendu, mesure ' + C + ' m. L’enfant qui le tient est à ' + B + ' m du point du sol situé juste sous le cerf-volant. À quelle hauteur est le cerf-volant (on néglige la taille de l’enfant) ? Arrondis au dixième.'; ask = 'h';
+      st = ['La hauteur est verticale, le sol horizontal : le fil est l’hypoténuse.', C + SQ + ' = h' + SQ + ' + ' + B + SQ, 'h' + SQ + ' = ' + fn(sq(C)) + ' − ' + fn(sq(B)) + ' = ' + fn(sq(C) - sq(B))];
+      traps = [[Math.sqrt(sq(C) + sq(B)), 'Le fil est l’hypoténuse : il faut soustraire les carrés.'], [C - B, 'On soustrait les carrés, pas les longueurs.']]; }
+    else if (k === 7){ var hc = rnd(20, 60), hm = cl(hc / 100); A = cl(rnd(30, 90) / 10); hyp(A, hm); u = 'm'; d = 2;
+      q = 'Une rampe d’accès pour fauteuil roulant monte de ' + hc + ' cm sur une distance horizontale de ' + fn(A) + ' m. Quelle est la longueur de la rampe, en mètres, arrondie au centième ?'; ask = 'L';
+      st = ['Même unité d’abord : ' + hc + ' cm = ' + fn(hm) + ' m. La hauteur est verticale, le sol horizontal : la rampe est l’hypoténuse.', 'L' + SQ + ' = ' + fn(A) + SQ + ' + ' + fn(hm) + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(hm)) + ' = ' + fn(sq(A) + sq(hm))];
+      traps = [[Math.sqrt(sq(A) + hc * hc), 'Les deux longueurs doivent être dans la même unité : convertis ' + hc + ' cm en m.'], [cl(A + hm), 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 8){ A = rnd(6, 15); B = rnd(3, 9); hyp(A, B); u = 'm';
+      q = 'Un câble relie le haut d’un mât vertical de ' + A + ' m à un piquet planté dans le sol horizontal, à ' + B + ' m du pied du mât. Quelle est la longueur du câble, arrondie au dixième ?'; ask = 'L';
+      st = ['Le mât est vertical, le sol horizontal : le câble est l’hypoténuse.', 'L' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[A + B, 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 9){ var W = 2 * rnd(3, 6), hw = W / 2; C = cl(hw + rnd(2, 8) / 2); leg(C, hw); u = 'm';
+      q = 'Le toit d’une maison a la forme d’un triangle isocèle : la façade mesure ' + W + ' m de large et chaque pan du toit mesure ' + fn(C) + ' m. Quelle est la hauteur du toit (du milieu de la façade jusqu’au sommet), arrondie au dixième ?'; ask = 'h';
+      st = ['La hauteur tombe au milieu de la façade et lui est perpendiculaire : on obtient un triangle rectangle de côtés ' + hw + ' m (moitié de ' + W + ' m) et h, d’hypoténuse le pan du toit.', fn(C) + SQ + ' = h' + SQ + ' + ' + hw + SQ, 'h' + SQ + ' = ' + fn(sq(C)) + ' − ' + sq(hw) + ' = ' + fn(sq(C) - sq(hw))];
+      traps = [[Math.sqrt(sq(C) - sq(W)), 'La hauteur tombe au milieu de la façade : utilise la moitié de la largeur, ' + hw + ' m.'], [Math.sqrt(sq(C) + sq(hw)), 'Le pan du toit est l’hypoténuse : il faut soustraire les carrés.']]; }
+    else if (k === 10){ var t2 = pick([[3, 4, 5, 4], [3, 4, 5, 5], [3, 4, 5, 6], [5, 12, 13, 2], [8, 15, 17, 1], [6, 8, 10, 2]]); A = t2[1] * t2[3]; B = t2[0] * t2[3]; C = t2[2] * t2[3]; d = undefined; x = B; u = 'cm';
+      q = 'L’écran rectangulaire d’une tablette a une diagonale de ' + C + ' cm et une largeur de ' + A + ' cm. Calcule sa hauteur.'; ask = 'h';
+      st = ['Les côtés de l’écran sont perpendiculaires : la diagonale est l’hypoténuse.', C + SQ + ' = ' + A + SQ + ' + h' + SQ, 'h' + SQ + ' = ' + fn(C * C) + ' − ' + fn(A * A) + ' = ' + fn(B * B)];
+      traps = [[Math.sqrt(C * C + A * A), 'La diagonale est l’hypoténuse : il faut soustraire les carrés.'], [C - A, 'On soustrait les carrés, pas les longueurs.']]; }
+    else if (k === 11){ A = rnd(30, 80); B = rnd(15, 45); var dg = Math.sqrt(sq(A) + sq(B)); x = A + B - dg; d = 0; u = 'm';
+      q = 'Pour traverser une pelouse rectangulaire de ' + A + ' m sur ' + B + ' m, Léa coupe en diagonale au lieu de longer deux côtés. Combien de mètres gagne-t-elle ? Arrondis au mètre.'; ask = 'gain';
+      st = ['La diagonale est l’hypoténuse : d' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B)) + ', donc d = √' + fn(sq(A) + sq(B)) + ' ≈ ' + fn(rd(dg, 2)) + ' m.', 'En longeant deux côtés : ' + A + ' + ' + B + ' = ' + (A + B) + ' m.', 'gain ≈ ' + (A + B) + ' − ' + fn(rd(dg, 2)) + ' ≈ ' + fn(rd(x, 0)) + ' m'];
+      v = rd(x, 0); traps = [[rd(dg, 0), 'Tu as calculé la diagonale : il reste à la comparer au trajet le long des deux côtés.'], [A + B, 'C’est le trajet le long des côtés : calcule la diagonale, puis la différence.']];
+      return numQ({q: q, lab: 'gain ≈', unit: u, v: v, x: x, d: 0, traps: traps, steps: st, key: 'k' + k}); }
+    else if (k === 12){ A = rnd(40, 150); B = rnd(6, 25); hyp(A, B); u = 'm'; d = pick([0, 1]);
+      q = 'Le câble d’une tyrolienne part du haut d’une plateforme de ' + B + ' m et arrive au sol, à ' + A + ' m de la plateforme (mesurés horizontalement). On suppose le câble bien tendu. Quelle est sa longueur, arrondie ' + ARR[d] + ' ?'; ask = 'L';
+      st = ['La plateforme est verticale, le sol horizontal : le câble est l’hypoténuse.', 'L' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[A + B, 'On additionne les carrés, pas les longueurs.']]; }
+    var s2 = cl(x * x);
+    if (d === undefined){ v = cl(x); st.push(ask + ' = ' + sqrtTxt(s2) + ' = ' + fn(v) + ' ' + u); }
+    else { v = rd(x, d); st.push(ask + ' = ' + sqrtTxt(s2) + ' ≈ ' + fn(v) + ' ' + u + ' (' + ARR[d] + ')'); }
+    traps.push([s2, 'Tu as trouvé le carré de la longueur : il reste à prendre la racine carrée.']);
+    return numQ({q: q, lab: ask + (d === undefined ? ' =' : ' ≈'), unit: u, v: v, x: x, d: d, traps: traps, steps: st, key: 'k' + k}); }}
+];
+EX.push(
+ {id: 'n09a', lv: 1, n: 'N09', t: 'Carrés parfaits', d: 'Reconnaître les carrés de 0 à 15².', c: 'Ce nombre est-il un carré parfait (le carré d’un nombre entier) ?', a: 'Les carrés parfaits jusqu’à 225 : 0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225.',
+  g: function(){ var yes = Math.random() < 0.5, n, r; if (yes){ r = rnd(2, 15); n = r * r; } else { do { n = rnd(10, 230); } while (isInt(Math.sqrt(n))); r = Math.floor(Math.sqrt(n)); }
+    return {type: 'ch', q: fn(n) + ' est-il un carré parfait ?', ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: [yes ? fn(n) + ' = ' + r + ' × ' + r + ' = ' + r + SQ + '.' : r + SQ + ' = ' + r * r + ' et ' + (r + 1) + SQ + ' = ' + (r + 1) * (r + 1) + ' : ' + n + ' est entre les deux, ce n’est pas un carré parfait.'], key: 'c' + n}; }},
+ {id: 'n09c', lv: 2, n: 'N09', t: 'Encadrer une racine carrée', d: 'Entre deux entiers consécutifs.', c: 'Complète l’encadrement par deux entiers consécutifs : on te demande le plus petit.', a: 'Cherche les deux carrés parfaits qui entourent le nombre : 49 < 52 < 64, donc 7 < √52 < 8.',
+  g: function(){ var n; do { n = rnd(3, 220); } while (isInt(Math.sqrt(n))); var r = Math.floor(Math.sqrt(n));
+    return {type: 'num', q: '… < ' + RAC + n + ' < …  Quel est l’entier de gauche ?', lab: 'entier :', v: r, steps: [r + SQ + ' = ' + r * r + ' < ' + n + ' < ' + (r + 1) * (r + 1) + ' = ' + (r + 1) + SQ + ', donc ' + r + ' < ' + RAC + n + ' < ' + (r + 1) + '.'], traps: [[r + 1, 'C’est l’entier de droite : on demande le plus petit.'], [Math.round(n / 2), 'La racine carrée n’est pas la moitié du nombre.']], key: 'e' + n}; }},
+ {id: 'n09d', lv: 3, n: 'N09', t: 'Vrai ou faux ?', d: 'Les pièges des racines carrées.', c: 'L’affirmation est-elle vraie ou fausse ?', a: '√a est le nombre positif dont le carré est a. Attention : la racine d’une somme n’est pas la somme des racines.',
+  g: function(){ var a = rnd(2, 12), b = rnd(2, 9), T = [
+    [RAC + (a * a) + ' = ' + a, true, a + SQ + ' = ' + a * a + ' et ' + a + ' est positif.'],
+    [RAC + (a * a) + ' = ' + fn(a * a / 2), a * a / 2 === a, 'La racine carrée n’est pas la moitié : ' + RAC + (a * a) + ' = ' + a + '.'],
+    ['(' + RAC + (b + 1) + ')' + SQ + ' = ' + (b + 1), true, 'Le carré de la racine carrée d’un nombre positif est ce nombre.'],
+    [RAC + '(9 + 16) = ' + RAC + '9 + ' + RAC + '16', false, RAC + '25 = 5 alors que 3 + 4 = 7.'],
+    [RAC + '(' + MINUS + (b * b) + ') = ' + MINUS + b, false, 'La racine carrée d’un nombre négatif n’existe pas (au collège).'],
+    [RAC + '0,25 = 0,5', true, '0,5' + SQ + ' = 0,25.'],
+    [RAC + '0,9 = 0,3', false, '0,3' + SQ + ' = 0,09, pas 0,9.'],
+    [RAC + '1 = 1', true, '1' + SQ + ' = 1.'],
+    [RAC + '100 = 50', false, RAC + '100 = 10.'],
+    [a + SQ + ' = ' + 2 * a, a === 2, a + SQ + ' = ' + a + ' × ' + a + ' = ' + a * a + '.'],
+    ['Un nombre négatif peut avoir un carré négatif.', false, 'Le carré d’un nombre est toujours positif ou nul.'],
+    [RAC + '2 est un nombre décimal.', false, 'Sa calculatrice affiche une valeur approchée 1,414… mais aucun décimal n’a pour carré 2.']];
+    var i = rnd(0, T.length - 1), p = T[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }}
+);
+var NOTIONS = [
+ {n: 'N09', t: 'Connaître les carrés parfaits et la racine carrée', r: 'a² = a × a ; la racine carrée d’un nombre positif a est le nombre positif dont le carré est a : √49 = 7.'},
+ {n: 'N10', t: 'Calculer une longueur avec le théorème de Pythagore', r: 'dans un triangle rectangle, le carré de l’hypoténuse est égal à la somme des carrés des deux autres côtés.'}
+];
+
+M.start({key: '4e-s04', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : probabilités (4e, séquence 20) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 20 : vocabulaire, calcul de probabilités, événement contraire, fréquence et probabilité.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 20 · Probabilités</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+// ---- outils communs 4e : tableau et repère en SVG ----
+function f1(v){ return (Math.round(v * 10) / 10).toString(); }
+function esc(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+// tableau : rows = [[titre, v1, v2, …], …] (chaînes)
+function tableSvg(rows){ var nc = rows[0].length, cw = [], i, j, H = 36;
+  for (j = 0; j < nc; j++){ var m = 0; for (i = 0; i < rows.length; i++) m = Math.max(m, String(rows[i][j]).length); cw.push(Math.max(46, m * 9 + 18)); }
+  var W = cw.reduce(function(a, b){ return a + b; }, 0), s = '<svg viewBox="-1 -1 ' + (W + 2) + ' ' + (H * rows.length + 2) + '" class="fig tab" role="img" aria-label="Tableau">', x;
+  for (i = 0; i < rows.length; i++){ x = 0; for (j = 0; j < nc; j++){ var t = String(rows[i][j]);
+    s += '<rect x="' + x + '" y="' + i * H + '" width="' + cw[j] + '" height="' + H + '" style="fill:' + (j === 0 ? 'var(--soft)' : 'none') + ';stroke:currentColor;stroke-width:1"/>';
+    s += '<text x="' + (x + cw[j] / 2) + '" y="' + (i * H + H / 2) + '" text-anchor="middle" dominant-baseline="central"' + (t === '?' ? ' class="qm"' : ' class="ln" style="font-size:15px"') + '>' + esc(t) + '</text>'; x += cw[j]; } }
+  return s + '</svg>'; }
+// repère : o = {xm, ym, sx, sy (pas des graduations), xl, yl (légendes), items: [{type:'line'|'seg'|'pts'|'curve', …}]}
+function graphSvg(o){ var W = 320, H = 230, L = 42, B = 30, T = 12, R = 14, w = W - L - R, h = H - T - B;
+  var X = function(x){ return L + x / o.xm * w; }, Y = function(y){ return T + h - y / o.ym * h; };
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Graphique">', x, y;
+  for (x = 0; x <= o.xm + 1e-9; x += o.sx){ s += '<line x1="' + f1(X(x)) + '" y1="' + T + '" x2="' + f1(X(x)) + '" y2="' + (T + h) + '" style="stroke:currentColor;opacity:.15"/><text x="' + f1(X(x)) + '" y="' + (T + h + 14) + '" text-anchor="middle" style="font-size:11px;font-weight:400">' + fr(cl(x)) + '</text>'; }
+  for (y = 0; y <= o.ym + 1e-9; y += o.sy){ s += '<line x1="' + L + '" y1="' + f1(Y(y)) + '" x2="' + (L + w) + '" y2="' + f1(Y(y)) + '" style="stroke:currentColor;opacity:.15"/><text x="' + (L - 5) + '" y="' + f1(Y(y)) + '" text-anchor="end" dominant-baseline="central" style="font-size:11px;font-weight:400">' + fr(cl(y)) + '</text>'; }
+  s += '<line x1="' + L + '" y1="' + (T + h) + '" x2="' + (L + w) + '" y2="' + (T + h) + '" style="stroke:currentColor;stroke-width:1.4"/><line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + (T + h) + '" style="stroke:currentColor;stroke-width:1.4"/>';
+  if (o.xl) s += '<text x="' + (L + w) + '" y="' + (H - 2) + '" text-anchor="end" style="font-size:11px;font-weight:700">' + esc(o.xl) + '</text>';
+  if (o.yl) s += '<text x="' + (L + 4) + '" y="' + (T + 2) + '" dominant-baseline="hanging" style="font-size:11px;font-weight:700">' + esc(o.yl) + '</text>';
+  (o.items || []).forEach(function(it){ var col = it.col || 'var(--accent)';
+    if (it.type === 'line'){ // y = a x + b sur [0, xm], coupée au cadre
+      var x2 = o.xm, y2 = it.a * x2 + (it.b || 0); if (y2 > o.ym){ x2 = (o.ym - (it.b || 0)) / it.a; y2 = o.ym; }
+      s += '<line x1="' + f1(X(it.x0 || 0)) + '" y1="' + f1(Y(it.a * (it.x0 || 0) + (it.b || 0))) + '" x2="' + f1(X(x2)) + '" y2="' + f1(Y(y2)) + '" style="stroke:' + col + ';stroke-width:2.4"/>'; }
+    else if (it.type === 'poly'){ s += '<polyline points="' + it.p.map(function(p){ return f1(X(p[0])) + ',' + f1(Y(p[1])); }).join(' ') + '" style="fill:none;stroke:' + col + ';stroke-width:2.4"/>'; }
+    else if (it.type === 'pts'){ it.p.forEach(function(p){ s += '<circle cx="' + f1(X(p[0])) + '" cy="' + f1(Y(p[1])) + '" r="3.5" style="fill:' + col + '"/>'; }); }
+    else if (it.type === 'lab'){ s += '<text x="' + f1(X(it.x)) + '" y="' + f1(Y(it.y)) + '" style="font-size:13px;fill:' + col + '" dominant-baseline="central">' + esc(it.t) + '</text>'; }
+  });
+  return s + '</svg>'; }
+var red = M.red, ftx = M.ftx;
+function P(n, d){ var r = red(n, d); return n + '/' + d + ((r[0] !== n || r[1] !== d) ? ' = ' + ftx(r) : ''); }
+var COUL = [['rouges', 'rouge'], ['bleues', 'bleue'], ['vertes', 'verte'], ['jaunes', 'jaune'], ['noires', 'noire'], ['blanches', 'blanche']];
+var EX = [
+ {id: 'n47a', lv: 1, n: 'N47', t: 'Vocabulaire', d: 'Issue, événement certain, impossible…', c: 'Choisis la bonne réponse.', a: 'Une issue est un résultat possible. Un événement est impossible si sa probabilité vaut 0, certain si elle vaut 1. Une probabilité est toujours comprise entre 0 et 1.',
+  g: function(k){ if (k === undefined) k = rnd(0, 13); var D = [
+    ['On lance un dé à six faces. L’événement « obtenir 7 » est…', ['impossible', 'certain', 'possible mais pas certain'], 0, 'Aucune face ne porte 7 : sa probabilité est 0.'],
+    ['On lance un dé à six faces. L’événement « obtenir un nombre inférieur à 10 » est…', ['impossible', 'certain', 'possible mais pas certain'], 1, 'Toutes les faces conviennent : sa probabilité est 1.'],
+    ['On lance un dé à six faces. L’événement « obtenir un nombre pair » est…', ['impossible', 'certain', 'possible mais pas certain'], 2, '3 faces sur 6 conviennent.'],
+    ['Une probabilité peut-elle valoir 1,2 ?', ['Oui', 'Non'], 1, 'Une probabilité est toujours comprise entre 0 et 1.'],
+    ['Une probabilité peut-elle valoir 0,35 ?', ['Oui', 'Non'], 0, '0,35 est compris entre 0 et 1.'],
+    ['Une probabilité peut-elle valoir ' + MINUS + '0,5 ?', ['Oui', 'Non'], 1, 'Une probabilité n’est jamais négative.'],
+    ['On tire une carte dans un jeu de 32 cartes. Combien y a-t-il d’issues ?', ['4', '8', '32'], 2, 'Chaque carte est une issue : 32 issues.'],
+    ['On lance une pièce de monnaie. Quelles sont les issues ?', ['Pile et Face', 'Seulement Pile', '1, 2, 3, 4, 5, 6'], 0, 'Deux issues : Pile et Face.'],
+    ['L’événement contraire de « obtenir un 6 » avec un dé est…', ['obtenir 1', 'ne pas obtenir 6', 'obtenir un nombre pair'], 1, 'Le contraire regroupe toutes les autres issues : ne pas obtenir 6.'],
+    ['Si P(A) = 0,3, que vaut la probabilité de l’événement contraire de A ?', ['0,3', '0,7', '1,3'], 1, 'P(non A) = 1 ' + MINUS + ' 0,3 = 0,7.'],
+    ['Dans une urne, il y a 3 boules rouges et 3 boules bleues. Les deux couleurs ont-elles la même probabilité ?', ['Oui', 'Non'], 0, 'Autant de boules de chaque couleur : probabilité 1/2 chacune.'],
+    ['On fait tourner une roue de 8 secteurs égaux, dont 5 sont verts. L’issue « vert » est-elle plus probable que « pas vert » ?', ['Oui', 'Non'], 0, '5/8 > 3/8.'],
+    ['La somme des probabilités de toutes les issues d’une expérience vaut…', ['0', '1', '100'], 1, 'Elle vaut toujours 1.'],
+    ['Un événement de probabilité 0,999 est…', ['certain', 'très probable', 'impossible'], 1, 'Il est très probable, mais pas certain (sa probabilité n’est pas 1).']][k];
+    return {type: 'ch', q: D[0], ch: D[1], ans: D[2], steps: [D[3]], key: 'k' + k}; }},
+ {id: 'n47b', lv: 1, n: 'N47', t: 'Tirer une boule dans une urne', d: 'Nombre de cas favorables ÷ nombre total.', c: 'Donne la probabilité sous forme de fraction irréductible (ou de nombre décimal).', a: 'Quand toutes les issues ont la même chance : P = nombre d’issues favorables ÷ nombre total d’issues.',
+  g: function(){ var c = shuffle(COUL.slice()).slice(0, 3), n = [rnd(1, 9), rnd(1, 9), rnd(1, 9)], T = n[0] + n[1] + n[2], i = rnd(0, 2), r = red(n[i], T);
+    return {type: 'frac', dec: true, q: 'Une urne contient ' + n[0] + ' boule' + (n[0] > 1 ? 's ' + c[0][0] : ' ' + c[0][1]) + ', ' + n[1] + ' boule' + (n[1] > 1 ? 's ' + c[1][0] : ' ' + c[1][1]) + ' et ' + n[2] + ' boule' + (n[2] > 1 ? 's ' + c[2][0] : ' ' + c[2][1]) + ', indiscernables au toucher. On tire une boule au hasard. Probabilité qu’elle soit ' + c[i][1] + ' ?', f: r, steps: ['Il y a ' + T + ' boules en tout, dont ' + n[i] + ' ' + (n[i] > 1 ? c[i][0] : c[i][1]) + '.', 'P = ' + P(n[i], T) + '.'], traps: [[n[i] / (T - n[i]), 'On divise par le nombre total de boules, pas par le nombre des autres boules.']]}; }},
+ {id: 'n47c', lv: 2, n: 'N47', t: 'Dés, cartes et roues', d: 'Compter les issues favorables.', c: 'Donne la probabilité sous forme de fraction irréductible (ou de nombre décimal).', a: 'Écris la liste des issues, repère celles qui réalisent l’événement, puis divise leur nombre par le nombre total.',
+  g: function(){ var t = rnd(0, 11), q, f, T, st;
+    var E = [
+     ['On lance un dé équilibré à 6 faces. Probabilité d’obtenir un nombre pair ?', 3, 6, '2, 4, 6'],
+     ['On lance un dé équilibré à 6 faces. Probabilité d’obtenir un multiple de 3 ?', 2, 6, '3, 6'],
+     ['On lance un dé équilibré à 6 faces. Probabilité d’obtenir un nombre premier ?', 3, 6, '2, 3, 5'],
+     ['On lance un dé équilibré à 6 faces. Probabilité d’obtenir au moins 5 ?', 2, 6, '5, 6'],
+     ['On lance un dé équilibré à 12 faces (numérotées de 1 à 12). Probabilité d’obtenir un multiple de 4 ?', 3, 12, '4, 8, 12'],
+     ['On lance un dé équilibré à 12 faces (numérotées de 1 à 12). Probabilité d’obtenir un diviseur de 12 ?', 6, 12, '1, 2, 3, 4, 6, 12'],
+     ['On tire une carte au hasard dans un jeu de 32 cartes. Probabilité de tirer un cœur ?', 8, 32, '8 cœurs'],
+     ['On tire une carte au hasard dans un jeu de 32 cartes. Probabilité de tirer un roi ?', 4, 32, '4 rois'],
+     ['On tire une carte au hasard dans un jeu de 32 cartes. Probabilité de tirer une figure (valet, dame, roi) ?', 12, 32, '3 figures dans chacune des 4 couleurs'],
+     ['On tire une carte au hasard dans un jeu de 52 cartes. Probabilité de tirer un as ?', 4, 52, '4 as'],
+     ['On tire au hasard un jeton parmi des jetons numérotés de 1 à 20. Probabilité d’obtenir un multiple de 5 ?', 4, 20, '5, 10, 15, 20'],
+     ['On tire au hasard une lettre du mot MATHEMATIQUES. Probabilité de tirer un A ?', 2, 13, 'les 2 A']][t];
+    f = red(E[1], E[2]);
+    return {type: 'frac', dec: true, q: E[0], f: f, steps: ['Issues favorables : ' + E[3] + ', soit ' + E[1] + ' sur ' + E[2] + '.', 'P = ' + P(E[1], E[2]) + '.'], key: 't' + t}; }},
+ {id: 'n47d', lv: 2, n: 'N47', t: 'Événement contraire', d: 'P(non A) = 1 − P(A).', c: 'Calcule la probabilité demandée.', a: 'La probabilité de l’événement contraire est 1 moins la probabilité de l’événement.',
+  g: function(){ var t = rnd(0, 1);
+    if (t === 0){ var p = rnd(1, 99) / 100; return {type: 'num', q: 'La probabilité qu’il pleuve demain est ' + fr(p) + '. Quelle est la probabilité qu’il ne pleuve pas ?', v: cl(1 - p), steps: ['1 ' + MINUS + ' ' + fr(p) + ' = ' + fr(cl(1 - p)) + '.'], key: 'p' + p}; }
+    var d = rnd(3, 20), n = rnd(1, d - 1), r = red(d - n, d), ev = pick(['gagner', 'tomber sur le jaune', 'obtenir un bonbon à la fraise', 'être choisi']);
+    return {type: 'frac', dec: true, q: 'La probabilité ' + (/^[aeiouéê]/.test(ev) ? 'd’' : 'de ') + ev + ' est ' + ftx(red(n, d)) + '. Quelle est la probabilité de ne pas ' + ev + ' ?', f: r, steps: ['1 ' + MINUS + ' ' + ftx(red(n, d)) + ' = ' + ftx(r) + '.'], key: ev + n + '/' + d}; }},
+ {id: 'n47e', lv: 3, n: 'N47', nq: 3, t: 'Problèmes', d: 'Loteries, sacs de bonbons, classes…', c: 'Lis l’énoncé et donne la probabilité sous forme de fraction irréductible (ou de nombre décimal).', a: 'Compte le nombre total d’issues et le nombre d’issues favorables. Attention aux « ou », aux « ne… pas » et aux tirages après modification.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var a = rnd(2, 9), b = rnd(2, 9), c = rnd(2, 9), q, n, d, st;
+    switch (k){
+     case 0: q = 'Un sachet contient ' + a + ' bonbons à la fraise, ' + b + ' à la menthe et ' + c + ' au citron. Probabilité de ne pas tirer un bonbon à la menthe ?'; n = a + c; d = a + b + c; st = ['Bonbons qui ne sont pas à la menthe : ' + a + ' + ' + c + ' = ' + n + ' sur ' + d + '.']; break;
+     case 1: q = 'Dans une classe, il y a ' + (a + 10) + ' filles et ' + (b + 10) + ' garçons. On choisit un élève au hasard. Probabilité que ce soit une fille ?'; n = a + 10; d = a + b + 20; st = [n + ' filles sur ' + d + ' élèves.']; break;
+     case 2: q = 'Une loterie vend ' + (a * 50) + ' billets dont ' + b + ' sont gagnants. Lina achète un billet. Probabilité qu’il soit gagnant ?'; n = b; d = a * 50; st = [b + ' billets gagnants sur ' + d + '.']; break;
+     case 3: q = 'Une urne contient ' + a + ' boules rouges et ' + b + ' boules vertes. On ajoute ' + c + ' boules rouges, puis on tire une boule. Probabilité qu’elle soit rouge ?'; n = a + c; d = a + b + c; st = ['Après l’ajout : ' + n + ' rouges sur ' + d + ' boules.']; break;
+     case 4: q = 'Une roue est partagée en ' + (a + b + c) + ' secteurs égaux : ' + a + ' rouges, ' + b + ' bleus, ' + c + ' jaunes. Probabilité de tomber sur du rouge ou du jaune ?'; n = a + c; d = a + b + c; st = ['Secteurs rouges ou jaunes : ' + a + ' + ' + c + ' = ' + n + ' sur ' + d + '.']; break;
+     case 5: q = 'Dans un club de ' + (a + b + c + 20) + ' adhérents, ' + (a + 20) + ' font du tennis. On tire un adhérent au hasard. Probabilité qu’il ne fasse pas de tennis ?'; d = a + b + c + 20; n = d - a - 20; st = [d + ' ' + MINUS + ' ' + (a + 20) + ' = ' + n + ' adhérents sur ' + d + '.']; break;
+     case 6: q = 'On lance un dé équilibré à 6 faces. Probabilité d’obtenir un nombre pair ou un multiple de 3 ?'; n = 4; d = 6; st = ['Issues favorables : 2, 3, 4, 6 (le 6 ne compte qu’une fois), soit 4 sur 6.']; break;
+     case 7: q = 'Un sac contient ' + a + ' jetons numérotés de 1 à ' + a + '. On tire un jeton. Probabilité que son numéro soit pair ?'; n = Math.floor(a / 2); d = a; st = ['Numéros pairs de 1 à ' + a + ' : ' + n + ' sur ' + a + '.']; break;
+     case 8: q = 'Une urne contient ' + (a + 2) + ' boules blanches et ' + b + ' noires. On retire ' + 2 + ' boules blanches, puis on tire une boule. Probabilité qu’elle soit blanche ?'; n = a; d = a + b; st = ['Il reste ' + a + ' blanches sur ' + d + ' boules.']; break;
+     case 9: q = 'Dans un paquet de ' + (a * 4) + ' gâteaux, le quart sont au chocolat et ' + b + ' à la vanille, les autres nature. Probabilité de tirer un gâteau nature ?'; d = a * 4; n = d - a - b; if (n <= 0) return this.g(k); st = ['Chocolat : ' + a + ' ; nature : ' + d + ' ' + MINUS + ' ' + a + ' ' + MINUS + ' ' + b + ' = ' + n + ' sur ' + d + '.']; break;
+     case 10: q = 'On tire au hasard une carte dans un jeu de 32 cartes. Probabilité de tirer un cœur ou un roi ?'; n = 11; d = 32; st = ['8 cœurs + 3 rois qui ne sont pas des cœurs = 11 cartes sur 32.']; break;
+     default: q = 'Dans un sachet de ' + (a + b + c) + ' billes, ' + a + ' sont rayées, les autres unies. On tire une bille. Probabilité qu’elle soit unie ?'; n = b + c; d = a + b + c; st = [(a + b + c) + ' ' + MINUS + ' ' + a + ' = ' + n + ' billes unies sur ' + d + '.'];
+    }
+    var r = red(n, d); st.push('P = ' + P(n, d) + '.');
+    return {type: 'frac', dec: true, q: q, f: r, steps: st, key: 'k' + k}; }}
+];
+EX.push(
+ {id: 'n48a', lv: 1, n: 'N48', t: 'Calculer une fréquence', d: 'Effectif ÷ effectif total.', c: 'Calcule la fréquence, en écriture décimale.', a: 'Fréquence = nombre de fois où l’issue est sortie ÷ nombre total d’essais.',
+  g: function(){ var N = pick([20, 25, 40, 50, 100, 200, 500]), n = rnd(1, N - 1), f = n / N, W = pick([['Pile', 'de Pile'], ['le 6', 'du 6'], ['une boule rouge', 'd’une boule rouge'], ['le secteur vert', 'du secteur vert']]), w = W[0];
+    if (!M.isInt(f * 1000)) return this.g();
+    return {type: 'num', q: 'Sur ' + N + ' essais, on a obtenu ' + n + ' fois ' + w + '. Quelle est la fréquence d’apparition ' + W[1] + ' ?', v: f, steps: [n + ' ÷ ' + N + ' = ' + fr(f) + '.'], traps: [[cl(f * 100), 'On demande une fréquence en écriture décimale (entre 0 et 1), pas un pourcentage.']]}; }},
+ {id: 'n48b', lv: 2, n: 'N48', t: 'Lire un tableau de résultats', d: 'Fréquence en pourcentage.', c: 'Donne la fréquence en pourcentage.', a: 'Calcule l’effectif total, puis divise l’effectif de l’issue par le total et multiplie par 100.',
+  g: function(){ var lab = pick([['1', '2', '3', '4', '5', '6'], ['Rouge', 'Bleu', 'Vert', 'Jaune']]), e, T, i;
+    var tries = 0; do { e = lab.map(function(){ return rnd(5, 40); }); T = e.reduce(function(a, b){ return a + b; }, 0); i = rnd(0, lab.length - 1); tries++; } while (!M.isInt(e[i] * 1000 / T) && tries < 5000);
+    var v = cl(e[i] * 100 / T); if (!M.isInt(v * 10)) return this.g();
+    return {type: 'num', q: 'On a fait l’expérience plusieurs fois et noté les résultats. Quelle est la fréquence de « ' + lab[i] + ' » ?', svg: tableSvg([['Issue'].concat(lab), ['Effectif'].concat(e.map(String))]), v: v, unit: '%', key: e.join('-') + ':' + i, steps: ['Total : ' + e.join(' + ') + ' = ' + T + '.', e[i] + ' ÷ ' + T + ' × 100 = ' + fr(v) + ' %.']}; }},
+ {id: 'n48c', lv: 2, n: 'N48', nq: 4, t: 'Fréquence ou probabilité ?', d: 'Vrai ou faux.', c: 'L’affirmation est-elle vraie ou fausse ?', a: 'La probabilité est fixée par l’expérience ; la fréquence observée varie d’une série à l’autre, mais elle se rapproche de la probabilité quand le nombre d’essais devient très grand.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var D = [
+    ['On a lancé 10 fois une pièce et obtenu 7 fois Pile. La probabilité d’obtenir Pile est donc 0,7.', 1, 'La fréquence observée est 0,7, mais la probabilité reste 0,5 : 10 lancers, c’est très peu.'],
+    ['Si on lance un dé un très grand nombre de fois, la fréquence du 6 sera proche de 1/6.', 0, 'Plus le nombre d’essais est grand, plus la fréquence se rapproche de la probabilité.'],
+    ['Après 5 Face de suite, on a plus de chances d’obtenir Pile au lancer suivant.', 1, 'La pièce n’a pas de mémoire : la probabilité reste 1/2 à chaque lancer.'],
+    ['Deux élèves qui lancent chacun 20 fois le même dé peuvent obtenir des fréquences différentes.', 0, 'Les fréquences varient d’une série d’essais à l’autre.'],
+    ['Sur 1 000 lancers d’un dé, le 3 est sorti 412 fois : le dé semble truqué.', 0, '412/1000 = 0,412, très loin de 1/6 ≈ 0,167 sur un grand nombre de lancers : le dé semble truqué.'],
+    ['Si on lance 6 fois un dé équilibré, on obtient forcément une fois chaque face.', 1, 'Ce n’est pas forcé : la probabilité décrit ce qui se passe « en moyenne » sur un grand nombre de lancers.'],
+    ['Une fréquence est toujours comprise entre 0 et 1.', 0, 'C’est un effectif divisé par un effectif total plus grand ou égal.'],
+    ['Avec 10 000 lancers d’une pièce équilibrée, la fréquence de Pile sera très probablement proche de 0,5.', 0, 'Sur un grand nombre d’essais, la fréquence se stabilise autour de la probabilité.'],
+    ['La fréquence observée sur 50 lancers est toujours exactement égale à la probabilité.', 1, 'Elle en est en général proche, mais rarement égale.'],
+    ['Pour estimer une probabilité qu’on ne sait pas calculer, on peut faire un grand nombre d’essais.', 0, 'La fréquence sur un grand nombre d’essais donne une estimation de la probabilité.'],
+    ['Sur 600 lancers d’un dé équilibré, on s’attend à obtenir environ 100 fois le 4.', 0, '600 × 1/6 = 100.'],
+    ['Une punaise tombe sur la pointe ou sur le dos : chaque cas a forcément une probabilité de 1/2.', 1, 'Les deux issues n’ont pas forcément la même chance : on estime la probabilité par l’expérience.']][k];
+    return {type: 'ch', q: D[0], ch: ['Vrai', 'Faux'], ans: D[1], steps: [D[2]], key: 'k' + k}; }},
+ {id: 'n48d', lv: 3, n: 'N48', nq: 3, t: 'Estimer une composition', d: 'Utiliser une fréquence observée.', c: 'Lis l’énoncé et calcule.', a: 'Sur un grand nombre d’essais, la fréquence observée est proche de la probabilité : on peut l’utiliser pour estimer une proportion ou un effectif.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var N = pick([20, 40, 50, 100]), p = pick([0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75]), E = pick([500, 1000, 2000]), obs, q, v, st, u = '';
+    obs = Math.round(E * p); var cnt = cl(N * p); if (!M.isInt(cnt)) return this.g(k);
+    var S = [['Une urne contient ' + N + ' boules, blanches ou noires. On a effectué ' + E + ' tirages avec remise et obtenu ' + obs + ' fois une boule noire. Combien de boules noires l’urne contient-elle probablement ?', 'boules'],
+     ['Un sac contient ' + N + ' jetons, verts ou rouges. Sur ' + E + ' tirages avec remise, on a obtenu ' + obs + ' jetons verts. Estime le nombre de jetons verts dans le sac.', 'jetons'],
+     ['Une roue a ' + N + ' secteurs égaux, gagnants ou perdants. Sur ' + E + ' essais, on a gagné ' + obs + ' fois. Combien de secteurs gagnants y a-t-il probablement ?', 'secteurs']][k % 3];
+    if (k >= 6){ var D2 = pick([600, 1200, 3000]); q = 'Sur ' + E + ' lancers d’une punaise, elle est tombée ' + obs + ' fois sur la pointe. Combien de fois peut-on s’attendre à ce qu’elle tombe sur la pointe sur ' + D2 + ' lancers ?'; v = cl(D2 * p); st = ['Fréquence observée : ' + obs + ' ÷ ' + E + ' = ' + fr(p) + '.', fr(p) + ' × ' + D2 + ' = ' + fr(v) + '.']; u = 'fois'; }
+    else { q = S[0]; v = cnt; u = S[1]; st = ['Fréquence observée : ' + obs + ' ÷ ' + E + ' = ' + fr(p) + ', proche de la probabilité.', fr(p) + ' × ' + N + ' = ' + fr(v) + '.']; }
+    return {type: 'num', q: q, v: v, unit: u, steps: st, key: 'k' + k + q}; }}
+);
+var NOTIONS = [
+ {n: 'N47', t: 'Utiliser le vocabulaire et calculer une probabilité', r: 'quand les issues ont toutes la même chance, P = nombre d’issues favorables ÷ nombre total d’issues ; P(non A) = 1 − P(A).'},
+ {n: 'N48', t: 'Relier fréquence observée et probabilité', r: 'sur un grand nombre d’essais, la fréquence observée d’une issue se rapproche de sa probabilité.'}
+];
+
+M.start({key: '4e-s20', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

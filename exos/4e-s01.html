@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : nombres relatifs (4e, séquence 1) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 1 : additionner, soustraire, multiplier, diviser des nombres relatifs et enchaîner les opérations.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 1 · Nombres relatifs</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Sans calculatrice.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+function sg(n){ return '(' + (n > 0 ? '+' : MINUS) + fr(Math.abs(n)) + ')'; }      // (+5) (−3)
+function ab(n){ return fr(Math.abs(n)); }
+function nb(k){ return k ? rnz(-20, 20) : cl(rnz(-99, 99) / 10); }               // entier ou décimal
+// écriture d'une somme algébrique : premier terme sans parenthèses si style simple
+function wr(n, first, st){ if (st) return sg(n); return first ? fr(n) : pf(n); }
+function addSteps(a, b){ var s = a + b;
+  if (a * b > 0) return ['Les deux nombres ont le même signe (' + (a > 0 ? '+' : MINUS) + ') : on additionne leurs distances à zéro, ' + ab(a) + ' + ' + ab(b) + ' = ' + ab(s) + ', et on garde le signe.', 'Résultat : ' + fr(s) + '.'];
+  var big = Math.abs(a) >= Math.abs(b) ? a : b;
+  return ['Les deux nombres sont de signes contraires : on soustrait les distances à zéro, ' + fr(Math.max(Math.abs(a), Math.abs(b))) + ' ' + MINUS + ' ' + fr(Math.min(Math.abs(a), Math.abs(b))) + ' = ' + ab(s) + ',',
+    s === 0 ? 'Les nombres sont opposés : leur somme est 0.' : 'et on prend le signe du nombre le plus éloigné de zéro (' + fr(big) + ') : ' + fr(s) + '.']; }
+var CTX = [
+ function(){ var a = rnz(-12, 9), b = rnd(3, 15); return {q: 'Le matin, il fait ' + fr(a) + ' °C. L’après-midi, la température a monté de ' + b + ' °C. Quelle température fait-il l’après-midi ?', v: a + b, u: '°C', st: [fr(a) + ' + ' + b + ' = ' + fr(a + b) + ' °C.']}; },
+ function(){ var a = rnd(-6, 8), b = rnd(5, 18); return {q: 'À midi, il fait ' + fr(a) + ' °C. La nuit, la température baisse de ' + b + ' °C. Quelle température fait-il la nuit ?', v: a - b, u: '°C', st: [fr(a) + ' ' + MINUS + ' ' + b + ' = ' + fr(a) + ' + ' + pf(-b) + ' = ' + fr(a - b) + ' °C.']}; },
+ function(){ var a = rnd(-15, -2), b = rnd(1, 12); return {q: 'À Moscou, il fait ' + fr(a) + ' °C ; à Rouen, il fait ' + b + ' °C. Quel est l’écart de température entre les deux villes ?', v: b - a, u: '°C', st: ['Écart : ' + b + ' ' + MINUS + ' ' + pf(a) + ' = ' + b + ' + ' + (-a) + ' = ' + (b - a) + ' °C.']}; },
+ function(){ var a = rnd(-80, -15), b = rnd(20, 90); return {q: 'Un plongeur est à ' + fr(a) + ' m (sous le niveau de la mer). Il remonte de ' + b + ' m. À quelle altitude est-il ?', v: a + b, u: 'm', st: [fr(a) + ' + ' + b + ' = ' + fr(a + b) + ' m.']}; },
+ function(){ var a = rnd(120, 900), b = rnd(-60, -10); return {q: 'Un hélicoptère vole à ' + a + ' m d’altitude, juste au-dessus d’un sous-marin à ' + fr(b) + ' m. Quelle distance les sépare ?', v: a - b, u: 'm', st: [a + ' ' + MINUS + ' ' + pf(b) + ' = ' + a + ' + ' + (-b) + ' = ' + (a - b) + ' m.']}; },
+ function(){ var a = rnd(-250, -30), b = rnd(40, 300); return {q: 'Le compte de Léa est à ' + fr(a) + ' €. Elle dépose ' + b + ' €. Quel est son nouveau solde ?', v: a + b, u: '€', st: [fr(a) + ' + ' + b + ' = ' + fr(a + b) + ' €.']}; },
+ function(){ var a = rnd(20, 150), b = rnd(60, 300); return {q: 'Le compte de Hugo est à ' + a + ' €. Il paie un achat de ' + b + ' €. Quel est son nouveau solde ?', v: a - b, u: '€', st: [a + ' ' + MINUS + ' ' + b + ' = ' + fr(a - b) + ' €.']}; },
+ function(){ var a = rnd(-40, -5), b = rnd(-12, 4); return {q: 'Dans une station de ski, le thermomètre indique ' + fr(a) + ' °C au sommet et ' + fr(b) + ' °C en bas des pistes. Quel est l’écart de température ?', v: b - a, u: '°C', st: [fr(b) + ' ' + MINUS + ' ' + pf(a) + ' = ' + fr(b) + ' + ' + (-a) + ' = ' + (b - a) + ' °C.']}; },
+ function(){ var a = rnd(2, 9), b = rnd(-5, -1), c = rnd(-6, -1); return {q: 'Au golf, Inès joue ' + a + ' coups au-dessus du par au 1er trou (+' + a + '), puis ' + fr(b) + ' et ' + fr(c) + ' aux deux suivants. Quel est son score total par rapport au par ?', v: a + b + c, u: '', st: [a + ' + ' + pf(b) + ' + ' + pf(c) + ' = ' + fr(a + b + c) + '.']}; },
+ function(){ var a = rnd(-9, -1), b = rnd(3, 9), c = rnd(-8, -2); return {q: 'Dans un ascenseur, on part du niveau ' + fr(a) + ' (sous-sol), on monte de ' + b + ' étages puis on descend de ' + (-c) + ' étages. À quel niveau arrive-t-on ?', v: a + b + c, u: '', st: [fr(a) + ' + ' + b + ' ' + MINUS + ' ' + (-c) + ' = ' + fr(a + b + c) + '.']}; },
+ function(){ var a = rnd(-30, -5), b = rnd(-12, -2); return {q: 'Sur Mars, la température moyenne en journée est ' + fr(a) + ' °C ; la nuit, elle est inférieure de ' + rnd(40, 70) + ' °C… On s’intéresse plutôt à un congélateur réglé à ' + fr(b) + ' °C dont la température baisse encore de ' + rnd(3, 9) + ' °C. Quelle est sa nouvelle température ?', v: null}; },
+ function(){ var a = rnd(3, 25), b = rnd(-40, -10); return {q: 'Le mont Everest culmine à environ 8 849 m. La fosse des Mariannes descend à environ ' + fr(-10994) + ' m. Quel est l’écart d’altitude entre ces deux points ?', v: 8849 + 10994, u: 'm', st: ['8 849 ' + MINUS + ' (' + MINUS + '10 994) = 8 849 + 10 994 = 19 843 m.']}; },
+ function(){ var a = rnd(-25, -8), b = rnd(-7, 6); return {q: 'Un thermomètre indiquait ' + fr(a) + ' °C ce matin et ' + fr(b) + ' °C à midi. De combien de degrés la température a-t-elle augmenté ?', v: b - a, u: '°C', st: [fr(b) + ' ' + MINUS + ' ' + pf(a) + ' = ' + fr(b) + ' + ' + (-a) + ' = ' + (b - a) + ' °C.']}; }
+];
+CTX[10] = function(){ var b = rnd(-22, -12), d = rnd(3, 9); return {q: 'Un congélateur est réglé à ' + fr(b) + ' °C. Sa température baisse encore de ' + d + ' °C. Quelle est sa nouvelle température ?', v: b - d, u: '°C', st: [fr(b) + ' ' + MINUS + ' ' + d + ' = ' + fr(b - d) + ' °C.']}; };
+var EX = [
+ {id: 'n01a', lv: 1, n: 'N01', t: 'Additionner deux relatifs', d: 'Même signe ou signes contraires.', c: 'Calcule.', a: 'Même signe : on additionne les distances à zéro et on garde le signe. Signes contraires : on soustrait les distances à zéro et on prend le signe du plus éloigné de zéro.',
+  g: function(){ var dec = Math.random() < 0.3, a = nb(!dec), b = nb(!dec), st = Math.random() < 0.6;
+    return {type: 'num', q: wr(a, true, st) + ' + ' + wr(b, false, st) + ' = ?', v: cl(a + b), steps: addSteps(a, b), traps: [[cl(a - b), 'Tu as soustrait au lieu d’additionner.'], [-cl(a + b), 'Attention au signe du résultat.']]}; }},
+ {id: 'n01b', lv: 1, n: 'N01', t: 'Soustraire un relatif', d: 'Ajouter l’opposé.', c: 'Calcule.', a: 'Soustraire un nombre, c’est ajouter son opposé : a − (−b) = a + b et a − (+b) = a − b.',
+  g: function(){ var dec = Math.random() < 0.3, a = nb(!dec), b = nb(!dec), st = Math.random() < 0.6, s = cl(a - b);
+    var q = wr(a, true, st) + ' ' + MINUS + ' ' + wr(b, false, st) + ' = ?';
+    return {type: 'num', q: q, v: s, steps: ['Soustraire ' + pf(b) + ', c’est ajouter son opposé ' + fr(-b) + ' : ' + fr(a) + ' + ' + pf(-b) + '.'].concat(addSteps(a, -b)), traps: [[cl(a + b), 'Soustraire, c’est ajouter l’opposé : attention au signe du second nombre.']]}; }},
+ {id: 'n01c', lv: 2, n: 'N01', t: 'Trouver le nombre manquant', d: 'Compléter une addition ou une soustraction.', c: 'Trouve le nombre qui complète l’égalité.', a: 'Pour trouver ? dans a + ? = b, on calcule b − a. Pour ? − a = b, on calcule b + a.',
+  g: function(){ var a = rnz(-15, 15), x = rnz(-15, 15), t = rnd(0, 2), q, st;
+    if (t === 0){ q = pf(a) + ' + ? = ' + fr(a + x); st = ['? = ' + fr(a + x) + ' ' + MINUS + ' ' + pf(a) + ' = ' + fr(x) + '.']; }
+    else if (t === 1){ q = '? + ' + pf(a) + ' = ' + fr(a + x); st = ['? = ' + fr(a + x) + ' ' + MINUS + ' ' + pf(a) + ' = ' + fr(x) + '.']; }
+    else { q = '? ' + MINUS + ' ' + pf(a) + ' = ' + fr(x - a); st = ['? = ' + fr(x - a) + ' + ' + pf(a) + ' = ' + fr(x) + '.']; }
+    return {type: 'num', q: q.replace(/^\(([^)]*)\)/, '$1'), v: x, steps: st.concat(['Vérification : on remplace ? par ' + fr(x) + ' et on retrouve l’égalité.'])}; }},
+ {id: 'n01d', lv: 2, n: 'N01', t: 'Suites d’additions et de soustractions', d: '3 à 5 nombres, entiers ou décimaux.', c: 'Calcule.', a: 'Transforme les soustractions en additions de l’opposé, puis regroupe les positifs d’un côté et les négatifs de l’autre.',
+  g: function(){ var k = rnd(3, 5), dec = Math.random() < 0.3, T = [], ops = [], s = 0;
+    for (var i = 0; i < k; i++){ var v = dec ? cl(rnz(-90, 90) / 10) : rnz(-25, 25); T.push(v); ops.push(i ? pick(['+', MINUS]) : '+'); s = cl(s + (ops[i] === '+' ? v : -v)); }
+    var q = T.map(function(v, i){ return i ? ' ' + ops[i] + ' ' + pf(v) : fr(v); }).join('') + ' = ?';
+    var ad = T.map(function(v, i){ return ops[i] === '+' ? v : cl(-v); }), pos = ad.filter(function(v){ return v > 0; }), neg = ad.filter(function(v){ return v < 0; });
+    var sp = cl(pos.reduce(function(a, b){ return a + b; }, 0)), sn = cl(neg.reduce(function(a, b){ return a + b; }, 0));
+    return {type: 'num', q: q, v: s, steps: ['Je remplace chaque soustraction par l’addition de l’opposé : ' + ad.map(function(v, i){ return i ? pf(v) : fr(v); }).join(' + ') + '.',
+      !neg.length ? 'Tous les termes sont positifs : ' + fr(s) + '.' : !pos.length ? 'Tous les termes sont négatifs : on additionne les distances à zéro et on garde le signe −, ' + fr(s) + '.' :
+      'Positifs : ' + pos.map(fr).join(' + ') + ' = ' + fr(sp) + ' ; négatifs : ' + neg.map(pf).join(' + ') + ' = ' + fr(sn) + '. Total : ' + fr(sp) + ' + ' + pf(sn) + ' = ' + fr(s) + '.']}; }},
+ {id: 'n01e', lv: 3, n: 'N01', nq: 3, t: 'Problèmes', d: 'Températures, altitudes, comptes…', c: 'Lis l’énoncé, écris le calcul, puis donne le résultat.', a: 'Monter, gagner, déposer : on ajoute. Descendre, perdre, payer : on soustrait. Un écart, c’est le plus grand moins le plus petit.',
+  g: function(){ var k = rnd(0, CTX.length - 1), C = CTX[k](); return {type: 'num', q: C.q, v: C.v, unit: C.u, steps: C.st, key: 'k' + k}; }}
+];
+function prod(T){ return T.reduce(function(a, b){ return cl(a * b); }, 1); }
+function nNeg(T){ return T.filter(function(v){ return v < 0; }).length; }
+EX.push(
+ {id: 'n02a', lv: 1, n: 'N02', t: 'Multiplier deux relatifs', d: 'La règle des signes.', c: 'Calcule.', a: 'Le produit de deux nombres de même signe est positif ; de signes contraires, il est négatif.',
+  g: function(){ var dec = Math.random() < 0.25, a = dec ? cl(rnz(-9, 9) * pick([0.1, 0.5, 1.5, 2.5])) : rnz(-12, 12), b = rnz(-12, 12); if (Math.abs(a) === 1 || Math.abs(b) === 1) return this.g();
+    if (a > 0 && b > 0) a = -a; var p = cl(a * b), st = Math.random() < 0.5;
+    return {type: 'num', q: (st ? sg(a) : fr(a)) + ' × ' + (st ? sg(b) : pf(b)) + ' = ?', v: p, steps: [(a * b > 0 ? 'Les deux nombres ont le même signe : le produit est positif.' : 'Les deux nombres sont de signes contraires : le produit est négatif.'), fr(Math.abs(a)) + ' × ' + fr(Math.abs(b)) + ' = ' + fr(Math.abs(p)) + ', donc le résultat est ' + fr(p) + '.'], traps: [[-p, 'Attention à la règle des signes.']]}; }},
+ {id: 'n02b', lv: 1, n: 'N02', t: 'Signe d’un produit', d: 'Compter les facteurs négatifs.', c: 'Sans calculer, dis si le produit est positif ou négatif.', a: 'Un produit de facteurs non nuls est positif si le nombre de facteurs négatifs est pair, négatif s’il est impair.',
+  g: function(){ var k = rnd(3, 6), T = []; for (var i = 0; i < k; i++) T.push(Math.random() < 0.75 ? rnz(-12, 12) : cl(rnz(-50, 50) / 10)); var n = nNeg(T); if (n === 0 && Math.random() < 0.8) return this.g();
+    return {type: 'ch', q: T.map(function(v, i){ return i ? pf(v) : fr(v); }).join(' × '), ch: ['Positif', 'Négatif'], ans: n % 2 ? 1 : 0, steps: ['Il y a ' + n + ' facteur' + (n > 1 ? 's' : '') + ' négatif' + (n > 1 ? 's' : '') + ' : c’est un nombre ' + (n % 2 ? 'impair' : 'pair') + ', donc le produit est ' + (n % 2 ? 'négatif.' : 'positif.')]}; }},
+ {id: 'n02c', lv: 2, n: 'N02', t: 'Produits de plusieurs facteurs', d: '3 ou 4 facteurs.', c: 'Calcule.', a: 'Détermine d’abord le signe (nombre de facteurs négatifs), puis multiplie les distances à zéro, en regroupant astucieusement (par exemple 2 × 5 = 10).',
+  g: function(){ var k = rnd(3, 4), T = []; for (var i = 0; i < k; i++) T.push(rnz(-9, 9)); if (T.some(function(v){ return Math.abs(v) === 1; }) || !nNeg(T)) return this.g();
+    if (Math.random() < 0.3) T[rnd(0, k - 1)] = pick([-0.5, 0.5, -0.2, 2.5, -2.5, 0.1]);
+    var p = prod(T), n = nNeg(T), A = T.map(Math.abs);
+    return {type: 'num', q: T.map(function(v, i){ return i ? pf(v) : fr(v); }).join(' × ') + ' = ?', v: p, steps: [n + ' facteur' + (n > 1 ? 's' : '') + ' négatif' + (n > 1 ? 's' : '') + ' : le produit est ' + (n % 2 ? 'négatif.' : 'positif.'), A.map(fr).join(' × ') + ' = ' + fr(Math.abs(p)) + ', donc le résultat est ' + fr(p) + '.'], traps: [[-p, 'Attention au signe : compte les facteurs négatifs.']]}; }},
+ {id: 'n02d', lv: 2, n: 'N02', t: 'Facteur manquant', d: 'Compléter une multiplication.', c: 'Trouve le nombre manquant.', a: 'Cherche d’abord la distance à zéro (table de multiplication), puis le signe avec la règle des signes.',
+  g: function(){ var a = rnz(-10, 10), x = rnz(-10, 10); if (Math.abs(a) < 2 || Math.abs(x) < 2) return this.g(); var p = a * x, f = Math.random() < 0.5;
+    return {type: 'num', q: f ? fr(a) + ' × ? = ' + fr(p) : '? × ' + pf(a) + ' = ' + fr(p), v: x, steps: [Math.abs(a) + ' × ' + Math.abs(x) + ' = ' + Math.abs(p) + ' : la distance à zéro du nombre cherché est ' + Math.abs(x) + '.', 'Le produit est ' + (p > 0 ? 'positif' : 'négatif') + ' et ' + fr(a) + ' est ' + (a > 0 ? 'positif' : 'négatif') + ' : le nombre cherché est ' + (x > 0 ? 'positif' : 'négatif') + ', c’est ' + fr(x) + '.'], traps: [[-x, 'Attention au signe.']]}; }},
+ {id: 'n02e', lv: 3, n: 'N02', t: 'Carrés et puissances de relatifs', d: '(−3)² ou −3² ?', c: 'Calcule.', a: '(−3)² = (−3) × (−3) = 9, mais −3² = −(3 × 3) = −9 : le carré ne porte que sur ce qui est juste avant lui.',
+  g: function(){ var a = rnd(2, 9), t = rnd(0, 3), e = t === 3 ? 3 : 2, q, v, st;
+    if (t === 0){ q = '(' + MINUS + a + ')' + (e === 2 ? '²' : '³'); v = e === 2 ? a * a : -a * a * a; st = ['(' + MINUS + a + ')² = (' + MINUS + a + ') × (' + MINUS + a + ') = ' + v + '.']; }
+    else if (t === 1){ q = MINUS + a + '²'; v = -a * a; st = ['Le carré porte seulement sur ' + a + ' : ' + MINUS + a + '² = ' + MINUS + '(' + a + ' × ' + a + ') = ' + fr(v) + '.']; }
+    else if (t === 2){ var b = rnz(-5, 5); q = '(' + MINUS + a + ')² + ' + pf(b) + ' × ' + pf(-a); v = a * a - a * b; st = ['(' + MINUS + a + ')² = ' + a * a + ' et ' + pf(b) + ' × ' + pf(-a) + ' = ' + fr(-a * b) + '.', a * a + ' + ' + pf(-a * b) + ' = ' + fr(v) + '.']; }
+    else { a = rnd(2, 5); q = '(' + MINUS + a + ')³'; v = -a * a * a; st = ['(' + MINUS + a + ')³ = (' + MINUS + a + ') × (' + MINUS + a + ') × (' + MINUS + a + ') : 3 facteurs négatifs, le résultat est négatif : ' + fr(v) + '.']; }
+    return {type: 'num', q: q + ' = ?', v: v, steps: st, traps: [[-v, 'Attention au signe : regarde bien si le signe − est dans la parenthèse.']]}; }}
+);
+EX.push(
+ {id: 'n03a', lv: 1, n: 'N03', t: 'Diviser deux relatifs', d: 'Même règle des signes.', c: 'Calcule.', a: 'Le quotient de deux nombres de même signe est positif ; de signes contraires, il est négatif.',
+  g: function(){ var b = rnz(-12, 12), x = rnz(-15, 15); if (Math.abs(b) < 2) return this.g(); if (b > 0 && x > 0) x = -x; var a = b * x, f = rnd(0, 2);
+    var q = f === 0 ? fr(a) + ' ÷ ' + pf(b) : f === 1 ? '(' + fr(a) + ') ÷ (' + fr(b) + ')' : fr(a) + ' / ' + pf(b);
+    return {type: 'num', q: q.replace('(' + fr(a) + ')', a < 0 ? '(' + fr(a) + ')' : fr(a)) + ' = ?', v: x, steps: [(a * b > 0 ? 'Même signe : le quotient est positif.' : 'Signes contraires : le quotient est négatif.'), Math.abs(a) + ' ÷ ' + Math.abs(b) + ' = ' + Math.abs(x) + ', donc le résultat est ' + fr(x) + '.'], traps: [[-x, 'Attention à la règle des signes.']]}; }},
+ {id: 'n03b', lv: 1, n: 'N03', t: 'Écritures d’un quotient', d: 'Où placer le signe − ?', c: 'Vrai ou faux ?', a: '−a/b = (−a)/b = a/(−b), et (−a)/(−b) = a/b.',
+  g: function(){ var a = rnd(2, 9), b = rnd(2, 9); if (a === b) return this.g(); var L = [
+      ['(' + MINUS + a + ') / ' + b + ' = ' + a + ' / (' + MINUS + b + ')', true, 'Les deux quotients sont négatifs et ont la même distance à zéro.'],
+      ['(' + MINUS + a + ') / (' + MINUS + b + ') = ' + a + ' / ' + b, true, 'Même signe : le quotient est positif.'],
+      ['(' + MINUS + a + ') / (' + MINUS + b + ') = ' + MINUS + ' ' + a + ' / ' + b, false, 'Même signe : le quotient est positif.'],
+      [MINUS + ' ' + a + ' / ' + b + ' = (' + MINUS + a + ') / ' + b, true, 'On peut placer le signe − devant le quotient ou au numérateur.'],
+      [a + ' / (' + MINUS + b + ') = ' + a + ' / ' + b, false, 'Signes contraires : le quotient est négatif.'],
+      ['Le quotient de deux nombres négatifs est négatif.', false, 'Il est positif (même signe).'],
+      ['Le quotient d’un nombre négatif par un nombre positif est négatif.', true, 'Signes contraires : négatif.'],
+      ['(' + MINUS + a * b + ') ÷ ' + b + ' = ' + MINUS + a, true, a * b + ' ÷ ' + b + ' = ' + a + ' et le quotient est négatif.'],
+      ['(' + MINUS + a * b + ') ÷ (' + MINUS + b + ') = ' + MINUS + a, false, 'Même signe : le résultat est ' + a + '.'],
+      ['On ne peut pas diviser par un nombre négatif.', false, 'On peut diviser par tout nombre non nul.'],
+      ['0 ÷ (' + MINUS + b + ') = 0', true, '0 divisé par un nombre non nul donne 0.'],
+      ['(' + MINUS + b + ') ÷ (' + MINUS + b + ') = ' + MINUS + '1', false, 'Un nombre non nul divisé par lui-même donne 1.']];
+    var i = rnd(0, L.length - 1), p = L[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n03c', lv: 2, n: 'N03', t: 'Quotients décimaux', d: 'Résultat décimal.', c: 'Calcule (résultat exact).', a: 'Le signe d’abord, puis la division des distances à zéro, posée si besoin.',
+  g: function(){ var b = pick([2, 4, 5, 8, 10, 20, 25]), x = cl(rnz(-99, 99) / pick([10, 100, 4, 2])); var a = cl(b * x); if (M.isInt(x) || Math.abs(a) > 300 || !M.isInt(a * 10)) return this.g();
+    var sb = pick([1, -1]), B = b * sb, X = cl(x * sb);
+    return {type: 'num', q: (a < 0 ? '(' + fr(a) + ')' : fr(a)) + ' ÷ ' + pf(B) + ' = ?', v: X, steps: [(a * B > 0 ? 'Même signe : positif.' : 'Signes contraires : négatif.'), fr(Math.abs(a)) + ' ÷ ' + Math.abs(B) + ' = ' + fr(Math.abs(X)) + ', donc ' + fr(X) + '.'], traps: [[-X, 'Attention au signe.']]}; }},
+ {id: 'n03d', lv: 2, n: 'N03', t: 'Nombre manquant', d: 'Dividende ou diviseur.', c: 'Trouve le nombre manquant.', a: '? ÷ b = c donne ? = c × b. a ÷ ? = c donne ? = a ÷ c.',
+  g: function(){ var b = rnz(-9, 9), c = rnz(-12, 12); if (Math.abs(b) < 2 || Math.abs(c) < 2) return this.g(); var a = b * c, t = Math.random() < 0.5;
+    return t ? {type: 'num', q: '? ÷ ' + pf(b) + ' = ' + fr(c), v: a, steps: ['? = ' + fr(c) + ' × ' + pf(b) + ' = ' + fr(a) + '.']} : {type: 'num', q: (a < 0 ? '(' + fr(a) + ')' : fr(a)) + ' ÷ ? = ' + fr(c), v: b, steps: ['? = ' + fr(a) + ' ÷ ' + pf(c) + ' = ' + fr(b) + '.']}; }},
+ {id: 'n03e', lv: 3, n: 'N03', nq: 3, t: 'Moyennes de relatifs', d: 'Températures, scores, soldes.', c: 'Calcule la moyenne.', a: 'Moyenne = somme des valeurs ÷ nombre de valeurs. La somme peut être négative : la moyenne aussi.',
+  g: function(){ var k = rnd(0, 11), n = pick([3, 4, 5, 6]), T = [], s;
+    var ctx = ['températures relevées à 6 h (en °C)', 'températures de la semaine à Oslo (en °C)', 'scores d’un jeu (en points)', 'variations d’une action en bourse (en €)', 'soldes d’un compte en fin de mois (en €)', 'écarts au par d’un golfeur', 'altitudes de points sous-marins et côtiers (en m)', 'températures d’un congélateur (en °C)', 'variations d’effectif d’un club', 'gains et pertes d’une boutique (en centaines d’€)', 'températures minimales de janvier à Montréal (en °C)', 'écarts à la moyenne d’une classe (en points)'][k];
+    do { T = []; for (var i = 0; i < n; i++) T.push(rnz(-15, 12)); s = T.reduce(function(a, b){ return a + b; }, 0); } while (!M.isInt(s * 10 / n) || s >= 0 && Math.random() < 0.7);
+    return {type: 'num', q: 'Voici des ' + ctx + ' : ' + T.map(fr).join(' ; ') + '. Calcule leur moyenne.', v: cl(s / n), steps: ['Somme : ' + T.map(function(v, i){ return i ? pf(v) : fr(v); }).join(' + ') + ' = ' + fr(s) + '.', 'Moyenne : ' + fr(s) + ' ÷ ' + n + ' = ' + fr(cl(s / n)) + '.'], key: 'k' + k}; }}
+);
+// N04 : enchaîner les opérations
+function f2(m){ var v; do { v = rnz(-m, m); } while (Math.abs(v) < 2); return v; }
+function E(){ var t = rnd(0, 7), a = rnz(-9, 9), b = f2(9), c = f2(9), d = f2(6), q, v, st;
+  switch (t){
+   case 0: q = fr(a) + ' + ' + pf(b) + ' × ' + pf(c); v = a + b * c; st = ['La multiplication est prioritaire : ' + pf(b) + ' × ' + pf(c) + ' = ' + fr(b * c) + '.', fr(a) + ' + ' + pf(b * c) + ' = ' + fr(v) + '.']; break;
+   case 1: q = fr(a) + ' ' + MINUS + ' ' + pf(b) + ' × ' + pf(c); v = a - b * c; st = ['Je calcule d’abord le produit : ' + pf(b) + ' × ' + pf(c) + ' = ' + fr(b * c) + '.', fr(a) + ' ' + MINUS + ' ' + pf(b * c) + ' = ' + fr(v) + '.']; break;
+   case 2: q = fr(b) + ' × ' + pf(c) + ' ' + MINUS + ' ' + pf(a); v = b * c - a; st = ['Produit d’abord : ' + fr(b) + ' × ' + pf(c) + ' = ' + fr(b * c) + '.', fr(b * c) + ' ' + MINUS + ' ' + pf(a) + ' = ' + fr(v) + '.']; break;
+   case 3: q = '(' + fr(a) + ' + ' + pf(b) + ') × ' + pf(c); v = (a + b) * c; st = ['Parenthèses d’abord : ' + fr(a) + ' + ' + pf(b) + ' = ' + fr(a + b) + '.', pf(a + b) + ' × ' + pf(c) + ' = ' + fr(v) + '.']; break;
+   case 4: q = fr(c) + ' × (' + fr(a) + ' ' + MINUS + ' ' + pf(b) + ')'; v = c * (a - b); st = ['Parenthèses d’abord : ' + fr(a) + ' ' + MINUS + ' ' + pf(b) + ' = ' + fr(a - b) + '.', fr(c) + ' × ' + pf(a - b) + ' = ' + fr(v) + '.']; break;
+   case 5: var x = rnz(-8, 8); b = rnz(-6, 6); if (Math.abs(b) < 2) return E(); var p = b * x; q = fr(a) + ' ' + MINUS + ' ' + (p < 0 ? '(' + fr(p) + ')' : fr(p)) + ' ÷ ' + pf(b); v = a - x; st = ['La division est prioritaire : ' + fr(p) + ' ÷ ' + pf(b) + ' = ' + fr(x) + '.', fr(a) + ' ' + MINUS + ' ' + pf(x) + ' = ' + fr(v) + '.']; break;
+   case 6: q = fr(a) + ' × ' + pf(b) + ' + ' + pf(c) + ' × ' + pf(d); v = a * b + c * d; if (!d) return E(); st = ['Les deux produits d’abord : ' + fr(a * b) + ' et ' + fr(c * d) + '.', fr(a * b) + ' + ' + pf(c * d) + ' = ' + fr(v) + '.']; break;
+   default: q = fr(a) + ' ' + MINUS + ' ' + pf(b) + ' ' + MINUS + ' ' + pf(c) + ' × ' + pf(d); if (!d) return E(); v = a - b - c * d; st = ['Le produit d’abord : ' + pf(c) + ' × ' + pf(d) + ' = ' + fr(c * d) + '.', fr(a) + ' ' + MINUS + ' ' + pf(b) + ' ' + MINUS + ' ' + pf(c * d) + ' = ' + fr(a) + ' + ' + pf(-b) + ' + ' + pf(-c * d) + ' = ' + fr(v) + '.'];
+  }
+  return {q: q, v: v, st: st, t: t}; }
+EX.push(
+ {id: 'n04a', lv: 1, n: 'N04', t: 'Priorité de la multiplication', d: 'Deux opérations.', c: 'Calcule en respectant les priorités.', a: 'Sans parenthèses, on effectue d’abord les multiplications et les divisions, puis les additions et soustractions de gauche à droite.',
+  g: function(){ var e; do { e = E(); } while ([0, 1, 2, 5].indexOf(e.t) < 0); return {type: 'num', q: e.q + ' = ?', v: e.v, steps: e.st}; }},
+ {id: 'n04b', lv: 2, n: 'N04', t: 'Avec des parenthèses', d: 'Les parenthèses d’abord.', c: 'Calcule.', a: 'On commence par les calculs entre parenthèses.',
+  g: function(){ var e; do { e = E(); } while ([3, 4].indexOf(e.t) < 0); return {type: 'num', q: e.q + ' = ?', v: e.v, steps: e.st}; }},
+ {id: 'n04c', lv: 2, n: 'N04', t: 'Trois ou quatre opérations', d: 'Produits et sommes mêlés.', c: 'Calcule.', a: 'Repère les produits, calcule-les, puis termine par les additions et soustractions.',
+  g: function(){ var e; do { e = E(); } while ([6, 7].indexOf(e.t) < 0); return {type: 'num', q: e.q + ' = ?', v: e.v, steps: e.st}; }},
+ {id: 'n04d', lv: 3, n: 'N04', nq: 4, t: 'Avec un trait de fraction', d: 'Numérateur et dénominateur.', c: 'Calcule. Le trait de fraction joue le rôle de parenthèses.', a: 'Calcule séparément le numérateur et le dénominateur, puis divise.',
+  g: function(){ var x = rnz(-9, 9), D = rnz(-8, 8); if (Math.abs(D) < 2) return this.g(); var N = x * D;
+    var a = rnz(-9, 9), b = N - a, c = rnz(-9, 9), d = c - D, nt = Math.random() < 0.5; if (!b || !d) return this.g();
+    var num = nt ? fr(a) + ' + ' + pf(b) : fr(a) + ' ' + MINUS + ' ' + pf(-b), den = fr(c) + ' ' + MINUS + ' ' + pf(d);
+    var e = rnd(0, 1); if (e){ var u = rnz(-5, 5), w = N - u * 3; if (Math.abs(u) < 2) return this.g(); if (!w) return this.g(); num = fr(u) + ' × 3 + ' + pf(w); }
+    return {type: 'num', q: '(' + num + ') / (' + den + ') = ?', v: x, steps: ['Numérateur : ' + num + ' = ' + fr(N) + '.', 'Dénominateur : ' + den + ' = ' + fr(D) + '.', fr(N) + ' ÷ ' + pf(D) + ' = ' + fr(x) + '.']}; }},
+ {id: 'n04e', lv: 3, n: 'N04', nq: 4, t: 'Où est l’erreur ?', d: 'Priorités mal appliquées.', c: 'Un élève a fait ce calcul. Est-il juste ?', a: 'Vérifie l’ordre des opérations : multiplication avant addition, parenthèses avant tout.',
+  g: function(){ var e; do { e = E(); } while ([0, 1, 2, 3, 4].indexOf(e.t) < 0); var ok = Math.random() < 0.4, shown = e.v;
+    if (!ok){ var a = e.q; // erreur classique : de gauche à droite
+      if (e.t === 0 || e.t === 1){ var m = e.q.match(/^(\S+) (.) (\S+) × (\S+)$/); if (!m) return this.g(); var A = M.parseNum(m[1]), B = M.parseNum(m[3].replace(/[()]/g, '')), C = M.parseNum(m[4].replace(/[()]/g, '')); shown = (m[2] === '+' ? A + B : A - B) * C; }
+      else shown = -e.v; if (shown === e.v) return this.g(); }
+    return {type: 'ch', q: e.q + ' = ' + fr(shown), ch: ['Juste', 'Faux'], ans: ok ? 0 : 1, steps: e.st.concat([ok ? 'Le calcul est juste.' : 'Le bon résultat est ' + fr(e.v) + '.'])}; }}
+);
+var NOTIONS = [
+ {n: 'N01', t: 'Additionner et soustraire des nombres relatifs', r: 'même signe : on additionne les distances à zéro et on garde le signe ; signes contraires : on soustrait et on prend le signe du plus éloigné de zéro. Soustraire, c’est ajouter l’opposé.'},
+ {n: 'N02', t: 'Multiplier des nombres relatifs', r: 'deux facteurs de même signe : produit positif ; de signes contraires : négatif. Avec plusieurs facteurs, on compte les facteurs négatifs : pair → positif, impair → négatif.'},
+ {n: 'N03', t: 'Diviser des nombres relatifs', r: 'même règle des signes que pour la multiplication ; on ne divise jamais par 0.'},
+ {n: 'N04', t: 'Enchaîner les opérations sur les nombres relatifs', r: 'd’abord les parenthèses, puis les multiplications et divisions, enfin les additions et soustractions, de gauche à droite.'}
+];
+
+M.start({key: '4e-s01', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

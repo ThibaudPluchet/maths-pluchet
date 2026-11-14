@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : distributivité (4e, séquence 3) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 3 : développer, factoriser et réduire une expression littérale.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 3 · Distributivité</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. </p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var poly = M.poly, mono = M.mono, terms = M.terms, pmul = M.pmul, padd = M.padd;
+function lin(a, b, xFirst){ return xFirst === false ? terms([[b, 0], [a, 1]]) : terms([[a, 1], [b, 0]]); }   // ax + b (ou b + ax)
+function tx(a){ return a < 0 ? '(' + mono(a, 1) + ')' : mono(a, 1); }
+function nz(m){ var v; do { v = rnz(-m, m); } while (Math.abs(v) < 2); return v; }
+function kf(k){ return k === -1 ? MINUS : k === 1 ? '' : fr(k); }       // facteur devant une parenthèse
+function devSteps(k, kt, a, b){ // k(ax+b), kt = texte de k (nombre ou monôme), kd = degré de k
+  return kt + ' × ' + pf(a) + 'x + ' + kt + ' × ' + pf(b); }
+var EX = [
+ {id: 'n06a', lv: 1, n: 'N06', t: 'Développer k(ax + b)', d: 'Facteur positif.', c: 'Développe et réduis.', a: 'k(a + b) = k × a + k × b : on multiplie le facteur par chaque terme de la parenthèse.',
+  g: function(){ var k = rnd(2, 9), a = rnd(1, 9), b = rnd(1, 12), s = Math.random() < 0.3 ? -1 : 1, xf = Math.random() < 0.75, A = a, B = b * s;
+    var inside = xf ? lin(A, B) : lin(A, B, false), P = {1: k * A, 0: k * B};
+    return {type: 'expr', mode: 'dev', q: 'A = ' + k + '(' + inside + ')', lab: 'A =', P: P, steps: ['A = ' + k + ' × ' + (A === 1 ? 'x' : fr(A) + 'x') + ' + ' + k + ' × ' + pf(B), 'A = ' + poly(P)], traps: [[{1: k * A, 0: B}, 'Tu as oublié de multiplier le deuxième terme par ' + k + '.']]}; }},
+ {id: 'n06b', lv: 2, n: 'N06', t: 'Avec des relatifs ou un facteur x', d: 'Facteur négatif, derrière ou en x.', c: 'Développe et réduis.', a: 'Attention aux signes : −3(2x − 5) = −3 × 2x + (−3) × (−5) = −6x + 15. Et x(2x + 3) = 2x² + 3x.',
+  g: function(){ var t = rnd(0, 2), a = nz(9), b = nz(12), k = nz(9), q, P, kt, kp;
+    if (t === 0){ if (k > 0) k = -k; kp = {0: k}; kt = pf(k); q = fr(k) + '(' + lin(a, b, Math.random() < 0.8) + ')'; }
+    else if (t === 1){ kp = {0: k}; kt = pf(k); q = '(' + lin(a, b, Math.random() < 0.7) + ') × ' + pf(k); }
+    else { var c = pick([1, 1, 2, 3, -1, -2, 4]); kp = {1: c}; kt = c === 1 ? 'x' : c === -1 ? MINUS + 'x' : fr(c) + 'x'; q = kt + '(' + lin(a, b, Math.random() < 0.8) + ')'; if (c < 0) kt = '(' + kt + ')'; }
+    P = pmul(kp, {1: a, 0: b});
+    return {type: 'expr', mode: 'dev', q: 'B = ' + q, lab: 'B =', P: P, steps: ['B = ' + kt + ' × ' + tx(a) + ' + ' + kt + ' × ' + pf(b), 'B = ' + poly(P)],
+      traps: [[pmul(kp, {1: a, 0: -b}), 'Attention au signe du deuxième produit.'], [padd(pmul(kp, {1: a}), {0: b}, 1), 'Tu as oublié de multiplier le deuxième terme.']]}; }},
+ {id: 'n06c', lv: 2, n: 'N06', t: 'Calcul astucieux', d: '7 × 102 = 7 × 100 + 7 × 2.', c: 'Calcule mentalement en utilisant la distributivité.', a: 'Décompose : 99 = 100 − 1, 102 = 100 + 2, 1,01 = 1 + 0,01… puis distribue.',
+  g: function(){ var k = rnd(3, 49), e = pick([-2, -1, 1, 2, 3, -3]), base = pick([10, 100, 1000]), m = base + e;
+    if (base === 10 && Math.abs(e) > 2) return this.g(); var v = k * m;
+    return {type: 'num', q: k + ' × ' + fr(m) + ' = ?', v: v, steps: [k + ' × ' + fr(m) + ' = ' + k + ' × (' + base + (e > 0 ? ' + ' : ' ' + MINUS + ' ') + Math.abs(e) + ') = ' + fr(k * base) + (e > 0 ? ' + ' : ' ' + MINUS + ' ') + Math.abs(k * e) + ' = ' + fr(v) + '.']}; }},
+ {id: 'n06d', lv: 3, n: 'N06', nq: 4, t: 'Développer puis réduire une somme', d: 'Deux parenthèses, signe − devant.', c: 'Développe et réduis.', a: 'Développe chaque produit séparément, en gardant le signe devant chaque facteur (−2(x − 4) = −2x + 8), puis regroupe les termes en x et les nombres.',
+  g: function(){ var k1 = nz(7), a1 = nz(6), b1 = nz(9), k2 = rnd(2, 7), a2 = nz(6), b2 = nz(9), op = pick(['+', MINUS]), xk = Math.random() < 0.3;
+    var K1 = xk ? {1: pick([1, 2, 3])} : {0: Math.abs(k1)}, P1 = pmul(K1, {1: a1, 0: b1}), s = op === '+' ? 1 : -1, P2 = pmul({0: s * k2}, {1: a2, 0: b2}), P = padd(P1, P2, 1);
+    var k1t = xk ? mono(K1[1], 1) : fr(Math.abs(k1));
+    var q = k1t + '(' + lin(a1, b1) + ') ' + op + ' ' + k2 + '(' + lin(a2, b2) + ')';
+    if (!Object.keys(P).length) return this.g();
+    var P2k = pmul({0: k2}, {1: a2, 0: b2}), TT = [[P1[2] || 0, 2], [P1[1] || 0, 1], [P1[0] || 0, 0], [P2[1], 1], [P2[0], 0]].filter(function(t){ return t[0]; });
+    return {type: 'expr', mode: 'dev', q: 'C = ' + q, lab: 'C =', P: P, steps: ['C = ' + poly(P1) + ' ' + op + ' (' + poly(P2k) + ')', 'C = ' + terms(TT), 'C = ' + poly(P)],
+      traps: op === MINUS ? [[padd(P1, pmul({0: -k2}, {1: a2, 0: -b2}), 1), 'Le signe − devant ' + k2 + ' s’applique aussi au deuxième terme de la parenthèse.']] : []}; }}
+];
+function fact(k, a, b, kx){ // k(ax+b) avec k entier (ou kx : facteur k·x)
+  var P = pmul(kx ? {1: k} : {0: k}, {1: a, 0: b}), kt = kx ? mono(k, 1) : fr(k), s = kt + '(' + lin(a, b) + ')';
+  return {P: P, sol: s.replace(/^1x\(/, 'x('), kt: kt}; }
+EX.push(
+ {id: 'n07a', lv: 1, n: 'N07', t: 'Calcul astucieux', d: '17 × 23 + 17 × 77.', c: 'Calcule mentalement en factorisant.', a: 'k × a + k × b = k × (a + b) : on met le facteur commun en évidence.',
+  g: function(){ var k = rnd(3, 99) / pick([1, 1, 10]), a = rnd(11, 89), tot = pick([100, 100, 10, 1000]), b = tot - a, op = '+';
+    if (b <= 0 || a <= 0) return this.g(); if (Math.random() < 0.35){ op = MINUS; b = a - tot; if (b <= 0) { a = tot + rnd(1, 40); b = a - tot; } }
+    k = cl(k); var v = cl(k * tot), sw = Math.random() < 0.5;
+    var q = sw ? fr(k) + ' × ' + a + ' ' + op + ' ' + fr(k) + ' × ' + b : a + ' × ' + fr(k) + ' ' + op + ' ' + b + ' × ' + fr(k);
+    return {type: 'num', q: q + ' = ?', v: v, steps: ['Le facteur commun est ' + fr(k) + ' : ' + fr(k) + ' × (' + a + ' ' + op + ' ' + b + ') = ' + fr(k) + ' × ' + tot + ' = ' + fr(v) + '.']}; }},
+ {id: 'n07b', lv: 1, n: 'N07', t: 'Factoriser par un nombre', d: '6x + 15 = 3(2x + 5).', c: 'Factorise le plus possible.', a: 'Cherche le plus grand nombre qui divise les deux termes, écris chaque terme comme un produit par ce nombre, puis mets-le en facteur.',
+  g: function(){ var k = rnd(2, 9), a = rnz(-9, 9), b = rnz(-9, 9); if (M.gcd(a, b) !== 1 || a < 0 && b < 0) return this.g(); var F = fact(k, a, b), sw = Math.random() < 0.25;
+    var q = sw ? terms([[k * b, 0], [k * a, 1]]) : poly(F.P);
+    return {type: 'expr', mode: 'fact', q: 'D = ' + q, lab: 'D =', P: F.P, sol: F.sol, steps: ['Le facteur commun est ' + k + ' : D = ' + k + ' × ' + pf(a).replace(/^1$/, '') + 'x + ' + k + ' × ' + pf(b), 'D = ' + F.sol].map(function(z){ return z.replace('× 1x', '× x').replace('× (−1)x', '× (−x)'); })}; }},
+ {id: 'n07c', lv: 2, n: 'N07', t: 'Factoriser par x', d: '3x² + 5x = x(3x + 5).', c: 'Factorise.', a: 'x² = x × x : si chaque terme contient x, on peut mettre x (ou kx) en facteur.',
+  g: function(){ var a = nz(9), b = nz(12), k = pick([1, 1, 1, 2, 3, 4, 5]); if (M.gcd(a, b) !== 1 || a < 0 && b < 0) return this.g(); var F = fact(k, a, b, true);
+    return {type: 'expr', mode: 'fact', q: 'E = ' + poly(F.P), lab: 'E =', P: F.P, sol: F.sol, steps: ['Chaque terme contient ' + F.kt + ' : E = ' + F.kt + ' × ' + mono(a, 1) + ' + ' + F.kt + ' × ' + pf(b), 'E = ' + F.sol]}; }},
+ {id: 'n07d', lv: 3, n: 'N07', nq: 4, t: 'Factoriser au maximum', d: '12x² − 8x = 4x(3x − 2).', c: 'Factorise le plus possible.', a: 'Le facteur commun peut contenir un nombre et x : dans 12x² − 8x, c’est 4x.',
+  g: function(){ var t = rnd(0, 2), k = rnd(2, 8), a = nz(9), b = nz(9); if (M.gcd(a, b) !== 1) return this.g(); var F;
+    if (t === 0){ F = fact(k, a, b, true); }
+    else if (t === 1){ if (a > 0) a = -a; if (b > 0) b = -b; F = fact(-k, -a, -b); }
+    else { var c = rnz(-9, 9); if (M.gcd(M.gcd(a, b), c) !== 1) return this.g(); var P = {2: k * a, 1: k * b, 0: k * c}; return {type: 'expr', mode: 'fact', q: 'F = ' + poly(P), lab: 'F =', P: P, sol: k + '(' + poly({2: a, 1: b, 0: c}) + ')', steps: ['Le facteur commun est ' + k + ' : F = ' + k + '(' + poly({2: a, 1: b, 0: c}) + ')']}; }
+    return {type: 'expr', mode: 'fact', q: 'F = ' + poly(F.P), lab: 'F =', P: F.P, sol: F.sol, steps: ['Facteur commun : ' + F.kt + '.', 'F = ' + F.sol]}; }}
+);
+function red(T){ var P = {}; T.forEach(function(t){ P = padd(P, (function(){ var o = {}; o[t[1]] = t[0]; return o; })(), 1); }); return P; }
+EX.push(
+ {id: 'n08a', lv: 1, n: 'N08', t: 'Réduire une somme', d: 'Termes en x et nombres.', c: 'Réduis l’expression.', a: 'On regroupe les termes en x entre eux et les nombres entre eux : 3x + 5 − 2x + 4 = (3 − 2)x + (5 + 4) = x + 9.',
+  g: function(){ var k = rnd(3, 5), T = []; for (var i = 0; i < k; i++) T.push([nz(12), i % 2 ? rnd(0, 1) : 1 - (i % 4 === 2 ? 1 : 0)]); T = shuffle(T); var P = red(T);
+    if (!T.some(function(t){ return t[1] === 1; }) || !T.some(function(t){ return t[1] === 0; }) || Object.keys(P).length === 0) return this.g();
+    var cx = T.filter(function(t){ return t[1] === 1; }).map(function(t){ return t[0]; }), c0 = T.filter(function(t){ return t[1] === 0; }).map(function(t){ return t[0]; });
+    return {type: 'expr', mode: 'dev', q: 'G = ' + terms(T), lab: 'G =', P: P, steps: ['Termes en x : ' + cx.map(function(c, i){ return i ? pf(c) : fr(c); }).join(' + ') + ' = ' + fr(P[1] || 0) + ' ; nombres : ' + c0.map(function(c, i){ return i ? pf(c) : fr(c); }).join(' + ') + ' = ' + fr(P[0] || 0) + '.', 'G = ' + poly(P)]}; }},
+ {id: 'n08b', lv: 2, n: 'N08', t: 'Avec des x²', d: 'Trois sortes de termes.', c: 'Réduis l’expression.', a: 'x² et x ne se regroupent pas : on regroupe les x² entre eux, les x entre eux, les nombres entre eux.',
+  g: function(){ var k = rnd(4, 6), T = [], d = shuffle([2, 2, 1, 1, 0, rnd(0, 2)]).slice(0, k); d.forEach(function(e){ T.push([nz(9), e]); }); var P = red(T);
+    if (!(P[2] && P[1]) || [0, 1, 2].filter(function(e){ return T.filter(function(t){ return t[1] === e; }).length > 1; }).length < 2) return this.g();
+    return {type: 'expr', mode: 'dev', q: 'H = ' + terms(T), lab: 'H =', P: P, steps: [[2, 1, 0].map(function(e){ var c = T.filter(function(t){ return t[1] === e; }).map(function(t){ return t[0]; }); return c.length ? (e === 2 ? 'x²' : e === 1 ? 'x' : 'nombres') + ' : ' + c.map(function(z, i){ return i ? pf(z) : fr(z); }).join(' + ') + (c.length > 1 ? ' = ' + fr(P[e] || 0) : '') : ''; }).filter(Boolean).join(' ; ') + '.', 'H = ' + poly(P)],
+      traps: [[{2: (P[2] || 0) + (P[1] || 0), 0: P[0] || 0}, 'On ne peut pas regrouper les x² et les x.']]}; }},
+ {id: 'n08c', lv: 2, n: 'N08', t: 'Réduire un produit', d: '3x × 5 ; 2x × 4x.', c: 'Écris le plus simplement possible.', a: 'On multiplie les nombres entre eux et les x entre eux : 2x × 4x = 2 × 4 × x × x = 8x².',
+  g: function(){ var a = nz(9), b = nz(9), t = rnd(0, 3), q, P;
+    if (t === 0){ q = mono(a, 1) + ' × ' + pf(b); P = {1: a * b}; }
+    else if (t === 1){ q = fr(a) + ' × ' + (b < 0 ? '(' + mono(b, 1) + ')' : mono(b, 1)); P = {1: a * b}; }
+    else if (t === 2){ q = mono(a, 1) + ' × ' + (b < 0 ? '(' + mono(b, 1) + ')' : mono(b, 1)); P = {2: a * b}; }
+    else { var c = rnd(2, 5); q = mono(a, 1) + ' × ' + c + ' × ' + (b < 0 ? '(' + mono(b, 1) + ')' : mono(b, 1)); P = {2: a * b * c}; }
+    return {type: 'expr', mode: 'dev', q: 'I = ' + q, lab: 'I =', P: P, steps: ['On multiplie les nombres : ' + (t === 3 ? '' : '') + fr(Math.abs(P[2] || P[1])) + (t >= 2 ? ', et x × x = x².' : '.') + ' Signe : ' + ((P[2] || P[1]) > 0 ? '+' : MINUS) + '.', 'I = ' + poly(P)],
+      traps: t >= 2 ? [[{1: P[2]}, 'x × x = x², pas x.'], [{2: a + b}, 'On multiplie les nombres, on ne les additionne pas.']] : [[{2: a * b}, 'Un seul facteur contient x : le résultat est en x, pas en x².']]}; }},
+ {id: 'n08d', lv: 3, n: 'N08', t: 'Égalités vraies ou fausses', d: 'Les pièges classiques.', c: 'L’égalité est-elle vraie pour tout nombre x ?', a: 'Teste avec une valeur, par exemple x = 2 : si les deux membres donnent des résultats différents, l’égalité est fausse.',
+  g: function(){ var a = rnd(2, 7), b = rnd(2, 7), T = [
+    ['x + x = x²', false, 'x + x = 2x (pour x = 3 : 6 et 9).'],
+    ['x × x = x²', true, 'C’est la définition du carré.'],
+    [a + 'x + ' + b + ' = ' + (a + b) + 'x', false, a + 'x et ' + b + ' ne se regroupent pas (pour x = 2 : ' + (2 * a + b) + ' et ' + 2 * (a + b) + ').'],
+    [a + 'x × ' + b + 'x = ' + a * b + 'x²', true, a + ' × ' + b + ' = ' + a * b + ' et x × x = x².'],
+    [a + 'x + ' + b + 'x = ' + (a + b) + 'x', true, '(' + a + ' + ' + b + ')x = ' + (a + b) + 'x.'],
+    [a + 'x × ' + b + ' = ' + (a + b) + 'x', false, a + 'x × ' + b + ' = ' + a * b + 'x.'],
+    ['2x² = (2x)²', false, '(2x)² = 4x² (pour x = 1 : 2 et 4).'],
+    [a + 'x' + ' ' + MINUS + ' x = ' + a, false, a + 'x ' + MINUS + ' x = ' + mono(a - 1, 1) + '.'],
+    ['x² + x² = 2x²', true, 'Deux fois x².'],
+    ['x² + x = x³', false, 'x² et x ne se regroupent pas.'],
+    [MINUS + 'x × ' + MINUS + 'x = x²', true, 'Moins par moins donne plus.'],
+    [a + '(x + ' + b + ') = ' + a + 'x + ' + b, false, 'Il faut multiplier les deux termes : ' + a + 'x + ' + a * b + '.'],
+    ['0 × x = x', false, '0 × x = 0.'],
+    ['1 × x = x', true, 'Multiplier par 1 ne change rien : on écrit simplement x.']];
+    var i = rnd(0, T.length - 1), p = T[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }}
+);
+var NOTIONS = [
+ {n: 'N06', t: 'Développer une expression littérale', r: 'k(a + b) = ka + kb et k(a − b) = ka − kb : on multiplie le facteur par chaque terme, en faisant attention aux signes.'},
+ {n: 'N07', t: 'Factoriser une expression littérale', r: 'ka + kb = k(a + b) : on repère le facteur commun et on le met en évidence.'},
+ {n: 'N08', t: 'Réduire une expression littérale', r: 'on regroupe les termes de même nature (x², x, nombres) ; dans un produit, on multiplie les nombres entre eux et les x entre eux.'}
+];
+
+M.start({key: '4e-s03', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

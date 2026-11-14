@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : fractions (4e, séquence 12) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 12 : simplifier, réduire au même dénominateur, comparer, additionner et soustraire des fractions.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 12 · Fractions (1)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Sans calculatrice.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var gcd = M.gcd, red = M.red, ftx = M.ftx;
+function F(n, d){ return n + '/' + d; }
+function sF(n, d){ return (n < 0 ? MINUS : '') + Math.abs(n) + '/' + d; }
+function irr(){ var d, n; do { d = rnd(2, 12); n = rnd(1, 15); } while (gcd(n, d) !== 1 || n === d); return [n, d]; }
+var EX = [
+ {id: 'n25a', lv: 1, n: 'N25', t: 'Simplifier une fraction', d: 'Diviser par un diviseur commun.', c: 'Donne la fraction sous forme irréductible.', a: 'On divise le numérateur et le dénominateur par un même nombre (2, 3, 5…), et on recommence jusqu’à ce qu’on ne puisse plus.',
+  g: function(){ var b = irr(), k = pick([2, 3, 4, 5, 6, 10]), n = b[0] * k, d = b[1] * k;
+    return {type: 'frac', q: F(n, d) + ' = ?', f: b, steps: [n + ' et ' + d + ' sont divisibles par ' + k + ' : ' + F(n, d) + ' = (' + (n / k) + ' × ' + k + ')/(' + (d / k) + ' × ' + k + ') = ' + F(b[0], b[1]) + '.', b[0] + ' et ' + b[1] + ' n’ont plus de diviseur commun autre que 1 : la fraction est irréductible.'], key: F(n, d)}; }},
+ {id: 'n25b', lv: 2, n: 'N25', t: 'Forme irréductible', d: 'Grands nombres : décomposer.', c: 'Donne la fraction sous forme irréductible.', a: 'Décompose le numérateur et le dénominateur en produits de facteurs premiers, puis supprime les facteurs communs.',
+  g: function(){ var b = irr(), k = pick([12, 14, 15, 18, 21, 24, 28, 35, 36, 45, 42]), n = b[0] * k, d = b[1] * k;
+    return {type: 'frac', q: F(n, d) + ' = ?', f: b, steps: ['Le plus grand diviseur commun de ' + n + ' et ' + d + ' est ' + k + '.', F(n, d) + ' = ' + F(n / k, d / k) + ' (on divise en haut et en bas par ' + k + ').'], key: F(n, d)}; }},
+ {id: 'n25c', lv: 2, n: 'N25', t: 'Fractions égales ?', d: 'Vrai ou faux.', c: 'Les deux fractions sont-elles égales ?', a: 'Deux fractions sont égales si on passe de l’une à l’autre en multipliant (ou divisant) numérateur et dénominateur par le même nombre. Tu peux aussi comparer les produits en croix.',
+  g: function(){ var b = irr(), k = rnd(2, 9), yes = Math.random() < 0.5, n = b[0] * k, d = b[1] * k; if (!yes){ if (Math.random() < 0.5) n += pick([1, -1]); else d = b[1] + k; } if (n <= 0) return this.g();
+    var eq = n * b[1] === d * b[0];
+    return {type: 'ch', q: F(b[0], b[1]) + ' = ' + F(n, d) + ' ?', ch: ['Vrai', 'Faux'], ans: eq ? 0 : 1, steps: ['Produits en croix : ' + b[0] + ' × ' + d + ' = ' + b[0] * d + ' et ' + b[1] + ' × ' + n + ' = ' + b[1] * n + (eq ? ' : égaux, les fractions sont égales.' : ' : différents, les fractions ne sont pas égales.')], key: F(n, d) + F(b[0], b[1])}; }}
+];
+EX.push(
+ {id: 'n26a', lv: 1, n: 'N26', t: 'Compléter une égalité', d: '3/4 = ?/20.', c: 'Trouve le nombre manquant.', a: 'Cherche par quel nombre on a multiplié le dénominateur, et multiplie le numérateur par le même nombre.',
+  g: function(){ var b = irr(), k = rnd(2, 9), top = Math.random() < 0.7;
+    return top ? {type: 'num', q: F(b[0], b[1]) + ' = ?/' + b[1] * k, v: b[0] * k, steps: [b[1] + ' × ' + k + ' = ' + b[1] * k + ', donc ? = ' + b[0] + ' × ' + k + ' = ' + b[0] * k + '.']} : {type: 'num', q: F(b[0], b[1]) + ' = ' + b[0] * k + '/?', v: b[1] * k, steps: [b[0] + ' × ' + k + ' = ' + b[0] * k + ', donc ? = ' + b[1] + ' × ' + k + ' = ' + b[1] * k + '.']}; }},
+ {id: 'n26b', lv: 2, n: 'N26', t: 'Le plus petit dénominateur commun', d: 'Deux fractions.', c: 'Quel est le plus petit dénominateur commun aux deux fractions ?', a: 'Cherche le plus petit multiple commun des deux dénominateurs : regarde d’abord si le plus grand est un multiple du plus petit.',
+  g: function(){ var a = rnd(2, 12), b = rnd(2, 15); if (a === b) return this.g(); var l = a * b / gcd(a, b); var n1 = rnd(1, a + 3), n2 = rnd(1, b + 3); if (gcd(n1, a) !== 1 || gcd(n2, b) !== 1) return this.g();
+    return {type: 'num', q: F(n1, a) + ' et ' + F(n2, b), v: l, steps: ['Multiples de ' + Math.max(a, b) + ' : on cherche le premier qui est aussi multiple de ' + Math.min(a, b) + ' : ' + l + '.', F(n1, a) + ' = ' + F(n1 * l / a, l) + ' et ' + F(n2, b) + ' = ' + F(n2 * l / b, l) + '.'], traps: [[a * b, a + ' × ' + b + ' convient, mais ce n’est pas le plus petit.']].filter(function(t){ return t[0] !== l; })}; }},
+ {id: 'n26c', lv: 2, n: 'N26', nq: 4, t: 'Réduire au même dénominateur', d: 'Trouver le nouveau numérateur.', c: 'On réduit les deux fractions au plus petit dénominateur commun. Quel est le numérateur de la seconde fraction ?', a: 'Trouve le dénominateur commun, puis multiplie le numérateur par le même nombre que le dénominateur.',
+  g: function(){ var a = rnd(2, 9), b = rnd(2, 9); if (a === b) return this.g(); var l = a * b / gcd(a, b), n1 = rnd(1, 2 * a), n2 = rnd(1, 2 * b); if (gcd(n1, a) !== 1 || gcd(n2, b) !== 1 || l === b) return this.g();
+    return {type: 'num', q: F(n1, a) + ' et ' + F(n2, b) + ' : ' + F(n2, b) + ' = ?/' + l, v: n2 * l / b, steps: ['Dénominateur commun : ' + l + ' = ' + b + ' × ' + l / b + '.', '? = ' + n2 + ' × ' + l / b + ' = ' + n2 * l / b + '.']}; }}
+);
+function cmpS(a, b){ var x = a[0] * b[1], y = b[0] * a[1]; return x < y ? '<' : x > y ? '>' : '='; }
+EX.push(
+ {id: 'n27a', lv: 1, n: 'N27', t: 'Même dénominateur ou même numérateur', d: 'Comparer facilement.', c: 'Choisis le bon signe.', a: 'Même dénominateur : la plus grande est celle qui a le plus grand numérateur. Même numérateur : la plus grande est celle qui a le plus petit dénominateur.',
+  g: function(){ var same = Math.random() < 0.6, a, b; if (same){ var d = rnd(3, 15); a = [rnd(1, 2 * d), d]; b = [rnd(1, 2 * d), d]; } else { var n = rnd(1, 9); a = [n, rnd(2, 15)]; b = [n, rnd(2, 15)]; } if (a[0] === b[0] && a[1] === b[1]) return this.g();
+    var s = cmpS(a, b), ch = ['<', '>', '='];
+    return {type: 'ch', q: F(a[0], a[1]) + ' … ' + F(b[0], b[1]), ch: ch, ans: ch.indexOf(s), steps: [same ? 'Même dénominateur : on compare les numérateurs, ' + a[0] + ' ' + s + ' ' + b[0] + '.' : 'Même numérateur : la fraction qui a le plus petit dénominateur est la plus grande.', F(a[0], a[1]) + ' ' + s + ' ' + F(b[0], b[1]) + '.']}; }},
+ {id: 'n27b', lv: 2, n: 'N27', t: 'Dénominateurs multiples', d: 'Mettre au même dénominateur.', c: 'Choisis le bon signe.', a: 'Écris les deux fractions avec le même dénominateur, puis compare les numérateurs.',
+  g: function(){ var d = rnd(2, 9), k = rnd(2, 5), a = [rnd(1, 2 * d), d], b = [rnd(1, 2 * d * k), d * k]; if (gcd(a[0], a[1]) !== 1) return this.g(); if (Math.random() < 0.5){ var t = a; a = b; b = t; }
+    var s = cmpS(a, b), ch = ['<', '>', '='], D = d * k, A = a[0] * D / a[1], B = b[0] * D / b[1];
+    return {type: 'ch', q: F(a[0], a[1]) + ' … ' + F(b[0], b[1]), ch: ch, ans: ch.indexOf(s), steps: ['Au dénominateur ' + D + ' : ' + F(A, D) + ' et ' + F(B, D) + '.', A + ' ' + s + ' ' + B + ', donc ' + F(a[0], a[1]) + ' ' + s + ' ' + F(b[0], b[1]) + '.']}; }},
+ {id: 'n27c', lv: 3, n: 'N27', nq: 4, t: 'La plus grande fraction', d: 'Comparer plusieurs fractions.', c: 'Quelle est la plus grande fraction ?', a: 'Compare d’abord à 1 (numérateur plus grand ou plus petit que le dénominateur), puis mets au même dénominateur celles qui restent.',
+  g: function(){ var d = pick([12, 18, 20, 24, 30, 36]), D = [2, 3, 4, 5, 6, 9, 10, 12].filter(function(x){ return d % x === 0; }), L = [], i;
+    for (i = 0; i < 4; i++){ var q = pick(D), n = rnd(1, 2 * q); L.push([n, q]); }
+    var vals = L.map(function(f){ return f[0] / f[1]; }), mx = Math.max.apply(0, vals); if (vals.filter(function(v){ return Math.abs(v - mx) < 1e-9; }).length > 1 || new Set(L.map(function(f){ return f.join(); })).size < 4) return this.g();
+    var good = F(L[vals.indexOf(mx)][0], L[vals.indexOf(mx)][1]), ch = L.map(function(f){ return F(f[0], f[1]); });
+    return {type: 'ch', q: 'Laquelle est la plus grande : ' + ch.join(' ; ') + ' ?', ch: ch, ans: ch.indexOf(good), steps: ['Au dénominateur ' + d + ' : ' + L.map(function(f){ return F(f[0] * d / f[1], d); }).join(' ; ') + '.', 'La plus grande est ' + good + '.']}; }}
+);
+EX.push(
+ {id: 'n28a', lv: 1, n: 'N28', t: 'Même dénominateur', d: 'Additionner les numérateurs.', c: 'Calcule et donne le résultat sous forme irréductible.', a: 'Quand les dénominateurs sont égaux, on additionne (ou soustrait) les numérateurs et on garde le dénominateur, puis on simplifie.',
+  g: function(){ var d = rnd(3, 15), a = rnd(1, 2 * d), b = rnd(1, 2 * d), op = pick(['+', MINUS]); if (a % d === 0 || b % d === 0) return this.g(); var n = op === '+' ? a + b : a - b, r = red(n, d);
+    return {type: 'frac', q: F(a, d) + ' ' + op + ' ' + F(b, d) + ' = ?', f: r, steps: [F(a, d) + ' ' + op + ' ' + F(b, d) + ' = ' + sF(n, d) + (r[1] !== d || r[0] !== n ? ' = ' + ftx(r) : '') + '.'], traps: [[n / (2 * d), 'On n’additionne pas les dénominateurs : on garde ' + d + '.']]}; }},
+ {id: 'n28b', lv: 2, n: 'N28', t: 'Un dénominateur multiple de l’autre', d: '1/3 + 5/6.', c: 'Calcule et donne le résultat sous forme irréductible.', a: 'Transforme la fraction qui a le plus petit dénominateur pour avoir le même dénominateur que l’autre.',
+  g: function(){ var d = rnd(2, 8), k = rnd(2, 4), D = d * k, a = rnd(1, 2 * d), b = rnd(1, 2 * D), op = pick(['+', MINUS]), sw = Math.random() < 0.5; if (gcd(a, d) !== 1 || gcd(b, D) !== 1) return this.g();
+    var A = a * k, n = sw ? (op === '+' ? b + A : b - A) : (op === '+' ? A + b : A - b), r = red(n, D), q = sw ? F(b, D) + ' ' + op + ' ' + F(a, d) : F(a, d) + ' ' + op + ' ' + F(b, D);
+    return {type: 'frac', q: q + ' = ?', f: r, steps: [F(a, d) + ' = ' + F(A, D) + '.', (sw ? F(b, D) + ' ' + op + ' ' + F(A, D) : F(A, D) + ' ' + op + ' ' + F(b, D)) + ' = ' + sF(n, D) + (r[1] !== D || r[0] !== n ? ' = ' + ftx(r) : '') + '.'], traps: [[(sw ? (op === '+' ? b + a : b - a) : (op === '+' ? a + b : a - b)) / (d + D), 'On ne peut pas additionner les dénominateurs.']]}; }},
+ {id: 'n28c', lv: 3, n: 'N28', nq: 4, t: 'Cas plus difficiles', d: 'Dénominateurs quelconques, entiers, relatifs.', c: 'Calcule et donne le résultat sous forme irréductible.', a: 'Cherche le plus petit dénominateur commun ; un entier n s’écrit n/1. Attention aux signes.',
+  g: function(){ var t = rnd(0, 2), a, b, c, d, n, D, q, st;
+    if (t === 0){ b = rnd(2, 7); d = rnd(2, 9); if (b === d || gcd(b, d) === b || gcd(b, d) === d) return this.g(); a = rnd(1, 2 * b); c = rnd(1, 2 * d); if (gcd(a, b) !== 1 || gcd(c, d) !== 1) return this.g(); D = b * d / gcd(b, d); var op = pick(['+', MINUS]); n = a * D / b + (op === '+' ? 1 : -1) * c * D / d; q = F(a, b) + ' ' + op + ' ' + F(c, d); st = ['Dénominateur commun : ' + D + '.', F(a * D / b, D) + ' ' + op + ' ' + F(c * D / d, D) + ' = ' + sF(n, D) + '.']; }
+    else if (t === 1){ var e = rnd(1, 5); b = rnd(2, 9); a = rnd(1, 2 * b); if (gcd(a, b) !== 1) return this.g(); var o2 = pick(['+', MINUS]); D = b; n = o2 === '+' ? e * b + a : e * b - a; q = e + ' ' + o2 + ' ' + F(a, b); st = [e + ' = ' + F(e * b, b) + '.', F(e * b, b) + ' ' + o2 + ' ' + F(a, b) + ' = ' + sF(n, b) + '.']; }
+    else { b = rnd(2, 6); d = b * rnd(2, 3); a = rnz(-9, 9); c = rnz(-9, 9); if (gcd(Math.abs(a), b) !== 1) return this.g(); D = d; n = a * d / b + c; q = sF(a, b) + ' + (' + sF(c, d) + ')'; st = [sF(a, b) + ' = ' + sF(a * d / b, d) + '.', sF(a * d / b, d) + ' + (' + sF(c, d) + ') = ' + sF(n, d) + '.']; }
+    var r = red(n, D); if (r[1] !== D || r[0] !== n) st.push(sF(n, D) + ' = ' + ftx(r) + '.');
+    return {type: 'frac', q: q + ' = ?', f: r, steps: st}; }},
+ {id: 'n28d', lv: 3, n: 'N28', nq: 3, t: 'Problèmes', d: 'Fractions d’un tout.', c: 'Lis l’énoncé et donne la réponse sous forme de fraction irréductible.', a: 'Le tout correspond à 1 : la part restante est 1 moins la somme des parts.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var P = [[2, 5, 1, 4], [1, 3, 1, 4], [1, 2, 1, 5], [3, 8, 1, 4], [1, 6, 2, 3], [2, 7, 1, 2], [1, 4, 1, 6], [3, 10, 2, 5], [1, 5, 1, 3], [5, 12, 1, 3], [1, 8, 1, 2], [2, 9, 1, 3]][k];
+    var who = [['Dans une classe, ', ' des élèves viennent à pied et ', ' en bus. Quelle fraction des élèves vient autrement ?'], ['Un jardin est planté pour ', ' en légumes et pour ', ' en fleurs. Quelle fraction reste en pelouse ?'], ['Léo a dépensé ', ' de son argent en livres et ', ' en jeux. Quelle fraction lui reste-t-il ?'], ['Sur un trajet, Inès a fait ', ' à vélo et ', ' en train. Quelle fraction a-t-elle faite à pied ?']][k % 4];
+    var s = M.fadd([P[0], P[1]], [P[2], P[3]]), r = M.fadd([1, 1], [-s[0], s[1]]);
+    return {type: 'frac', q: who[0] + F(P[0], P[1]) + who[1] + F(P[2], P[3]) + who[2], f: r, steps: [F(P[0], P[1]) + ' + ' + F(P[2], P[3]) + ' = ' + ftx(s) + '.', '1 ' + MINUS + ' ' + ftx(s) + ' = ' + ftx(r) + '.'], key: 'k' + k}; }}
+);
+var NOTIONS = [
+ {n: 'N25', t: 'Simplifier une fraction jusqu’à la forme irréductible', r: 'on divise le numérateur et le dénominateur par un même nombre ; la fraction est irréductible quand ils n’ont plus de diviseur commun autre que 1.'},
+ {n: 'N26', t: 'Réduire des fractions au même dénominateur', r: 'on multiplie numérateur et dénominateur par le même nombre pour obtenir un dénominateur commun (le plus petit multiple commun des dénominateurs).'},
+ {n: 'N27', t: 'Comparer des fractions', r: 'au même dénominateur, la plus grande fraction est celle qui a le plus grand numérateur.'},
+ {n: 'N28', t: 'Additionner et soustraire des fractions', r: 'on réduit au même dénominateur, on additionne (ou soustrait) les numérateurs et on garde le dénominateur, puis on simplifie.'}
+];
+
+M.start({key: '4e-s12', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

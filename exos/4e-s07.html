@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : translations (4e, séquence 7) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 7 : reconnaître une translation, décrire un glissement, construire une image par translation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 7 · Transformations (1)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. </p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+// formes sur quadrillage : liste de sommets (unités de carreaux)
+var SHAPES = [[[0,0],[3,0],[3,1],[1,1],[1,3],[0,3]], [[0,0],[2,0],[2,1],[3,1],[3,2],[0,2]], [[0,0],[1,0],[3,2],[1,2],[1,3],[0,3]], [[0,0],[3,0],[2,2],[0,1]], [[0,0],[2,0],[2,3],[1,3],[1,1],[0,1]], [[0,1],[1,0],[3,0],[3,1],[1,1],[1,3],[0,3]]];
+function tr(S, dx, dy){ return S.map(function(p){ return [p[0] + dx, p[1] + dy]; }); }
+function symV(S, ax){ return S.map(function(p){ return [2 * ax - p[0], p[1]]; }); }        // axe vertical x = ax
+function symH(S, ay){ return S.map(function(p){ return [p[0], 2 * ay - p[1]]; }); }
+function symC(S, c){ return S.map(function(p){ return [2 * c[0] - p[0], 2 * c[1] - p[1]]; }); }
+function rot90(S, c){ return S.map(function(p){ return [c[0] - (p[1] - c[1]), c[1] + (p[0] - c[0])]; }); }
+function bbox(S){ var xs = S.map(function(p){ return p[0]; }), ys = S.map(function(p){ return p[1]; }); return [Math.min.apply(0, xs), Math.min.apply(0, ys), Math.max.apply(0, xs), Math.max.apply(0, ys)]; }
+var GW = 16, GH = 10, U = 20;
+function gridSvg(items, extra){ var s = '<svg viewBox="-4 -4 ' + (GW * U + 8) + ' ' + (GH * U + 8) + '" class="fig" style="max-width:420px" role="img" aria-label="Quadrillage">', i;
+  for (i = 0; i <= GW; i++) s += '<line x1="' + i * U + '" y1="0" x2="' + i * U + '" y2="' + GH * U + '" style="stroke:currentColor;opacity:.15"/>';
+  for (i = 0; i <= GH; i++) s += '<line x1="0" y1="' + i * U + '" x2="' + GW * U + '" y2="' + i * U + '" style="stroke:currentColor;opacity:.15"/>';
+  items.forEach(function(it){ var P = it.S.map(function(p){ return p[0] * U + ',' + (GH - p[1]) * U; }).join(' ');
+    s += '<polygon points="' + P + '" style="fill:' + (it.fill || 'var(--soft)') + ';stroke:' + (it.col || 'currentColor') + ';stroke-width:2;fill-opacity:.85"/>';
+    if (it.t){ var b = bbox(it.S); s += '<text x="' + ((b[0] + b[2]) / 2 * U) + '" y="' + ((GH - (b[1] + b[3]) / 2) * U) + '" text-anchor="middle" dominant-baseline="central" style="font-size:15px">' + it.t + '</text>'; } });
+  (extra || []).forEach(function(e){ if (e.arrow){ var a = e.arrow; s += '<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ko)"/></marker></defs><line x1="' + a[0] * U + '" y1="' + (GH - a[1]) * U + '" x2="' + a[2] * U + '" y2="' + (GH - a[3]) * U + '" style="stroke:var(--ko);stroke-width:2.4" marker-end="url(#ar)"/>'; }
+    if (e.pt){ s += '<circle cx="' + e.pt[0] * U + '" cy="' + (GH - e.pt[1]) * U + '" r="3.5" style="fill:currentColor"/><text x="' + (e.pt[0] * U + 6) + '" y="' + ((GH - e.pt[1]) * U - 8) + '" style="font-size:14px">' + e.t + '</text>'; }
+    if (e.line){ var l = e.line; s += '<line x1="' + l[0] * U + '" y1="' + (GH - l[1]) * U + '" x2="' + l[2] * U + '" y2="' + (GH - l[3]) * U + '" style="stroke:var(--ko);stroke-width:2;stroke-dasharray:6 4"/>'; } });
+  return s + '</svg>'; }
+function inG(S){ var b = bbox(S); return b[0] >= 0 && b[1] >= 0 && b[2] <= GW && b[3] <= GH; }
+function overlap(A, B, m){ m = m || 0; var a = bbox(A), b = bbox(B); return !(a[2] + m <= b[0] || b[2] + m <= a[0] || a[3] + m <= b[1] || b[3] + m <= a[1]); }
+function base(){ var S = pick(SHAPES); if (Math.random() < 0.5) S = symV(S, 1.5); return tr(S, -bbox(S)[0], -bbox(S)[1]); }
+function vtxt(dx, dy){ var p = []; if (dx) p.push(Math.abs(dx) + ' carreau' + (Math.abs(dx) > 1 ? 'x' : '') + (dx > 0 ? ' vers la droite' : ' vers la gauche')); if (dy) p.push(Math.abs(dy) + ' carreau' + (Math.abs(dy) > 1 ? 'x' : '') + (dy > 0 ? ' vers le haut' : ' vers le bas')); return p.join(' et '); }
+var EX = [
+ {id: 'n16a', lv: 1, n: 'N16', t: 'Quelle transformation ?', d: 'Translation ou symétrie.', c: 'Quelle transformation permet de passer de la figure bleue à la figure rouge ?', a: 'Une translation fait glisser la figure sans la tourner ni la retourner. Une symétrie axiale la retourne (effet miroir) ; une symétrie centrale la fait tourner d’un demi-tour.',
+  g: function(){ var k = rnd(0, 2), S, I, ex = [], i = 0;
+    do { S = tr(base(), rnd(0, 6), rnd(0, 6)); if (k === 0) I = tr(S, rnd(-8, 8), rnd(-5, 5)); else if (k === 1){ var ax = bbox(S)[2] + rnd(1, 3) / (Math.random() < 0.5 ? 1 : 2); I = symV(S, Math.round(ax * 2) / 2); ex = [{line: [Math.round(ax * 2) / 2, 0, Math.round(ax * 2) / 2, GH]}]; } else { var c = [bbox(S)[2] + rnd(0, 2), bbox(S)[3] + rnd(-1, 1)]; I = symC(S, c); ex = [{pt: c, t: 'O'}]; } }
+    while ((!inG(S) || !inG(I) || overlap(S, I)) && ++i < 200);
+    if (i >= 200) return this.g();
+    var ch = ['Une translation', 'Une symétrie axiale', 'Une symétrie centrale'], why = ['La figure a glissé sans tourner ni se retourner : c’est une translation.', 'La figure a été retournée par rapport à la droite en pointillés : symétrie axiale.', 'La figure a fait un demi-tour autour du point O : symétrie centrale.'][k];
+    return {type: 'ch', q: 'Bleue → rouge : quelle transformation ?', svg: gridSvg([{S: S, col: 'var(--accent)'}, {S: I, col: 'var(--ko)', fill: 'var(--kos)'}], k === 0 ? [] : ex), ch: ch, ans: k, steps: [why], key: 'k' + k + JSON.stringify(S)}; }},
+ {id: 'n16b', lv: 2, n: 'N16', t: 'Décrire le glissement', d: 'Combien de carreaux, dans quel sens ?', c: 'La figure rouge est l’image de la figure bleue par une translation. Décris ce glissement.', a: 'Choisis un sommet de la figure bleue et son image : compte les carreaux horizontalement, puis verticalement.',
+  g: function(){ var S, dx, dy, I, i = 0; do { S = tr(base(), rnd(0, 6), rnd(0, 5)); dx = rnz(-7, 7); dy = rnd(-4, 4); I = tr(S, dx, dy); } while ((!inG(I) || !inG(S) || overlap(S, I)) && ++i < 200); if (i >= 200) return this.g();
+    var good = vtxt(dx, dy), opts = [good, vtxt(-dx, dy), vtxt(dx, -dy), vtxt(dy || 1, dx), vtxt(dx + (dx > 0 ? 1 : -1), dy)].filter(function(o, j, a){ return o && a.indexOf(o) === j; });
+    var ch = shuffle([good].concat(shuffle(opts.slice(1)).slice(0, 3)));
+    return {type: 'ch', q: 'Quelle translation transforme la figure bleue en la figure rouge ?', svg: gridSvg([{S: S, col: 'var(--accent)'}, {S: I, col: 'var(--ko)', fill: 'var(--kos)'}]), ch: ch, ans: ch.indexOf(good), steps: ['Chaque sommet se déplace de ' + good + '.'], key: dx + ':' + dy + JSON.stringify(S)}; }},
+ {id: 'n16c', lv: 2, n: 'N16', t: 'Frises et pavages', d: 'Retrouver l’image dans une frise.', c: 'Dans cette frise, on passe d’un motif au suivant par la même translation. Quel est le numéro de l’image du motif indiqué ?', a: 'Repère le glissement qui fait passer du motif 1 au motif 2. Appliqué deux fois, il fait passer du motif 1 au motif 3, etc.',
+  g: function(){ var S = base(), w = bbox(S)[2] + rnd(1, 2), n = Math.min(5, Math.floor((GW - 1) / w)), y0 = rnd(2, 5), items = []; if (n < 4) return this.g();
+    for (var i = 0; i < n; i++) items.push({S: tr(S, 1 + i * w, y0), t: String(i + 1), col: i === 0 ? 'var(--accent)' : 'currentColor'});
+    var a = rnd(1, n - 2), k = rnd(1, n - a); var q = 'Image du motif ' + a + ' par la translation qui transforme le motif 1 en le motif ' + (1 + k) + ' ?';
+    var ch = []; for (var j = 1; j <= n; j++) ch.push(String(j));
+    return {type: 'ch', q: q, svg: gridSvg(items), ch: ch, ans: a + k - 1, steps: ['Cette translation fait avancer de ' + k + ' motif' + (k > 1 ? 's' : '') + ' : le motif ' + a + ' a pour image le motif ' + (a + k) + '.'], key: a + ':' + k + ':' + n + JSON.stringify(S)}; }},
+ {id: 'n16d', lv: 2, n: 'N16', t: 'Vrai ou faux ?', d: 'Propriétés de la translation.', c: 'L’affirmation est-elle vraie ou fausse ?', a: 'Une translation conserve les longueurs, les angles, les aires et l’alignement : la figure glisse sans être déformée.',
+  g: function(){ var T = [
+    ['Une translation conserve les longueurs.', true, 'La figure glisse sans être déformée.'],
+    ['L’image d’un triangle par une translation peut être plus grande que lui.', false, 'Les longueurs sont conservées : l’image a les mêmes dimensions.'],
+    ['Une translation conserve les angles.', true, 'La forme ne change pas.'],
+    ['Une translation fait tourner la figure.', false, 'C’est une rotation qui fait tourner ; la translation fait glisser.'],
+    ['Par une translation, l’image d’une droite est une droite parallèle (ou confondue).', true, 'La direction ne change pas.'],
+    ['Par une translation, tous les points se déplacent de la même façon (même direction, même sens, même longueur).', true, 'C’est la définition.'],
+    ['Une translation retourne la figure comme dans un miroir.', false, 'C’est la symétrie axiale qui retourne la figure.'],
+    ['Une translation conserve les aires.', true, 'L’image est superposable à la figure.'],
+    ['L’image d’un carré par une translation est un rectangle non carré.', false, 'Longueurs et angles conservés : c’est un carré identique.'],
+    ['Si une translation transforme A en B, elle transforme B en A.', false, 'Elle transforme B en un autre point C, avec B milieu de [AC].'],
+    ['Dans une frise, on passe d’un motif au suivant par une translation.', true, 'C’est ce qui définit une frise.'],
+    ['Une symétrie centrale est une translation.', false, 'Elle fait faire un demi-tour à la figure.']];
+    var i = rnd(0, T.length - 1), p = T[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }}
+];
+function cpt(p){ return '(' + fr(p[0]) + ' ; ' + fr(p[1]) + ')'; }
+EX.push(
+ {id: 'n17a', lv: 1, n: 'N17', t: 'L’image de la figure', d: 'Choisir le bon dessin.', c: 'La translation transforme A en B (flèche rouge). Quelle figure est l’image de la figure bleue ?', a: 'Chaque sommet de la figure se déplace exactement comme A va en B : même direction, même sens, même longueur.',
+  g: function(){ for (var t = 0; t < 2000; t++){
+      var S = tr(base(), rnd(0, 13), rnd(0, 7)), dx = rnz(-7, 7), dy = rnd(-4, 4), good = tr(S, dx, dy), raw = [good], k;
+      for (k = 0; k < 3; k++){ var ex = rnd(-12, 12), ey = rnd(-7, 7); if (ex === dx && ey === dy) ex++; var D = tr(S, ex, ey); if (k === 2) D = symV(D, (bbox(D)[0] + bbox(D)[2]) / 2); raw.push(D); }
+      var all = [S].concat(raw), ok = all.every(inG);
+      for (var i = 0; ok && i < all.length; i++) for (var j = i + 1; j < all.length; j++) if (overlap(all[i], all[j], 1)) { ok = false; break; }
+      if (!ok) continue;
+      var px = dx > 0 ? rnd(1, GW - 1 - dx) : rnd(1 - dx, GW - 1), py = dy > 0 ? rnd(1, GH - 1 - dy) : rnd(1 - dy, GH - 1), AR = [[px, py], [px + dx, py + dy]];
+      if (all.some(function(F){ return overlap(F, AR, 0.6); })) continue;
+      var order = shuffle([0, 1, 2, 3]), lab = ['1', '2', '3', '4'], items = [{S: S, col: 'var(--accent)'}]; order.forEach(function(o, j){ items.push({S: raw[o], t: lab[j]}); });
+      return {type: 'ch', q: 'Quelle figure est l’image de la figure bleue ?', svg: gridSvg(items, [{arrow: [px, py, px + dx, py + dy]}, {pt: [px, py], t: 'A'}, {pt: [px + dx, py + dy], t: 'B'}]), ch: lab, ans: order.indexOf(0), steps: ['La flèche indique ' + vtxt(dx, dy) + ' : la figure ' + lab[order.indexOf(0)] + ' est obtenue en faisant glisser chaque sommet de cette façon.'], key: dx + ':' + dy + JSON.stringify(S)}; }
+    return this.g(); }},
+ {id: 'n17b', lv: 2, n: 'N17', t: 'Image d’un point dans un repère', d: 'Coordonnées de l’image.', c: 'Dans un repère, choisis les coordonnées de l’image.', a: 'Calcule le déplacement de A vers B (abscisse puis ordonnée) et applique-le au point.',
+  g: function(){ var A = [rnz(-6, 6), rnz(-6, 6)], B = [rnz(-6, 6), rnz(-6, 6)], C = [rnz(-6, 6), rnz(-6, 6)], dx = B[0] - A[0], dy = B[1] - A[1]; if (!dx || !dy) return this.g();
+    var D = [C[0] + dx, C[1] + dy], good = cpt(D), ch = shuffle([good, cpt([C[0] - dx, C[1] - dy]), cpt([C[0] + dy, C[1] + dx]), cpt([B[0] + C[0], B[1] + C[1]])].filter(function(c, i, a){ return a.indexOf(c) === i; }));
+    return {type: 'ch', q: 'La translation qui transforme A' + cpt(A) + ' en B' + cpt(B) + ' transforme C' + cpt(C) + ' en D. Coordonnées de D ?', ch: ch, ans: ch.indexOf(good), steps: ['De A à B : abscisse ' + (dx > 0 ? '+' : MINUS) + Math.abs(dx) + ', ordonnée ' + (dy > 0 ? '+' : MINUS) + Math.abs(dy) + '.', 'D = (' + fr(C[0]) + ' + ' + pf(dx) + ' ; ' + fr(C[1]) + ' + ' + pf(dy) + ') = ' + good + '.']}; }},
+ {id: 'n17c', lv: 3, n: 'N17', t: 'Translation et parallélogramme', d: 'La propriété clé.', c: 'Choisis la bonne réponse.', a: 'Si la translation qui transforme A en B transforme C en D, alors ABDC est un parallélogramme (attention à l’ordre des lettres).',
+  g: function(){ var L = M.letters(4), A = L[0], B = L[1], C = L[2], D = L[3], w = rnd(0, 3), q, good, ch, st;
+    if (w === 0){ q = 'La translation qui transforme ' + A + ' en ' + B + ' transforme ' + C + ' en ' + D + '. Quel quadrilatère est un parallélogramme ?'; good = A + B + D + C; ch = shuffle([good, A + B + C + D, A + C + B + D, A + D + B + C]); st = [good + ' est un parallélogramme : on suit ' + A + ' → ' + B + ', puis ' + B + ' → ' + D + ', ' + D + ' → ' + C + ' et on revient en ' + A + '.']; }
+    else if (w === 1){ q = A + B + D + C + ' est un parallélogramme. Par la translation qui transforme ' + A + ' en ' + B + ', quelle est l’image de ' + C + ' ?'; good = D; ch = shuffle([A, B, C, D]); st = ['Dans le parallélogramme ' + A + B + D + C + ', [' + A + B + '] et [' + C + D + '] sont parallèles et de même longueur, dans le même sens : ' + C + ' a pour image ' + D + '.']; }
+    else if (w === 2){ q = 'La translation qui transforme ' + A + ' en ' + B + ' transforme ' + C + ' en ' + D + '. Que peut-on dire des segments [' + A + B + '] et [' + C + D + '] ?'; good = 'Parallèles et de même longueur'; ch = ['Parallèles et de même longueur', 'Perpendiculaires', 'Sécants en leur milieu', 'De longueurs différentes']; st = ['A' + 'B' === '' ? '' : 'Tous les points se déplacent de la même façon : [' + A + B + '] et [' + C + D + '] sont parallèles et de même longueur.']; }
+    else { q = 'La translation qui transforme ' + A + ' en ' + B + ' transforme ' + B + ' en ' + C + '. Que représente ' + B + ' pour le segment [' + A + C + '] ?'; good = 'Son milieu'; ch = ['Son milieu', 'Une extrémité', 'Un point extérieur au segment', 'Le symétrique de ' + A]; st = ['On avance deux fois du même déplacement : ' + A + ', ' + B + ', ' + C + ' sont alignés et ' + A + B + ' = ' + B + C + ', donc ' + B + ' est le milieu de [' + A + C + '].']; }
+    return {type: 'ch', q: q, ch: ch, ans: ch.indexOf(good), steps: st, key: 'w' + w + L.join('')}; }}
+);
+var NOTIONS = [
+ {n: 'N16', t: 'Reconnaître une translation (frises, pavages)', r: 'une translation fait glisser une figure sans la tourner ni la retourner : tous les points se déplacent dans la même direction, le même sens et de la même longueur.'},
+ {n: 'N17', t: 'Construire l’image d’une figure par translation', r: 'pour construire l’image d’un point M par la translation qui transforme A en B, on place M’ tel que ABM’M soit un parallélogramme (on reproduit le glissement de A vers B).'}
+];
+
+M.start({key: '4e-s07', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : puissances (4e, séquence 13) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 13 : puissances, puissances de 10, préfixes et notation scientifique.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 13 · Puissances</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Sans calculatrice.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var SUP = {'0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻'};
+function sup(n){ return String(n).split('').map(function(c){ return SUP[c]; }).join(''); }
+function pw(b, n){ return (b < 0 ? '(' + fr(b) + ')' : fr(b)) + sup(n); }
+function dec(x){ // écriture décimale exacte d'une puissance de 10 ou d'un produit
+  return fr(x); }
+function p10(n){ return n >= 0 ? Math.pow(10, n) : cl(1 / Math.pow(10, -n) * 1) ; }
+function strP10(n){ return n >= 0 ? fr(Math.pow(10, n)) : '0,' + '0'.repeat(-n - 1) + '1'; }
+var EX = [
+ {id: 'n29a', lv: 1, n: 'N29', t: 'Écrire avec une puissance', d: '3 × 3 × 3 × 3 = 3⁴.', c: 'Donne l’exposant.', a: 'aⁿ = a × a × … × a (n facteurs égaux). L’exposant est le nombre de facteurs.',
+  g: function(){ var b = pick([2, 3, 5, 7, 10, -2, -3, 4, 6]), n = rnd(3, 7), L = []; for (var i = 0; i < n; i++) L.push(b < 0 ? '(' + fr(b) + ')' : fr(b));
+    return {type: 'num', q: L.join(' × ') + ' = ' + (b < 0 ? '(' + fr(b) + ')' : fr(b)) + '^?', lab: 'exposant :', v: n, steps: ['Il y a ' + n + ' facteurs égaux à ' + fr(b) + ' : ' + pw(b, n) + '.'], key: L.join()}; }},
+ {id: 'n29b', lv: 1, n: 'N29', t: 'Calculer une puissance', d: 'Base positive ou négative.', c: 'Calcule.', a: 'Écris le produit puis calcule. Avec une base négative : exposant pair → résultat positif ; impair → négatif.',
+  g: function(){ var b = pick([2, 3, 4, 5, 10, -2, -3, -1, -5, 0.5, 1]), n = rnd(0, b === 2 || b === -2 ? 6 : 4); var v = cl(Math.pow(b, n));
+    return {type: 'num', q: pw(b, n) + ' = ?', v: v, steps: [n === 0 ? 'Par convention, a⁰ = 1 (a non nul).' : n === 1 ? 'a¹ = a.' : pw(b, n) + ' = ' + Array(n).fill(b < 0 ? '(' + fr(b) + ')' : fr(b)).join(' × ') + ' = ' + fr(v) + '.'], traps: [[cl(b * n), 'aⁿ n’est pas a × n : c’est a multiplié par lui-même n fois.'], [-v, 'Attention au signe.']].filter(function(t){ return t[0] !== v; }), key: pw(b, n)}; }},
+ {id: 'n29c', lv: 2, n: 'N29', t: 'Vrai ou faux ?', d: 'Les pièges des puissances.', c: 'L’égalité est-elle vraie ou fausse ?', a: 'Attention : 2³ = 8 (pas 6) ; −2² = −4 mais (−2)² = 4 ; a⁰ = 1.',
+  g: function(){ var T = [['2³ = 6', false, '2³ = 2 × 2 × 2 = 8.'], ['(−2)² = 4', true, '(−2) × (−2) = 4.'], ['−2² = 4', false, '−2² = −(2 × 2) = −4.'], ['5⁰ = 0', false, '5⁰ = 1.'], ['7¹ = 7', true, 'a¹ = a.'], ['(−1)⁷ = −1', true, 'Exposant impair : le résultat est négatif.'], ['(−3)⁴ = −81', false, 'Exposant pair : (−3)⁴ = 81.'], ['10⁴ = 10 000', true, '1 suivi de 4 zéros.'], ['3² × 3³ = 3⁵', true, '2 + 3 = 5 facteurs égaux à 3.'], ['2⁴ = 4²', true, 'Les deux valent 16.'], ['2³ + 2³ = 2⁶', false, '8 + 8 = 16 = 2⁴.'], ['0,1² = 0,01', true, '0,1 × 0,1 = 0,01.'], ['1¹⁰⁰ = 100', false, '1 × 1 × … × 1 = 1.']];
+    var i = rnd(0, T.length - 1), p = T[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n29d', lv: 2, n: 'N29', t: 'Priorités avec des puissances', d: 'La puissance d’abord.', c: 'Calcule.', a: 'La puissance est prioritaire sur la multiplication et l’addition : 2 × 3² = 2 × 9 = 18.',
+  g: function(){ var a = rnd(2, 6), b = rnd(2, 5), n = rnd(2, 3), c = rnz(-9, 9), t = rnd(0, 3), q, v, st;
+    if (t === 0){ q = a + ' × ' + b + sup(n); v = a * Math.pow(b, n); st = [b + sup(n) + ' = ' + Math.pow(b, n) + ', puis ' + a + ' × ' + Math.pow(b, n) + ' = ' + v + '.']; }
+    else if (t === 1){ q = fr(c) + ' + ' + b + sup(n); v = c + Math.pow(b, n); st = [b + sup(n) + ' = ' + Math.pow(b, n) + ', puis ' + fr(c) + ' + ' + Math.pow(b, n) + ' = ' + fr(v) + '.']; }
+    else if (t === 2){ q = '(' + a + ' + ' + b + ')²'; v = (a + b) * (a + b); st = ['Parenthèses d’abord : ' + (a + b) + '² = ' + v + '.']; }
+    else { q = a + '² + ' + b + '²'; v = a * a + b * b; st = [a * a + ' + ' + b * b + ' = ' + v + '.']; }
+    return {type: 'num', q: q + ' = ?', v: v, steps: st, key: q}; }}
+];
+EX.push(
+ {id: 'n30a', lv: 1, n: 'N30', t: 'Puissances de 10', d: 'Écriture décimale.', c: 'Donne l’écriture décimale.', a: '10ⁿ (n positif) : 1 suivi de n zéros. 10⁻ⁿ : 0,0…01 avec le 1 au n-ième rang après la virgule.',
+  g: function(){ var n = rnd(-6, 8); return {type: 'num', q: '10' + sup(n) + ' = ?', v: n >= 0 ? Math.pow(10, n) : cl(Math.pow(10, n)), steps: [n >= 0 ? '1 suivi de ' + n + ' zéro' + (n > 1 ? 's' : '') + ' : ' + strP10(n) + '.' : '10' + sup(n) + ' = 1 ÷ 10' + sup(-n) + ' = ' + strP10(n) + ' (le 1 est au ' + (-n) + 'e rang après la virgule).'], key: 'p' + n}; }},
+ {id: 'n30b', lv: 2, n: 'N30', t: 'Produits et quotients', d: '10ᵃ × 10ᵇ, 10ᵃ ÷ 10ᵇ.', c: 'Écris le résultat sous la forme 10ⁿ : donne n.', a: '10ᵃ × 10ᵇ = 10ᵃ⁺ᵇ ; 10ᵃ ÷ 10ᵇ = 10ᵃ⁻ᵇ ; (10ᵃ)ᵇ = 10ᵃˣᵇ.',
+  g: function(){ var a = rnz(-7, 9), b = rnz(-6, 8), t = rnd(0, 2), q, v, st;
+    if (t === 0){ q = '10' + sup(a) + ' × 10' + sup(b); v = a + b; st = [fr(a) + ' + ' + pf(b) + ' = ' + fr(v) + '.']; }
+    else if (t === 1){ q = '10' + sup(a) + ' ÷ 10' + sup(b); v = a - b; st = [fr(a) + ' ' + MINUS + ' ' + pf(b) + ' = ' + fr(v) + '.']; }
+    else { b = rnd(2, 3); q = '(10' + sup(a) + ')' + sup(b); v = a * b; st = [fr(a) + ' × ' + b + ' = ' + fr(v) + '.']; }
+    return {type: 'num', q: q + ' = 10^?', lab: 'n =', v: v, steps: st.concat(['Résultat : 10' + sup(v) + '.']), key: q}; }},
+ {id: 'n30c', lv: 2, n: 'N30', t: 'Les préfixes', d: 'kilo, méga, giga, milli, micro, nano.', c: 'Donne l’exposant n.', a: 'kilo = 10³, méga = 10⁶, giga = 10⁹, téra = 10¹² ; milli = 10⁻³, micro = 10⁻⁶, nano = 10⁻⁹.',
+  g: function(){ var P = [['kilo', 'k', 3], ['méga', 'M', 6], ['giga', 'G', 9], ['téra', 'T', 12], ['milli', 'm', -3], ['micro', 'µ', -6], ['nano', 'n', -9], ['centi', 'c', -2]], p = pick(P), U = pick([['mètre', 'm'], ['gramme', 'g'], ['octet', 'o'], ['watt', 'W']]);
+    if (U[1] === 'm' && p[1] === 'm' || U[1] === 'o' && p[2] < 0 || U[1] === 'W' && p[2] < 0 && p[1] !== 'm' || U[1] === 'g' && (p[2] > 3 || p[1] === 'c')) return this.g();
+    return {type: 'num', q: '1 ' + p[0] + U[0] + ' (1 ' + p[1] + U[1] + ') = 10^? ' + U[0] + 's', lab: 'n =', v: p[2], steps: ['« ' + p[0] + ' » signifie 10' + sup(p[2]) + ' : 1 ' + p[1] + U[1] + ' = 10' + sup(p[2]) + ' ' + U[1] + '.'], key: p[0] + U[0]}; }},
+ {id: 'n30d', lv: 2, n: 'N30', t: 'Multiplier par une puissance de 10', d: 'Déplacer la virgule.', c: 'Donne l’écriture décimale.', a: 'Multiplier par 10ⁿ (n positif) : la virgule se déplace de n rangs vers la droite. Par 10⁻ⁿ : de n rangs vers la gauche.',
+  g: function(){ var a = cl(rnd(11, 9999) / pick([1, 10, 100])), n = rnz(-4, 5), v = cl(a * Math.pow(10, n)); if (Math.abs(v) < 1e-6 || String(v).length > 12) return this.g();
+    return {type: 'num', q: fr(a) + ' × 10' + sup(n) + ' = ?', v: v, steps: ['La virgule se déplace de ' + Math.abs(n) + ' rang' + (Math.abs(n) > 1 ? 's' : '') + ' vers la ' + (n > 0 ? 'droite' : 'gauche') + ' : ' + fr(v) + '.']}; }}
+);
+function sci(x){ var e = Math.floor(Math.log10(Math.abs(x)) + 1e-9), m = cl(x / Math.pow(10, e)); if (Math.abs(m) >= 10){ m = cl(m / 10); e++; } return [m, e]; }
+EX.push(
+ {id: 'n31a', lv: 1, n: 'N31', t: 'Reconnaître la notation scientifique', d: 'a × 10ⁿ avec 1 ≤ a < 10.', c: 'Cette écriture est-elle une notation scientifique ?', a: 'Notation scientifique : a × 10ⁿ, où a a un seul chiffre non nul avant la virgule (1 ≤ a < 10) et n est un entier relatif.',
+  g: function(){ var yes = Math.random() < 0.5, a = yes ? cl(rnd(10, 99) / 10) : pick([cl(rnd(11, 99)), cl(rnd(1, 9) / 10), cl(rnd(101, 999) / 10), 0.25]), n = rnz(-8, 9);
+    return {type: 'ch', q: fr(a) + ' × 10' + sup(n), ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: [yes ? fr(a) + ' est compris entre 1 et 10 (strictement inférieur à 10) : oui.' : fr(a) + ' n’est pas compris entre 1 et 10 : ce n’est pas une notation scientifique.'], key: fr(a) + n}; }},
+ {id: 'n31b', lv: 2, n: 'N31', t: 'Écrire en notation scientifique', d: 'Trouver l’exposant.', c: 'Complète la notation scientifique : donne l’exposant n.', a: 'Place la virgule après le premier chiffre non nul, puis compte de combien de rangs elle s’est déplacée : vers la gauche → n positif ; vers la droite → n négatif.',
+  g: function(){ var m = cl(rnd(101, 999) / 100), e = rnz(-7, 9); if (e === 0) return this.g(); var x = cl(m * Math.pow(10, e)); var big = e > 0;
+    var xs = big ? fr(x) : '0,' + '0'.repeat(-e - 1) + String(m).replace('.', '');
+    return {type: 'num', q: xs + ' = ' + fr(m) + ' × 10^?', lab: 'n =', v: e, steps: ['La virgule passe après le premier chiffre non nul en se déplaçant de ' + Math.abs(e) + ' rang' + (Math.abs(e) > 1 ? 's' : '') + ' vers la ' + (big ? 'gauche' : 'droite') + ' : ' + fr(m) + ' × 10' + sup(e) + '.'], traps: [[-e, 'Attention au signe de l’exposant : un grand nombre a un exposant positif, un petit nombre un exposant négatif.']], key: xs}; }},
+ {id: 'n31c', lv: 2, n: 'N31', t: 'Écriture décimale', d: 'Depuis la notation scientifique.', c: 'Donne l’écriture décimale.', a: 'Multiplier par 10ⁿ : la virgule se déplace de n rangs (à droite si n positif, à gauche si n négatif).',
+  g: function(){ var m = cl(rnd(11, 99) / 10), e = rnz(-5, 6), v = cl(m * Math.pow(10, e));
+    return {type: 'num', q: fr(m) + ' × 10' + sup(e) + ' = ?', v: v, steps: ['La virgule se déplace de ' + Math.abs(e) + ' rang' + (Math.abs(e) > 1 ? 's' : '') + ' vers la ' + (e > 0 ? 'droite' : 'gauche') + ' : ' + fr(v) + '.'], key: m + ':' + e}; }},
+ {id: 'n31d', lv: 3, n: 'N31', t: 'Comparer en notation scientifique', d: 'L’exposant d’abord.', c: 'Choisis le bon signe.', a: 'Pour des nombres positifs en notation scientifique, le plus grand est celui qui a le plus grand exposant ; à exposant égal, on compare les mantisses.',
+  g: function(){ var e1 = rnz(-6, 9), e2 = Math.random() < 0.4 ? e1 : rnz(-6, 9), m1 = cl(rnd(11, 99) / 10), m2 = cl(rnd(11, 99) / 10), a = m1 * Math.pow(10, e1), b = m2 * Math.pow(10, e2), s = Math.abs(a - b) < 1e-15 * Math.max(a, b) ? '=' : a < b ? '<' : '>', ch = ['<', '>', '='];
+    return {type: 'ch', q: fr(m1) + ' × 10' + sup(e1) + ' … ' + fr(m2) + ' × 10' + sup(e2), ch: ch, ans: ch.indexOf(s), steps: [e1 !== e2 ? 'Les exposants sont différents : ' + fr(e1) + ' et ' + fr(e2) + ', le plus grand nombre a le plus grand exposant.' : 'Même exposant : on compare ' + fr(m1) + ' et ' + fr(m2) + '.', 'Donc ' + fr(m1) + ' × 10' + sup(e1) + ' ' + s + ' ' + fr(m2) + ' × 10' + sup(e2) + '.']}; }}
+);
+var NOTIONS = [
+ {n: 'N29', t: 'Écrire un produit de facteurs égaux avec une puissance', r: 'aⁿ = a × a × … × a (n facteurs) ; a¹ = a et a⁰ = 1 ; (−a)ⁿ est positif si n est pair, négatif si n est impair.'},
+ {n: 'N30', t: 'Utiliser les puissances de 10 et les préfixes', r: '10ⁿ = 1 suivi de n zéros ; 10⁻ⁿ = 0,0…01 ; 10ᵃ × 10ᵇ = 10ᵃ⁺ᵇ. Préfixes : kilo 10³, méga 10⁶, giga 10⁹, milli 10⁻³, micro 10⁻⁶, nano 10⁻⁹.'},
+ {n: 'N31', t: 'Écrire et comparer des nombres en notation scientifique', r: 'notation scientifique : a × 10ⁿ avec 1 ≤ a < 10 et n entier relatif.'}
+];
+
+M.start({key: '4e-s13', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

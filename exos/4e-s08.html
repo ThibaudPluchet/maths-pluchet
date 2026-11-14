@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : calcul littéral (4e, séquence 8) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 8 : calculer une expression, programmes de calcul, traduire une situation par une expression.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 8 · Calcul littéral</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée pour les formules.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var poly = M.poly, mono = M.mono, terms = M.terms;
+function nz(m){ var v; do { v = rnz(-m, m); } while (Math.abs(v) < 2); return v; }
+function sg(v){ return (v < 0 ? ' ' + MINUS + ' ' : ' + ') + fr(Math.abs(v)); }
+function xv(){ return pick([rnz(-9, 9), rnz(-9, 9), rnd(2, 12), cl(rnz(-9, 9) / 2), cl(rnz(-40, 40) / 10)]); }
+// expressions : [texte, fonction, texte du calcul pour une valeur]
+function EXPR(){ var a = nz(9), b = nz(12), c = nz(6), t = rnd(0, 6);
+  switch (t){
+   case 0: return {s: terms([[a, 1], [b, 0]]), f: function(x){ return a * x + b; }, w: function(x){ return fr(a) + ' × ' + pf(x) + sg(b); }};
+   case 1: return {s: fr(a) + '(x + ' + pf(b) + ')', f: function(x){ return a * (x + b); }, w: function(x){ return fr(a) + ' × (' + fr(x) + ' + ' + pf(b) + ')'; }};
+   case 2: return {s: terms([[a, 2], [b, 0]]), f: function(x){ return a * x * x + b; }, w: function(x){ return fr(a) + ' × ' + pf(x) + '²' + sg(b); }};
+   case 3: return {s: terms([[1, 2], [a, 1], [b, 0]]), f: function(x){ return x * x + a * x + b; }, w: function(x){ return pf(x) + '²' + sg(a) + ' × ' + pf(x) + sg(b); }};
+   case 4: return {s: terms([[b, 0], [a, 1]]), f: function(x){ return b + a * x; }, w: function(x){ return fr(b) + sg(a) + ' × ' + pf(x); }};
+   case 5: return {s: fr(c) + ' ' + MINUS + ' ' + Math.abs(a) + 'x', f: function(x){ return c - Math.abs(a) * x; }, w: function(x){ return fr(c) + ' ' + MINUS + ' ' + Math.abs(a) + ' × ' + pf(x); }};
+   default: return {s: '(x + ' + pf(b) + ')(x ' + MINUS + ' ' + Math.abs(c) + ')', f: function(x){ return (x + b) * (x - Math.abs(c)); }, w: function(x){ return '(' + fr(x) + ' + ' + pf(b) + ') × (' + fr(x) + ' ' + MINUS + ' ' + Math.abs(c) + ')'; }};
+  } }
+var EX = [
+ {id: 'n18a', lv: 1, n: 'N18', t: 'Calculer pour une valeur de x', d: 'Remplacer x par un nombre.', c: 'Calcule la valeur de l’expression.', a: 'On remplace x par la valeur donnée (entre parenthèses si elle est négative), on rétablit les signes × puis on calcule en respectant les priorités.',
+  g: function(){ var E = EXPR(), x = xv(); if (Math.abs(E.f(x)) > 999) return this.g(); var v = cl(E.f(x));
+    return {type: 'num', q: 'A = ' + E.s + '. Calcule A pour x = ' + fr(x) + '.', lab: 'A =', v: v, steps: ['Je remplace x par ' + fr(x) + ' : A = ' + E.w(x) + '.', 'A = ' + fr(v) + '.'], key: E.s + x}; }},
+ {id: 'n18b', lv: 2, n: 'N18', t: 'Deux lettres', d: 'Remplacer a et b.', c: 'Calcule.', a: 'Remplace chaque lettre par sa valeur, avec des parenthèses autour des nombres négatifs.',
+  g: function(){ var a = rnz(-9, 9), b = rnz(-9, 9), p = nz(7), q = nz(7), t = rnd(0, 3), s, v, w;
+    if (t === 0){ s = terms([[p, 1], [q, 0]]).replace('x', 'a').replace(/(\d)$/, '$1b'); s = fr(p) + 'a ' + (q < 0 ? MINUS : '+') + ' ' + Math.abs(q) + 'b'; v = p * a + q * b; w = fr(p) + ' × ' + pf(a) + ' ' + (q < 0 ? MINUS : '+') + ' ' + Math.abs(q) + ' × ' + pf(b); }
+    else if (t === 1){ s = 'ab ' + MINUS + ' ' + Math.abs(p) + 'a'; v = a * b - Math.abs(p) * a; w = pf(a) + ' × ' + pf(b) + ' ' + MINUS + ' ' + Math.abs(p) + ' × ' + pf(a); }
+    else if (t === 2){ s = 'a² + b²'; v = a * a + b * b; w = pf(a) + '² + ' + pf(b) + '²'; }
+    else { s = fr(p) + '(a ' + MINUS + ' b)'; v = p * (a - b); w = fr(p) + ' × (' + fr(a) + ' ' + MINUS + ' ' + pf(b) + ')'; }
+    return {type: 'num', q: 'B = ' + s + '. Calcule B pour a = ' + fr(a) + ' et b = ' + fr(b) + '.', lab: 'B =', v: v, steps: ['B = ' + w + ' = ' + fr(v) + '.']}; }},
+ {id: 'n18c', lv: 2, n: 'N18', nq: 4, t: 'Utiliser une formule', d: 'Périmètres, aires, conversions.', c: 'Utilise la formule pour répondre.', a: 'Repère ce que représente chaque lettre, remplace par les valeurs (dans la bonne unité), puis calcule.',
+  g: function(){ var k = rnd(0, 7), q, v, u, st;
+    if (k === 0){ var L = rnd(5, 30), l = rnd(2, L - 1); q = 'Le périmètre d’un rectangle est P = 2(L + l). Calcule P pour L = ' + L + ' cm et l = ' + l + ' cm.'; v = 2 * (L + l); u = 'cm'; st = ['P = 2 × (' + L + ' + ' + l + ') = 2 × ' + (L + l) + ' = ' + v + ' cm.']; }
+    else if (k === 1){ var c = cl(rnd(3, 40) / 2); q = 'L’aire d’un carré est A = c². Calcule A pour c = ' + fr(c) + ' m.'; v = sq(c); u = 'm²'; st = ['A = ' + fr(c) + '² = ' + fr(c) + ' × ' + fr(c) + ' = ' + fr(v) + ' m².']; }
+    else if (k === 2){ var C = rnd(-20, 40); q = 'Pour convertir des degrés Celsius en degrés Fahrenheit, on utilise F = 1,8 × C + 32. Calcule F pour C = ' + fr(C) + '.'; v = cl(1.8 * C + 32); u = '°F'; st = ['F = 1,8 × ' + pf(C) + ' + 32 = ' + fr(cl(1.8 * C)) + ' + 32 = ' + fr(v) + ' °F.']; }
+    else if (k === 3){ var n = rnd(3, 25); q = 'Une salle de sport facture P = 15 + 6n euros pour n séances. Combien paie-t-on pour ' + n + ' séances ?'; v = 15 + 6 * n; u = '€'; st = ['P = 15 + 6 × ' + n + ' = ' + v + ' €.']; }
+    else if (k === 4){ var B = rnd(4, 20), h = rnd(3, 15); q = 'L’aire d’un triangle est A = (b × h) ÷ 2. Calcule A pour b = ' + B + ' cm et h = ' + h + ' cm.'; v = cl(B * h / 2); u = 'cm²'; st = ['A = (' + B + ' × ' + h + ') ÷ 2 = ' + B * h + ' ÷ 2 = ' + fr(v) + ' cm².']; }
+    else if (k === 5){ var d = rnd(2, 12) * 10, t = pick([2, 4, 5, 0.5, 1.5]); q = 'La vitesse moyenne est v = d ÷ t. Calcule v pour d = ' + d + ' km et t = ' + fr(t) + ' h.'; v = cl(d / t); u = 'km/h'; st = ['v = ' + d + ' ÷ ' + fr(t) + ' = ' + fr(v) + ' km/h.']; }
+    else if (k === 6){ var a = rnd(12, 17), FC = 220 - a; q = 'Une formule estime la fréquence cardiaque maximale : F = 220 − a, où a est l’âge. Calcule F pour a = ' + a + '.'; v = FC; u = 'battements/min'; st = ['F = 220 − ' + a + ' = ' + FC + '.']; }
+    else { var r = rnd(2, 12); q = 'Le périmètre d’un cercle est P = 2 × π × r. Calcule P pour r = ' + r + ' cm, arrondi au dixième.'; return {type: 'num', q: q, v: rd(2 * Math.PI * r, 1), x: 2 * Math.PI * r, d: 1, unit: 'cm', steps: ['P = 2 × π × ' + r + ' ≈ ' + fr(rd(2 * Math.PI * r, 3)) + ' ≈ ' + fr(rd(2 * Math.PI * r, 1)) + ' cm.'], key: 'k' + k}; }
+    return {type: 'num', q: q, v: v, unit: u, steps: st, key: 'k' + k}; }},
+ {id: 'n18d', lv: 3, n: 'N18', t: 'Pièges des priorités', d: 'Carrés et signes −.', c: 'Calcule.', a: 'Avec x négatif : x² = (−3)² = 9, mais −x² = −9. Dans 2x², seul x est au carré : 2 × (−3)² = 18.',
+  g: function(){ var x = rnz(-6, -1), a = rnd(2, 5), t = rnd(0, 3), s, v, w;
+    if (t === 0){ s = 'x²'; v = x * x; w = '(' + fr(x) + ')² = ' + v; }
+    else if (t === 1){ s = MINUS + 'x²'; v = -x * x; w = MINUS + '(' + fr(x) + ')² = ' + MINUS + x * x; }
+    else if (t === 2){ s = a + 'x²'; v = a * x * x; w = a + ' × (' + fr(x) + ')² = ' + a + ' × ' + x * x + ' = ' + v; }
+    else { s = '(' + a + 'x)²'; v = a * a * x * x; w = '(' + a + ' × (' + fr(x) + '))² = (' + fr(a * x) + ')² = ' + v; }
+    return {type: 'num', q: 'Calcule ' + s + ' pour x = ' + fr(x) + '.', lab: s + ' =', v: v, steps: [w + '.'], traps: [[-v, 'Attention au signe : un carré est positif, le signe − devant ne porte que sur le carré.']], key: s + x}; }}
+];
+// programmes de calcul
+function PROG(){ var a = rnd(2, 9), b = rnd(2, 12), c = rnd(2, 6), t = rnd(0, 4), L, f, ex, P; if (a === b || a === c || b === c) return PROG();
+  switch (t){
+   case 0: L = ['Choisir un nombre', 'Le multiplier par ' + a, 'Ajouter ' + b]; f = function(x){ return a * x + b; }; P = {1: a, 0: b}; ex = [fr(a) + 'x + ' + b, fr(b) + 'x + ' + a, fr(a) + '(x + ' + b + ')', 'x + ' + (a + b)]; break;
+   case 1: L = ['Choisir un nombre', 'Ajouter ' + b, 'Multiplier par ' + a]; f = function(x){ return a * (x + b); }; P = {1: a, 0: a * b}; ex = [fr(a) + '(x + ' + b + ')', fr(a) + 'x + ' + b, 'x + ' + b + ' × ' + a, fr(b) + '(x + ' + a + ')']; break;
+   case 2: L = ['Choisir un nombre', 'Soustraire ' + b, 'Multiplier par ' + a, 'Ajouter le nombre de départ']; f = function(x){ return a * (x - b) + x; }; P = {1: a + 1, 0: -a * b}; ex = [fr(a) + '(x ' + MINUS + ' ' + b + ') + x', fr(a) + 'x ' + MINUS + ' ' + b + ' + x', fr(a) + '(x ' + MINUS + ' ' + b + ')', '(x ' + MINUS + ' ' + b + ') + ' + a + 'x']; break;
+   case 3: L = ['Choisir un nombre', 'Le mettre au carré', 'Soustraire ' + b]; f = function(x){ return x * x - b; }; P = {2: 1, 0: -b}; ex = ['x² ' + MINUS + ' ' + b, '(x ' + MINUS + ' ' + b + ')²', '2x ' + MINUS + ' ' + b, 'x ' + MINUS + ' ' + b + '²']; break;
+   default: L = ['Choisir un nombre', 'Multiplier par ' + a, 'Soustraire ' + b, 'Multiplier le résultat par ' + c]; f = function(x){ return c * (a * x - b); }; P = {1: a * c, 0: -b * c}; ex = [fr(c) + '(' + a + 'x ' + MINUS + ' ' + b + ')', fr(a) + 'x ' + MINUS + ' ' + b + ' × ' + c, fr(c) + 'x × ' + a + ' ' + MINUS + ' ' + b, fr(a) + '(' + c + 'x ' + MINUS + ' ' + b + ')'];
+  }
+  return {L: L, f: f, ex: ex, t: t, P: P, a: a, b: b, c: c}; }
+function ptxt(L){ return L.map(function(l, i){ return (i ? '→ ' : '') + l; }).join(' '); }
+EX.push(
+ {id: 'n19a', lv: 1, n: 'N19', t: 'Appliquer un programme', d: 'Avec un nombre choisi.', c: 'Applique le programme de calcul au nombre donné.', a: 'Suis les étapes dans l’ordre, en écrivant le résultat de chaque étape.',
+  g: function(){ var P = PROG(), x = pick([rnz(-9, 9), rnd(2, 15), cl(rnd(1, 19) / 2)]), r = cl(P.f(x));
+    return {type: 'num', q: ptxt(P.L) + '. Avec ' + fr(x) + ', on obtient ?', v: r, steps: ['Résultat : ' + fr(r) + ' (calcul : ' + P.ex[0].replace(/x/g, '×' + pf(x)).replace(/^×/, '').replace(/(\d)×/g, '$1 × ').replace(/\(×/g, '(').replace(/ ×\(/g, ' (') + ').'].map(function(z){ return z.replace(/× ×/g, '×'); }), key: P.L.join() + x}; }},
+ {id: 'n19b', lv: 2, n: 'N19', t: 'Quelle expression ?', d: 'Traduire le programme avec x.', c: 'On choisit x comme nombre de départ. Quelle expression donne le résultat ?', a: 'Applique le programme à x, étape par étape : attention, quand on multiplie un résultat qui est une somme, il faut des parenthèses.',
+  g: function(){ var P = PROG(), good = P.ex[0], ch = shuffle(P.ex.slice());
+    return {type: 'ch', q: ptxt(P.L) + '.', ch: ch, ans: ch.indexOf(good), steps: ['En partant de x : ' + good + '.'], key: P.L.join()}; }},
+ {id: 'n19c', lv: 2, n: 'N19', t: 'Remonter le programme', d: 'Trouver le nombre de départ.', c: 'Quel nombre faut-il choisir au départ pour obtenir ce résultat ?', a: 'Remonte le programme en faisant les opérations contraires, dans l’ordre inverse : + devient −, × devient ÷.',
+  g: function(){ var a = rnd(2, 9), b = rnd(1, 15), x = rnz(-10, 12), t = rnd(0, 1), L, r, st;
+    if (t === 0){ L = ['Choisir un nombre', 'Le multiplier par ' + a, 'Ajouter ' + b]; r = a * x + b; st = [fr(r) + ' ' + MINUS + ' ' + b + ' = ' + fr(r - b) + ', puis ' + fr(r - b) + ' ÷ ' + a + ' = ' + fr(x) + '.']; }
+    else { L = ['Choisir un nombre', 'Soustraire ' + b, 'Multiplier par ' + a]; r = a * (x - b); st = [fr(r) + ' ÷ ' + a + ' = ' + fr(x - b) + ', puis ' + fr(x - b) + ' + ' + b + ' = ' + fr(x) + '.']; }
+    return {type: 'num', q: ptxt(L) + '. Le résultat est ' + fr(r) + '. Nombre de départ ?', v: x, steps: ['On remonte : ' + st[0]]}; }},
+ {id: 'n19d', lv: 3, n: 'N19', nq: 4, t: 'Deux programmes équivalents ?', d: 'Développer pour comparer.', c: 'Les deux programmes donnent-ils toujours le même résultat ?', a: 'Écris l’expression de chaque programme avec x, développe et réduis : si les expressions sont égales, les programmes donnent toujours le même résultat.',
+  g: function(){ var a = rnd(2, 6), b = rnd(1, 9), same = Math.random() < 0.55, c = same ? a * b : a * b + pick([-2, -1, 1, 2, 3]); if (c <= 0) c = a * b + 1;
+    var A = ['Choisir un nombre', 'Ajouter ' + b, 'Multiplier par ' + a], B = ['Choisir un nombre', 'Multiplier par ' + a, 'Ajouter ' + c];
+    return {type: 'ch', q: 'Programme A : ' + ptxt(A) + '. Programme B : ' + ptxt(B) + '.', ch: ['Oui, toujours', 'Non'], ans: same ? 0 : 1, steps: ['A : ' + a + '(x + ' + b + ') = ' + a + 'x + ' + a * b + ' ; B : ' + a + 'x + ' + c + '.', same ? 'Les expressions sont égales : les programmes donnent toujours le même résultat.' : 'Les expressions sont différentes (' + a * b + ' ≠ ' + c + ') : par exemple avec 0, A donne ' + a * b + ' et B donne ' + c + '.'], key: a + ':' + b + ':' + c}; }}
+);
+var PHR = [
+ ['le double de x', '2x', ['x²', 'x + 2', 'x ÷ 2']], ['le triple de x', '3x', ['x³', 'x + 3', '3 + x²']], ['le carré de x', 'x²', ['2x', 'x + 2', 'x × 2']],
+ ['la moitié de x', 'x ÷ 2', ['2x', 'x ' + MINUS + ' 2', 'x²']], ['x augmenté de 5', 'x + 5', ['5x', 'x ' + MINUS + ' 5', '5 ' + MINUS + ' x']],
+ ['le double de x, augmenté de 3', '2x + 3', ['2(x + 3)', '3x + 2', '2 + 3x']], ['le double de la somme de x et 3', '2(x + 3)', ['2x + 3', 'x + 6', '(2 + x) × 3']],
+ ['le carré de la somme de x et 1', '(x + 1)²', ['x² + 1', 'x + 1²', '2(x + 1)']], ['la somme du carré de x et de 1', 'x² + 1', ['(x + 1)²', '2x + 1', 'x + 1']],
+ ['la différence de x et 4', 'x ' + MINUS + ' 4', ['4 ' + MINUS + ' x', '4x', 'x ÷ 4']], ['le produit de x par 7, diminué de 2', '7x ' + MINUS + ' 2', ['7(x ' + MINUS + ' 2)', '2 ' + MINUS + ' 7x', '7x + 2']],
+ ['le tiers de x', 'x ÷ 3', ['3x', 'x ' + MINUS + ' 3', 'x³']], ['l’opposé de x', MINUS + 'x', ['1 ÷ x', 'x ' + MINUS + ' 1', 'x²']],
+ ['le quotient de x par 5', 'x ÷ 5', ['5 ÷ x', '5x', 'x ' + MINUS + ' 5']]
+];
+EX.push(
+ {id: 'n20a', lv: 1, n: 'N20', t: 'Phrase → expression', d: 'Double, carré, somme…', c: 'Quelle expression correspond à la phrase ?', a: 'Le double : 2x. Le carré : x². La somme : +. La différence : −. Le produit : ×. Repère la dernière opération : c’est elle qui donne le nom (une somme, un produit…).',
+  g: function(){ var i = rnd(0, PHR.length - 1), P = PHR[i], ch = shuffle([P[1]].concat(P[2]));
+    return {type: 'ch', q: '« ' + P[0].charAt(0).toUpperCase() + P[0].slice(1) + ' » s’écrit :', ch: ch, ans: ch.indexOf(P[1]), steps: ['« ' + P[0] + ' » : ' + P[1] + '.'], key: 'p' + i}; }},
+ {id: 'n20b', lv: 1, n: 'N20', t: 'Expression → phrase', d: 'Lire une expression.', c: 'Quelle phrase correspond à l’expression ?', a: 'Repère la dernière opération effectuée : 2(x + 3) est un produit (le double d’une somme), 2x + 3 est une somme.',
+  g: function(){ var i = rnd(0, PHR.length - 1), P = PHR[i], others = shuffle(PHR.filter(function(_, j){ return j !== i; })).slice(0, 3).map(function(p){ return p[0]; }), ch = shuffle([P[0]].concat(others));
+    return {type: 'ch', q: P[1] + ' se lit :', ch: ch, ans: ch.indexOf(P[0]), steps: [P[1] + ' : « ' + P[0] + ' ».'], key: 'e' + i}; }},
+ {id: 'n20c', lv: 2, n: 'N20', nq: 4, t: 'Périmètre en fonction de x', d: 'Figures avec des longueurs en x.', c: 'Exprime le périmètre en fonction de x, sous forme réduite.', a: 'Additionne toutes les longueurs des côtés, puis réduis : regroupe les x et les nombres.',
+  g: function(){ var t = rnd(0, 3), a = rnd(1, 9), b = rnd(2, 6), q, P;
+    if (t === 0){ q = 'Un rectangle a pour longueur x + ' + a + ' et pour largeur x.'; P = {1: 4, 0: 2 * a}; }
+    else if (t === 1){ q = 'Un triangle a des côtés de longueurs x, 2x et x + ' + a + '.'; P = {1: 4, 0: a}; }
+    else if (t === 2){ q = 'Un carré a des côtés de longueur x + ' + a + '.'; P = {1: 4, 0: 4 * a}; }
+    else { q = 'Un rectangle a pour longueur ' + b + 'x et pour largeur x ' + MINUS + ' ' + Math.min(a, 3) + ' (avec x > ' + Math.min(a, 3) + ').'; P = {1: 2 * b + 2, 0: -2 * Math.min(a, 3)}; }
+    return {type: 'expr', mode: 'dev', q: q + ' Exprime son périmètre P.', lab: 'P =', P: P, steps: ['On additionne les côtés puis on réduit : P = ' + poly(P) + '.'], key: q}; }},
+ {id: 'n20d', lv: 3, n: 'N20', nq: 3, t: 'Mettre une situation en expression', d: 'Prix, âges, quantités…', c: 'Écris l’expression demandée en fonction de x, sous forme réduite.', a: 'Remplace le nombre inconnu par x et traduis chaque phrase par un calcul.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var a = rnd(2, 9), b = rnd(3, 30), c = rnd(2, 5), q, P;
+    switch (k){
+     case 0: q = 'Un abonnement coûte ' + b + ' € plus ' + a + ' € par séance. Prix pour x séances ?'; P = {1: a, 0: b}; break;
+     case 1: q = 'Léa a x ans. Son père a ' + (b + 10) + ' ans de plus qu’elle. Somme de leurs âges ?'; P = {1: 2, 0: b + 10}; break;
+     case 2: q = 'Un cahier coûte x € et un stylo ' + a + ' € de moins. Prix de ' + c + ' cahiers et ' + c + ' stylos ?'; P = {1: 2 * c, 0: -a * c}; break;
+     case 3: q = 'Un taxi facture ' + a + ' € de prise en charge et 2 € par km. Prix pour x km ?'; P = {1: 2, 0: a}; break;
+     case 4: q = 'Tom a x billes. Zoé en a le triple, et Inès ' + a + ' de plus que Zoé. Nombre total de billes ?'; P = {1: 7, 0: a}; break;
+     case 5: q = 'Un rectangle a une largeur x et une longueur double de sa largeur. Son périmètre ?'; P = {1: 6}; break;
+     case 6: q = 'On achète x kg de pommes à ' + a + ' € le kg et un sac à ' + c + ' €. Prix total ?'; P = {1: a, 0: c}; break;
+     case 7: q = 'Trois nombres entiers se suivent ; le plus petit est x. Leur somme ?'; P = {1: 3, 0: 3}; break;
+     case 8: q = 'Une piscine contient ' + b * 10 + ' m³ d’eau. Elle se vide de ' + a + ' m³ par heure. Volume restant après x heures ?'; P = {1: -a, 0: b * 10}; break;
+     case 9: q = 'Un téléphone coûte x €. Il est soldé : on enlève ' + b + ' €, puis on paie en ' + c + ' fois sans frais… Montant total payé ?'; P = {1: 1, 0: -b}; break;
+     case 10: q = 'Un carré a un côté de x cm. On augmente son côté de ' + c + ' cm. Périmètre du nouveau carré ?'; P = {1: 4, 0: 4 * c}; break;
+     default: q = 'Une salle a x rangées de ' + (a + 10) + ' places, plus ' + b + ' places au balcon. Nombre total de places ?'; P = {1: a + 10, 0: b};
+    }
+    return {type: 'expr', mode: 'dev', q: q, lab: '=', P: P, steps: ['Expression : ' + poly(P) + '.'], key: 'k' + k}; }}
+);
+var NOTIONS = [
+ {n: 'N18', t: 'Calculer la valeur d’une expression littérale', r: 'on remplace la lettre par sa valeur (entre parenthèses si elle est négative), on rétablit les signes × et on calcule en respectant les priorités.'},
+ {n: 'N19', t: 'Comparer des programmes de calcul', r: 'on traduit chaque programme par une expression en x, on développe et on réduit : deux expressions égales donnent toujours le même résultat.'},
+ {n: 'N20', t: 'Traduire une situation par une expression littérale', r: 'le double : 2x ; le carré : x² ; la somme de x et 3 : x + 3 ; le double de la somme : 2(x + 3). La dernière opération donne le nom de l’expression.'}
+];
+
+M.start({key: '4e-s08', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

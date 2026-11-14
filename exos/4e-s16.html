@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : équations (4e, séquence 16) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 16 : tester une solution, résoudre une équation du premier degré, mettre un problème en équation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 16 · Équations</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. </p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var terms = M.terms, red = M.red;
+function nz(m){ var v; do { v = rnz(-m, m); } while (Math.abs(v) < 2); return v; }
+function L(a, b){ return terms([[a, 1], [b, 0]].filter(function(t){ return t[0]; })) || '0'; }
+function sgn(v){ return (v < 0 ? ' ' + MINUS + ' ' : ' + ') + fr(Math.abs(v)); }
+function ans(n, d){ var r = red(n, d); return r; }
+// équation ax + b = cx + d de solution entière x0
+function eqn(level){ var x0 = rnz(-9, 9), a = nz(9), c = level >= 3 ? nz(9) : 0; if (a === c) return eqn(level); var b = rnz(-15, 15), d = (a - c) * x0 + b; if (level === 1){ c = 0; b = Math.random() < 0.5 ? 0 : b; if (b === 0) d = a * x0; else { a = 1; d = x0 + b; } }
+  return {a: a, b: b, c: c, d: d, x: x0}; }
+function eqTxt(E){ return L(E.a, E.b) + ' = ' + (E.c ? L(E.c, E.d) : fr(E.d)); }
+function solveSteps(E){ var st = [], A = E.a - E.c, B = E.d - E.b;
+  if (E.c) st.push((E.c > 0 ? 'J’enlève ' + M.mono(E.c, 1) : 'J’ajoute ' + M.mono(-E.c, 1)) + ' aux deux membres : ' + L(A, E.b) + ' = ' + fr(E.d) + '.');
+  if (E.b) st.push((E.b > 0 ? 'J’enlève ' + fr(E.b) : 'J’ajoute ' + fr(-E.b)) + ' aux deux membres : ' + L(A, 0) + ' = ' + fr(B) + '.');
+  if (A !== 1) st.push('Je divise par ' + pf(A) + ' : x = ' + fr(B) + ' ÷ ' + pf(A) + ' = ' + fr(E.x) + '.');
+  st.push('La solution est ' + fr(E.x) + '.'); return st; }
+var EX = [
+ {id: 'n37a', lv: 1, n: 'N37', t: 'Est-ce une solution ?', d: 'Tester une valeur.', c: 'Le nombre proposé est-il solution de l’équation ?', a: 'On remplace x par le nombre dans chaque membre et on calcule séparément : si on trouve le même résultat, c’est une solution.',
+  g: function(){ var E = eqn(3), t = Math.random() < 0.5 ? E.x : E.x + pick([1, -1, 2]), l = E.a * t + E.b, r = E.c * t + E.d, yes = l === r;
+    return {type: 'ch', q: fr(t) + ' est-il solution de ' + eqTxt(E) + ' ?', ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: ['Membre de gauche : ' + fr(E.a) + ' × ' + pf(t) + (E.b ? sgn(E.b) : '') + ' = ' + fr(l) + '.', 'Membre de droite : ' + fr(E.c) + ' × ' + pf(t) + (E.d ? sgn(E.d) : '') + ' = ' + fr(r) + '.', yes ? 'Les deux membres sont égaux : oui.' : 'Les deux membres sont différents : non.'].map(function(z){ return z.replace(/ \+ 0\./, '.'); })}; }},
+ {id: 'n37b', lv: 2, n: 'N37', t: 'Trouver la solution parmi plusieurs', d: 'Tester chaque nombre.', c: 'Lequel de ces nombres est solution de l’équation ?', a: 'Teste chaque nombre en remplaçant x : un seul rend l’égalité vraie.',
+  g: function(){ var E = eqn(3), opts = [E.x], i = 0; while (opts.length < 4 && i++ < 50){ var o = E.x + rnz(-4, 4); if (opts.indexOf(o) < 0) opts.push(o); } var ch = shuffle(opts.map(fr));
+    return {type: 'ch', q: eqTxt(E), ch: ch, ans: ch.indexOf(fr(E.x)), steps: ['Pour x = ' + fr(E.x) + ' : ' + fr(E.a * E.x + E.b) + ' des deux côtés.']}; }}
+];
+EX.push(
+ {id: 'n38a', lv: 1, n: 'N38', t: 'Équations simples', d: 'x + a = b ; ax = b.', c: 'Résous l’équation.', a: 'Pour isoler x : on enlève (ou on ajoute) le même nombre des deux côtés ; on divise les deux membres par le même nombre non nul.',
+  g: function(){ var E = eqn(1); return {type: 'num', q: eqTxt(E), lab: 'x =', v: E.x, steps: solveSteps(E)}; }},
+ {id: 'n38b', lv: 2, n: 'N38', t: 'ax + b = c', d: 'Deux étapes.', c: 'Résous l’équation.', a: 'On enlève d’abord le nombre b des deux côtés, puis on divise par a.',
+  g: function(){ var E = eqn(2); if (!E.b) return this.g(); var sw = Math.random() < 0.3;
+    return {type: 'num', q: sw ? fr(E.d) + ' = ' + L(E.a, E.b) : eqTxt(E), lab: 'x =', v: E.x, steps: solveSteps(E), traps: [[cl((E.d + E.b) / E.a), 'Pour enlever ' + pf(E.b) + ', il faut soustraire ' + pf(E.b) + ' des deux côtés.']]}; }},
+ {id: 'n38c', lv: 3, n: 'N38', nq: 4, t: 'x des deux côtés', d: 'ax + b = cx + d.', c: 'Résous l’équation. Si la solution n’est pas entière, donne-la sous forme de fraction irréductible.', a: 'Regroupe les termes en x d’un côté (en enlevant cx des deux membres), les nombres de l’autre, puis divise.',
+  g: function(){ var E = eqn(3), frac = Math.random() < 0.3;
+    if (frac){ var A = E.a - E.c, B = E.d - E.b + rnz(-3, 3); var r = red(B, A); if (r[1] === 1 || !E.b) return this.g(); E.d = B + E.b;
+      return {type: 'frac', q: eqTxt(E), lab: 'x =', f: r, dec: true, steps: [(E.c > 0 ? 'J’enlève ' + M.mono(E.c, 1) : 'J’ajoute ' + M.mono(-E.c, 1)) + ' aux deux membres : ' + L(A, E.b) + ' = ' + fr(E.d) + '.', (E.b >= 0 ? 'J’enlève ' + fr(E.b) : 'J’ajoute ' + fr(-E.b)) + ' : ' + L(A, 0) + ' = ' + fr(B) + '.', 'Je divise par ' + pf(A) + ' : x = ' + M.ftx(r) + '.'].map(function(z){ return z.replace(/^J’enlève \(?0\)? : /, ''); })}; }
+    return {type: 'num', q: eqTxt(E), lab: 'x =', v: E.x, steps: solveSteps(E)}; }},
+ {id: 'n38d', lv: 3, n: 'N38', nq: 4, t: 'Avec des parenthèses', d: 'Développer d’abord.', c: 'Résous l’équation.', a: 'Développe chaque membre, réduis, puis résous comme d’habitude.',
+  g: function(){ var k = nz(6), b = rnz(-9, 9), x = rnz(-8, 8), c = nz(5), d; if (k === c) return this.g(); d = k * (x + b) - c * x; // k(x + b) = cx + d
+    var E = {a: k, b: k * b, c: c, d: d, x: x};
+    return {type: 'num', q: fr(k) + '(x' + sgn(b) + ') = ' + L(c, d), lab: 'x =', v: x, steps: ['Je développe : ' + L(k, k * b) + ' = ' + L(c, d) + '.'].concat(solveSteps(E))}; }}
+);
+var PB = [
+ function(){ var x = rnd(5, 40), a = rnd(2, 5); return {q: 'Je pense à un nombre. Je le multiplie par ' + a + ' et j’ajoute ' + (a + 3) + '. J’obtiens ' + (a * x + a + 3) + '. Quel est ce nombre ?', v: x, eq: a + 'x + ' + (a + 3) + ' = ' + (a * x + a + 3)}; },
+ function(){ var x = rnd(8, 15), y = rnd(25, 45); return {q: 'Léo a ' + x + ' ans et son père ' + y + ' ans. Dans combien d’années le père aura-t-il le double de l’âge de Léo ?', v: y - 2 * x, eq: y + ' + x = 2(' + x + ' + x)', ok: y - 2 * x > 0}; },
+ function(){ var p = rnd(3, 9), n = rnd(5, 20), f = rnd(10, 40); return {q: 'Un abonnement coûte ' + f + ' € plus ' + p + ' € par séance. Léa a payé ' + (f + p * n) + ' €. Combien de séances a-t-elle faites ?', v: n, eq: f + ' + ' + p + 'x = ' + (f + p * n)}; },
+ function(){ var x = rnd(4, 30); return {q: 'La somme de trois entiers consécutifs est ' + (3 * x + 3) + '. Quel est le plus petit ?', v: x, eq: 'x + (x + 1) + (x + 2) = ' + (3 * x + 3)}; },
+ function(){ var l = rnd(3, 20), a = rnd(2, 10); return {q: 'Un rectangle a une longueur qui dépasse sa largeur de ' + a + ' cm et un périmètre de ' + (4 * l + 2 * a) + ' cm. Quelle est sa largeur ?', v: l, eq: '2(x + x + ' + a + ') = ' + (4 * l + 2 * a)}; },
+ function(){ var c = rnd(2, 6), s = rnd(2, 4), n = rnd(3, 12); if (c === s) return null; return {q: 'Un cahier coûte ' + c + ' € et un stylo ' + s + ' €. Tom achète autant de cahiers que de stylos et paie ' + (c + s) * n + ' €. Combien de cahiers a-t-il achetés ?', v: n, eq: c + 'x + ' + s + 'x = ' + (c + s) * n}; },
+ function(){ var x = rnd(10, 40), k = rnd(2, 4); return {q: 'Inès a ' + k + ' fois plus de billes que Sam. À eux deux, ils en ont ' + (k + 1) * x + '. Combien Sam en a-t-il ?', v: x, eq: 'x + ' + k + 'x = ' + (k + 1) * x}; },
+ function(){ var a = rnd(8, 20), b = rnd(2, 6), t = rnd(3, 12); return {q: 'Un réservoir contient ' + (a * 10) + ' L et se vide de ' + b + ' L par minute. Au bout de combien de minutes contiendra-t-il ' + (a * 10 - b * t) + ' L ?', v: t, eq: (a * 10) + ' − ' + b + 'x = ' + (a * 10 - b * t), ok: a * 10 - b * t > 0}; },
+ function(){ var x = rnd(4, 15), A = rnd(10, 30), B = rnd(2, 6), C = A + (rnd(2, 5)) * x; var d = (C - A) / x; if (!M.isInt(d) || d <= 0) return null; return {q: 'Le tarif A coûte ' + A + ' € plus ' + (B + d) + ' € par jour ; le tarif B coûte ' + (A + d * x) + ' € plus ' + B + ' € par jour… Pour combien de jours les deux tarifs sont-ils égaux ?', v: x, eq: A + ' + ' + (B + d) + 'x = ' + (A + d * x) + ' + ' + B + 'x'}; },
+ function(){ var x = rnd(2, 12) * 5; return {q: 'Un triangle a des angles de x°, 2x° et ' + (180 - 3 * x) + '°… Plus simplement : ses angles mesurent x°, x° et ' + (180 - 2 * x) + '°. Combien vaut x ?', v: x, eq: 'x + x + ' + (180 - 2 * x) + ' = 180', ok: 180 - 2 * x > 0}; },
+ function(){ var x = rnd(5, 25), b = rnd(3, 9); return {q: 'Si on ajoute ' + b + ' au triple d’un nombre, on obtient le même résultat qu’en ajoutant ' + (2 * x + b) + ' à ce nombre. Quel est ce nombre ?', v: x, eq: '3x + ' + b + ' = x + ' + (2 * x + b)}; },
+ function(){ var n = rnd(12, 30), g = rnd(3, n - 3); return {q: 'Dans une classe de ' + n + ' élèves, il y a ' + (n - 2 * g > 0 ? (n - 2 * g) : 2) + ' filles de plus que de garçons… Il y a ' + n + ' élèves et ' + (n - 2 * g) + ' filles de plus que de garçons. Combien de garçons ?', v: g, eq: 'x + (x + ' + (n - 2 * g) + ') = ' + n, ok: n - 2 * g > 0}; }
+];
+// nettoyage des énoncés maladroits
+PB[8] = function(){ var x = rnd(4, 15), A = rnd(10, 30), B = rnd(2, 6), d = rnd(2, 5); return {q: 'Le tarif A coûte ' + A + ' € plus ' + (B + d) + ' € par jour ; le tarif B coûte ' + (A + d * x) + ' € plus ' + B + ' € par jour. Pour combien de jours les deux tarifs coûtent-ils le même prix ?', v: x, eq: A + ' + ' + (B + d) + 'x = ' + (A + d * x) + ' + ' + B + 'x'}; };
+PB[9] = function(){ var x = rnd(2, 12) * 5; return {q: 'Un triangle isocèle a deux angles de x° et un troisième angle de ' + (180 - 2 * x) + '°. Combien vaut x ?', v: x, eq: 'x + x + ' + (180 - 2 * x) + ' = 180', ok: 180 - 2 * x > 0}; };
+PB[11] = function(){ var n = rnd(12, 30), g = rnd(3, n - 3), e = n - 2 * g; return {q: 'Une classe de ' + n + ' élèves compte ' + e + ' fille' + (e > 1 ? 's' : '') + ' de plus que de garçons. Combien y a-t-il de garçons ?', v: g, eq: 'x + (x + ' + e + ') = ' + n, ok: e > 0}; };
+EX.push(
+ {id: 'n39a', lv: 2, n: 'N39', t: 'Choisir l’équation', d: 'Traduire l’énoncé.', c: 'Quelle équation traduit le problème (x désigne l’inconnue) ?', a: 'Choisis l’inconnue, traduis chaque information par un calcul, puis écris l’égalité donnée par l’énoncé.',
+  g: function(){ var x = rnd(5, 30), a = rnd(2, 6), b = rnd(3, 20); if (a === b) return this.g(); var r = a * x + b, good = a + 'x + ' + b + ' = ' + r, ch = shuffle([good, a + '(x + ' + b + ') = ' + r, 'x + ' + a + ' + ' + b + ' = ' + r, b + 'x + ' + a + ' = ' + r]);
+    return {type: 'ch', q: 'Je multiplie un nombre par ' + a + ', puis j’ajoute ' + b + ' : j’obtiens ' + r + '.', ch: ch, ans: ch.indexOf(good), steps: ['Le nombre multiplié par ' + a + ' : ' + a + 'x ; on ajoute ' + b + ' : ' + good + '.']}; }},
+ {id: 'n39b', lv: 3, n: 'N39', nq: 3, t: 'Problèmes', d: 'Mettre en équation et résoudre.', c: 'Mets le problème en équation, résous-la, puis réponds.', a: 'Choisis l’inconnue x, écris l’équation, résous-la et vérifie que la solution répond bien au problème.',
+  g: function(k){ if (k === undefined) k = rnd(0, PB.length - 1); var C = PB[k](); if (!C || C.ok === false) return this.g(k);
+    return {type: 'num', q: C.q, v: C.v, steps: ['Équation : ' + C.eq + '.', 'Solution : x = ' + fr(C.v) + '.'], key: 'k' + k}; }}
+);
+var NOTIONS = [
+ {n: 'N37', t: 'Tester si un nombre est solution d’une équation', r: 'on remplace x par le nombre dans chaque membre : si les deux membres sont égaux, le nombre est solution.'},
+ {n: 'N38', t: 'Résoudre une équation du premier degré', r: 'on peut ajouter ou soustraire un même nombre (ou un même terme en x) aux deux membres, et les multiplier ou les diviser par un même nombre non nul.'},
+ {n: 'N39', t: 'Mettre un problème en équation', r: 'choisir l’inconnue, traduire l’énoncé par une équation, la résoudre, puis répondre par une phrase en vérifiant la cohérence.'}
+];
+
+M.start({key: '4e-s16', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

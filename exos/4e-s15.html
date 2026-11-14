@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : pourcentages, vitesses et grandeurs composées (4e, séquence 15) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 15 : pourcentages, vitesse, distance, durée et grandeurs composées.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 15 · Proportionnalité (2)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+function hm(m){ var h = Math.floor(m / 60), r = m % 60; return (h ? h + ' h' : '') + (h && r ? ' ' : '') + (r ? (r < 10 && h ? '0' : '') + r + ' min' : ''); }
+var EX = [
+ {id: 'n34a', lv: 1, n: 'N34', t: 'Appliquer un pourcentage', d: 'p % d’une quantité.', c: 'Calcule.', a: 'p % de x, c’est x × p ÷ 100. Exemples : 10 % → diviser par 10 ; 50 % → la moitié ; 25 % → le quart.',
+  g: function(){ var p = pick([5, 10, 15, 20, 25, 30, 40, 50, 60, 75, 12, 8, 3, 150]), x = pick([rnd(2, 40) * 10, rnd(1, 20) * 20, rnd(4, 99) * 4]), v = cl(x * p / 100); if (!M.isInt(v * 100)) return this.g();
+    var ctx = pick(['', ' des ' + x + ' élèves du collège', ' d’un prix de ' + x + ' €']);
+    return {type: 'num', q: p + ' % de ' + x + ' = ?', v: v, steps: [x + ' × ' + p + ' ÷ 100 = ' + fr(v) + '.'], key: p + ':' + x}; }},
+ {id: 'n34b', lv: 2, n: 'N34', t: 'Augmenter ou réduire', d: 'Prix après une évolution.', c: 'Calcule le nouveau prix.', a: 'Augmenter de p % : on ajoute p % du prix (ou on multiplie par 1 + p/100). Réduire de p % : on enlève p % (ou on multiplie par 1 − p/100).',
+  g: function(){ var p = pick([5, 10, 15, 20, 25, 30, 40, 50, 12, 8, 2]), x = rnd(2, 60) * 5, up = Math.random() < 0.5, d = cl(x * p / 100), v = cl(up ? x + d : x - d); if (!M.isInt(v * 100)) return this.g();
+    return {type: 'num', q: 'Un article coûte ' + x + ' €. Son prix ' + (up ? 'augmente' : 'baisse') + ' de ' + p + ' %. Nouveau prix ?', v: v, unit: '€', steps: [p + ' % de ' + x + ' : ' + x + ' × ' + p + ' ÷ 100 = ' + fr(d) + ' €.', x + (up ? ' + ' : ' ' + MINUS + ' ') + fr(d) + ' = ' + fr(v) + ' € (ou ' + x + ' × ' + fr(cl(1 + (up ? 1 : -1) * p / 100)) + ').'], traps: [[d, 'C’est le montant de ' + (up ? 'l’augmentation' : 'la réduction') + ' : il reste à calculer le nouveau prix.'], [cl(up ? x - d : x + d), (up ? 'C’est une augmentation' : 'C’est une baisse') + ' : attention au sens.']]}; }},
+ {id: 'n34c', lv: 2, n: 'N34', t: 'Calculer un pourcentage', d: 'Quelle part en % ?', c: 'Calcule le pourcentage (arrondi à l’unité si besoin).', a: 'Pourcentage = partie ÷ total × 100.',
+  g: function(){ var N = pick([20, 25, 40, 50, 80, 200, 30, 120, 28]), k = rnd(1, N - 1), x = k / N * 100, ex = M.isInt(x), ctx = pick([['Dans une classe de %N élèves, %k sont demi-pensionnaires.', 'demi-pensionnaires'], ['Sur %N tirs, une basketteuse en a réussi %k.', 'tirs réussis'], ['Un collège de %N élèves compte %k élèves de 4e.', 'élèves de 4e'], ['Dans un sac de %N billes, %k sont rouges.', 'billes rouges']]);
+    return {type: 'num', q: ctx[0].replace('%N', N).replace('%k', k) + ' Quel pourcentage cela représente-t-il ?', v: ex ? x : rd(x, 0), x: x, d: ex ? undefined : 0, unit: '%', steps: [k + ' ÷ ' + N + ' × 100 ' + (ex ? '= ' : '≈ ') + fr(ex ? x : rd(x, 0)) + ' %.'], traps: [[k, 'C’est l’effectif : il faut le comparer au total.']], key: ctx[0] + N + k}; }},
+ {id: 'n34d', lv: 3, n: 'N34', nq: 3, t: 'Problèmes', d: 'Soldes, TVA, population…', c: 'Lis l’énoncé et calcule (arrondi au centime si besoin).', a: 'Repère sur quelle quantité s’applique le pourcentage, puis calcule.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var a = rnd(20, 200), p = pick([10, 20, 25, 30, 40]), q, v, u = '€', st;
+    switch (k){
+     case 0: q = 'Pendant les soldes, un jean à ' + a + ' € est réduit de ' + p + ' %. Combien économise-t-on ?'; v = cl(a * p / 100); st = [a + ' × ' + p + ' ÷ 100 = ' + fr(v) + ' €.']; break;
+     case 1: q = 'Un prix hors taxe de ' + a + ' € augmente de 20 % de TVA. Prix TTC ?'; v = cl(a * 1.2); st = [a + ' × 1,2 = ' + fr(v) + ' €.']; break;
+     case 2: var P = rnd(2, 9) * 1000; q = 'Une ville de ' + fr(P) + ' habitants gagne ' + p / 5 + ' % d’habitants en un an. Combien en compte-t-elle ensuite ?'; v = cl(P * (1 + p / 500)); u = 'habitants'; st = [fr(P) + ' × ' + fr(1 + p / 500) + ' = ' + fr(v) + '.']; break;
+     case 3: q = 'Un vélo à ' + a * 2 + ' € est d’abord réduit de ' + p + ' %. Quel est son prix soldé ?'; v = cl(a * 2 * (1 - p / 100)); st = [a * 2 + ' × ' + fr(1 - p / 100) + ' = ' + fr(v) + ' €.']; break;
+     case 4: var s = rnd(12, 30) * 100; q = 'Un salaire de ' + fr(s) + ' € augmente de 2 %. Nouveau salaire ?'; v = cl(s * 1.02); st = [fr(s) + ' × 1,02 = ' + fr(v) + ' €.']; break;
+     case 5: q = 'Un forfait téléphone de ' + fr(a / 10) + ' € par mois baisse de ' + p + ' %. Nouveau prix mensuel ?'; v = cl(a / 10 * (1 - p / 100)); if (!M.isInt(v * 100)) return this.g(k); st = [fr(a / 10) + ' × ' + fr(1 - p / 100) + ' = ' + fr(v) + ' €.']; break;
+     case 6: var n = rnd(20, 32), r = pick([25, 50, 75]); q = 'Dans une classe de ' + (n - n % 4) + ' élèves, ' + r + ' % font du sport en club. Combien d’élèves cela représente-t-il ?'; v = (n - n % 4) * r / 100; u = 'élèves'; st = [(n - n % 4) + ' × ' + r + ' ÷ 100 = ' + v + '.']; break;
+     case 7: var m = rnd(4, 20) * 50; q = 'Un yaourt de ' + m + ' g contient 4 % de matières grasses. Quelle masse de matières grasses ?'; v = cl(m * 0.04); u = 'g'; st = [m + ' × 4 ÷ 100 = ' + fr(v) + ' g.']; break;
+     case 8: var pc = pick([5, 10, 15, 20]); q = 'Une console coûte ' + a * 2 + ' €. Son prix augmente de ' + pc + ' %. Nouveau prix ?'; v = cl(a * 2 * (1 + pc / 100)); st = [a * 2 + ' × ' + fr(1 + pc / 100) + ' = ' + fr(v) + ' €.']; break;
+     case 9: var b = rnd(4, 16) * 25, sold = rnd(1, 3) * 25; if (sold >= b) sold = 25; q = 'Un livre coûtait ' + fr(b / 10) + ' € ; il coûte maintenant ' + fr((b - sold) / 10) + ' €. De quel pourcentage a-t-il baissé ?'; v = cl(sold / b * 100); u = '%'; if (!M.isInt(v * 10)) return this.g(k); st = ['Baisse : ' + fr(sold / 10) + ' €. ' + fr(sold / 10) + ' ÷ ' + fr(b / 10) + ' × 100 = ' + fr(v) + ' %.']; break;
+     case 10: var e = rnd(500, 1500); q = 'Un collège de ' + e + ' élèves compte ' + p + ' % d’externes. Combien d’élèves ne sont pas externes ?'; v = cl(e * (100 - p) / 100); u = 'élèves'; if (!M.isInt(v)) return this.g(k); st = [(100 - p) + ' % ne sont pas externes : ' + e + ' × ' + (100 - p) + ' ÷ 100 = ' + v + '.']; break;
+     default: q = 'Un smartphone perd ' + p + ' % de sa valeur la première année. Il valait ' + a * 5 + ' €. Combien vaut-il après un an ?'; v = cl(a * 5 * (1 - p / 100)); st = [a * 5 + ' × ' + fr(1 - p / 100) + ' = ' + fr(v) + ' €.'];
+    }
+    return {type: 'num', q: q, v: v, unit: u, steps: st, key: 'k' + k}; }}
+];
+EX.push(
+ {id: 'n35a', lv: 1, n: 'N35', t: 'Calculer une vitesse', d: 'v = d ÷ t.', c: 'Calcule la vitesse moyenne en km/h.', a: 'v = d ÷ t, avec t en heures pour obtenir des km/h. 30 min = 0,5 h ; 15 min = 0,25 h ; 45 min = 0,75 h.',
+  g: function(){ var v = pick([4, 5, 12, 15, 18, 20, 30, 40, 50, 60, 80, 90, 100, 120]), t = pick([15, 30, 45, 60, 90, 120, 150, 180, 20, 40]), d = cl(v * t / 60); if (!M.isInt(d * 10)) return this.g();
+    return {type: 'num', q: 'On parcourt ' + fr(d) + ' km en ' + hm(t) + '. Vitesse moyenne ?', v: v, unit: 'km/h', steps: [hm(t) + ' = ' + fr(cl(t / 60)) + ' h.', 'v = ' + fr(d) + ' ÷ ' + fr(cl(t / 60)) + ' = ' + v + ' km/h.'], traps: [[cl(d / t), 'Il faut la durée en heures, pas en minutes.']], key: d + ':' + t}; }},
+ {id: 'n35b', lv: 2, n: 'N35', t: 'Calculer une distance', d: 'd = v × t.', c: 'Calcule la distance en km.', a: 'd = v × t. Convertis la durée en heures : 1 h 30 min = 1,5 h ; 20 min = 1/3 h.',
+  g: function(){ var v = pick([5, 12, 15, 30, 45, 60, 80, 90, 110, 120, 130]), t = pick([15, 30, 45, 90, 120, 150, 75, 20, 40, 100]), d = cl(v * t / 60); if (!M.isInt(d * 10)) return this.g();
+    return {type: 'num', q: 'À ' + v + ' km/h de moyenne, quelle distance parcourt-on en ' + hm(t) + ' ?', v: d, unit: 'km', steps: ['En 1 h : ' + v + ' km ; en ' + hm(t) + (t >= 60 ? ' (' + t + ' min)' : '') + ' : ' + v + ' × ' + t + ' ÷ 60 = ' + fr(d) + ' km.'], traps: [[v * t, 'La durée doit être en heures.']], key: v + ':' + t}; }},
+ {id: 'n35c', lv: 2, n: 'N35', t: 'Calculer une durée', d: 't = d ÷ v.', c: 'Calcule la durée du trajet, en minutes.', a: 't = d ÷ v donne une durée en heures ; multiplie par 60 pour avoir des minutes.',
+  g: function(){ var v = pick([4, 5, 10, 12, 15, 20, 30, 40, 45, 60, 80, 90, 120]), t = pick([15, 20, 30, 40, 45, 50, 75, 90, 105, 120, 150]), d = cl(v * t / 60); if (!M.isInt(d * 10)) return this.g();
+    return {type: 'num', q: 'Combien de temps faut-il pour parcourir ' + fr(d) + ' km à ' + v + ' km/h ?', v: t, unit: 'min', steps: ['t = ' + fr(d) + ' ÷ ' + v + ' h ; en minutes : ' + fr(d) + ' ÷ ' + v + ' × 60 = ' + t + ' min' + (t >= 60 ? ' (' + hm(t) + ')' : '') + '.'], traps: [[cl(t / 60), 'C’est la durée en heures : convertis en minutes.']], key: d + ':' + v}; }},
+ {id: 'n35d', lv: 3, n: 'N35', t: 'km/h et m/s', d: 'Convertir une vitesse.', c: 'Convertis la vitesse.', a: '1 m/s = 3,6 km/h (3 600 m en une heure). Donc km/h → m/s : diviser par 3,6 ; m/s → km/h : multiplier par 3,6.',
+  g: function(){ var ms = pick([5, 10, 15, 20, 25, 30, 2.5, 12.5, 40, 50]), kh = cl(ms * 3.6), w = Math.random() < 0.5;
+    return w ? {type: 'num', q: fr(ms) + ' m/s = ? km/h', v: kh, unit: 'km/h', steps: [fr(ms) + ' m en 1 s, donc ' + fr(ms) + ' × 3 600 = ' + fr(ms * 3600) + ' m en 1 h, soit ' + fr(kh) + ' km/h.']} : {type: 'num', q: fr(kh) + ' km/h = ? m/s', v: ms, unit: 'm/s', steps: [fr(kh) + ' km/h = ' + fr(kh * 1000) + ' m en 3 600 s ; ' + fr(kh * 1000) + ' ÷ 3 600 = ' + fr(ms) + ' m/s.']}; }}
+);
+EX.push(
+ {id: 'n36a', lv: 2, n: 'N36', nq: 4, t: 'Grandeurs produits et quotients', d: 'Énergie, débit, densité…', c: 'Calcule (arrondi au dixième si besoin).', a: 'Énergie (kWh) = puissance (kW) × durée (h). Débit = volume ÷ durée. Masse volumique = masse ÷ volume. Densité de population = habitants ÷ surface.',
+  g: function(){ var k = rnd(0, 7), q, v, u, st, x;
+    if (k === 0){ var P = pick([0.5, 1, 1.5, 2, 2.5]), t = pick([2, 3, 4, 1.5, 0.5]); v = cl(P * t); q = 'Un radiateur de ' + fr(P) + ' kW fonctionne ' + fr(t) + ' h. Quelle énergie consomme-t-il ?'; u = 'kWh'; st = [fr(P) + ' × ' + fr(t) + ' = ' + fr(v) + ' kWh.']; }
+    else if (k === 1){ var W = pick([60, 100, 1500, 2000, 800]), h = pick([2, 3, 5, 10]); v = cl(W * h / 1000); q = 'Un appareil de ' + W + ' W fonctionne ' + h + ' h. Énergie consommée, en kWh ?'; u = 'kWh'; st = [W + ' W = ' + fr(W / 1000) + ' kW ; ' + fr(W / 1000) + ' × ' + h + ' = ' + fr(v) + ' kWh.']; }
+    else if (k === 2){ var V = rnd(2, 20) * 10, m = pick([2, 4, 5, 8, 10]); v = cl(V / m); q = 'Un robinet remplit ' + V + ' L en ' + m + ' min. Quel est son débit en L/min ?'; u = 'L/min'; st = [V + ' ÷ ' + m + ' = ' + fr(v) + ' L/min.']; }
+    else if (k === 3){ var d = pick([6, 8, 12, 15]), mn = pick([10, 20, 30, 45]); v = d * mn; q = 'Une douche débite ' + d + ' L/min. Volume d’eau pour une douche de ' + mn + ' min ?'; u = 'L'; st = [d + ' × ' + mn + ' = ' + v + ' L.']; }
+    else if (k === 4){ var mv = pick([2.7, 7.8, 1, 0.9, 11.3]), vol = pick([10, 20, 50, 100]); v = cl(mv * vol); q = 'Un métal a une masse volumique de ' + fr(mv) + ' g/cm³. Masse d’un objet de ' + vol + ' cm³ ?'; u = 'g'; st = [fr(mv) + ' × ' + vol + ' = ' + fr(v) + ' g.']; }
+    else if (k === 5){ var hab = rnd(20, 900) * 100, S = rnd(10, 120); x = hab / S; v = rd(x, 1); q = 'Une commune de ' + fr(hab) + ' habitants a une superficie de ' + S + ' km². Densité de population (habitants par km²) ?'; u = 'hab./km²'; st = [fr(hab) + ' ÷ ' + S + ' ≈ ' + fr(v) + ' hab./km².']; return {type: 'num', q: q, v: v, x: x, d: 1, unit: u, steps: st, key: 'k' + k + hab}; }
+    else if (k === 6){ var pr = pick([0.2, 0.25, 0.18, 0.15]), e = rnd(50, 400); v = cl(pr * e); q = 'Le kWh coûte ' + fr(pr) + ' €. Prix de ' + e + ' kWh ?'; u = '€'; st = [fr(pr) + ' × ' + e + ' = ' + fr(v) + ' €.']; }
+    else { var c = pick([5, 6, 7, 8]), km = rnd(1, 9) * 50; v = cl(c * km / 100); q = 'Une voiture consomme ' + c + ' L aux 100 km. Combien consomme-t-elle pour ' + km + ' km ?'; u = 'L'; st = [c + ' × ' + km + ' ÷ 100 = ' + fr(v) + ' L.']; }
+    return {type: 'num', q: q, v: v, unit: u, steps: st, key: 'k' + k + q}; }},
+ {id: 'n36b', lv: 3, n: 'N36', t: 'Convertir une grandeur composée', d: 'L/min, m³/h, g/cm³…', c: 'Convertis.', a: 'Convertis séparément chaque unité : par exemple 3 L/min = 3 × 60 L/h = 180 L/h ; 1 m³ = 1 000 L.',
+  g: function(){ var k = rnd(0, 4), q, v, u, st;
+    if (k === 0){ var a = rnd(2, 30); v = a * 60; q = a + ' L/min = ? L/h'; u = 'L/h'; st = ['En 1 h = 60 min : ' + a + ' × 60 = ' + v + ' L, donc ' + v + ' L/h.']; }
+    else if (k === 1){ var b = rnd(2, 20) * 60; v = b / 60; q = b + ' L/h = ? L/min'; u = 'L/min'; st = [b + ' ÷ 60 = ' + v + ' L/min.']; }
+    else if (k === 2){ var c = rnd(1, 9); v = c * 1000; q = c + ' m³/h = ? L/h'; u = 'L/h'; st = ['1 m³ = 1 000 L : ' + c + ' m³/h = ' + fr(v) + ' L/h.']; }
+    else if (k === 3){ var d = pick([1, 2.7, 7.8, 0.9, 1.2]); v = cl(d * 1000); q = fr(d) + ' g/cm³ = ? kg/m³'; u = 'kg/m³'; st = ['1 m³ = 1 000 000 cm³, donc ' + fr(d) + ' × 1 000 000 g = ' + fr(v) + ' kg dans 1 m³.']; }
+    else { var e = rnd(2, 12) * 60; v = cl(e / 3.6); if (!M.isInt(v * 10)) return this.g(); q = fr(e) + ' km/h = ? m/s'; u = 'm/s'; st = [fr(e) + ' ÷ 3,6 = ' + fr(v) + ' m/s.']; }
+    return {type: 'num', q: q, v: v, unit: u, steps: st, key: q}; }}
+);
+var NOTIONS = [
+ {n: 'N34', t: 'Calculer avec des pourcentages', r: 'p % de x = x × p ÷ 100. Augmenter de p % : multiplier par 1 + p/100 ; baisser de p % : multiplier par 1 − p/100.'},
+ {n: 'N35', t: 'Calculer une vitesse, une distance ou une durée', r: 'v = d ÷ t ; d = v × t ; t = d ÷ v (durées en heures pour des km/h). 1 m/s = 3,6 km/h.'},
+ {n: 'N36', t: 'Utiliser et convertir des grandeurs composées', r: 'grandeur produit : énergie (kWh) = puissance × durée ; grandeur quotient : débit (L/min), masse volumique (g/cm³), vitesse (km/h). On convertit chaque unité séparément.'}
+];
+
+M.start({key: '4e-s15', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

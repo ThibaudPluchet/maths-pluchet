@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : réciproque de Pythagore et problèmes (4e, séquence 14) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 14 : démontrer qu’un triangle est rectangle ou non, problèmes avec le théorème de Pythagore et sa réciproque.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 14 · Triangle rectangle (2)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var fn = fr, isInt = M.isInt, RAC = M.RAC, ARR = M.ARR;
+var fn = fr, isInt = M.isInt, RAC = M.RAC, ARR = M.ARR;
+function letters(){ var L = 'ABCDEFGHIJKLMNPRSTUVWXYZ'.split(''); shuffle(L); return L.slice(0, 3); }
+function seg(p, q){ return '[' + [p, q].sort().join('') + ']'; }
+function nm(p, q){ return [p, q].sort().join(''); }
+var ARR = {0: 'à l’unité', 1: 'au dixième', 2: 'au centième'};
+function tri(){ var t = letters(), r = rnd(0, 2); var R = t[r], o = t.filter(function(_, i){ return i !== r; }); shuffle(o);
+  return {name: t.join(''), R: R, P: o[0], Q: o[1]}; }
+// figure SVG : RP = a, RQ = b (longueurs affichées : labels), "?" sur le côté cherché
+function fig(T, a, b, lab){ return M.figTri(T, a, b, lab); }
+var TRIP2 = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25], [6, 8, 10], [9, 12, 15], [20, 21, 29], [12, 16, 20], [15, 20, 25], [9, 40, 41]];
+// en mm : longueurs entières seulement ; en cm, dm, m : décimaux possibles
+function triple(u){ var t = pick(TRIP2), k = pick(u === 'mm' ? [1, 2, 3, 10] : t[2] > 20 ? [1, 1, 0.5, 0.1] : [1, 1, 2, 0.5, 3, 10, 0.1]); return t.map(function(v){ return cl(v * k); }); }
+function len(u){ return u === 'mm' ? rnd(3, 40) : Math.random() < 0.7 ? rnd(2, 15) : cl(rnd(15, 120) / 10); }
+function unit(){ return pick(['cm', 'cm', 'cm', 'm', 'mm', 'dm']); }
+function sqrtTxt(s){ return RAC + fn(s); }
+// réponse numérique : v attendu (exact ou arrondi d décimales), x valeur exacte, pièges à reconnaître
+function numQ(o){ o.type = 'num'; return o; }
+function pyth(hyp, figure, opts){
+  opts = opts || {};
+  var T = tri(), u = unit(), a, b, c, exact = Math.random() < 0.5, d = 1;
+  if (exact){ var t = triple(u); if (Math.random() < 0.5) t = [t[1], t[0], t[2]]; a = t[0]; b = t[1]; c = t[2]; }
+  else if (hyp){ do { a = len(u); b = len(u); } while (isInt(Math.sqrt(sq(a) + sq(b))) || a === b && Math.random() < 0.7); c = Math.sqrt(sq(a) + sq(b)); }
+  else { do { c = len(u); b = len(u); } while (b >= c || c - b < 0.8 || isInt(Math.sqrt(sq(c) - sq(b)))); a = Math.sqrt(sq(c) - sq(b)); }
+  if (!exact) d = pick([1, 1, 1, 0, 2]);
+  var RP = nm(T.R, T.P), RQ = nm(T.R, T.Q), PQ = nm(T.P, T.Q);
+  var q = 'Le triangle ' + T.name + ' est rectangle en ' + T.R + '. ', lab = {}, ask, x, st = [], traps = [];
+  st.push('Le triangle ' + T.name + ' est rectangle en ' + T.R + ', d’après le théorème de Pythagore :', PQ + SQ + ' = ' + RP + SQ + ' + ' + RQ + SQ);
+  if (hyp){
+    ask = PQ; x = Math.sqrt(sq(a) + sq(b)); lab = {a: fn(a) + ' ' + u, b: fn(b) + ' ' + u, c: '?'};
+    q += figure ? 'Calcule ' + PQ : RP + ' = ' + fn(a) + ' ' + u + ' et ' + RQ + ' = ' + fn(b) + ' ' + u + '. Calcule ' + PQ;
+    st.push(PQ + SQ + ' = ' + fn(a) + SQ + ' + ' + fn(b) + SQ, PQ + SQ + ' = ' + fn(sq(a)) + ' + ' + fn(sq(b)) + ' = ' + fn(sq(a) + sq(b)));
+    traps = [[cl(a + b), 'On additionne les carrés des longueurs, pas les longueurs elles-mêmes.'], [cl(sq(a) + sq(b)), 'Tu as trouvé ' + PQ + SQ + ' : il reste à prendre la racine carrée.']];
+    var s2 = cl(sq(a) + sq(b));
+  } else {
+    ask = RP; x = Math.sqrt(sq(c) - sq(b)); lab = {a: '?', b: fn(b) + ' ' + u, c: fn(c) + ' ' + u};
+    q += figure ? 'Calcule ' + RP : PQ + ' = ' + fn(c) + ' ' + u + ' et ' + RQ + ' = ' + fn(b) + ' ' + u + '. Calcule ' + RP;
+    st.push(fn(c) + SQ + ' = ' + RP + SQ + ' + ' + fn(b) + SQ, RP + SQ + ' = ' + fn(c) + SQ + ' − ' + fn(b) + SQ + ' = ' + fn(sq(c)) + ' − ' + fn(sq(b)) + ' = ' + fn(sq(c) - sq(b)));
+    traps = [[Math.sqrt(sq(c) + sq(b)), RP + ' n’est pas l’hypoténuse : il faut soustraire les carrés, pas les additionner.'], [cl(c - b), 'On soustrait les carrés des longueurs, pas les longueurs elles-mêmes.'], [cl(sq(c) - sq(b)), 'Tu as trouvé ' + RP + SQ + ' : il reste à prendre la racine carrée.'], [cl(sq(c) + sq(b)), RP + ' n’est pas l’hypoténuse : il faut soustraire les carrés.']];
+    var s2 = cl(sq(c) - sq(b));
+  }
+  var v = exact ? cl(x) : rd(x, d);
+  if (exact) st.push(ask + ' = ' + sqrtTxt(s2) + ' = ' + fn(v) + ' ' + u);
+  else st.push(ask + ' = ' + sqrtTxt(s2) + ' ≈ ' + fn(v) + ' ' + u + ' (' + ARR[d] + ')');
+  q += exact ? '.' : ', arrondi ' + ARR[d] + '.';
+  if (!figure && Math.random() < 0.5) q += ' (Fais d’abord une figure à main levée.)';
+  return numQ({q: q, svg: figure ? fig(T, a, b, lab) : null, lab: ask + ' ' + (exact ? '=' : '≈'), unit: u, v: v, x: x, d: exact ? undefined : d, traps: traps, steps: st, key: q});
+}
+
+var TRIP = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25], [6, 8, 10], [9, 12, 15], [20, 21, 29], [12, 16, 20], [9, 40, 41], [12, 35, 37]];
+// trois longueurs : rectangle (triplet mis à l'échelle) ou presque
+function three(){ var t = pick(TRIP), k = pick([1, 1, 2, 0.5, 0.1, 3, 10, 1.5]), s = t.map(function(v){ return cl(v * k); }), yes = Math.random() < 0.5;
+  if (!yes){ var i = rnd(0, 2), dlt = k < 1 ? 0.1 : k >= 10 ? 1 : pick([1, -1]); s[i] = cl(s[i] + dlt * pick([1, -1])); if (s[i] <= 0) s[i] = cl(s[i] + 2 * Math.abs(dlt)); }
+  var o = s.slice().sort(function(a, b){ return a - b; }); yes = Math.abs(sq(o[2]) - sq(o[0]) - sq(o[1])) < 1e-9; if (o[0] + o[1] <= o[2]) return three();
+  return {s: s, o: o, yes: yes}; }
+function tname(){ var L = M.letters(3); return L; }
+function proof(L, s, o, yes, u){ var map = {}; [[L[0] + L[1], s[0]], [L[1] + L[2], s[1]], [L[0] + L[2], s[2]]].forEach(function(p){ map[p[0]] = p[1]; });
+  var big = Object.keys(map).filter(function(k){ return map[k] === o[2]; })[0], others = Object.keys(map).filter(function(k){ return k !== big; }), R = L.filter(function(c){ return big.indexOf(c) < 0; })[0];
+  return ['Le plus grand côté est [' + big + '].', big + SQ + ' = ' + fr(o[2]) + SQ + ' = ' + fr(sq(o[2])) + ' et ' + others[0] + SQ + ' + ' + others[1] + SQ + ' = ' + fr(map[others[0]]) + SQ + ' + ' + fr(map[others[1]]) + SQ + ' = ' + fr(sq(map[others[0]])) + ' + ' + fr(sq(map[others[1]])) + ' = ' + fr(cl(sq(map[others[0]]) + sq(map[others[1]]))) + '.',
+    yes ? 'Les deux résultats sont égaux : d’après la réciproque du théorème de Pythagore, le triangle est rectangle en ' + R + '.' : 'Les deux résultats sont différents : d’après le théorème de Pythagore (contraposée), le triangle n’est pas rectangle.'].concat([R]); }
+var EX = [
+ {id: 'n32a', lv: 1, n: 'N32', t: 'Que faut-il comparer ?', d: 'Le plus grand côté d’abord.',
+  c: 'Choisis la bonne réponse.', a: 'On calcule séparément le carré du plus grand côté, et la somme des carrés des deux autres. S’ils sont égaux, le triangle est rectangle (en face du plus grand côté).',
+  g: function(){ var L = tname(), T = three(), s = T.s, names = [L[0] + L[1], L[1] + L[2], L[0] + L[2]], bi = s.indexOf(T.o[2]), o = names.filter(function(_, i){ return i !== bi; });
+    var good = names[bi] + SQ + ' et ' + o[0] + SQ + ' + ' + o[1] + SQ, ch = shuffle([good, o[0] + SQ + ' et ' + names[bi] + SQ + ' + ' + o[1] + SQ, names[bi] + ' et ' + o[0] + ' + ' + o[1]]);
+    var q = 'Dans le triangle ' + L.join('') + ', ' + names.map(function(n, i){ return n + ' = ' + fr(s[i]) + ' cm'; }).join(', ') + '. Pour savoir s’il est rectangle, que compare-t-on ?';
+    return {type: 'ch', q: q, ch: ch, ans: ch.indexOf(good), steps: ['Le plus grand côté est [' + names[bi] + '] : on compare ' + good + '.'], key: q}; }},
+ {id: 'n32b', lv: 2, n: 'N32', nq: 4, t: 'Rectangle ou pas ?', d: 'Calculer et conclure.',
+  c: 'Le triangle est-il rectangle ? Fais le calcul au brouillon (calculatrice autorisée).', a: 'Exemple : 5² = 25 et 3² + 4² = 9 + 16 = 25, égaux : le triangle est rectangle. Si les deux résultats sont différents, il ne l’est pas.',
+  g: function(){ var L = tname(), T = three(), u = pick(['cm', 'm', 'mm']), names = [L[0] + L[1], L[1] + L[2], L[0] + L[2]], q = 'Le triangle ' + L.join('') + ' a pour côtés ' + names.map(function(n, i){ return n + ' = ' + fr(T.s[i]) + ' ' + u; }).join(', ') + '. Est-il rectangle ?';
+    var p = proof(L, T.s, T.o, T.yes, u); p.pop(); return {type: 'ch', q: q, ch: ['Oui', 'Non'], ans: T.yes ? 0 : 1, steps: p, key: q}; }},
+ {id: 'n32c', lv: 2, n: 'N32', nq: 4, t: 'Rectangle en quel point ?', d: 'Le sommet de l’angle droit.',
+  c: 'Le triangle est rectangle. Choisis le sommet de l’angle droit.', a: 'L’angle droit est en face du plus grand côté (l’hypoténuse) : c’est le sommet qui n’appartient pas au plus grand côté.',
+  g: function(){ var L = tname(), t = pick(TRIP), k = pick([1, 2, 0.5, 3]), s = shuffle(t.map(function(v){ return cl(v * k); })), o = s.slice().sort(function(a, b){ return a - b; });
+    var names = [L[0] + L[1], L[1] + L[2], L[0] + L[2]], p = proof(L, s, o, true, 'cm'), R = p.pop(), ch = L.slice().sort();
+    return {type: 'ch', q: 'Le triangle ' + L.join('') + ' a pour côtés ' + names.map(function(n, i){ return n + ' = ' + fr(s[i]) + ' cm'; }).join(', ') + '. En quel sommet est-il rectangle ?', ch: ch, ans: ch.indexOf(R), steps: p, key: L.join('') + s.join()}; }},
+ {id: 'n32d', lv: 2, n: 'N32', t: 'Vrai ou faux ?', d: 'Réciproque, contraposée, pièges.',
+  c: 'Chaque affirmation est-elle vraie ou fausse ?', a: 'Théorème : si rectangle, alors égalité. Réciproque : si égalité, alors rectangle. Contraposée : si pas égalité, alors pas rectangle.',
+  g: function(){ var L = tname(), A = L[0], B = L[1], C = L[2], T = [
+      ['Si ' + B + C + SQ + ' = ' + A + B + SQ + ' + ' + A + C + SQ + ', alors le triangle ' + A + B + C + ' est rectangle en ' + A + '.', true, 'C’est la réciproque du théorème de Pythagore.'],
+      ['Si ' + B + C + SQ + ' = ' + A + B + SQ + ' + ' + A + C + SQ + ', alors le triangle ' + A + B + C + ' est rectangle en ' + B + '.', false, 'L’angle droit est en face de [' + B + C + '], donc en ' + A + '.'],
+      ['Un triangle de côtés 3, 4 et 5 est rectangle.', true, '5² = 25 = 3² + 4².'],
+      ['Un triangle de côtés 4, 5 et 6 est rectangle.', false, '6² = 36 et 4² + 5² = 41 : différents.'],
+      ['Pour prouver qu’un triangle est rectangle, on utilise le théorème de Pythagore.', false, 'On utilise sa réciproque ; le théorème sert à calculer une longueur dans un triangle déjà rectangle.'],
+      ['Pour prouver qu’un triangle n’est pas rectangle, on utilise la contraposée du théorème de Pythagore.', true, 'Si l’égalité est fausse, le triangle n’est pas rectangle.'],
+      ['Si on multiplie les trois côtés d’un triangle rectangle par 10, il reste rectangle.', true, 'Les carrés sont tous multipliés par 100 : l’égalité reste vraie.'],
+      ['On peut comparer le carré de n’importe quel côté à la somme des carrés des deux autres.', false, 'Il faut prendre le plus grand côté.'],
+      ['Un triangle de côtés 6, 8 et 10 est rectangle.', true, '10² = 100 = 6² + 8² = 36 + 64.'],
+      ['Si ' + B + C + SQ + ' ≠ ' + A + B + SQ + ' + ' + A + C + SQ + ' avec [' + B + C + '] le plus grand côté, le triangle peut quand même être rectangle.', false, 'Non : s’il était rectangle, l’égalité serait vraie.'],
+      ['Un triangle de côtés 0,3 ; 0,4 et 0,5 est rectangle.', true, '0,5² = 0,25 = 0,09 + 0,16.'],
+      ['Un triangle de côtés 2, 3 et 4 est rectangle.', false, '4² = 16 et 2² + 3² = 13.']];
+    var i = rnd(0, T.length - 1), p = T[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+
+];
+
+EX.push(
+ {id: 'n33a', lv: 2, nq: 3, n: 'N33', t: 'Calculer une longueur en situation', d: 'Échelles, écrans, terrains…',
+  c: 'Lis l’énoncé, fais une figure à main levée, repère le triangle rectangle, puis calcule. Calculatrice autorisée.', a: 'Repère l’angle droit (mur vertical et sol horizontal, côtés d’un rectangle…), puis l’hypoténuse. Mets toutes les longueurs dans la même unité avant de calculer, et contrôle que l’hypoténuse reste le plus long côté.',
+  g: function(k){ if (k === undefined) k = rnd(0, 12); var q, ask, u, v, x, d = 1, st = [], traps = [], A, B, C;
+    function hyp(a, b){ x = Math.sqrt(sq(a) + sq(b)); return x; }
+    function leg(c, b){ x = Math.sqrt(sq(c) - sq(b)); return x; }
+    if (k === 0){ do { C = cl(rnd(30, 80) / 10); B = cl(rnd(8, 20) / 10); } while (B >= C / 2); leg(C, B); u = 'm';
+      q = 'Une échelle de ' + fn(C) + ' m est posée contre un mur vertical, sur un sol horizontal. Son pied est à ' + fn(B) + ' m du mur. À quelle hauteur l’échelle touche-t-elle le mur ? Arrondis au dixième.'; ask = 'h';
+      st = ['Le mur et le sol forment un angle droit : l’échelle est l’hypoténuse.', fn(C) + SQ + ' = h' + SQ + ' + ' + fn(B) + SQ, 'h' + SQ + ' = ' + fn(sq(C)) + ' − ' + fn(sq(B)) + ' = ' + fn(sq(C) - sq(B))];
+      traps = [[Math.sqrt(sq(C) + sq(B)), 'L’échelle est l’hypoténuse : il faut soustraire les carrés.'], [cl(C - B), 'On soustrait les carrés, pas les longueurs.']]; }
+    else if (k === 1){ A = pick([16, 32, 48, 64, 80, 100, 120]); B = cl(A * 9 / 16); if (!isInt(B)) B = Math.round(B); hyp(A, B); u = 'cm'; d = 0;
+      q = 'Un écran rectangulaire mesure ' + fn(A) + ' cm de large et ' + fn(B) + ' cm de haut. Calcule la longueur de sa diagonale, arrondie au centimètre.'; ask = 'd';
+      st = ['Les côtés d’un rectangle sont perpendiculaires : la diagonale est l’hypoténuse.', 'd' + SQ + ' = ' + fn(A) + SQ + ' + ' + fn(B) + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[cl(A + B), 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 2){ A = rnd(90, 120); B = rnd(45, 90); hyp(A, B); u = 'm'; d = 0;
+      q = 'Un terrain de football rectangulaire mesure ' + A + ' m sur ' + B + ' m. Un joueur le traverse en diagonale, d’un coin au coin opposé. Quelle distance parcourt-il, arrondie au mètre ?'; ask = 'd';
+      st = ['Les côtés du terrain sont perpendiculaires : la diagonale est l’hypoténuse.', 'd' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[A + B, 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 3){ A = pick([1, 2, 3, 4, 5, 6, 7, 8, 10, 1.5, 2.5]); hyp(A, A); u = pick(['cm', 'm', 'dm']); d = pick([1, 2]);
+      q = 'Calcule la longueur de la diagonale d’un carré de côté ' + fn(A) + ' ' + u + ', arrondie ' + ARR[d] + '.'; ask = 'd';
+      st = ['Les côtés d’un carré sont perpendiculaires : la diagonale est l’hypoténuse.', 'd' + SQ + ' = ' + fn(A) + SQ + ' + ' + fn(A) + SQ + ' = ' + fn(2 * sq(A))];
+      traps = [[cl(2 * A), 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 4){ var t = pick(TRIP.slice(0, 6)); A = t[0] * 10; B = t[1] * 10; d = undefined; x = t[2] * 10; u = 'cm';
+      var am = cl(A / 100); q = 'Un triangle ABC est rectangle en A, avec AB = ' + fn(am) + ' m et AC = ' + B + ' cm. Calcule BC en centimètres.'; ask = 'BC';
+      st = ['Même unité d’abord : AB = ' + fn(am) + ' m = ' + A + ' cm.', 'ABC est rectangle en A : BC' + SQ + ' = AB' + SQ + ' + AC' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(A * A) + ' + ' + fn(B * B) + ' = ' + fn(A * A + B * B)];
+      traps = [[Math.sqrt(am * am + B * B), 'Les deux longueurs doivent être dans la même unité : convertis ' + fn(am) + ' m en cm.'], [A + B, 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 5){ A = cl(rnd(10, 60) / 10); B = cl(rnd(10, 60) / 10); hyp(A, B); u = 'km';
+      q = 'Un bateau quitte le port et parcourt ' + fn(A) + ' km vers l’est, puis ' + fn(B) + ' km vers le nord. À quelle distance du port est-il, à vol d’oiseau ? Arrondis au dixième.'; ask = 'd';
+      st = ['L’est et le nord sont perpendiculaires : la distance cherchée est l’hypoténuse.', 'd' + SQ + ' = ' + fn(A) + SQ + ' + ' + fn(B) + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[cl(A + B), 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 6){ do { C = rnd(20, 60); B = rnd(8, 30); } while (B >= C - 5); leg(C, B); u = 'm';
+      q = 'Le fil d’un cerf-volant, bien tendu, mesure ' + C + ' m. L’enfant qui le tient est à ' + B + ' m du point du sol situé juste sous le cerf-volant. À quelle hauteur est le cerf-volant (on néglige la taille de l’enfant) ? Arrondis au dixième.'; ask = 'h';
+      st = ['La hauteur est verticale, le sol horizontal : le fil est l’hypoténuse.', C + SQ + ' = h' + SQ + ' + ' + B + SQ, 'h' + SQ + ' = ' + fn(sq(C)) + ' − ' + fn(sq(B)) + ' = ' + fn(sq(C) - sq(B))];
+      traps = [[Math.sqrt(sq(C) + sq(B)), 'Le fil est l’hypoténuse : il faut soustraire les carrés.'], [C - B, 'On soustrait les carrés, pas les longueurs.']]; }
+    else if (k === 7){ var hc = rnd(20, 60), hm = cl(hc / 100); A = cl(rnd(30, 90) / 10); hyp(A, hm); u = 'm'; d = 2;
+      q = 'Une rampe d’accès pour fauteuil roulant monte de ' + hc + ' cm sur une distance horizontale de ' + fn(A) + ' m. Quelle est la longueur de la rampe, en mètres, arrondie au centième ?'; ask = 'L';
+      st = ['Même unité d’abord : ' + hc + ' cm = ' + fn(hm) + ' m. La hauteur est verticale, le sol horizontal : la rampe est l’hypoténuse.', 'L' + SQ + ' = ' + fn(A) + SQ + ' + ' + fn(hm) + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(hm)) + ' = ' + fn(sq(A) + sq(hm))];
+      traps = [[Math.sqrt(sq(A) + hc * hc), 'Les deux longueurs doivent être dans la même unité : convertis ' + hc + ' cm en m.'], [cl(A + hm), 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 8){ A = rnd(6, 15); B = rnd(3, 9); hyp(A, B); u = 'm';
+      q = 'Un câble relie le haut d’un mât vertical de ' + A + ' m à un piquet planté dans le sol horizontal, à ' + B + ' m du pied du mât. Quelle est la longueur du câble, arrondie au dixième ?'; ask = 'L';
+      st = ['Le mât est vertical, le sol horizontal : le câble est l’hypoténuse.', 'L' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[A + B, 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 9){ var W = 2 * rnd(3, 6), hw = W / 2; C = cl(hw + rnd(2, 8) / 2); leg(C, hw); u = 'm';
+      q = 'Le toit d’une maison a la forme d’un triangle isocèle : la façade mesure ' + W + ' m de large et chaque pan du toit mesure ' + fn(C) + ' m. Quelle est la hauteur du toit (du milieu de la façade jusqu’au sommet), arrondie au dixième ?'; ask = 'h';
+      st = ['La hauteur tombe au milieu de la façade et lui est perpendiculaire : on obtient un triangle rectangle de côtés ' + hw + ' m (moitié de ' + W + ' m) et h, d’hypoténuse le pan du toit.', fn(C) + SQ + ' = h' + SQ + ' + ' + hw + SQ, 'h' + SQ + ' = ' + fn(sq(C)) + ' − ' + sq(hw) + ' = ' + fn(sq(C) - sq(hw))];
+      traps = [[Math.sqrt(sq(C) - sq(W)), 'La hauteur tombe au milieu de la façade : utilise la moitié de la largeur, ' + hw + ' m.'], [Math.sqrt(sq(C) + sq(hw)), 'Le pan du toit est l’hypoténuse : il faut soustraire les carrés.']]; }
+    else if (k === 10){ var t2 = pick([[3, 4, 5, 4], [3, 4, 5, 5], [3, 4, 5, 6], [5, 12, 13, 2], [8, 15, 17, 1], [6, 8, 10, 2]]); A = t2[1] * t2[3]; B = t2[0] * t2[3]; C = t2[2] * t2[3]; d = undefined; x = B; u = 'cm';
+      q = 'L’écran rectangulaire d’une tablette a une diagonale de ' + C + ' cm et une largeur de ' + A + ' cm. Calcule sa hauteur.'; ask = 'h';
+      st = ['Les côtés de l’écran sont perpendiculaires : la diagonale est l’hypoténuse.', C + SQ + ' = ' + A + SQ + ' + h' + SQ, 'h' + SQ + ' = ' + fn(C * C) + ' − ' + fn(A * A) + ' = ' + fn(B * B)];
+      traps = [[Math.sqrt(C * C + A * A), 'La diagonale est l’hypoténuse : il faut soustraire les carrés.'], [C - A, 'On soustrait les carrés, pas les longueurs.']]; }
+    else if (k === 11){ A = rnd(30, 80); B = rnd(15, 45); var dg = Math.sqrt(sq(A) + sq(B)); x = A + B - dg; d = 0; u = 'm';
+      q = 'Pour traverser une pelouse rectangulaire de ' + A + ' m sur ' + B + ' m, Léa coupe en diagonale au lieu de longer deux côtés. Combien de mètres gagne-t-elle ? Arrondis au mètre.'; ask = 'gain';
+      st = ['La diagonale est l’hypoténuse : d' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B)) + ', donc d = √' + fn(sq(A) + sq(B)) + ' ≈ ' + fn(rd(dg, 2)) + ' m.', 'En longeant deux côtés : ' + A + ' + ' + B + ' = ' + (A + B) + ' m.', 'gain ≈ ' + (A + B) + ' − ' + fn(rd(dg, 2)) + ' ≈ ' + fn(rd(x, 0)) + ' m'];
+      v = rd(x, 0); traps = [[rd(dg, 0), 'Tu as calculé la diagonale : il reste à la comparer au trajet le long des deux côtés.'], [A + B, 'C’est le trajet le long des côtés : calcule la diagonale, puis la différence.']];
+      return numQ({q: q, lab: 'gain ≈', unit: u, v: v, x: x, d: 0, traps: traps, steps: st, key: 'k' + k}); }
+    else if (k === 12){ A = rnd(40, 150); B = rnd(6, 25); hyp(A, B); u = 'm'; d = pick([0, 1]);
+      q = 'Le câble d’une tyrolienne part du haut d’une plateforme de ' + B + ' m et arrive au sol, à ' + A + ' m de la plateforme (mesurés horizontalement). On suppose le câble bien tendu. Quelle est sa longueur, arrondie ' + ARR[d] + ' ?'; ask = 'L';
+      st = ['La plateforme est verticale, le sol horizontal : le câble est l’hypoténuse.', 'L' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[A + B, 'On additionne les carrés, pas les longueurs.']]; }
+    var s2 = cl(x * x);
+    if (d === undefined){ v = cl(x); st.push(ask + ' = ' + sqrtTxt(s2) + ' = ' + fn(v) + ' ' + u); }
+    else { v = rd(x, d); st.push(ask + ' = ' + sqrtTxt(s2) + ' ≈ ' + fn(v) + ' ' + u + ' (' + ARR[d] + ')'); }
+    traps.push([s2, 'Tu as trouvé le carré de la longueur : il reste à prendre la racine carrée.']);
+    return numQ({q: q, lab: ask + (d === undefined ? ' =' : ' ≈'), unit: u, v: v, x: x, d: d, traps: traps, steps: st, key: 'k' + k}); }},
+ {id: 'n33b', lv: 2, n: 'N33', nq: 3, t: 'Vérifier un angle droit', d: 'Murs, cadres, étagères…',
+  c: 'Lis l’énoncé, repère le triangle et son plus grand côté, calcule, puis conclus.', a: 'Les maçons utilisent la « corde à 12 nœuds » : un triangle de côtés 3, 4, 5 (ou proportionnels) a un angle droit.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var T = three(), q, yes = T.yes, u = 'm', pre;
+    var RG = [[0.5, 5], [10, 100], [20, 80], [10, 200], [2, 10], [10, 80], [1, 10], [2, 30], [2, 10], [3, 40], [2, 15], [40, 200]][k], mx = T.o[2];
+    var fs = [0.1, 0.2, 0.5, 1, 2, 3, 4, 5, 10, 20, 50].filter(function(f){ var m = mx * f; return m >= RG[0] && m <= RG[1] && T.s.every(function(v){ return M.isInt(cl(v * f) * 10); }); });
+    if (!fs.length) return this.g(k); var fk = pick(fs); T.s = T.s.map(function(v){ return cl(v * fk); }); T.o = T.o.map(function(v){ return cl(v * fk); }); var o = T.o;
+    var ctx = [
+      ['Un maçon vérifie qu’un mur est perpendiculaire au sol. Il marque un point à ' + fr(o[0]) + ' m du coin sur le sol, un autre à ' + fr(o[1]) + ' m du coin sur le mur, et mesure ' + fr(o[2]) + ' m entre ces deux points. Le mur est-il perpendiculaire au sol ?'],
+      ['Un cadre rectangulaire mesure ' + fr(o[0]) + ' cm sur ' + fr(o[1]) + ' cm, et sa diagonale ' + fr(o[2]) + ' cm. Ses coins sont-ils bien droits ?'],
+      ['Une étagère : le support vertical mesure ' + fr(o[0]) + ' cm, la tablette ' + fr(o[1]) + ' cm, et la barre de renfort qui relie leurs extrémités ' + fr(o[2]) + ' cm. La tablette est-elle perpendiculaire au support ?'],
+      ['Un terrain triangulaire a des côtés de ' + T.s.map(fr).join(' m, ') + ' m. Le propriétaire affirme qu’il a un angle droit. A-t-il raison ?'],
+      ['Une voile triangulaire a pour côtés ' + T.s.map(fr).join(' m, ') + ' m. Est-ce un triangle rectangle ?'],
+      ['Un écran mesure ' + fr(o[0]) + ' pouces de haut, ' + fr(o[1]) + ' pouces de large et sa diagonale ' + fr(o[2]) + ' pouces. Est-il bien rectangulaire ?'],
+      ['Une rampe : hauteur ' + fr(o[0]) + ' m, longueur au sol ' + fr(o[1]) + ' m, longueur de la rampe ' + fr(o[2]) + ' m. La hauteur est-elle verticale (perpendiculaire au sol) ?'],
+      ['Sur un plan, trois villages sont à ' + T.s.map(fr).join(' km, ') + ' km les uns des autres. Forment-ils un triangle rectangle ?'],
+      ['Un charpentier assemble trois poutres de ' + T.s.map(fr).join(' m, ') + ' m en triangle. Obtient-il un angle droit ?'],
+      ['Avec une corde à nœuds, on forme un triangle de côtés ' + T.s.map(fr).join(', ') + ' unités. A-t-on un angle droit ?'],
+      ['Un poteau est maintenu par un câble : le poteau mesure ' + fr(o[1]) + ' m, le câble ' + fr(o[2]) + ' m, et le câble est fixé au sol à ' + fr(o[0]) + ' m du pied du poteau. Le poteau est-il vertical (sol horizontal) ?'],
+      ['Une table triangulaire a des bords de ' + T.s.map(fr).join(' cm, ') + ' cm. Peut-on la placer exactement dans le coin droit d’une pièce ?']][k][0];
+    var st = ['Plus grand côté : ' + fr(o[2]) + '. ' + fr(o[2]) + SQ + ' = ' + fr(sq(o[2])) + ' et ' + fr(o[0]) + SQ + ' + ' + fr(o[1]) + SQ + ' = ' + fr(sq(o[0])) + ' + ' + fr(sq(o[1])) + ' = ' + fr(cl(sq(o[0]) + sq(o[1]))) + '.',
+      yes ? 'Égalité : d’après la réciproque du théorème de Pythagore, il y a un angle droit.' : 'Pas d’égalité : d’après le théorème de Pythagore (contraposée), il n’y a pas d’angle droit.'];
+    return {type: 'ch', q: ctx, ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: st, key: 'k' + k}; }},
+ {id: 'n33c', lv: 3, n: 'N33', nq: 3, t: 'Deux étapes', d: 'Prouver l’angle droit, puis calculer.', c: 'Démontre d’abord que le triangle est rectangle, puis calcule ce qui est demandé.', a: 'La réciproque du théorème de Pythagore prouve l’angle droit ; on peut ensuite utiliser les côtés de l’angle droit comme base et hauteur.',
+  g: function(){ var t = pick(TRIP), k = pick([1, 2, 0.5, 3, 10]), s = t.map(function(v){ return cl(v * k); }), L = M.letters(3), w = rnd(0, 1), u = pick(['cm', 'm']);
+    var q = 'Un triangle ' + L.join('') + ' a pour côtés ' + L[0] + L[1] + ' = ' + fr(s[0]) + ' ' + u + ', ' + L[1] + L[2] + ' = ' + fr(s[1]) + ' ' + u + ' et ' + L[0] + L[2] + ' = ' + fr(s[2]) + ' ' + u + '. ';
+    var st = ['Le plus grand côté est [' + L[0] + L[2] + '] : ' + fr(s[2]) + SQ + ' = ' + fr(sq(s[2])) + ' et ' + fr(s[0]) + SQ + ' + ' + fr(s[1]) + SQ + ' = ' + fr(cl(sq(s[0]) + sq(s[1]))) + '. D’après la réciproque du théorème de Pythagore, le triangle est rectangle en ' + L[1] + '.'];
+    if (w === 0){ var A = cl(s[0] * s[1] / 2); st.push('Aire = ' + fr(s[0]) + ' × ' + fr(s[1]) + ' ÷ 2 = ' + fr(A) + ' ' + u + '².'); return {type: 'num', q: q + 'Calcule son aire.', v: A, unit: u + '²', steps: st, key: q}; }
+    var h = cl(s[0] * s[1] / s[2]); if (!M.isInt(h * 100)) return this.g(); st.push('Aire = ' + fr(s[0]) + ' × ' + fr(s[1]) + ' ÷ 2 = ' + fr(cl(s[0] * s[1] / 2)) + ' ' + u + '². C’est aussi ' + fr(s[2]) + ' × h ÷ 2, donc h = ' + fr(s[0]) + ' × ' + fr(s[1]) + ' ÷ ' + fr(s[2]) + ' = ' + fr(h) + ' ' + u + '.');
+    return {type: 'num', q: q + 'Calcule la hauteur issue de ' + L[1] + ' (perpendiculaire à [' + L[0] + L[2] + ']).', v: h, unit: u, steps: st, key: q}; }}
+);
+var NOTIONS = [
+ {n: 'N32', t: 'Démontrer qu’un triangle est rectangle ou non', r: 'on compare le carré du plus grand côté et la somme des carrés des deux autres : égaux → rectangle (réciproque) ; différents → pas rectangle (contraposée).'},
+ {n: 'N33', t: 'Résoudre des problèmes avec Pythagore et sa réciproque', r: 'le théorème calcule une longueur dans un triangle rectangle ; la réciproque prouve qu’un triangle est rectangle.'}
+];
+
+M.start({key: '4e-s14', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

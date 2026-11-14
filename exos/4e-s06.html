@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : divisibilité (4e, séquence 6) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 6 : multiples, diviseurs, critères de divisibilité, nombres premiers, décomposition et problèmes.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 6 · Divisibilité</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée pour les problèmes.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var gcd = M.gcd;
+function divs(n){ var D = []; for (var i = 1; i <= n; i++) if (n % i === 0) D.push(i); return D; }
+function isPrime(n){ if (n < 2) return false; for (var i = 2; i * i <= n; i++) if (n % i === 0) return false; return true; }
+function fac(n){ var F = [], p = 2; while (n > 1){ while (n % p === 0){ F.push(p); n /= p; } p++; } return F; }
+function facTxt(F){ var c = {}; F.forEach(function(p){ c[p] = (c[p] || 0) + 1; }); return Object.keys(c).map(Number).sort(function(a, b){ return a - b; }).map(function(p){ return c[p] > 1 ? p + (['', '', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹', '¹⁰', '¹¹'][c[p]]) : String(p); }).join(' × '); }
+function digs(n){ return String(n).split('').map(Number); }
+function crit(n, d){ var s = digs(n).reduce(function(a, b){ return a + b; }, 0), u = n % 10, l2 = n % 100;
+  return {2: 'Son chiffre des unités est ' + u + (u % 2 ? ' (impair)' : ' (pair)') + '.', 5: 'Son chiffre des unités est ' + u + '.', 10: 'Son chiffre des unités est ' + u + '.',
+    3: 'La somme de ses chiffres est ' + digs(n).join(' + ') + ' = ' + s + (s % 3 ? ', qui n’est pas un multiple de 3.' : ', qui est un multiple de 3.'),
+    9: 'La somme de ses chiffres est ' + digs(n).join(' + ') + ' = ' + s + (s % 9 ? ', qui n’est pas un multiple de 9.' : ', qui est un multiple de 9.'),
+    4: 'Le nombre formé par ses deux derniers chiffres est ' + l2 + (l2 % 4 ? ', qui n’est pas un multiple de 4.' : ', qui est un multiple de 4.')}[d]; }
+var EX = [
+ {id: 'n13a', lv: 1, n: 'N13', t: 'Critères de divisibilité', d: 'Par 2, 3, 4, 5, 9 et 10.', c: 'Le nombre est-il divisible par le diviseur proposé ? Utilise un critère, sans poser la division.', a: 'Par 2 : chiffre des unités pair. Par 5 : 0 ou 5. Par 10 : 0. Par 3 (ou 9) : somme des chiffres multiple de 3 (ou 9). Par 4 : les deux derniers chiffres forment un multiple de 4.',
+  g: function(){ var d = pick([2, 3, 4, 5, 9, 10, 3, 9]), yes = Math.random() < 0.5, n; do { n = rnd(100, 99999); } while ((n % d === 0) !== yes);
+    return {type: 'ch', q: fr(n) + ' est-il divisible par ' + d + ' ?', ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: [crit(n, d) + ' Donc ' + fr(n) + (yes ? ' est' : ' n’est pas') + ' divisible par ' + d + '.'], key: n + ':' + d}; }},
+ {id: 'n13b', lv: 1, n: 'N13', t: 'Multiple ou diviseur ?', d: 'Le vocabulaire.', c: 'L’affirmation est-elle vraie ou fausse ?', a: 'a est un multiple de b (ou b est un diviseur de a, ou b divise a) quand a = b × k avec k entier : la division de a par b tombe juste.',
+  g: function(){ var b = rnd(2, 15), k = rnd(2, 15), a = b * k, yes = Math.random() < 0.5, w = rnd(0, 3); if (!yes) a = a + rnd(1, b - 1);
+    var q = [fr(a) + ' est un multiple de ' + b + '.', b + ' est un diviseur de ' + fr(a) + '.', b + ' divise ' + fr(a) + '.', fr(a) + ' est divisible par ' + b + '.'][w];
+    var trick = Math.random() < 0.15; if (trick && yes){ q = fr(a) + ' est un diviseur de ' + b + '.'; return {type: 'ch', q: q, ch: ['Vrai', 'Faux'], ans: 1, steps: ['Faux : c’est l’inverse. ' + fr(a) + ' = ' + b + ' × ' + k + ', donc ' + fr(a) + ' est un multiple de ' + b + ' (et ' + b + ' est un diviseur de ' + fr(a) + ').']}; }
+    return {type: 'ch', q: q, ch: ['Vrai', 'Faux'], ans: yes ? 0 : 1, steps: [yes ? fr(a) + ' = ' + b + ' × ' + k + ' : ' + (yes ? 'vrai.' : '') : fr(a) + ' = ' + b + ' × ' + Math.floor(a / b) + ' + ' + a % b + ' : la division ne tombe pas juste, c’est faux.']}; }},
+ {id: 'n13c', lv: 2, n: 'N13', t: 'Liste des diviseurs', d: 'Les trouver tous.', c: 'Combien ce nombre a-t-il de diviseurs ?', a: 'Cherche les diviseurs par paires : 36 = 1 × 36 = 2 × 18 = 3 × 12 = 4 × 9 = 6 × 6. On s’arrête quand les deux facteurs se rejoignent.',
+  g: function(){ var n = pick([12, 18, 20, 24, 28, 30, 32, 36, 40, 42, 45, 48, 50, 54, 56, 60, 63, 64, 72, 75, 80, 84, 90, 96, 100, 17, 23, 49, 81, 98]), D = divs(n), P = [];
+    for (var i = 0; i < D.length && D[i] * D[i] <= n; i++) P.push(D[i] + ' × ' + n / D[i]);
+    return {type: 'num', q: 'Combien ' + n + ' a-t-il de diviseurs ?', v: D.length, unit: 'diviseurs', steps: ['Par paires : ' + n + ' = ' + P.join(' = ') + '.', 'Diviseurs : ' + D.join(' ; ') + ', soit ' + D.length + ' diviseurs.'], traps: [[D.length - 2, 'N’oublie pas 1 et le nombre lui-même.'], [D.length - 1, 'Il en manque un : as-tu pensé à 1 et à ' + n + ' ?']], key: 'd' + n}; }},
+ {id: 'n13d', lv: 2, n: 'N13', t: 'Le chiffre manquant', d: 'Rendre un nombre divisible.', c: 'Remplace ? par le plus petit chiffre possible pour que le nombre soit divisible par le diviseur indiqué.', a: 'Utilise le critère : pour 3 ou 9, ajuste la somme des chiffres ; pour 4, regarde les deux derniers chiffres.',
+  g: function(){ var d = pick([3, 9, 4, 6, 3, 9]), len = rnd(3, 5), D = [], pos; for (var i = 0; i < len; i++) D.push(i ? rnd(0, 9) : rnd(1, 9)); pos = d === 4 ? len - 1 - rnd(0, 1) : rnd(1, len - 1);
+    var sol = null; for (var c = 0; c <= 9 && sol === null; c++){ var E = D.slice(); E[pos] = c; if (+E.join('') % d === 0) sol = c; } if (sol === null) return this.g();
+    var shown = D.map(function(x, i){ return i === pos ? '?' : x; }).join(''), E2 = D.slice(); E2[pos] = sol; var nn = +E2.join('');
+    var st = d === 3 || d === 9 ? 'Somme des chiffres connus : ' + D.filter(function(_, i){ return i !== pos; }).reduce(function(a, b){ return a + b; }, 0) + '. Le plus petit chiffre qui donne un multiple de ' + d + ' est ' + sol + '.' : d === 6 ? 'Divisible par 6 = divisible par 2 et par 3 : il faut un nombre pair dont la somme des chiffres est un multiple de 3.' : 'Les deux derniers chiffres doivent former un multiple de 4.';
+    return {type: 'num', q: shown + ' doit être divisible par ' + d + '.', lab: '? =', v: sol, steps: [st, 'On obtient ' + fr(nn) + ' = ' + d + ' × ' + fr(nn / d) + '.'], key: shown + d}; }}
+];
+EX.push(
+ {id: 'n14a', lv: 1, n: 'N14', t: 'Premier ou pas ?', d: 'Nombres jusqu’à 120.', c: 'Ce nombre est-il premier ?', a: 'Un nombre premier a exactement deux diviseurs : 1 et lui-même. Teste les divisions par 2, 3, 5, 7… tant que le carré du diviseur ne dépasse pas le nombre.',
+  g: function(){ var yes = Math.random() < 0.45, n; do { n = rnd(2, 120); } while (isPrime(n) !== yes || (!yes && n % 2 === 0 && Math.random() < 0.6));
+    var f = fac(n); return {type: 'ch', q: n + ' est-il un nombre premier ?', ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: [yes ? n + ' n’est divisible ni par 2, ni par 3, ni par 5, ni par 7… : ses seuls diviseurs sont 1 et ' + n + '. Il est premier.' : n === 1 ? '1 n’a qu’un diviseur.' : n + ' = ' + f[0] + ' × ' + n / f[0] + ' : il a d’autres diviseurs que 1 et lui-même, il n’est pas premier.'], key: 'p' + n}; }},
+ {id: 'n14b', lv: 2, n: 'N14', t: 'Décomposer en facteurs premiers', d: 'Choisir la bonne décomposition.', c: 'Quelle est la décomposition en produit de facteurs premiers ?', a: 'Divise par 2 tant que possible, puis par 3, 5, 7… Tous les facteurs doivent être premiers (9, 15, 21 ne le sont pas).',
+  g: function(){ var n; do { n = rnd(24, 600); } while (isPrime(n) || fac(n).length < 3 || fac(n)[fac(n).length - 1] > 23); var F = fac(n), good = facTxt(F);
+    var bad = []; var c = F.slice(); // regrouper deux facteurs en un non premier
+    bad.push(facTxt([c[0] * c[1]].concat(c.slice(2))).replace(/^(\d+)/, '$1'));
+    var wrong = F.slice(); wrong[wrong.length - 1] = wrong[wrong.length - 1] === 2 ? 3 : 2; bad.push(facTxt(wrong));
+    var w2 = F.slice(1); bad.push(facTxt(w2) + (w2.length ? '' : ''));
+    bad = bad.filter(function(b, i){ return b !== good && bad.indexOf(b) === i; }); var ch = shuffle([good].concat(bad).slice(0, 4));
+    var div = [], m = n; F.slice(0, -1).forEach(function(p){ div.push(m + ' = ' + p + ' × ' + m / p); m /= p; }); div[div.length - 1] += ', et ' + m + ' est premier';
+    return {type: 'ch', q: n + ' = ?', ch: ch, ans: ch.indexOf(good), steps: [div.join(' ; ') + '.', 'Donc ' + n + ' = ' + good + '.'], key: 'f' + n}; }},
+ {id: 'n14c', lv: 2, n: 'N14', t: 'Le plus grand facteur premier', d: 'Décomposer pour le trouver.', c: 'Décompose le nombre et donne son plus grand facteur premier.', a: 'Divise successivement par les nombres premiers 2, 3, 5, 7, 11, 13… jusqu’à obtenir 1.',
+  g: function(){ var n; do { n = rnd(30, 999); } while (isPrime(n) || fac(n).length < 2); var F = fac(n);
+    return {type: 'num', q: 'Plus grand facteur premier de ' + n + ' ?', v: F[F.length - 1], steps: [n + ' = ' + facTxt(F) + '.', 'Le plus grand facteur premier est ' + F[F.length - 1] + '.'], key: 'g' + n}; }},
+ {id: 'n14d', lv: 3, n: 'N14', t: 'Retrouver le nombre', d: 'À partir de sa décomposition.', c: 'Calcule le nombre.', a: 'Calcule les puissances, puis multiplie en regroupant astucieusement (2 × 5 = 10).',
+  g: function(){ var F = []; var k = rnd(3, 6); for (var i = 0; i < k; i++) F.push(pick([2, 2, 3, 3, 5, 7, 11])); var n = F.reduce(function(a, b){ return a * b; }, 1); if (n > 5000) return this.g();
+    return {type: 'num', q: facTxt(F) + ' = ?', v: n, steps: [facTxt(F) + ' = ' + F.sort(function(a, b){ return a - b; }).join(' × ') + ' = ' + fr(n) + '.'], key: 'r' + n}; }}
+);
+var PB = [
+ ['Un fleuriste a %a roses et %b tulipes. Il veut faire le plus grand nombre de bouquets identiques en utilisant toutes les fleurs. Combien de bouquets ?', 'bouquets', 'roses', 'tulipes'],
+ ['Pour une fête, on a %a bonbons et %b sucettes. On veut remplir le plus grand nombre de sachets identiques avec tout. Combien de sachets ?', 'sachets', 'bonbons', 'sucettes'],
+ ['Un club de sport compte %a garçons et %b filles. Il veut faire le plus grand nombre d’équipes ayant la même composition. Combien d’équipes ?', 'équipes', 'garçons', 'filles'],
+ ['Une pâtissière a %a macarons et %b chouquettes. Elle prépare le plus grand nombre de boîtes identiques avec tout. Combien de boîtes ?', 'boîtes', 'macarons', 'chouquettes'],
+ ['Un carreleur doit couvrir un sol rectangulaire de %a cm sur %b cm avec des carreaux carrés les plus grands possibles, sans couper. Quel est le côté d’un carreau (en cm) ?', 'cm', '', ''],
+ ['Une collectionneuse range %a timbres français et %b timbres étrangers dans le plus grand nombre de pochettes identiques. Combien de pochettes ?', 'pochettes', 'timbres français', 'timbres étrangers'],
+ ['On coupe deux rubans de %a cm et %b cm en morceaux de même longueur, la plus grande possible, sans chute. Quelle est la longueur d’un morceau (en cm) ?', 'cm', '', ''],
+ ['Un club a %a ballons de foot et %b ballons de basket à répartir dans le plus grand nombre de sacs identiques. Combien de sacs ?', 'sacs', 'ballons de foot', 'ballons de basket'],
+ ['Un libraire a %a romans et %b BD. Il fait le plus grand nombre de colis identiques avec tous les livres. Combien de colis ?', 'colis', 'romans', 'BD'],
+ ['Une maraîchère a %a carottes et %b poireaux. Elle compose le plus grand nombre de paniers identiques avec tout. Combien de paniers ?', 'paniers', 'carottes', 'poireaux'],
+ ['Pour un tournoi, %a élèves de 4e et %b élèves de 3e forment le plus grand nombre d’équipes de même composition. Combien d’équipes ?', 'équipes', 'élèves de 4e', 'élèves de 3e'],
+ ['Un artisan découpe une plaque de %a cm sur %b cm en carrés identiques les plus grands possibles, sans perte. Quel est le côté d’un carré (en cm) ?', 'cm', '', '']
+];
+var RV = [
+ ['Deux bus partent ensemble de la gare à 8 h. Le premier repasse toutes les %a minutes, le second toutes les %b minutes. Dans combien de minutes repartiront-ils ensemble pour la première fois ?'],
+ ['Deux phares s’allument en même temps. L’un clignote toutes les %a secondes, l’autre toutes les %b secondes. Au bout de combien de secondes clignoteront-ils de nouveau ensemble ?'],
+ ['Deux coureurs partent ensemble sur une piste. L’un fait un tour en %a secondes, l’autre en %b secondes. Au bout de combien de secondes se retrouveront-ils ensemble au départ ?'],
+ ['Léo arrose ses tomates tous les %a jours et ses salades tous les %b jours. Il arrose les deux aujourd’hui. Dans combien de jours arrosera-t-il de nouveau les deux le même jour ?'],
+ ['Deux engrenages ont %a et %b dents. Ils démarrent en position de départ. Au bout de combien de dents passées reviennent-ils ensemble à leur position de départ ?'],
+ ['Des gâteaux sont vendus par paquets de %a, des bougies par paquets de %b. Quel est le plus petit nombre de gâteaux qu’on peut acheter pour avoir autant de gâteaux que de bougies ?'],
+ ['On empile des boîtes de %a cm de haut à côté de boîtes de %b cm. Quelle est la plus petite hauteur (en cm) pour que les deux piles aient la même hauteur ?'],
+ ['Deux alarmes sonnent ensemble. L’une sonne toutes les %a minutes, l’autre toutes les %b minutes. Dans combien de minutes sonneront-elles de nouveau ensemble ?'],
+ ['Une comète passe tous les %a ans, une autre tous les %b ans. Elles sont passées la même année. Dans combien d’années repasseront-elles la même année ?'],
+ ['Deux robots avancent par pas : l’un fait des pas de %a cm, l’autre de %b cm. Partis du même point, à quelle distance (en cm) poseront-ils de nouveau le pied au même endroit ?'],
+ ['Un feu passe au vert toutes les %a secondes, un autre toutes les %b secondes. Ils sont passés au vert ensemble. Dans combien de secondes de nouveau ?'],
+ ['Des carreaux rectangulaires de %a cm sur %b cm sont assemblés pour former le plus petit carré possible. Quel est le côté de ce carré (en cm) ?']
+];
+function pairG(){ var g = pick([4, 6, 8, 9, 12, 14, 15, 18, 24]), a, b; do { a = rnd(2, 9); b = rnd(2, 9); } while (gcd(a, b) !== 1 || a === b); return {a: a * g, b: b * g, g: g, p: a, q: b}; }
+EX.push(
+ {id: 'n15a', lv: 2, n: 'N15', nq: 3, t: 'Partager équitablement', d: 'Le plus grand diviseur commun.', c: 'Lis l’énoncé et réponds.', a: 'Le nombre de paquets doit diviser les deux quantités : on cherche le plus grand diviseur commun (avec les listes de diviseurs ou les décompositions).',
+  g: function(){ var k = rnd(0, PB.length - 1), P = PB[k], G = pairG(), q = P[0].replace('%a', G.a).replace('%b', G.b);
+    var st = [G.a + ' = ' + facTxt(fac(G.a)) + ' et ' + G.b + ' = ' + facTxt(fac(G.b)) + '.', 'Le plus grand diviseur commun est ' + G.g + '.'];
+    if (P[2]) st.push('Il y aura ' + G.g + ' ' + P[1] + ', avec dans chacun' + (/^(équipes|boîtes|pochettes)$/.test(P[1]) ? 'e' : '') + ' ' + G.p + ' ' + P[2] + ' et ' + G.q + ' ' + P[3] + '.'); else st.push('Le côté (ou la longueur) cherché mesure ' + G.g + ' cm.');
+    return {type: 'num', q: q, v: G.g, unit: P[1], steps: st, traps: [[G.a * G.b, 'On cherche un diviseur commun, pas un multiple.']], key: 'k' + k}; }},
+ {id: 'n15b', lv: 2, n: 'N15', t: 'Diviseurs communs', d: 'Combien en ont-ils ?', c: 'Combien ces deux nombres ont-ils de diviseurs communs ?', a: 'Écris la liste des diviseurs de chaque nombre et entoure ceux qui sont dans les deux listes.',
+  g: function(){ var G = pairG(), D1 = divs(G.a), D2 = divs(G.b), C = D1.filter(function(d){ return D2.indexOf(d) >= 0; });
+    return {type: 'num', q: 'Diviseurs communs à ' + G.a + ' et ' + G.b + ' ?', v: C.length, unit: 'diviseurs', steps: ['Diviseurs de ' + G.a + ' : ' + D1.join(' ; ') + '.', 'Diviseurs de ' + G.b + ' : ' + D2.join(' ; ') + '.', 'Communs : ' + C.join(' ; ') + ', soit ' + C.length + '.'], key: G.a + ':' + G.b}; }},
+ {id: 'n15c', lv: 3, n: 'N15', nq: 3, t: 'Se retrouver ensemble', d: 'Le plus petit multiple commun.', c: 'Lis l’énoncé et réponds.', a: 'On cherche le plus petit nombre qui est à la fois multiple des deux : écris les premiers multiples de chacun jusqu’à trouver le premier commun.',
+  g: function(){ var k = rnd(0, RV.length - 1), a, b; do { a = pick([4, 6, 8, 9, 10, 12, 14, 15, 18, 20, 21, 24]); b = pick([6, 8, 9, 10, 12, 15, 16, 18, 20, 25, 30]); } while (a === b || gcd(a, b) === 1 && a * b > 200 || gcd(a, b) === Math.min(a, b));
+    var l = a * b / gcd(a, b), ma = [], mb = []; for (var i = 1; i * a <= l; i++) ma.push(i * a); for (i = 1; i * b <= l; i++) mb.push(i * b);
+    return {type: 'num', q: RV[k][0].replace('%a', a).replace('%b', b), v: l, steps: ['Multiples de ' + a + ' : ' + ma.join(' ; ') + '.', 'Multiples de ' + b + ' : ' + mb.join(' ; ') + '.', 'Le premier multiple commun est ' + l + '.'], traps: [[a * b, a + ' × ' + b + ' est bien un multiple commun, mais pas le plus petit.'], [gcd(a, b), 'C’est un diviseur commun : on cherche un multiple commun.']], key: 'k' + k}; }}
+);
+var NOTIONS = [
+ {n: 'N13', t: 'Connaître les multiples, les diviseurs et les critères de divisibilité', r: 'a est un multiple de b (b divise a) si a = b × k avec k entier. Critères : 2 (unités paires), 5 (0 ou 5), 10 (0), 3 et 9 (somme des chiffres), 4 (deux derniers chiffres).'},
+ {n: 'N14', t: 'Reconnaître les nombres premiers, décomposer un entier', r: 'un nombre premier a exactement deux diviseurs, 1 et lui-même. Tout entier supérieur à 1 se décompose en produit de facteurs premiers : 60 = 2² × 3 × 5.'},
+ {n: 'N15', t: 'Résoudre des problèmes de divisibilité', r: 'partager sans reste en un maximum de parts : plus grand diviseur commun ; se retrouver ensemble : plus petit multiple commun.'}
+];
+
+M.start({key: '4e-s06', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : statistiques (4e, séquence 11) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 11 : fréquences, diagrammes en barres et circulaires, moyenne et médiane.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 11 · Statistiques</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+// ---- outils communs 4e : tableau et repère en SVG ----
+function f1(v){ return (Math.round(v * 10) / 10).toString(); }
+function esc(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+// tableau : rows = [[titre, v1, v2, …], …] (chaînes)
+function tableSvg(rows){ var nc = rows[0].length, cw = [], i, j, H = 36;
+  for (j = 0; j < nc; j++){ var m = 0; for (i = 0; i < rows.length; i++) m = Math.max(m, String(rows[i][j]).length); cw.push(Math.max(46, m * 9 + 18)); }
+  var W = cw.reduce(function(a, b){ return a + b; }, 0), s = '<svg viewBox="-1 -1 ' + (W + 2) + ' ' + (H * rows.length + 2) + '" class="fig tab" role="img" aria-label="Tableau">', x;
+  for (i = 0; i < rows.length; i++){ x = 0; for (j = 0; j < nc; j++){ var t = String(rows[i][j]);
+    s += '<rect x="' + x + '" y="' + i * H + '" width="' + cw[j] + '" height="' + H + '" style="fill:' + (j === 0 ? 'var(--soft)' : 'none') + ';stroke:currentColor;stroke-width:1"/>';
+    s += '<text x="' + (x + cw[j] / 2) + '" y="' + (i * H + H / 2) + '" text-anchor="middle" dominant-baseline="central"' + (t === '?' ? ' class="qm"' : ' class="ln" style="font-size:15px"') + '>' + esc(t) + '</text>'; x += cw[j]; } }
+  return s + '</svg>'; }
+// repère : o = {xm, ym, sx, sy (pas des graduations), xl, yl (légendes), items: [{type:'line'|'seg'|'pts'|'curve', …}]}
+function graphSvg(o){ var W = 320, H = 230, L = 42, B = 30, T = 12, R = 14, w = W - L - R, h = H - T - B;
+  var X = function(x){ return L + x / o.xm * w; }, Y = function(y){ return T + h - y / o.ym * h; };
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Graphique">', x, y;
+  for (x = 0; x <= o.xm + 1e-9; x += o.sx){ s += '<line x1="' + f1(X(x)) + '" y1="' + T + '" x2="' + f1(X(x)) + '" y2="' + (T + h) + '" style="stroke:currentColor;opacity:.15"/><text x="' + f1(X(x)) + '" y="' + (T + h + 14) + '" text-anchor="middle" style="font-size:11px;font-weight:400">' + fr(cl(x)) + '</text>'; }
+  for (y = 0; y <= o.ym + 1e-9; y += o.sy){ s += '<line x1="' + L + '" y1="' + f1(Y(y)) + '" x2="' + (L + w) + '" y2="' + f1(Y(y)) + '" style="stroke:currentColor;opacity:.15"/><text x="' + (L - 5) + '" y="' + f1(Y(y)) + '" text-anchor="end" dominant-baseline="central" style="font-size:11px;font-weight:400">' + fr(cl(y)) + '</text>'; }
+  s += '<line x1="' + L + '" y1="' + (T + h) + '" x2="' + (L + w) + '" y2="' + (T + h) + '" style="stroke:currentColor;stroke-width:1.4"/><line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + (T + h) + '" style="stroke:currentColor;stroke-width:1.4"/>';
+  if (o.xl) s += '<text x="' + (L + w) + '" y="' + (H - 2) + '" text-anchor="end" style="font-size:11px;font-weight:700">' + esc(o.xl) + '</text>';
+  if (o.yl) s += '<text x="' + (L + 4) + '" y="' + (T + 2) + '" dominant-baseline="hanging" style="font-size:11px;font-weight:700">' + esc(o.yl) + '</text>';
+  (o.items || []).forEach(function(it){ var col = it.col || 'var(--accent)';
+    if (it.type === 'line'){ // y = a x + b sur [0, xm], coupée au cadre
+      var x2 = o.xm, y2 = it.a * x2 + (it.b || 0); if (y2 > o.ym){ x2 = (o.ym - (it.b || 0)) / it.a; y2 = o.ym; }
+      s += '<line x1="' + f1(X(it.x0 || 0)) + '" y1="' + f1(Y(it.a * (it.x0 || 0) + (it.b || 0))) + '" x2="' + f1(X(x2)) + '" y2="' + f1(Y(y2)) + '" style="stroke:' + col + ';stroke-width:2.4"/>'; }
+    else if (it.type === 'poly'){ s += '<polyline points="' + it.p.map(function(p){ return f1(X(p[0])) + ',' + f1(Y(p[1])); }).join(' ') + '" style="fill:none;stroke:' + col + ';stroke-width:2.4"/>'; }
+    else if (it.type === 'pts'){ it.p.forEach(function(p){ s += '<circle cx="' + f1(X(p[0])) + '" cy="' + f1(Y(p[1])) + '" r="3.5" style="fill:' + col + '"/>'; }); }
+    else if (it.type === 'lab'){ s += '<text x="' + f1(X(it.x)) + '" y="' + f1(Y(it.y)) + '" style="font-size:13px;fill:' + col + '" dominant-baseline="central">' + esc(it.t) + '</text>'; }
+  });
+  return s + '</svg>'; }
+var CATS = [
+ ['Sport préféré', ['Football', 'Basket', 'Tennis', 'Natation', 'Danse', 'Handball']], ['Moyen de transport', ['Bus', 'Vélo', 'À pied', 'Voiture', 'Train']],
+ ['Couleur préférée', ['Bleu', 'Rouge', 'Vert', 'Noir', 'Jaune']], ['Animal de compagnie', ['Chat', 'Chien', 'Poisson', 'Lapin', 'Aucun']], ['Genre de film', ['Comédie', 'Action', 'Animation', 'Horreur', 'Science-fiction']]];
+function serie(total){ var C = pick(CATS), k = rnd(3, Math.min(5, C[1].length)), names = shuffle(C[1].slice()).slice(0, k), E;
+  if (total){ // effectifs dont la somme vaut total, angles entiers
+    do { E = names.map(function(){ return rnd(1, total); }); var s = E.reduce(function(a, b){ return a + b; }, 0); E = E.map(function(e){ return Math.max(1, Math.round(e * total / s)); }); E[0] += total - E.reduce(function(a, b){ return a + b; }, 0); } while (E.some(function(e){ return e < 1; }) || E.some(function(e){ return !M.isInt(e * 360 / total); }));
+  } else E = names.map(function(){ return rnd(1, 15); });
+  return {t: C[0], n: names, e: E, N: E.reduce(function(a, b){ return a + b; }, 0)}; }
+function barSvg(S){ var W = 320, H = 210, L = 34, B = 40, T = 10, n = S.n.length, w = (W - L - 10) / n, mx = Math.ceil(Math.max.apply(0, S.e) / 2) * 2 + 2, h = H - B - T, s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Diagramme en barres">';
+  for (var y = 0; y <= mx; y += 1) s += '<line x1="' + L + '" y1="' + f1(T + h - y / mx * h) + '" x2="' + (W - 10) + '" y2="' + f1(T + h - y / mx * h) + '" style="stroke:currentColor;opacity:' + (y % 2 ? '.07' : '.18') + '"/>' + (y % 2 ? '' : '<text x="' + (L - 5) + '" y="' + f1(T + h - y / mx * h) + '" text-anchor="end" dominant-baseline="central" style="font-size:11px;font-weight:400">' + y + '</text>');
+  S.n.forEach(function(nm, i){ var x = L + i * w + w * 0.18, bh = S.e[i] / mx * h; s += '<rect x="' + f1(x) + '" y="' + f1(T + h - bh) + '" width="' + f1(w * 0.64) + '" height="' + f1(bh) + '" style="fill:var(--accent);opacity:.8"/><text x="' + f1(x + w * 0.32) + '" y="' + (T + h + 14) + '" text-anchor="middle" style="font-size:10.5px;font-weight:400">' + esc(nm) + '</text>'; });
+  return s + '<line x1="' + L + '" y1="' + (T + h) + '" x2="' + (W - 10) + '" y2="' + (T + h) + '" style="stroke:currentColor"/></svg>'; }
+function pieSvg(S, showAng){ var R = 90, cx = 120, cy = 105, a0 = -Math.PI / 2, s = '<svg viewBox="0 0 330 210" class="fig" role="img" aria-label="Diagramme circulaire">', cols = ['var(--accent)', 'var(--ko)', 'var(--ok)', 'var(--mid)', '#8a5cd0'];
+  S.e.forEach(function(e, i){ var a = e / S.N * 2 * Math.PI, a1 = a0 + a, big = a > Math.PI ? 1 : 0;
+    s += '<path d="M' + cx + ',' + cy + ' L' + f1(cx + R * Math.cos(a0)) + ',' + f1(cy + R * Math.sin(a0)) + ' A' + R + ',' + R + ' 0 ' + big + ' 1 ' + f1(cx + R * Math.cos(a1)) + ',' + f1(cy + R * Math.sin(a1)) + ' Z" style="fill:' + cols[i] + ';opacity:.75;stroke:var(--card);stroke-width:1.5"/>';
+    var am = a0 + a / 2; if (showAng) s += '<text x="' + f1(cx + R * 0.62 * Math.cos(am)) + '" y="' + f1(cy + R * 0.62 * Math.sin(am)) + '" text-anchor="middle" dominant-baseline="central" style="font-size:12px">' + Math.round(e / S.N * 360) + '°</text>';
+    s += '<rect x="235" y="' + (20 + i * 22) + '" width="12" height="12" style="fill:' + cols[i] + ';opacity:.75"/><text x="252" y="' + (26 + i * 22) + '" dominant-baseline="central" style="font-size:12px;font-weight:400">' + esc(S.n[i]) + '</text>'; a0 = a1; });
+  return s + '</svg>'; }
+var EX = [
+ {id: 'n23a', lv: 1, n: 'N23', t: 'Calculer une fréquence', d: 'En pourcentage.', c: 'Calcule la fréquence demandée, en pourcentage (arrondie à l’unité si besoin).', a: 'Fréquence = effectif ÷ effectif total. Pour l’avoir en %, on multiplie par 100.',
+  g: function(){ var S = serie(pick([20, 25, 40, 50, 30, 24])), i = rnd(0, S.n.length - 1), x = S.e[i] / S.N * 100, ex = M.isInt(x);
+    return {type: 'num', q: S.t + ' des élèves : quelle est la fréquence de « ' + S.n[i] + ' » ?', svg: tableSvg([['Réponse'].concat(S.n), ['Effectif'].concat(S.e.map(String))]), v: ex ? x : rd(x, 0), x: x, d: ex ? undefined : 0, unit: '%', steps: ['Effectif total : ' + S.e.join(' + ') + ' = ' + S.N + '.', S.e[i] + ' ÷ ' + S.N + ' × 100 ' + (ex ? '= ' : '≈ ') + fr(ex ? x : rd(x, 0)) + ' %.'], traps: [[S.e[i], 'C’est l’effectif : divise-le par l’effectif total.']], key: i + JSON.stringify(S)}; }},
+ {id: 'n23b', lv: 2, n: 'N23', t: 'Lire un diagramme en barres', d: 'Effectifs et total.', c: 'Lis le diagramme pour répondre.', a: 'La hauteur de chaque barre donne l’effectif de la catégorie ; l’effectif total est la somme de toutes les hauteurs.',
+  g: function(){ var S = serie(), w = rnd(0, 2), i = rnd(0, S.n.length - 1), j = (i + 1) % S.n.length, q, v, st;
+    if (w === 0){ q = 'Combien d’élèves ont répondu « ' + S.n[i] + ' » ?'; v = S.e[i]; st = ['La barre « ' + S.n[i] + ' » monte à ' + v + '.']; }
+    else if (w === 1){ q = 'Combien d’élèves ont été interrogés en tout ?'; v = S.N; st = ['Total : ' + S.e.join(' + ') + ' = ' + v + '.']; }
+    else { if (S.e[i] === S.e[j]) return this.g(); if (S.e[i] < S.e[j]){ var t = i; i = j; j = t; } q = 'Combien d’élèves de plus ont répondu « ' + S.n[i] + ' » que « ' + S.n[j] + ' » ?'; v = S.e[i] - S.e[j]; st = [S.e[i] + ' ' + MINUS + ' ' + S.e[j] + ' = ' + fr(v) + '.']; }
+    return {type: 'num', q: S.t + ' — ' + q, svg: barSvg(S), v: v, steps: st, key: q + JSON.stringify(S)}; }},
+ {id: 'n23c', lv: 2, n: 'N23', nq: 4, t: 'Angle d’un secteur', d: 'Construire un diagramme circulaire.', c: 'Calcule l’angle du secteur demandé dans le diagramme circulaire (en degrés).', a: 'L’angle est proportionnel à l’effectif : l’effectif total correspond à 360°. Angle = effectif ÷ total × 360.',
+  g: function(){ var S = serie(pick([12, 18, 20, 24, 30, 36, 40, 45, 60, 72, 90])), i = rnd(0, S.n.length - 1), v = S.e[i] * 360 / S.N;
+    return {type: 'num', q: S.t + ' : angle du secteur « ' + S.n[i] + ' » ?', svg: tableSvg([['Réponse'].concat(S.n), ['Effectif'].concat(S.e.map(String))]), v: v, unit: '°', steps: ['Total : ' + S.N + ' élèves ↔ 360°.', S.e[i] + ' × 360 ÷ ' + S.N + ' = ' + fr(v) + '°.'], traps: [[cl(S.e[i] / S.N * 100), 'C’est la fréquence en % : il faut un angle (total = 360°).']], key: i + JSON.stringify(S)}; }},
+ {id: 'n23d', lv: 3, n: 'N23', nq: 4, t: 'Lire un diagramme circulaire', d: 'Retrouver un effectif.', c: 'Lis le diagramme et calcule l’effectif demandé.', a: '360° correspondent à l’effectif total : effectif = angle ÷ 360 × total.',
+  g: function(){ var S = serie(pick([24, 36, 40, 60, 72, 90, 120, 180, 360])), i = rnd(0, S.n.length - 1), ang = S.e[i] * 360 / S.N;
+    return {type: 'num', q: S.N + ' personnes ont répondu (' + S.t.toLowerCase() + '). Combien ont choisi « ' + S.n[i] + ' » ?', svg: pieSvg(S, true), v: S.e[i], key: i + JSON.stringify(S), steps: ['Le secteur « ' + S.n[i] + ' » mesure ' + fr(ang) + '°.', fr(ang) + ' ÷ 360 × ' + S.N + ' = ' + S.e[i] + ' personnes.']}; }}
+];
+function med(V){ var s = V.slice().sort(function(a, b){ return a - b; }), n = s.length; return n % 2 ? s[(n - 1) / 2] : cl((s[n / 2 - 1] + s[n / 2]) / 2); }
+EX.push(
+ {id: 'n24a', lv: 1, n: 'N24', t: 'Calculer une moyenne', d: 'Une série de valeurs.', c: 'Calcule la moyenne (arrondie au dixième si besoin).', a: 'Moyenne = somme des valeurs ÷ nombre de valeurs.',
+  g: function(){ var n = rnd(4, 8), V = [], ctx = pick([['notes', '', 0, 20], ['tailles (en cm)', 'cm', 140, 180], ['temps (en s)', 's', 10, 40], ['températures (en °C)', '°C', -5, 25], ['scores', 'points', 0, 50]]);
+    for (var i = 0; i < n; i++) V.push(rnd(ctx[2], ctx[3])); var s = V.reduce(function(a, b){ return a + b; }, 0), x = s / n, ex = M.isInt(x * 10);
+    return {type: 'num', q: 'Voici des ' + ctx[0] + ' : ' + V.map(fr).join(' ; ') + '. Moyenne ?', v: ex ? cl(x) : rd(x, 1), x: x, d: ex ? undefined : 1, unit: ctx[1], steps: ['Somme : ' + fr(s) + ' ; nombre de valeurs : ' + n + '.', fr(s) + ' ÷ ' + n + (ex ? ' = ' + fr(cl(x)) : ' ≈ ' + fr(rd(x, 1))) + '.']}; }},
+ {id: 'n24b', lv: 1, n: 'N24', t: 'Trouver la médiane', d: 'Ranger, puis prendre le milieu.', c: 'Donne la médiane de la série.', a: 'On range les valeurs dans l’ordre croissant. Nombre impair de valeurs : la médiane est celle du milieu. Nombre pair : c’est la moyenne des deux valeurs du milieu.',
+  g: function(){ var n = rnd(5, 10), V = []; for (var i = 0; i < n; i++) V.push(rnd(0, 20)); var s = V.slice().sort(function(a, b){ return a - b; }), m = med(V);
+    var st = n % 2 ? 'Il y a ' + n + ' valeurs : la médiane est la ' + (n + 1) / 2 + 'e, soit ' + fr(m) + '.' : 'Il y a ' + n + ' valeurs : la médiane est la moyenne des ' + n / 2 + 'e et ' + (n / 2 + 1) + 'e valeurs, (' + s[n / 2 - 1] + ' + ' + s[n / 2] + ') ÷ 2 = ' + fr(m) + '.';
+    return {type: 'num', q: 'Série : ' + V.join(' ; ') + '. Médiane ?', v: m, steps: ['Rangée : ' + s.join(' ; ') + '.', st], traps: [[V[Math.floor(n / 2)], 'Il faut d’abord ranger les valeurs dans l’ordre croissant.']].filter(function(t){ return t[0] !== m; })}; }},
+ {id: 'n24c', lv: 2, n: 'N24', nq: 4, t: 'Moyenne pondérée', d: 'À partir d’un tableau d’effectifs.', c: 'Calcule la moyenne (arrondie au dixième si besoin).', a: 'Multiplie chaque valeur par son effectif, additionne, puis divise par l’effectif total.',
+  g: function(){ var k = rnd(3, 5), vals = shuffle([0, 1, 2, 3, 4, 5, 6]).slice(0, k).sort(function(a, b){ return a - b; }), E = vals.map(function(){ return rnd(1, 9); }), N = E.reduce(function(a, b){ return a + b; }, 0), S = vals.reduce(function(a, v, i){ return a + v * E[i]; }, 0), x = S / N, ex = M.isInt(x * 10);
+    var ctx = pick(['Nombre de frères et sœurs', 'Nombre de livres lus', 'Buts marqués par match', 'Nombre d’animaux']);
+    return {type: 'num', q: ctx + ' dans une classe : moyenne ?', svg: tableSvg([['Valeur'].concat(vals.map(String)), ['Effectif'].concat(E.map(String))]), v: ex ? cl(x) : rd(x, 1), x: x, d: ex ? undefined : 1, steps: ['Somme : ' + vals.map(function(v, i){ return v + ' × ' + E[i]; }).join(' + ') + ' = ' + S + ' ; effectif total : ' + N + '.', S + ' ÷ ' + N + (ex ? ' = ' + fr(cl(x)) : ' ≈ ' + fr(rd(x, 1))) + '.'],
+      traps: [[cl(vals.reduce(function(a, b){ return a + b; }, 0) / k), 'Il faut tenir compte des effectifs (moyenne pondérée).']], key: vals.join() + E.join()}; }},
+ {id: 'n24d', lv: 2, n: 'N24', t: 'Moyenne ou médiane ?', d: 'Interpréter.', c: 'L’affirmation est-elle vraie ou fausse ?', a: 'La médiane partage la série en deux groupes de même effectif ; la moyenne est sensible aux valeurs extrêmes.',
+  g: function(){ var m = rnd(10, 15), T = [
+    ['La médiane d’une série de notes est ' + m + '. Au moins la moitié des élèves a une note supérieure ou égale à ' + m + '.', true, 'C’est la définition de la médiane.'],
+    ['La moyenne d’une série est toujours l’une des valeurs de la série.', false, 'Par exemple, la moyenne de 1 et 2 est 1,5.'],
+    ['Si on ajoute une valeur très grande à une série, la moyenne augmente.', true, 'La moyenne est sensible aux valeurs extrêmes.'],
+    ['Si on remplace la plus grande valeur par une valeur encore plus grande, la médiane change.', false, 'La médiane ne dépend que de la valeur du milieu.'],
+    ['La médiane et la moyenne sont toujours égales.', false, 'Exemple : 1 ; 2 ; 9 → médiane 2, moyenne 4.'],
+    ['Dans la série 3 ; 5 ; 8 ; 10, la médiane est 6,5.', true, '(5 + 8) ÷ 2 = 6,5.'],
+    ['L’étendue d’une série est la différence entre la plus grande et la plus petite valeur.', true, 'C’est la définition.'],
+    ['Pour calculer la médiane, il faut d’abord ranger les valeurs.', true, 'Dans l’ordre croissant (ou décroissant).'],
+    ['Une moyenne de ' + m + ' sur 20 signifie que tous les élèves ont eu ' + m + '.', false, 'Les notes peuvent être différentes ; seule leur somme compte.'],
+    ['Dans une série de 9 valeurs rangées, la médiane est la 5e valeur.', true, '4 valeurs avant, 4 valeurs après.'],
+    ['Dans une série de 10 valeurs rangées, la médiane est la 5e valeur.', false, 'C’est la moyenne des 5e et 6e valeurs.'],
+    ['La moyenne de 12 et 18 est 15.', true, '(12 + 18) ÷ 2 = 15.']];
+    var i = rnd(0, T.length - 1), p = T[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n24e', lv: 3, n: 'N24', nq: 3, t: 'La valeur manquante', d: 'Atteindre une moyenne.', c: 'Calcule la valeur cherchée.', a: 'Si la moyenne de n valeurs vaut m, leur somme vaut n × m. La valeur manquante est la différence entre cette somme et la somme des valeurs connues.',
+  g: function(){ var n = rnd(3, 6), m = rnd(10, 16), V = [], s = 0; for (var i = 0; i < n - 1; i++){ V.push(rnd(6, 20)); s += V[i]; } var x = n * m - s; if (x < 0 || x > 20) return this.g();
+    var who = pick(['Léa', 'Malo', 'Inès', 'Noah', 'Jade', 'Sacha']);
+    return {type: 'num', q: who + ' a obtenu ' + V.join(' ; ') + '. Quelle note doit-' + (/a$|e$/.test(who) && who !== 'Noah' ? 'elle' : 'il') + ' avoir au prochain contrôle pour avoir exactement ' + m + ' de moyenne sur ces ' + n + ' notes ?', v: x, steps: ['Il faut une somme de ' + n + ' × ' + m + ' = ' + n * m + '.', 'Somme actuelle : ' + s + '. Note nécessaire : ' + n * m + ' ' + MINUS + ' ' + s + ' = ' + x + '.']}; }}
+);
+var NOTIONS = [
+ {n: 'N23', t: 'Représenter des données (dont diagramme circulaire)', r: 'fréquence = effectif ÷ effectif total ; dans un diagramme circulaire, l’angle de chaque secteur est proportionnel à l’effectif (total ↔ 360°).'},
+ {n: 'N24', t: 'Calculer et interpréter la moyenne et la médiane', r: 'moyenne = somme des valeurs ÷ nombre de valeurs ; médiane : la valeur du milieu de la série rangée (au moins la moitié des valeurs lui sont inférieures ou égales, au moins la moitié supérieures ou égales).'}
+];
+
+M.start({key: '4e-s11', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

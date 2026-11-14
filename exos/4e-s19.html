@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : réciproque de Thalès et problèmes de synthèse (4e, séquence 19) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 19 : démontrer que deux droites sont parallèles ou non, enchaîner Pythagore et Thalès.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 19 · Théorème de Thalès (2)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+// figure de Thalès : A sommet commun, M sur (AB), N sur (AC), (MN) // (BC). k < 0 : papillon
+function figTh(L, k){ var A = L[0], B = L[1], C = L[2], Mn = L[3], Nn = L[4];
+  var th = Math.random() * 2 * Math.PI, al = (pick([1, -1])) * (0.45 + Math.random() * 0.6), lb = 1, lc = 0.7 + Math.random() * 0.6;
+  var P = {}; P[A] = [0, 0]; P[B] = [lb * Math.cos(th), lb * Math.sin(th)]; P[C] = [lc * Math.cos(th + al), lc * Math.sin(th + al)];
+  P[Mn] = [k * P[B][0], k * P[B][1]]; P[Nn] = [k * P[C][0], k * P[C][1]];
+  var ks = Object.keys(P), xs = ks.map(function(n){ return P[n][0]; }), ys = ks.map(function(n){ return P[n][1]; });
+  var W = 320, H = 220, pad = 30, mnx = Math.min.apply(0, xs), mxx = Math.max.apply(0, xs), mny = Math.min.apply(0, ys), mxy = Math.max.apply(0, ys);
+  var s2 = Math.min((W - 2 * pad) / (mxx - mnx || 1), (H - 2 * pad) / (mxy - mny || 1)), ox = (W - s2 * (mxx - mnx)) / 2 - s2 * mnx, oy = (H - s2 * (mxy - mny)) / 2 - s2 * mny;
+  function m(n){ return [ox + s2 * P[n][0], oy + s2 * P[n][1]]; }
+  var G = [0, 0]; ks.forEach(function(n){ G[0] += m(n)[0] / ks.length; G[1] += m(n)[1] / ks.length; });
+  function f(v){ return v.toFixed(1); }
+  function seg(a, b, w){ var p = m(a), q = m(b); return '<line x1="' + f(p[0]) + '" y1="' + f(p[1]) + '" x2="' + f(q[0]) + '" y2="' + f(q[1]) + '" style="stroke:currentColor;stroke-width:' + (w || 1.7) + '"/>'; }
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Configuration de Thalès">';
+  if (k > 0){ s += seg(A, k > 1 ? Mn : B) + seg(A, k > 1 ? Nn : C); } else { s += seg(Mn, B) + seg(Nn, C); }
+  s += seg(B, C) + seg(Mn, Nn);
+  ks.forEach(function(n){ var p = m(n), c = P[A], d = [p[0] - G[0], p[1] - G[1]], l = Math.hypot(d[0], d[1]) || 1;
+    if (n === A){ var u = [(m(B)[0] + m(C)[0]) / 2 - p[0], (m(B)[1] + m(C)[1]) / 2 - p[1]], lu = Math.hypot(u[0], u[1]) || 1; d = k > 0 ? [-u[0], -u[1]] : [-u[1], u[0]]; l = lu; }
+    s += '<circle cx="' + f(p[0]) + '" cy="' + f(p[1]) + '" r="2.4" style="fill:currentColor"/><text x="' + f(p[0] + d[0] / l * 14) + '" y="' + f(p[1] + d[1] / l * 14) + '" class="pt" text-anchor="middle" dominant-baseline="central">' + n + '</text>'; });
+  return s + '</svg>'; }
+function rec(){ var k, b, c; do { k = pick([0.25, 0.4, 0.5, 0.6, 0.75, 0.8, 1.5, 2, 2.5, 3, 1.2]); b = rnd(2, 15); c = rnd(2, 15); } while (b === c || !M.isInt(cl(k * b) * 10) || !M.isInt(cl(k * c) * 10));
+  var par = Math.random() < 0.5, AM = cl(k * b), AN = cl(k * c);
+  if (!par){ var dl = pick([-1, 1]) * pick([0.1, 0.2, 0.3, 0.5, 1]); AN = cl(AN + dl); if (AN <= 0 || (k < 1 ? AN >= c : AN <= c)) return rec(); }
+  return {k: k, AB: b, AC: c, AM: AM, AN: AN, par: Math.abs(AM * c - AN * b) < 1e-9}; }
+function recQ(pap){ var L = M.letters(5), D = rec(), u = pick(['cm', 'm', 'mm']);
+  var A = L[0], B = L[1], C = L[2], Mn = L[3], Nn = L[4], kf = pap ? -D.k : D.k;
+  if (pap && D.k > 1.5) return recQ(pap);
+  var where = pap ? 'Les points ' + Mn + ', ' + A + ', ' + B + ' sont alignés, ainsi que ' + Nn + ', ' + A + ', ' + C + ', dans le même ordre' : (D.k < 1 ? Mn + ' ∈ [' + A + B + '] et ' + Nn + ' ∈ [' + A + C + ']' : B + ' ∈ [' + A + Mn + '] et ' + C + ' ∈ [' + A + Nn + ']');
+  var q = where + '. ' + A + Mn + ' = ' + fr(D.AM) + ' ' + u + ', ' + A + B + ' = ' + fr(D.AB) + ' ' + u + ', ' + A + Nn + ' = ' + fr(D.AN) + ' ' + u + ', ' + A + C + ' = ' + fr(D.AC) + ' ' + u + '. Les droites (' + Mn + Nn + ') et (' + B + C + ') sont-elles parallèles ?';
+  var p1 = cl(D.AM * D.AC), p2 = cl(D.AN * D.AB);
+  var st = ['Je compare ' + A + Mn + '/' + A + B + ' et ' + A + Nn + '/' + A + C + ' avec les produits en croix : ' + fr(D.AM) + ' × ' + fr(D.AC) + ' = ' + fr(p1) + ' et ' + fr(D.AN) + ' × ' + fr(D.AB) + ' = ' + fr(p2) + '.'];
+  if (D.par) st.push('Les produits sont égaux, donc ' + A + Mn + '/' + A + B + ' = ' + A + Nn + '/' + A + C + '. De plus les points sont alignés dans le même ordre. D’après la réciproque du théorème de Thalès, (' + Mn + Nn + ') // (' + B + C + ').');
+  else st.push('Les produits sont différents, donc ' + A + Mn + '/' + A + B + ' ≠ ' + A + Nn + '/' + A + C + '. Si les droites étaient parallèles, ces rapports seraient égaux (théorème de Thalès) : les droites (' + Mn + Nn + ') et (' + B + C + ') ne sont pas parallèles.');
+  return {type: 'ch', q: q, svg: figTh(L, kf), ch: ['Oui, elles sont parallèles', 'Non, elles ne sont pas parallèles'], ans: D.par ? 0 : 1, steps: st, key: q}; }
+var EX = [
+ {id: 'n45a', lv: 1, n: 'N45', t: 'Les rapports sont-ils égaux ?', d: 'Produits en croix.', c: 'Les deux quotients sont-ils égaux ?', a: 'a/b = c/d lorsque a × d = b × c (produits en croix). Tu peux aussi calculer chaque quotient.',
+  g: function(){ var b = rnd(2, 15), k = pick([0.5, 0.4, 0.6, 0.75, 1.5, 2, 0.8, 2.5, 3]), d = rnd(2, 15), a = cl(k * b), c = cl(k * d), eq = Math.random() < 0.5;
+    if (!eq) c = cl(c + pick([-1, 1]) * pick([0.1, 0.2, 0.5, 1])); if (c <= 0 || b === d) return this.g();
+    var p1 = cl(a * d), p2 = cl(b * c), ok = Math.abs(p1 - p2) < 1e-9;
+    return {type: 'ch', q: fr(a) + '/' + b + ' et ' + fr(c) + '/' + d, ch: ['Égaux', 'Pas égaux'], ans: ok ? 0 : 1, steps: [fr(a) + ' × ' + d + ' = ' + fr(p1) + ' et ' + b + ' × ' + fr(c) + ' = ' + fr(p2) + (ok ? ' : les produits en croix sont égaux, les quotients aussi.' : ' : les produits en croix sont différents, les quotients ne sont pas égaux.')]}; }},
+ {id: 'n45b', lv: 2, n: 'N45', t: 'Parallèles ou pas ? (triangles emboîtés)', d: 'Réciproque du théorème de Thalès.', c: 'Réponds en t’appuyant sur un calcul. La figure n’est pas en vraie grandeur.', a: 'Compare les rapports AM/AB et AN/AC. S’ils sont égaux (et les points alignés dans le même ordre), les droites sont parallèles (réciproque de Thalès) ; sinon elles ne le sont pas.',
+  g: function(){ return recQ(false); }},
+ {id: 'n45c', lv: 2, n: 'N45', nq: 4, t: 'Parallèles ou pas ? (papillon)', d: 'Les droites se croisent.', c: 'Réponds en t’appuyant sur un calcul. La figure n’est pas en vraie grandeur.', a: 'Même méthode : compare les rapports, et vérifie que les points sont alignés dans le même ordre.',
+  g: function(){ return recQ(true); }},
+ {id: 'n45d', lv: 3, n: 'N45', nq: 3, t: 'Problèmes', d: 'Étagères, toits, ponts…', c: 'Lis l’énoncé et réponds en t’appuyant sur un calcul.', a: 'Repère les deux droites sécantes et les deux droites dont on se demande si elles sont parallèles, puis compare les rapports.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var S = [
+    ['Un pupitre a deux pieds qui se croisent en O. Sur un pied, OA = ', ' cm et OB = ', ' cm ; sur l’autre, OC = ', ' cm et OD = ', ' cm, avec A et C en haut, B et D au sol. Le plateau [AC] est-il parallèle au sol [BD] ?', 'cm', 1],
+    ['Sur le toit d’une maison, une poutre [MN] relie les deux pans : SM = ', ' m, SA = ', ' m, SN = ', ' m, SB = ', ' m, avec M ∈ [SA] et N ∈ [SB]. La poutre est-elle parallèle au plancher [AB] ?', 'm', 0],
+    ['Dans un triangle de signalisation ABC, on trace un trait [MN] avec M ∈ [AB] et N ∈ [AC] : AM = ', ' cm, AB = ', ' cm, AN = ', ' cm, AC = ', ' cm. Le trait est-il parallèle à [BC] ?', 'cm', 0],
+    ['Une table pliante a deux pieds qui se coupent en O : OA = ', ' cm, OB = ', ' cm, OC = ', ' cm, OD = ', ' cm (A, O, B alignés et C, O, D alignés, dans le même ordre). Le plateau (AC) est-il parallèle au sol (BD) ?', 'cm', 1]][k % 4];
+    var D = rec(); if (S[6] === 0 && D.k > 1 || S[6] === 1 && D.k > 1.5) return this.g(k);
+    var m = S[5] === 'm' ? 1 : 10, a = cl(D.AM * m), b = cl(D.AB * m), c = cl(D.AN * m), d = cl(D.AC * m);
+    var p1 = cl(a * d), p2 = cl(c * b), par = Math.abs(p1 - p2) < 1e-9;
+    var nm = S[6] === 1 ? ['OA', 'OB', 'OC', 'OD'] : (k % 4 === 1 ? ['SM', 'SA', 'SN', 'SB'] : ['AM', 'AB', 'AN', 'AC']);
+    var q = S[0] + fr(a) + S[1] + fr(b) + S[2] + fr(c) + S[3] + fr(d) + S[4];
+    return {type: 'ch', q: q, ch: ['Oui', 'Non'], ans: par ? 0 : 1, steps: ['Je compare ' + nm[0] + '/' + nm[1] + ' et ' + nm[2] + '/' + nm[3] + ' : ' + fr(a) + ' × ' + fr(d) + ' = ' + fr(p1) + ' et ' + fr(c) + ' × ' + fr(b) + ' = ' + fr(p2) + '.', par ? 'Les rapports sont égaux et les points sont alignés dans le même ordre : d’après la réciproque du théorème de Thalès, les droites sont parallèles.' : 'Les rapports ne sont pas égaux : d’après le théorème de Thalès, les droites ne sont pas parallèles.'], key: 'k' + k + q}; }}
+];
+var TR = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 15, 17], [9, 12, 15], [12, 16, 20], [7, 24, 25], [20, 21, 29]];
+EX.push(
+ {id: 'n46a', lv: 1, n: 'N46', t: 'Quel théorème utiliser ?', d: 'Thalès ou Pythagore, direct ou réciproque.', c: 'Quel théorème permet de répondre ?', a: 'Pythagore : triangle rectangle (calcul) ou prouver qu’un triangle est rectangle (réciproque). Thalès : droites parallèles (calcul) ou prouver que deux droites sont parallèles (réciproque).',
+  g: function(){ var t = rnd(0, 11), L = M.letters(5), A = L[0], B = L[1], C = L[2], Mn = L[3], Nn = L[4], q, ans;
+    var CH = ['Théorème de Pythagore', 'Réciproque de Pythagore', 'Théorème de Thalès', 'Réciproque de Thalès'];
+    switch (t){
+     case 0: q = 'Le triangle ' + A + B + C + ' est rectangle en ' + A + '. On connaît ' + A + B + ' et ' + A + C + '. On veut calculer ' + B + C + '.'; ans = 0; break;
+     case 1: q = 'On connaît les trois longueurs du triangle ' + A + B + C + '. On veut savoir s’il est rectangle.'; ans = 1; break;
+     case 2: q = Mn + ' ∈ [' + A + B + '], ' + Nn + ' ∈ [' + A + C + '] et (' + Mn + Nn + ') // (' + B + C + '). On veut calculer ' + Mn + Nn + '.'; ans = 2; break;
+     case 3: q = Mn + ' ∈ [' + A + B + '] et ' + Nn + ' ∈ [' + A + C + ']. On connaît ' + A + Mn + ', ' + A + B + ', ' + A + Nn + ' et ' + A + C + '. On veut savoir si (' + Mn + Nn + ') et (' + B + C + ') sont parallèles.'; ans = 3; break;
+     case 4: q = 'Une échelle est posée contre un mur vertical, sur un sol horizontal. On connaît la longueur de l’échelle et la distance de son pied au mur. On veut la hauteur atteinte.'; ans = 0; break;
+     case 5: q = 'Un menuisier mesure les côtés d’un cadre triangulaire : 30 cm, 40 cm et 50 cm. Il veut savoir si l’angle est droit.'; ans = 1; break;
+     case 6: q = 'Les droites (' + B + Mn + ') et (' + C + Nn + ') se coupent en ' + A + ', et (' + B + C + ') // (' + Mn + Nn + '). On veut calculer ' + A + Mn + '.'; ans = 2; break;
+     case 8: q = 'Le triangle ' + A + B + C + ' est rectangle en ' + A + '. On connaît l’hypoténuse ' + B + C + ' et le côté ' + A + B + '. On veut calculer ' + A + C + '.'; ans = 0; break;
+     case 9: q = 'Les côtés du triangle ' + A + B + C + ' mesurent 5 cm, 12 cm et 13 cm. On veut démontrer qu’il est rectangle.'; ans = 1; break;
+     case 10: q = 'Au même moment, un bâton vertical et un arbre ont chacun une ombre au sol ; les rayons du soleil sont parallèles. On connaît la hauteur du bâton et les deux ombres. On veut la hauteur de l’arbre.'; ans = 2; break;
+     case 11: q = 'Les deux pieds d’une table pliante se croisent. On a mesuré les quatre morceaux de pieds. On veut savoir si le plateau est parallèle au sol.'; ans = 3; break;
+     default: q = 'Les droites (' + B + Mn + ') et (' + C + Nn + ') se coupent en ' + A + '. On connaît ' + A + B + ', ' + A + Mn + ', ' + A + C + ' et ' + A + Nn + '. On veut savoir si (' + B + C + ') // (' + Mn + Nn + ').'; ans = 3;
+    }
+    return {type: 'ch', q: q, ch: CH, ans: ans, steps: [['Triangle rectangle et longueur à calculer : théorème de Pythagore.', 'Trois longueurs connues, angle droit à prouver : réciproque du théorème de Pythagore.', 'Droites parallèles et longueur à calculer : théorème de Thalès.', 'Parallélisme à prouver à partir des longueurs : réciproque du théorème de Thalès.'][ans]], key: 't' + t}; }},
+ {id: 'n46b', lv: 2, n: 'N46', nq: 4, t: 'Pythagore puis Thalès', d: 'Deux étapes.', c: 'Calcule la longueur demandée. La figure n’est pas en vraie grandeur.', a: 'Calcule d’abord la longueur manquante du triangle rectangle avec Pythagore, puis utilise Thalès pour la longueur demandée.',
+  g: function(){ var T = pick(TR), sw = Math.random() < 0.5, L = M.letters(5), A = L[0], B = L[1], C = L[2], Mn = L[3], Nn = L[4], k = pick([0.5, 0.25, 0.75, 0.4, 0.6, 1.5, 2]);
+    var AB = sw ? T[1] : T[0], AC = sw ? T[0] : T[1], BC = T[2], AM = cl(k * AB), MN = cl(k * BC); if (!M.isInt(AM * 10) || !M.isInt(MN * 10)) return this.g();
+    var u = pick(['cm', 'm']);
+    var q = 'Le triangle ' + A + B + C + ' est rectangle en ' + A + ' ; ' + A + B + ' = ' + AB + ' ' + u + ' et ' + A + C + ' = ' + AC + ' ' + u + '. ' + (k < 1 ? Mn + ' ∈ [' + A + B + '], ' + Nn + ' ∈ [' + A + C + ']' : B + ' ∈ [' + A + Mn + '], ' + C + ' ∈ [' + A + Nn + ']') + ', (' + Mn + Nn + ') // (' + B + C + ') et ' + A + Mn + ' = ' + fr(AM) + ' ' + u + '. Calcule ' + Mn + Nn + '.';
+    return {type: 'num', q: q, svg: figTh(L, k), v: MN, unit: u, lab: Mn + Nn + ' =', steps: ['Pythagore dans ' + A + B + C + ' rectangle en ' + A + ' : ' + B + C + '² = ' + AB + '² + ' + AC + '² = ' + (AB * AB + AC * AC) + ', donc ' + B + C + ' = ' + BC + ' ' + u + '.', 'Thalès : ' + A + Mn + '/' + A + B + ' = ' + Mn + Nn + '/' + B + C + ', donc ' + Mn + Nn + ' = ' + fr(AM) + ' × ' + BC + ' ÷ ' + AB + ' = ' + fr(MN) + ' ' + u + '.'], traps: [[cl(k * AC), 'Ce n’est pas ' + A + Nn + ' : il faut ' + Mn + Nn + ', qui correspond à ' + B + C + '.']], key: q}; }},
+ {id: 'n46c', lv: 3, n: 'N46', nq: 4, t: 'Thalès puis réciproque de Pythagore', d: 'Le petit triangle est-il rectangle ?', c: 'Réponds en t’appuyant sur des calculs. La figure n’est pas en vraie grandeur.', a: 'Calcule la longueur manquante avec Thalès, puis compare le carré du plus grand côté à la somme des carrés des deux autres.',
+  g: function(){ var T = pick(TR), right = Math.random() < 0.5, L = M.letters(5), A = L[0], B = L[1], C = L[2], Mn = L[3], Nn = L[4], k = pick([2, 0.5, 0.25, 0.75, 1.5]);
+    var MN = T[0] * pick([1, 2]), AM = right ? T[1] * MN / T[0] : T[1] * MN / T[0] + pick([-1, 1]), AN = right ? T[2] * MN / T[0] : T[2] * MN / T[0] + (right ? 0 : 0);
+    if (!right && AM === AN) return this.g();
+    var AB = cl(AM / k), AC = cl(AN / k), BC = cl(MN / k); if (!M.isInt(AB * 10) || !M.isInt(BC * 10) || !M.isInt(AC * 10)) return this.g();
+    var a2 = AM * AM + MN * MN, c2 = AN * AN, ok = Math.abs(a2 - c2) < 1e-9;
+    var q = (k < 1 ? Mn + ' ∈ [' + A + B + '], ' + Nn + ' ∈ [' + A + C + ']' : B + ' ∈ [' + A + Mn + '], ' + C + ' ∈ [' + A + Nn + ']') + ' et (' + Mn + Nn + ') // (' + B + C + '). ' + A + Mn + ' = ' + fr(AM) + ' cm, ' + A + Nn + ' = ' + fr(AN) + ' cm, ' + A + C + ' = ' + fr(AC) + ' cm et ' + B + C + ' = ' + fr(BC) + ' cm. Le triangle ' + A + Mn + Nn + ' est-il rectangle en ' + Mn + ' ?';
+    return {type: 'ch', q: q, svg: figTh(L, k), ch: ['Oui', 'Non'], ans: ok ? 0 : 1, steps: ['Thalès : ' + A + Nn + '/' + A + C + ' = ' + Mn + Nn + '/' + B + C + ', donc ' + Mn + Nn + ' = ' + fr(AN) + ' × ' + fr(BC) + ' ÷ ' + fr(AC) + ' = ' + fr(MN) + ' cm.', 'Le plus grand côté est [' + A + Nn + '] : ' + A + Nn + '² = ' + fr(c2) + ' et ' + A + Mn + '² + ' + Mn + Nn + '² = ' + fr(AM * AM) + ' + ' + fr(MN * MN) + ' = ' + fr(a2) + '.', ok ? 'Les deux résultats sont égaux : d’après la réciproque du théorème de Pythagore, le triangle est rectangle en ' + Mn + '.' : 'Les résultats sont différents : le triangle n’est pas rectangle (sinon on aurait l’égalité de Pythagore).'], key: q}; }},
+ {id: 'n46d', lv: 3, n: 'N46', nq: 3, t: 'Problèmes de synthèse', d: 'Toboggans, rampes, échelles…', c: 'Lis l’énoncé et calcule. Arrondis au dixième si nécessaire.', a: 'Repère les triangles rectangles (Pythagore) et les droites parallèles (Thalès). Rédige chaque étape.',
+  g: function(k){ if (k === undefined) k = rnd(0, 11); var T = TR[k % 8], m = [1, 2, 0.5, 1, 2, 0.5, 1, 1, 2, 0.5, 1, 2][k], a = cl(T[0] * m), b = cl(T[1] * m), c = cl(T[2] * m), r, q, st, u;
+    var f = pick([0.5, 0.25, 0.75, 0.4]);
+    if (k % 3 === 0){ u = 'm'; q = 'Une rampe d’accès rectiligne [AC] mesure ' + fr(c) + ' m ; elle monte d’un sol horizontal jusqu’à un quai vertical haut de ' + fr(a) + ' m. Un poteau vertical [MN] soutient la rampe à ' + fr(cl(b * f)) + ' m du point A (au sol, mesuré horizontalement). Quelle est la hauteur du poteau ?'; r = cl(a * f); st = ['Pythagore : distance horizontale = √(' + fr(c) + '² ' + MINUS + ' ' + fr(a) + '²) = ' + fr(b) + ' m.', 'Le poteau et le quai sont verticaux, donc parallèles. Thalès : hauteur = ' + fr(a) + ' × ' + fr(cl(b * f)) + ' ÷ ' + fr(b) + ' = ' + fr(r) + ' m.']; }
+    else if (k % 3 === 1){ u = 'm'; q = 'Un toboggan rectiligne de ' + fr(c) + ' m part du haut d’une échelle verticale et touche le sol (horizontal) à ' + fr(b) + ' m du pied de l’échelle. Un enfant glisse ; il est à ' + fr(cl(a * f)) + ' m au-dessus du sol. Quelle longueur de toboggan lui reste-t-il à descendre ?'; r = cl(c * f); st = ['Pythagore : hauteur de l’échelle = √(' + fr(c) + '² ' + MINUS + ' ' + fr(b) + '²) = ' + fr(a) + ' m.', 'La hauteur de l’enfant et l’échelle sont verticales, donc parallèles. Thalès, de sommet le bas du toboggan : longueur restante = ' + fr(c) + ' × ' + fr(cl(a * f)) + ' ÷ ' + fr(a) + ' = ' + fr(r) + ' m.']; }
+    else { u = 'cm'; var A = cl(a * 10), B = cl(b * 10), C = cl(c * 10); q = 'Une étagère triangulaire ABC est rectangle en A, avec AB = ' + fr(A) + ' cm et AC = ' + fr(B) + ' cm. On fixe une baguette [MN] parallèle à [BC], avec M ∈ [AB] et AM = ' + fr(cl(A * f)) + ' cm. Longueur de la baguette ?'; r = cl(C * f); st = ['Pythagore : BC = √(' + fr(A) + '² + ' + fr(B) + '²) = ' + fr(C) + ' cm.', 'Thalès : MN = ' + fr(C) + ' × ' + fr(cl(A * f)) + ' ÷ ' + fr(A) + ' = ' + fr(r) + ' cm.']; }
+    return {type: 'num', q: q, v: r, unit: u, steps: st, key: 'k' + k}; }}
+);
+var NOTIONS = [
+ {n: 'N45', t: 'Démontrer que deux droites sont parallèles ou non', r: 'si AM/AB = AN/AC et si les points sont alignés dans le même ordre, alors (MN) // (BC) (réciproque de Thalès) ; si les rapports sont différents, les droites ne sont pas parallèles.'},
+ {n: 'N46', t: 'Résoudre des problèmes de synthèse (Thalès, Pythagore)', r: 'Pythagore pour un triangle rectangle, Thalès pour des droites parallèles, et leurs réciproques pour démontrer.'}
+];
+
+M.start({key: '4e-s19', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

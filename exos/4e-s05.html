@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : proportionnalité (4e, séquence 5) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 5 : quatrième proportionnelle, échelles et proportionnalité sur un graphique.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 5 · Proportionnalité (1)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+// ---- outils communs 4e : tableau et repère en SVG ----
+function f1(v){ return (Math.round(v * 10) / 10).toString(); }
+function esc(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+// tableau : rows = [[titre, v1, v2, …], …] (chaînes)
+function tableSvg(rows){ var nc = rows[0].length, cw = [], i, j, H = 36;
+  for (j = 0; j < nc; j++){ var m = 0; for (i = 0; i < rows.length; i++) m = Math.max(m, String(rows[i][j]).length); cw.push(Math.max(46, m * 9 + 18)); }
+  var W = cw.reduce(function(a, b){ return a + b; }, 0), s = '<svg viewBox="-1 -1 ' + (W + 2) + ' ' + (H * rows.length + 2) + '" class="fig tab" role="img" aria-label="Tableau">', x;
+  for (i = 0; i < rows.length; i++){ x = 0; for (j = 0; j < nc; j++){ var t = String(rows[i][j]);
+    s += '<rect x="' + x + '" y="' + i * H + '" width="' + cw[j] + '" height="' + H + '" style="fill:' + (j === 0 ? 'var(--soft)' : 'none') + ';stroke:currentColor;stroke-width:1"/>';
+    s += '<text x="' + (x + cw[j] / 2) + '" y="' + (i * H + H / 2) + '" text-anchor="middle" dominant-baseline="central"' + (t === '?' ? ' class="qm"' : ' class="ln" style="font-size:15px"') + '>' + esc(t) + '</text>'; x += cw[j]; } }
+  return s + '</svg>'; }
+// repère : o = {xm, ym, sx, sy (pas des graduations), xl, yl (légendes), items: [{type:'line'|'seg'|'pts'|'curve', …}]}
+function graphSvg(o){ var W = 320, H = 230, L = 42, B = 30, T = 12, R = 14, w = W - L - R, h = H - T - B;
+  var X = function(x){ return L + x / o.xm * w; }, Y = function(y){ return T + h - y / o.ym * h; };
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Graphique">', x, y;
+  for (x = 0; x <= o.xm + 1e-9; x += o.sx){ s += '<line x1="' + f1(X(x)) + '" y1="' + T + '" x2="' + f1(X(x)) + '" y2="' + (T + h) + '" style="stroke:currentColor;opacity:.15"/><text x="' + f1(X(x)) + '" y="' + (T + h + 14) + '" text-anchor="middle" style="font-size:11px;font-weight:400">' + fr(cl(x)) + '</text>'; }
+  for (y = 0; y <= o.ym + 1e-9; y += o.sy){ s += '<line x1="' + L + '" y1="' + f1(Y(y)) + '" x2="' + (L + w) + '" y2="' + f1(Y(y)) + '" style="stroke:currentColor;opacity:.15"/><text x="' + (L - 5) + '" y="' + f1(Y(y)) + '" text-anchor="end" dominant-baseline="central" style="font-size:11px;font-weight:400">' + fr(cl(y)) + '</text>'; }
+  s += '<line x1="' + L + '" y1="' + (T + h) + '" x2="' + (L + w) + '" y2="' + (T + h) + '" style="stroke:currentColor;stroke-width:1.4"/><line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + (T + h) + '" style="stroke:currentColor;stroke-width:1.4"/>';
+  if (o.xl) s += '<text x="' + (L + w) + '" y="' + (H - 2) + '" text-anchor="end" style="font-size:11px;font-weight:700">' + esc(o.xl) + '</text>';
+  if (o.yl) s += '<text x="' + (L + 4) + '" y="' + (T + 2) + '" dominant-baseline="hanging" style="font-size:11px;font-weight:700">' + esc(o.yl) + '</text>';
+  (o.items || []).forEach(function(it){ var col = it.col || 'var(--accent)';
+    if (it.type === 'line'){ // y = a x + b sur [0, xm], coupée au cadre
+      var x2 = o.xm, y2 = it.a * x2 + (it.b || 0); if (y2 > o.ym){ x2 = (o.ym - (it.b || 0)) / it.a; y2 = o.ym; }
+      s += '<line x1="' + f1(X(it.x0 || 0)) + '" y1="' + f1(Y(it.a * (it.x0 || 0) + (it.b || 0))) + '" x2="' + f1(X(x2)) + '" y2="' + f1(Y(y2)) + '" style="stroke:' + col + ';stroke-width:2.4"/>'; }
+    else if (it.type === 'poly'){ s += '<polyline points="' + it.p.map(function(p){ return f1(X(p[0])) + ',' + f1(Y(p[1])); }).join(' ') + '" style="fill:none;stroke:' + col + ';stroke-width:2.4"/>'; }
+    else if (it.type === 'pts'){ it.p.forEach(function(p){ s += '<circle cx="' + f1(X(p[0])) + '" cy="' + f1(Y(p[1])) + '" r="3.5" style="fill:' + col + '"/>'; }); }
+    else if (it.type === 'lab'){ s += '<text x="' + f1(X(it.x)) + '" y="' + f1(Y(it.y)) + '" style="font-size:13px;fill:' + col + '" dominant-baseline="central">' + esc(it.t) + '</text>'; }
+  });
+  return s + '</svg>'; }
+function nice(){ return pick([rnd(2, 12), rnd(2, 12), cl(rnd(3, 39) / 2), cl(rnd(11, 99) / 10)]); }
+// tableau de proportionnalité à compléter
+function prop4(){ var k, a, c; do { k = pick([1.5, 2, 2.5, 3, 4, 0.5, 1.2, 0.8, 5, 6, 7, 1.25, 0.4]); a = rnd(2, 12); c = rnd(2, 15); } while (a === c || !M.isInt(cl(a * k) * 100) || !M.isInt(cl(c * k) * 100));
+  return {a: a, c: c, k: k, b: cl(a * k), d: cl(c * k)}; }
+var CTX = [
+ function(){ var P = prop4(), m = rnd(0, 1); return m ? {q: P.a + ' kg de pommes coûtent ' + fr(P.b) + ' €. Combien coûtent ' + P.c + ' kg ?', v: P.d, u: '€', st: ['Prix d’un kilogramme : ' + fr(P.b) + ' ÷ ' + P.a + ' = ' + fr(P.k) + ' €.', P.c + ' × ' + fr(P.k) + ' = ' + fr(P.d) + ' €.']} : {q: P.a + ' kg de pommes coûtent ' + fr(P.b) + ' €. Quelle masse de pommes peut-on acheter avec ' + fr(P.d) + ' € ?', v: P.c, u: 'kg', st: ['Prix d’un kilogramme : ' + fr(P.b) + ' ÷ ' + P.a + ' = ' + fr(P.k) + ' €.', fr(P.d) + ' ÷ ' + fr(P.k) + ' = ' + P.c + ' kg.']}; },
+ function(){ var n = pick([4, 6, 8]), m = pick([2, 3, 10, 12, 5]), f = rnd(100, 300); if (m === n) m = n + 2; f = Math.round(f / n) * n; return {q: 'Une recette de crêpes pour ' + n + ' personnes demande ' + f + ' g de farine. Quelle masse de farine faut-il pour ' + m + ' personnes ?', v: cl(f * m / n), u: 'g', st: ['Pour 1 personne : ' + f + ' ÷ ' + n + ' = ' + fr(f / n) + ' g.', 'Pour ' + m + ' personnes : ' + m + ' × ' + fr(f / n) + ' = ' + fr(cl(f * m / n)) + ' g.']}; },
+ function(){ var P = prop4(); return {q: 'Une voiture consomme ' + fr(P.b) + ' L d’essence pour ' + P.a * 10 + ' km. Combien consomme-t-elle pour ' + P.c * 10 + ' km ?', v: P.d, u: 'L', st: ['Produit en croix : ' + fr(P.b) + ' × ' + P.c * 10 + ' ÷ ' + P.a * 10 + ' = ' + fr(P.d) + ' L.']}; },
+ function(){ var a = rnd(3, 9), r = pick([12, 15, 18, 20, 24, 30]), c = rnd(10, 40); return {q: 'Une imprimante imprime ' + a * r + ' pages en ' + a + ' minutes. Combien de pages imprime-t-elle en ' + c + ' minutes ?', v: r * c, u: 'pages', st: ['En 1 minute : ' + a * r + ' ÷ ' + a + ' = ' + r + ' pages.', 'En ' + c + ' minutes : ' + c + ' × ' + r + ' = ' + r * c + ' pages.']}; },
+ function(){ var P = prop4(); return {q: P.a + ' cahiers identiques coûtent ' + fr(P.b) + ' €. Combien coûtent ' + P.c + ' cahiers ?', v: P.d, u: '€', st: ['Un cahier : ' + fr(P.b) + ' ÷ ' + P.a + ' = ' + fr(P.k) + ' €.', P.c + ' × ' + fr(P.k) + ' = ' + fr(P.d) + ' €.']}; },
+ function(){ var t = pick([2, 3, 4, 5]), d = pick([12, 15, 18, 25, 30]), h = rnd(2, 8); if (h === t) h = t + 1; return {q: 'Un robinet remplit un seau de ' + t * d + ' L en ' + t + ' minutes. Quel volume d’eau coule en ' + h + ' minutes ?', v: d * h, u: 'L', st: ['En 1 minute : ' + t * d + ' ÷ ' + t + ' = ' + d + ' L.', h + ' × ' + d + ' = ' + d * h + ' L.']}; },
+ function(){ var r = pick([1.1, 1.2, 1.15, 0.9, 1.08]), e = rnd(5, 40) * 10; return {q: 'Un jour, 1 € vaut ' + fr(r) + ' dollar. Combien de dollars obtient-on avec ' + e + ' € ?', v: cl(e * r), u: '$', st: [e + ' × ' + fr(r) + ' = ' + fr(cl(e * r)) + ' $.']}; },
+ function(){ var a = pick([2, 3, 4, 5]), k = pick([45, 60, 75, 90]), c = rnd(6, 15); return {q: 'Un cycliste roulant à vitesse constante parcourt ' + fr(a * k / 3) + ' km en ' + a * 20 + ' minutes. Quelle distance parcourt-il en ' + c * 10 + ' minutes ?', v: cl(k / 60 * c * 10), u: 'km', st: ['En 10 minutes : ' + fr(a * k / 3) + ' ÷ ' + 2 * a + ' = ' + fr(k / 6) + ' km.', 'En ' + c * 10 + ' minutes : ' + c + ' × ' + fr(k / 6) + ' = ' + fr(cl(k / 60 * c * 10)) + ' km.']}; },
+ function(){ var P = prop4(); return {q: 'Pour peindre ' + P.a + ' m² de mur, il faut ' + fr(P.b) + ' L de peinture. Quelle surface peut-on peindre avec ' + fr(P.d) + ' L ?', v: P.c, u: 'm²', st: ['Avec 1 L : ' + P.a + ' ÷ ' + fr(P.b) + ' m² ; avec ' + fr(P.d) + ' L : ' + fr(P.d) + ' × ' + P.a + ' ÷ ' + fr(P.b) + ' = ' + P.c + ' m².']}; },
+ function(){ var b = pick([6, 8, 10, 12]), g = pick([25, 30, 40, 45]), n = rnd(3, 9); return {q: 'Un paquet de ' + b + ' biscuits pèse ' + b * g + ' g. Combien pèsent ' + n + ' biscuits ?', v: n * g, u: 'g', st: ['Un biscuit : ' + b * g + ' ÷ ' + b + ' = ' + g + ' g.', n + ' × ' + g + ' = ' + n * g + ' g.']}; },
+ function(){ var a = pick([3, 4, 5, 6]), s = pick([25, 30, 35, 40]), n = rnd(7, 20); return {q: 'Un tissu se vend au mètre : ' + a + ' m coûtent ' + a * s + ' €. Quel est le prix de ' + n + ' m ?', v: n * s, u: '€', st: ['Un mètre : ' + a * s + ' ÷ ' + a + ' = ' + s + ' €.', n + ' × ' + s + ' = ' + n * s + ' €.']}; },
+ function(){ var P = prop4(); return {q: 'Un sirop se dilue toujours de la même façon : ' + P.a + ' cL de sirop pour ' + fr(P.b) + ' dL d’eau. Quelle quantité d’eau faut-il pour ' + P.c + ' cL de sirop ?', v: P.d, u: 'dL', st: ['Produit en croix : ' + P.c + ' × ' + fr(P.b) + ' ÷ ' + P.a + ' = ' + fr(P.d) + ' dL.']}; },
+ function(){ var e = pick([100, 200, 250, 500, 1000, 2000]), p = rnd(2, 15), r = cl(p * e / 100); return {q: 'Sur une carte à l’échelle 1/' + fr(e * 100) + ', deux villages sont à ' + p + ' cm l’un de l’autre. Quelle est la distance réelle, en mètres ?', v: cl(p * e), u: 'm', st: ['1 cm sur la carte représente ' + fr(e * 100) + ' cm = ' + fr(e) + ' m en réalité.', p + ' × ' + fr(e) + ' = ' + fr(cl(p * e)) + ' m.']}; }
+];
+var EX = [
+ {id: 'n11a', lv: 1, n: 'N11', t: 'Compléter un tableau', d: 'La quatrième proportionnelle.', c: 'Le tableau est un tableau de proportionnalité. Trouve le nombre manquant.', a: 'Utilise le coefficient de proportionnalité (on multiplie la 1re ligne par le même nombre) ou le produit en croix : ? = b × c ÷ a.',
+  g: function(){ var P = prop4(), pos = rnd(0, 3), cells = [P.a, P.c, P.b, P.d].map(fr), v = [P.a, P.c, P.b, P.d][pos]; cells[pos] = '?';
+    var st = pos >= 2 ? ['Coefficient : ' + (pos === 2 ? fr(P.d) + ' ÷ ' + P.c : fr(P.b) + ' ÷ ' + P.a) + ' = ' + fr(P.k) + '.', '? = ' + (pos === 2 ? P.a : P.c) + ' × ' + fr(P.k) + ' = ' + fr(v) + '.'] : ['Coefficient : ' + (pos === 0 ? fr(P.d) + ' ÷ ' + P.c : fr(P.b) + ' ÷ ' + P.a) + ' = ' + fr(P.k) + '.', '? = ' + (pos === 0 ? fr(P.b) : fr(P.d)) + ' ÷ ' + fr(P.k) + ' = ' + fr(v) + '.'];
+    return {type: 'num', q: 'Trouve le nombre manquant.', svg: tableSvg([['Grandeur A', cells[0], cells[1]], ['Grandeur B', cells[2], cells[3]]]), lab: '? =', v: v, steps: st, key: cells.join()}; }},
+ {id: 'n11b', lv: 2, n: 'N11', t: 'Proportionnel ou pas ?', d: 'Tester un tableau.', c: 'Ce tableau est-il un tableau de proportionnalité ?', a: 'Calcule les quotients (2e ligne ÷ 1re ligne) : s’ils sont tous égaux, c’est un tableau de proportionnalité.',
+  g: function(){ var k = pick([1.5, 2, 2.5, 3, 4, 0.5, 1.2, 5, 6]), xs = shuffle([1, 2, 3, 4, 5, 6, 8, 10, 12]).slice(0, 3).sort(function(a, b){ return a - b; }), ys = xs.map(function(x){ return cl(x * k); }), yes = Math.random() < 0.5;
+    if (!yes){ var i = rnd(0, 2); ys[i] = cl(ys[i] + pick([1, -1, 0.5, 2])); if (ys[i] <= 0) ys[i] = cl(ys[i] + 3); if (ys.every(function(y, j){ return Math.abs(y / xs[j] - ys[0] / xs[0]) < 1e-9; })) yes = true; }
+    var q = xs.map(function(x, j){ return fr(ys[j]) + ' ÷ ' + x + ' = ' + fr(cl(ys[j] / x)) + (M.isInt(ys[j] / x * 1000) ? '' : '…'); });
+    return {type: 'ch', q: 'Ce tableau est-il un tableau de proportionnalité ?', svg: tableSvg([['x'].concat(xs.map(fr)), ['y'].concat(ys.map(fr))]), ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: [q.join(' ; ') + '.', yes ? 'Les quotients sont égaux : oui, le coefficient est ' + fr(k) + '.' : 'Les quotients ne sont pas tous égaux : non.'].map(function(z){ return z.replace(/(\d),(\d{4,})/g, function(m, a, b){ return a + ',' + b.slice(0, 3); }); }), key: xs.join() + ys.join()}; }},
+ {id: 'n11c', lv: 2, n: 'N11', nq: 3, t: 'Problèmes', d: 'Prix, recettes, consommations…', c: 'Lis l’énoncé et calcule.', a: 'Repère les deux grandeurs proportionnelles, puis passe par l’unité ou fais un produit en croix.',
+  g: function(){ var k = rnd(0, CTX.length - 1), C = CTX[k](); return {type: 'num', q: C.q, v: C.v, unit: C.u, steps: C.st, key: 'k' + k}; }},
+ {id: 'n11d', lv: 3, n: 'N11', nq: 4, t: 'Échelles', d: 'Plan et réalité.', c: 'Calcule. Attention aux unités.', a: 'Sur un plan à l’échelle 1/n, 1 cm représente n cm en réalité. Convertis ensuite : 100 cm = 1 m, 100 000 cm = 1 km.',
+  g: function(){ var w = rnd(0, 2), e = pick([50, 100, 200, 500, 1000, 25000, 50000, 100000]), p, q, v, st, u;
+    if (w === 0){ p = cl(rnd(2, 30) / 2); var r = cl(p * e); u = r >= 100000 ? 'km' : 'm'; v = u === 'km' ? cl(r / 100000) : cl(r / 100); q = 'Sur un plan à l’échelle 1/' + fr(e) + ', une longueur mesure ' + fr(p) + ' cm. Quelle est la longueur réelle, en ' + u + ' ?'; st = [fr(p) + ' × ' + fr(e) + ' = ' + fr(r) + ' cm = ' + fr(v) + ' ' + u + '.']; }
+    else if (w === 1){ p = cl(rnd(2, 30) / 2); var r2 = cl(p * e); u = r2 >= 100000 ? 'km' : 'm'; var R = u === 'km' ? cl(r2 / 100000) : cl(r2 / 100); v = p; u = 'cm'; q = 'À l’échelle 1/' + fr(e) + ', quelle longueur sur le plan représente ' + fr(R) + ' ' + (r2 >= 100000 ? 'km' : 'm') + ' en réalité ? (en cm)'; st = [fr(R) + ' ' + (r2 >= 100000 ? 'km' : 'm') + ' = ' + fr(r2) + ' cm ; ' + fr(r2) + ' ÷ ' + fr(e) + ' = ' + fr(p) + ' cm.']; }
+    else { p = rnd(2, 20); var Rm = pick([10, 20, 50, 100, 200, 500]); e = cl(Rm * 100 / p); if (!M.isInt(e)) return this.g(); v = e; u = ''; q = 'Sur un plan, une allée de ' + Rm + ' m est représentée par un segment de ' + p + ' cm. Quelle est l’échelle 1/n du plan ? Donne n.'; st = [Rm + ' m = ' + fr(Rm * 100) + ' cm ; ' + fr(Rm * 100) + ' ÷ ' + p + ' = ' + fr(e) + ' : l’échelle est 1/' + fr(e) + '.']; }
+    return {type: 'num', q: q, v: v, unit: u, lab: w === 2 ? 'n =' : undefined, steps: st}; }}
+];
+// N12 : graphiques
+function pg(kind){ // kind 0 : proportionnel ; 1 : droite qui ne passe pas par O ; 2 : courbe ; 3 : points non alignés
+  var a = pick([0.5, 1, 1.5, 2, 3]), b = rnd(1, 4), o = {xm: 10, ym: 20, sx: 1, sy: 2, items: []};
+  if (kind === 0) o.items.push({type: 'line', a: a});
+  else if (kind === 1) o.items.push({type: 'line', a: a, b: b});
+  else if (kind === 2){ var p = []; for (var x = 0; x <= 10; x += 0.5) p.push([x, Math.min(20, 0.2 * x * x)]); o.items.push({type: 'poly', p: p}); }
+  else { o.items.push({type: 'pts', p: [[1, a + 1], [3, 3 * a], [5, 5 * a + 2], [7, 7 * a - 1]].filter(function(p){ return p[1] <= 20 && p[1] >= 0; })}); }
+  return o; }
+EX.push(
+ {id: 'n12a', lv: 1, n: 'N12', t: 'Reconnaître le graphique', d: 'Droite passant par l’origine.', c: 'Ce graphique représente-t-il une situation de proportionnalité ?', a: 'Une situation de proportionnalité est représentée par des points alignés avec l’origine du repère : une droite qui passe par l’origine.',
+  g: function(){ var k = pick([0, 0, 1, 2, 3]); var why = ['Les points sont sur une droite qui passe par l’origine : c’est une situation de proportionnalité.', 'C’est une droite, mais elle ne passe pas par l’origine : ce n’est pas une situation de proportionnalité.', 'Ce n’est pas une droite : ce n’est pas une situation de proportionnalité.', 'Les points ne sont pas alignés avec l’origine : ce n’est pas une situation de proportionnalité.'][k];
+    return {type: 'ch', q: 'Situation de proportionnalité ?', svg: graphSvg(pg(k)), ch: ['Oui', 'Non'], ans: k ? 1 : 0, steps: [why], key: 'g' + k + Math.random()}; }},
+ {id: 'n12b', lv: 2, n: 'N12', nq: 4, t: 'Lire et utiliser le graphique', d: 'Prix, distances…', c: 'Lis le graphique, puis calcule.', a: 'Lis un point bien placé (sur un quadrillage), déduis-en le coefficient (y pour x = 1), puis calcule.',
+  g: function(){ var ctx = pick([['masse (kg)', 'prix (€)', 'kg', '€', 'Combien coûtent', [0.5, 1.5, 2, 2.5, 3, 4], [12, 15, 20, 25, 30]], ['durée (h)', 'distance (km)', 'h', 'km', 'Quelle distance est parcourue en', [4, 5, 15, 20, 50, 80], [1.5, 2.5, 3.5, 12, 15]], ['volume (L)', 'masse (kg)', 'L', 'kg', 'Quelle est la masse de', [1.5, 2, 2.5, 3], [12, 15, 20, 25, 40]]]), a = pick(ctx[5]);
+    var xm = 10, ym = a * 10, sy = ym / 10, X = pick(ctx[6]), v = cl(a * X), w = Math.random() < 0.4;
+    var o = {xm: xm, ym: ym, sx: 1, sy: sy, xl: ctx[0], yl: ctx[1], items: [{type: 'line', a: a}]};
+    if (w){ var Y = cl(a * X); return {type: 'num', q: 'Le graphique représente une situation de proportionnalité. Quelle quantité (en ' + ctx[2] + ') correspond à ' + fr(Y) + ' ' + ctx[3] + ' ?', svg: graphSvg(o), v: X, unit: ctx[2], steps: ['Sur le graphique, 1 ' + ctx[2] + ' correspond à ' + fr(a) + ' ' + ctx[3] + ' (on lit par exemple ' + fr(cl(a * 10)) + ' ' + ctx[3] + ' pour 10 ' + ctx[2] + ').', fr(Y) + ' ÷ ' + fr(a) + ' = ' + fr(X) + ' ' + ctx[2] + '.']}; }
+    return {type: 'num', q: 'Le graphique représente une situation de proportionnalité. ' + ctx[4] + ' ' + fr(X) + ' ' + ctx[2] + ' ?', svg: graphSvg(o), v: v, unit: ctx[3], steps: ['Sur le graphique, 1 ' + ctx[2] + ' correspond à ' + fr(a) + ' ' + ctx[3] + ' (on lit par exemple ' + fr(cl(a * 10)) + ' ' + ctx[3] + ' pour 10 ' + ctx[2] + ').', fr(X) + ' × ' + fr(a) + ' = ' + fr(v) + ' ' + ctx[3] + '.']}; }},
+ {id: 'n12c', lv: 2, n: 'N12', t: 'Vrai ou faux ?', d: 'Graphiques et proportionnalité.', c: 'L’affirmation est-elle vraie ou fausse ?', a: 'Proportionnalité ⟺ points alignés avec l’origine.',
+  g: function(){ var T = [
+    ['Si une situation est proportionnelle, sa représentation graphique est une droite passant par l’origine.', true, 'C’est la propriété du cours.'],
+    ['Toute droite représente une situation de proportionnalité.', false, 'Il faut aussi qu’elle passe par l’origine.'],
+    ['Si des points sont alignés avec l’origine du repère, la situation est proportionnelle.', true, 'C’est la réciproque de la propriété.'],
+    ['Le prix d’un taxi (prise en charge de 4 € plus 1,50 € par km) est proportionnel à la distance.', false, 'Pour 0 km on paie déjà 4 € : la droite ne passe pas par l’origine.'],
+    ['Le périmètre d’un carré est proportionnel à la longueur de son côté.', true, 'P = 4 × c.'],
+    ['L’aire d’un carré est proportionnelle à la longueur de son côté.', false, 'A = c × c : si c double, A est multipliée par 4.'],
+    ['La taille d’un enfant est proportionnelle à son âge.', false, 'À 0 an il mesure déjà environ 50 cm, et la croissance ralentit.'],
+    ['Le prix payé pour des pommes à 2 € le kg est proportionnel à la masse achetée.', true, 'Prix = 2 × masse.'],
+    ['Une droite qui passe par l’origine peut ne pas représenter une situation de proportionnalité.', false, 'Une droite passant par l’origine représente toujours une proportionnalité.'],
+    ['Une courbe qui passe par l’origine représente une situation de proportionnalité.', false, 'Il faut que ce soit une droite.'],
+    ['La distance parcourue à vitesse constante est proportionnelle à la durée.', true, 'd = v × t.'],
+    ['Le prix d’un abonnement de 10 € par mois plus 2 € par film est proportionnel au nombre de films.', false, 'À 0 film on paie 10 € : pas d’origine.']];
+    var i = rnd(0, T.length - 1), p = T[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n12d', lv: 3, n: 'N12', nq: 4, t: 'Comparer deux offres', d: 'Deux droites sur le même graphique.', c: 'Lis le graphique pour répondre.', a: 'Pour chaque quantité, la droite la plus basse correspond à l’offre la moins chère. Le point d’intersection donne la quantité pour laquelle les prix sont égaux.',
+  g: function(){ var a = pick([2, 3, 4]), c = pick([1, 1.5, 2]); if (c >= a) c = a - 1; var X = pick([4, 5, 6, 8]), b = cl((a - c) * X); if (b > 20) return this.g();
+    var o = {xm: 10, ym: Math.ceil(a * 10 / 5) * 5, sx: 1, sy: Math.ceil(a * 10 / 5) * 5 / 10, xl: 'nombre de séances', yl: 'prix (€)', items: [{type: 'line', a: a}, {type: 'line', a: c, b: b, col: 'var(--ko)'}, {type: 'lab', x: 0.4, y: Math.min(a * 9, o ? 0 : 0) + a * 1.6, t: 'A'}, {type: 'lab', x: 0.4, y: b + 2.2, t: 'B', col: 'var(--ko)'}]};
+    var w = rnd(0, 1);
+    if (w === 0) return {type: 'num', q: 'Offre A (bleue) : proportionnelle. Offre B (rouge) : un abonnement plus un prix par séance. Pour combien de séances les deux offres coûtent-elles le même prix ?', svg: graphSvg(o), v: X, unit: 'séances', steps: ['Les deux droites se coupent au point d’abscisse ' + X + ' (prix ' + fr(a * X) + ' €).'], key: 'i' + a + c + X};
+    var n = pick([1, 2, 3, X + 1, X + 2, 9].filter(function(z){ return z !== X; })), ch = ['Offre A', 'Offre B'], best = a * n < c * n + b ? 0 : 1;
+    return {type: 'ch', q: 'Offre A (bleue) et offre B (rouge). Quelle offre est la moins chère pour ' + n + ' séances ?', svg: graphSvg(o), ch: ch, ans: best, steps: ['Pour ' + n + ' séances, on lit A : ' + fr(a * n) + ' € et B : ' + fr(cl(c * n + b)) + ' €. La moins chère est l’offre ' + (best ? 'B' : 'A') + '.'], key: 'c' + a + c + X + n}; }}
+);
+var NOTIONS = [
+ {n: 'N11', t: 'Calculer une quatrième proportionnelle', r: 'on passe par l’unité, on utilise le coefficient de proportionnalité ou le produit en croix : si a ↔ b et c ↔ ?, alors ? = b × c ÷ a.'},
+ {n: 'N12', t: 'Reconnaître la proportionnalité sur un graphique', r: 'une situation de proportionnalité est représentée par des points alignés avec l’origine du repère.'}
+];
+
+M.start({key: '4e-s05', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : pyramides et cônes (4e, séquence 2) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 2 : reconnaître et décrire pyramides et cônes de révolution.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 2 · Géométrie dans l’espace (1)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. </p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var POLY = {3: 'triangle', 4: 'quadrilatère', 5: 'pentagone', 6: 'hexagone', 8: 'octogone'};
+var BASEN = {3: 'triangulaire', 4: 'à base carrée', 5: 'à base pentagonale', 6: 'à base hexagonale', 8: 'à base octogonale'};
+function f1(v){ return v.toFixed(1); }
+// solide en perspective : kind = 'pyr' | 'prism' | 'cone' | 'cyl' ; n = nombre de côtés de la base ; lab = noms des points (pyramide)
+function solid(kind, n, lab, extra){
+  var W = 260, H = 230, cx = 130, cy = 175, R = 82, r = 26, h = 135, t0 = Math.random() * Math.PI / n + 0.15;
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Solide">';
+  function L(a, b, hid){ return '<line x1="' + f1(a[0]) + '" y1="' + f1(a[1]) + '" x2="' + f1(b[0]) + '" y2="' + f1(b[1]) + '" class="' + (hid ? 'hid' : 'tr') + '" style="fill:none;stroke:currentColor;stroke-width:1.6' + (hid ? ';stroke-dasharray:5 4;opacity:.7' : '') + '"/>'; }
+  function T(p, t, dx, dy){ return '<text x="' + f1(p[0] + (dx || 0)) + '" y="' + f1(p[1] + (dy || 0)) + '" class="pt" text-anchor="middle" dominant-baseline="central">' + t + '</text>'; }
+  if (kind === 'cone' || kind === 'cyl'){
+    var top = kind === 'cone' ? [cx, cy - h] : null, ty = cy - h + 10;
+    s += '<path d="M' + (cx - R) + ',' + cy + ' A' + R + ',' + r + ' 0 0 0 ' + (cx + R) + ',' + cy + '" style="fill:none;stroke:currentColor;stroke-width:1.6"/>';
+    s += '<path d="M' + (cx - R) + ',' + cy + ' A' + R + ',' + r + ' 0 0 1 ' + (cx + R) + ',' + cy + '" style="fill:none;stroke:currentColor;stroke-width:1.6;stroke-dasharray:5 4;opacity:.7"/>';
+    if (kind === 'cone'){ s += L([cx - R, cy], top) + L([cx + R, cy], top);
+      if (extra){ s += L(top, [cx, cy], true) + L([cx, cy], [cx + R, cy], true) + '<polyline points="' + cx + ',' + (cy - 10) + ' ' + (cx + 10) + ',' + (cy - 10) + ' ' + (cx + 10) + ',' + cy + '" style="fill:none;stroke:currentColor;stroke-width:1"/>' + T(top, lab[0], 0, -12) + T([cx, cy], lab[1], -10, 10) + T([cx + R, cy], lab[2], 12, 4) + T([cx - R, cy], lab[3], -12, 4); } }
+    else { s += '<ellipse cx="' + cx + '" cy="' + ty + '" rx="' + R + '" ry="' + r + '" style="fill:none;stroke:currentColor;stroke-width:1.6"/>' + L([cx - R, cy], [cx - R, ty]) + L([cx + R, cy], [cx + R, ty]); }
+    return s + '</svg>'; }
+  var P = [], i;
+  for (i = 0; i < n; i++){ var th = t0 + 2 * Math.PI * i / n; P.push([cx + R * Math.cos(th), cy + r * Math.sin(th), Math.sin(th)]); }
+  var back = function(i){ var a = P[i], b = P[(i + 1) % n]; return (a[2] + b[2]) / 2 < -0.05; };
+  // pour la base : arêtes arrière en pointillés ; silhouette : points extrêmes en x
+  for (i = 0; i < n; i++) s += L(P[i], P[(i + 1) % n], back(i));
+  if (kind === 'pyr'){
+    var S = [cx + rnd(-12, 12), cy - h];
+    var xs = P.map(function(p){ return p[0]; }), mn = Math.min.apply(0, xs), mx = Math.max.apply(0, xs);
+    for (i = 0; i < n; i++){ var hid = P[i][2] < -0.05 && P[i][0] > mn + 1 && P[i][0] < mx - 1; s += L(S, P[i], hid); }
+    if (lab){ s += T(S, lab[0], 0, -12); for (i = 0; i < n; i++){ var dx = P[i][0] - cx, dy = P[i][1] - cy, l = Math.hypot(dx, dy * 2.5) || 1; s += T(P[i], lab[i + 1], dx / l * 13, dy / l * 13 + (P[i][2] > 0 ? 4 : -4)); }
+      if (extra){ s += L(S, [S[0], cy + (S[0] - cx) * 0], true); s += T([S[0], cy], lab[n + 1], 10, 0); } }
+  } else {
+    var Q = P.map(function(p){ return [p[0], p[1] - h + 20, p[2]]; });
+    for (i = 0; i < n; i++) s += L(Q[i], Q[(i + 1) % n], false);
+    var xs2 = P.map(function(p){ return p[0]; }), mn2 = Math.min.apply(0, xs2), mx2 = Math.max.apply(0, xs2);
+    for (i = 0; i < n; i++) s += L(P[i], Q[i], P[i][2] < -0.05 && P[i][0] > mn2 + 1 && P[i][0] < mx2 - 1);
+  }
+  return s + '</svg>';
+}
+var EX = [
+ {id: 'n05a', lv: 1, n: 'N05', t: 'Reconnaître le solide', d: 'Pyramide, cône, prisme, cylindre.', c: 'Quel est ce solide ?', a: 'Une pyramide a une base polygonale et des faces latérales triangulaires qui se rejoignent au sommet. Un cône a une base en forme de disque et un sommet. Prismes et cylindres ont deux bases identiques et parallèles.',
+  g: function(){ var k = pick(['pyr', 'pyr', 'pyr', 'cone', 'prism', 'cyl']), n = pick([3, 4, 5, 6]), good, ch;
+    if (k === 'pyr') good = 'Pyramide ' + BASEN[n]; else if (k === 'cone') good = 'Cône de révolution'; else if (k === 'cyl') good = 'Cylindre de révolution'; else good = 'Prisme droit';
+    var opts = ['Cône de révolution', 'Cylindre de révolution', 'Prisme droit'].concat([3, 4, 5, 6].map(function(m){ return 'Pyramide ' + BASEN[m]; }));
+    ch = shuffle([good].concat(shuffle(opts.filter(function(o){ return o !== good; })).slice(0, 3)));
+    var why = k === 'pyr' ? 'Sa base est un ' + POLY[n] + ' et ses ' + n + ' faces latérales sont des triangles qui se rejoignent au sommet.' : k === 'cone' ? 'Sa base est un disque et sa surface latérale se termine en un sommet.' : k === 'cyl' ? 'Il a deux bases qui sont des disques identiques et parallèles.' : 'Il a deux bases identiques et parallèles (des ' + POLY[n] + 's) et ses faces latérales sont des rectangles.';
+    return {type: 'ch', q: 'Quel est ce solide ?', svg: solid(k, n), ch: ch, ans: ch.indexOf(good), steps: [why], key: k + (k === 'pyr' || k === 'prism' ? n : '') + Math.random().toFixed(1)}; }},
+ {id: 'n05b', lv: 1, n: 'N05', t: 'Faces, arêtes, sommets', d: 'Compter sur une pyramide.', c: 'Réponds par un nombre.', a: 'Une pyramide dont la base a n côtés a n + 1 faces (la base et n faces latérales), 2n arêtes et n + 1 sommets.',
+  g: function(){ var n = pick([3, 4, 5, 6, 8]), w = rnd(0, 3), q, v, st;
+    var nm = 'une pyramide ' + BASEN[n] + (n === 4 ? '' : '');
+    if (w === 0){ q = 'Combien de faces a ' + nm + ' ?'; v = n + 1; st = ['La base (1 face) et ' + n + ' faces latérales triangulaires : ' + (n + 1) + ' faces.']; }
+    else if (w === 1){ q = 'Combien d’arêtes a ' + nm + ' ?'; v = 2 * n; st = [n + ' arêtes pour la base et ' + n + ' arêtes latérales : ' + 2 * n + ' arêtes.']; }
+    else if (w === 2){ q = 'Combien de sommets a ' + nm + ' ?'; v = n + 1; st = ['Les ' + n + ' sommets de la base et le sommet principal : ' + (n + 1) + ' sommets.']; }
+    else { q = 'Combien de faces latérales a ' + nm + ' ?'; v = n; st = ['Une face latérale par côté de la base : ' + n + ' faces latérales.']; }
+    return {type: 'num', q: q, v: v, svg: Math.random() < 0.5 ? solid('pyr', n) : undefined, steps: st, traps: [[n, 'N’oublie pas la base ou le sommet principal.'], [n + 1, 'Compte bien : la base a ' + n + ' côtés.']].filter(function(t){ return t[0] !== v; })}; }},
+ {id: 'n05c', lv: 2, n: 'N05', t: 'Le vocabulaire sur une figure', d: 'Sommet, base, arête, face, hauteur.', c: 'Observe la figure et choisis la bonne réponse.', a: 'Dans la pyramide SABCD, S est le sommet (principal), ABCD la base, [SA] une arête latérale, SAB une face latérale. La hauteur est le segment issu de S perpendiculaire à la base.',
+  g: function(){ var n = pick([3, 4]), L = M.letters(n + 2), S = L[0], B = L.slice(1, n + 1), Hh = L[n + 1], base = B.join(''), w = rnd(0, 5), q, good, ch, st;
+    var aret = S + B[rnd(0, n - 1)], face = S + B[0] + B[1], cote = B[0] + B[1];
+    if (w === 0){ q = 'Quel est le sommet de la pyramide ?'; good = S; ch = shuffle([S, B[0], B[1], Hh]); st = ['Le sommet est le point commun à toutes les faces latérales : ' + S + '.']; }
+    else if (w === 1){ q = 'Quelle est la base de la pyramide ?'; good = base; ch = shuffle([base, S + B[0] + B[1], S + B[1] + B[2 % n], S + Hh + B[0]]); st = ['La base est la face qui ne contient pas le sommet : ' + base + '.']; }
+    else if (w === 2){ q = 'Que représente le segment [' + aret + '] ?'; good = 'Une arête latérale'; ch = ['Une arête latérale', 'Une arête de la base', 'La hauteur', 'Une face latérale']; st = ['Il relie le sommet ' + S + ' à un sommet de la base : c’est une arête latérale.']; }
+    else if (w === 3){ q = 'Que représente le segment [' + cote + '] ?'; good = 'Une arête de la base'; ch = ['Une arête latérale', 'Une arête de la base', 'La hauteur', 'Une face latérale']; st = ['C’est un côté de la base ' + base + '.']; }
+    else if (w === 4){ q = 'Que représente le triangle ' + face + ' ?'; good = 'Une face latérale'; ch = ['La base', 'Une face latérale', 'Une arête', 'La hauteur']; st = ['C’est un triangle qui contient le sommet ' + S + ' : une face latérale.']; }
+    else { q = 'Que représente le segment [' + S + Hh + '] (en pointillés, perpendiculaire à la base) ?'; good = 'La hauteur'; ch = ['Une arête latérale', 'Une arête de la base', 'La hauteur', 'Une face latérale']; st = ['C’est le segment issu du sommet et perpendiculaire à la base : la hauteur.']; }
+    return {type: 'ch', q: q, svg: solid('pyr', n, L, w === 5 || Math.random() < 0.3), ch: ch, ans: ch.indexOf(good), steps: st, key: 'w' + w + L.join('')}; }},
+ {id: 'n05d', lv: 2, n: 'N05', t: 'Le cône de révolution', d: 'Sommet, rayon, hauteur, génératrice.', c: 'Observe le cône et choisis la bonne réponse.', a: 'Un cône de révolution a un sommet et une base en forme de disque. La hauteur relie le sommet au centre de la base ; une génératrice relie le sommet à un point du cercle de base.',
+  g: function(){ var L = M.letters(4), S = L[0], O = L[1], A = L[2], B = L[3], w = rnd(0, 4), q, good, ch, st, all = ['La hauteur', 'Un rayon de la base', 'Une génératrice', 'Un diamètre de la base'];
+    if (w === 0){ q = 'Que représente le segment [' + S + O + '] ?'; good = 'La hauteur'; st = ['Il relie le sommet au centre de la base : c’est la hauteur.']; }
+    else if (w === 1){ q = 'Que représente le segment [' + O + A + '] ?'; good = 'Un rayon de la base'; st = ['Il relie le centre de la base à un point du cercle : c’est un rayon.']; }
+    else if (w === 2){ q = 'Que représente le segment [' + S + A + '] ?'; good = 'Une génératrice'; st = ['Il relie le sommet à un point du cercle de base : c’est une génératrice.']; }
+    else if (w === 3){ q = 'Que représente le segment [' + A + B + '] ?'; good = 'Un diamètre de la base'; st = ['Il passe par le centre ' + O + ' et relie deux points du cercle : c’est un diamètre.']; }
+    else { q = 'Quelle est la nature du triangle ' + S + O + A + ' ?'; all = ['Rectangle en ' + O, 'Rectangle en ' + S, 'Équilatéral', 'Rectangle en ' + A]; good = all[0]; st = ['La hauteur [' + S + O + '] est perpendiculaire à la base, donc à [' + O + A + '] : le triangle est rectangle en ' + O + '.']; }
+    ch = all.slice(); return {type: 'ch', q: q, svg: solid('cone', 0, [S, O, A, B], true), ch: ch, ans: ch.indexOf(good), steps: st, key: 'c' + w + L.join('')}; }},
+ {id: 'n05e', lv: 2, n: 'N05', t: 'Vrai ou faux ?', d: 'Pyramides et cônes.', c: 'L’affirmation est-elle vraie ou fausse ?', a: 'Relis les définitions : la base d’une pyramide est un polygone, ses faces latérales sont des triangles ; la base d’un cône est un disque.',
+  g: function(){ var T = [
+    ['Les faces latérales d’une pyramide sont des triangles.', true, 'Elles relient le sommet à chaque côté de la base.'],
+    ['Une pyramide a toujours une base carrée.', false, 'La base peut être n’importe quel polygone (triangle, pentagone…).'],
+    ['Un tétraèdre est une pyramide à base triangulaire.', true, 'Il a 4 faces triangulaires.'],
+    ['Une pyramide à base hexagonale a 6 faces.', false, 'Elle a 6 faces latérales et une base : 7 faces.'],
+    ['La base d’un cône de révolution est un disque.', true, 'C’est la définition.'],
+    ['Un cône a deux bases.', false, 'Un cône a une seule base ; c’est le cylindre qui en a deux.'],
+    ['La hauteur d’une pyramide est toujours une arête.', false, 'La hauteur est perpendiculaire à la base ; en général ce n’est pas une arête.'],
+    ['Une pyramide régulière a pour base un polygone régulier.', true, 'Et sa hauteur passe par le centre de la base.'],
+    ['Les faces latérales d’une pyramide régulière sont des triangles isocèles superposables.', true, 'C’est une propriété des pyramides régulières.'],
+    ['Une pyramide à base carrée a 8 arêtes.', true, '4 arêtes pour la base et 4 arêtes latérales.'],
+    ['Un cône de révolution a des arêtes.', false, 'Sa surface latérale est courbe : il n’a pas d’arête.'],
+    ['Une pyramide à base triangulaire a 4 sommets.', true, '3 sommets de base et le sommet principal.'],
+    ['Dans un cône de révolution, la hauteur est perpendiculaire au rayon de la base.', true, 'Elle est perpendiculaire à la base.'],
+    ['Toutes les arêtes d’une pyramide ont la même longueur.', false, 'Ce n’est vrai que dans des cas particuliers (tétraèdre régulier…).']];
+    var i = rnd(0, T.length - 1), p = T[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
+ {id: 'n05f', lv: 3, n: 'N05', nq: 4, t: 'Retrouver la pyramide', d: 'À partir du nombre d’arêtes, de faces…', c: 'Réponds à la question.', a: 'Si la base a n côtés : n + 1 faces, 2n arêtes, n + 1 sommets. Pars de l’information donnée pour retrouver n.',
+  g: function(){ var n = pick([3, 4, 5, 6, 7, 8, 10, 12]), w = rnd(0, 3), q, v, st, nmb = {7: 'heptagone', 10: 'décagone', 12: 'dodécagone'};
+    var bn = POLY[n] || nmb[n];
+    if (w === 0){ q = 'Une pyramide a ' + 2 * n + ' arêtes. Combien de côtés a sa base ?'; v = n; st = ['2n = ' + 2 * n + ', donc n = ' + n + ' : la base est un ' + bn + '.']; }
+    else if (w === 1){ q = 'Une pyramide a ' + (n + 1) + ' faces. Combien d’arêtes a-t-elle ?'; v = 2 * n; st = ['n + 1 = ' + (n + 1) + ', donc la base a ' + n + ' côtés ; arêtes : 2 × ' + n + ' = ' + 2 * n + '.']; }
+    else if (w === 2){ q = 'Une pyramide a ' + 2 * n + ' arêtes. Combien de sommets a-t-elle ?'; v = n + 1; st = ['La base a ' + n + ' côtés (2 × ' + n + ' = ' + 2 * n + '), donc ' + (n + 1) + ' sommets.']; }
+    else { q = 'La base d’une pyramide est un ' + bn + '. Combien a-t-elle de faces, arêtes et sommets en tout (on additionne les trois nombres) ?'; v = (n + 1) + 2 * n + (n + 1); st = [(n + 1) + ' faces + ' + 2 * n + ' arêtes + ' + (n + 1) + ' sommets = ' + v + '.']; }
+    return {type: 'num', q: q, v: v, steps: st, key: 'w' + w + 'n' + n}; }}
+];
+var NOTIONS = [{n: 'N05', t: 'Connaître le vocabulaire des pyramides et des cônes', r: 'une pyramide a un sommet, une base polygonale et des faces latérales triangulaires ; un cône de révolution a un sommet et une base en forme de disque. La hauteur est perpendiculaire à la base.'}];
+
+M.start({key: '4e-s02', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

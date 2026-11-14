@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : dépendance entre grandeurs (4e, séquence 9) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 9 : lire et interpréter un graphique, relier tableau, formule et courbe.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 9 · Fonctions</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. </p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+// ---- outils communs 4e : tableau et repère en SVG ----
+function f1(v){ return (Math.round(v * 10) / 10).toString(); }
+function esc(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+// tableau : rows = [[titre, v1, v2, …], …] (chaînes)
+function tableSvg(rows){ var nc = rows[0].length, cw = [], i, j, H = 36;
+  for (j = 0; j < nc; j++){ var m = 0; for (i = 0; i < rows.length; i++) m = Math.max(m, String(rows[i][j]).length); cw.push(Math.max(46, m * 9 + 18)); }
+  var W = cw.reduce(function(a, b){ return a + b; }, 0), s = '<svg viewBox="-1 -1 ' + (W + 2) + ' ' + (H * rows.length + 2) + '" class="fig tab" role="img" aria-label="Tableau">', x;
+  for (i = 0; i < rows.length; i++){ x = 0; for (j = 0; j < nc; j++){ var t = String(rows[i][j]);
+    s += '<rect x="' + x + '" y="' + i * H + '" width="' + cw[j] + '" height="' + H + '" style="fill:' + (j === 0 ? 'var(--soft)' : 'none') + ';stroke:currentColor;stroke-width:1"/>';
+    s += '<text x="' + (x + cw[j] / 2) + '" y="' + (i * H + H / 2) + '" text-anchor="middle" dominant-baseline="central"' + (t === '?' ? ' class="qm"' : ' class="ln" style="font-size:15px"') + '>' + esc(t) + '</text>'; x += cw[j]; } }
+  return s + '</svg>'; }
+// repère : o = {xm, ym, sx, sy (pas des graduations), xl, yl (légendes), items: [{type:'line'|'seg'|'pts'|'curve', …}]}
+function graphSvg(o){ var W = 320, H = 230, L = 42, B = 30, T = 12, R = 14, w = W - L - R, h = H - T - B;
+  var X = function(x){ return L + x / o.xm * w; }, Y = function(y){ return T + h - y / o.ym * h; };
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="fig" role="img" aria-label="Graphique">', x, y;
+  for (x = 0; x <= o.xm + 1e-9; x += o.sx){ s += '<line x1="' + f1(X(x)) + '" y1="' + T + '" x2="' + f1(X(x)) + '" y2="' + (T + h) + '" style="stroke:currentColor;opacity:.15"/><text x="' + f1(X(x)) + '" y="' + (T + h + 14) + '" text-anchor="middle" style="font-size:11px;font-weight:400">' + fr(cl(x)) + '</text>'; }
+  for (y = 0; y <= o.ym + 1e-9; y += o.sy){ s += '<line x1="' + L + '" y1="' + f1(Y(y)) + '" x2="' + (L + w) + '" y2="' + f1(Y(y)) + '" style="stroke:currentColor;opacity:.15"/><text x="' + (L - 5) + '" y="' + f1(Y(y)) + '" text-anchor="end" dominant-baseline="central" style="font-size:11px;font-weight:400">' + fr(cl(y)) + '</text>'; }
+  s += '<line x1="' + L + '" y1="' + (T + h) + '" x2="' + (L + w) + '" y2="' + (T + h) + '" style="stroke:currentColor;stroke-width:1.4"/><line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + (T + h) + '" style="stroke:currentColor;stroke-width:1.4"/>';
+  if (o.xl) s += '<text x="' + (L + w) + '" y="' + (H - 2) + '" text-anchor="end" style="font-size:11px;font-weight:700">' + esc(o.xl) + '</text>';
+  if (o.yl) s += '<text x="' + (L + 4) + '" y="' + (T + 2) + '" dominant-baseline="hanging" style="font-size:11px;font-weight:700">' + esc(o.yl) + '</text>';
+  (o.items || []).forEach(function(it){ var col = it.col || 'var(--accent)';
+    if (it.type === 'line'){ // y = a x + b sur [0, xm], coupée au cadre
+      var x2 = o.xm, y2 = it.a * x2 + (it.b || 0); if (y2 > o.ym){ x2 = (o.ym - (it.b || 0)) / it.a; y2 = o.ym; }
+      s += '<line x1="' + f1(X(it.x0 || 0)) + '" y1="' + f1(Y(it.a * (it.x0 || 0) + (it.b || 0))) + '" x2="' + f1(X(x2)) + '" y2="' + f1(Y(y2)) + '" style="stroke:' + col + ';stroke-width:2.4"/>'; }
+    else if (it.type === 'poly'){ s += '<polyline points="' + it.p.map(function(p){ return f1(X(p[0])) + ',' + f1(Y(p[1])); }).join(' ') + '" style="fill:none;stroke:' + col + ';stroke-width:2.4"/>'; }
+    else if (it.type === 'pts'){ it.p.forEach(function(p){ s += '<circle cx="' + f1(X(p[0])) + '" cy="' + f1(Y(p[1])) + '" r="3.5" style="fill:' + col + '"/>'; }); }
+    else if (it.type === 'lab'){ s += '<text x="' + f1(X(it.x)) + '" y="' + f1(Y(it.y)) + '" style="font-size:13px;fill:' + col + '" dominant-baseline="central">' + esc(it.t) + '</text>'; }
+  });
+  return s + '</svg>'; }
+// courbe définie par des points (abscisses entières)
+function curve(){ var k = rnd(0, 3), P = [], x;
+  if (k === 0){ var b = rnd(2, 8); for (x = 0; x <= 12; x++) P.push([x * 2, Math.max(0, Math.round(b + 8 * Math.sin((x - 3) / 12 * Math.PI) + (x > 8 ? -2 : 0)))]); return {P: P, xm: 24, ym: 20, sx: 2, sy: 2, xl: 'heure (h)', yl: 'température (°C)', xu: 'h', yu: '°C', w: 'la température', at: 'à'}; }
+  if (k === 1){ var h = 0; for (x = 0; x <= 10; x++){ P.push([x, h]); h = Math.min(20, h + pick([0, 1, 2, 3])); } return {P: P, xm: 10, ym: 20, sx: 1, sy: 2, xl: 'âge (mois)', yl: 'masse (kg)', xu: 'mois', yu: 'kg', w: 'la masse du chiot', at: 'à'}; }
+  if (k === 2){ var v = 0; for (x = 0; x <= 10; x++){ P.push([x, v]); v = x < 4 ? v + rnd(1, 3) * 2 : x < 7 ? v : Math.max(0, v - rnd(1, 4) * 2); } P = P.map(function(p){ return [p[0], Math.min(20, p[1])]; }); return {P: P, xm: 10, ym: 20, sx: 1, sy: 2, xl: 'temps (min)', yl: 'vitesse (m/s)', xu: 'min', yu: 'm/s', w: 'la vitesse', at: 'à'}; }
+  var y = rnd(4, 10); for (x = 0; x <= 10; x++){ P.push([x, y]); y = Math.max(0, Math.min(20, y + pick([-3, -2, -1, 1, 2, 3]))); } return {P: P, xm: 10, ym: 20, sx: 1, sy: 2, xl: 'jour', yl: 'hauteur d’eau (cm)', xu: '', yu: 'cm', w: 'la hauteur d’eau', at: 'le jour'}; }
+function draw(C){ return graphSvg({xm: C.xm, ym: C.ym, sx: C.sx, sy: C.sy, xl: C.xl, yl: C.yl, items: [{type: 'poly', p: C.P}, {type: 'pts', p: C.P}]}); }
+var EX = [
+ {id: 'n21a', lv: 1, n: 'N21', t: 'Lire une image', d: 'Une valeur sur la courbe.', c: 'Lis la valeur sur le graphique.', a: 'Pars de la valeur sur l’axe horizontal, monte jusqu’à la courbe, puis lis la valeur sur l’axe vertical.',
+  g: function(){ var C = curve(), p = pick(C.P.slice(1));
+    return {type: 'num', q: 'Quelle est ' + C.w + ' ' + C.at + ' ' + fr(p[0]) + (C.xu ? ' ' + C.xu : '') + ' ?', svg: draw(C), v: p[1], unit: C.yu, key: p.join() + JSON.stringify(C.P), steps: ['Au point d’abscisse ' + fr(p[0]) + ', la courbe est à la hauteur ' + fr(p[1]) + ' : ' + fr(p[1]) + ' ' + C.yu + '.']}; }},
+ {id: 'n21b', lv: 2, n: 'N21', t: 'Lire un antécédent', d: 'Quand atteint-on cette valeur ?', c: 'Lis sur le graphique. Il n’y a qu’une réponse.', a: 'Pars de la valeur sur l’axe vertical, trace une ligne horizontale jusqu’à la courbe, puis descends lire sur l’axe horizontal.',
+  g: function(){ var C = curve(), cnt = {}; C.P.forEach(function(p){ cnt[p[1]] = (cnt[p[1]] || 0) + 1; });
+    var u = C.P.filter(function(p, i){ return cnt[p[1]] === 1 && i > 0; }); if (!u.length) return this.g(); var p = pick(u);
+    // la valeur ne doit pas être atteinte entre deux points
+    for (var i = 0; i + 1 < C.P.length; i++){ var a = C.P[i][1], b = C.P[i + 1][1]; if (C.P[i] !== p && C.P[i + 1] !== p && (a - p[1]) * (b - p[1]) < 0) return this.g(); }
+    return {type: 'num', q: 'Pour quelle valeur ' + (C.xu ? '(en ' + C.xu + ') ' : '') + C.w + ' vaut-elle ' + fr(p[1]) + ' ' + C.yu + ' ?', svg: draw(C), v: p[0], unit: C.xu, key: p.join() + JSON.stringify(C.P), steps: ['La courbe atteint la hauteur ' + fr(p[1]) + ' au point d’abscisse ' + fr(p[0]) + '.']}; }},
+ {id: 'n21c', lv: 2, n: 'N21', t: 'Interpréter le graphique', d: 'Maximum, minimum, évolution.', c: 'Choisis la bonne réponse en observant le graphique.', a: 'Le maximum est le point le plus haut de la courbe ; quand la courbe monte, la grandeur augmente.',
+  g: function(){ var C = curve(), ys = C.P.map(function(p){ return p[1]; }), mx = Math.max.apply(0, ys), mn = Math.min.apply(0, ys), w = rnd(0, 1);
+    var at = C.P.filter(function(p){ return p[1] === (w ? mn : mx); }); if (at.length !== 1) return this.g();
+    var good = fr(at[0][0]) + (C.xu ? ' ' + C.xu : ''), opts = shuffle(C.P.filter(function(p){ return p !== at[0]; })).slice(0, 3).map(function(p){ return fr(p[0]) + (C.xu ? ' ' + C.xu : ''); }), ch = shuffle([good].concat(opts));
+    return {type: 'ch', q: 'Pour quelle valeur ' + C.w + ' est-elle ' + (w ? 'la plus petite' : 'la plus grande') + ' ?', svg: draw(C), ch: ch, ans: ch.indexOf(good), key: w + JSON.stringify(C.P), steps: ['Le point le plus ' + (w ? 'bas' : 'haut') + ' de la courbe a pour abscisse ' + good + ' (' + fr(w ? mn : mx) + ' ' + C.yu + ').']}; }},
+ {id: 'n21d', lv: 2, n: 'N21', t: 'Formule et tableau', d: 'Quelle formule ?', c: 'Quelle formule permet de calculer y à partir de x dans ce tableau ?', a: 'Teste chaque formule avec deux colonnes du tableau : elle doit marcher pour toutes.',
+  g: function(){ var a = rnd(2, 6), b = rnd(2, 9), t = rnd(0, 3), xs = [0, 1, 2, 3, 4].slice(rnd(0, 1), 5), F = [
+      ['y = ' + a + 'x + ' + b, function(x){ return a * x + b; }], ['y = ' + a + '(x + ' + b + ')', function(x){ return a * (x + b); }], ['y = x² + ' + b, function(x){ return x * x + b; }], ['y = ' + b + 'x + ' + a, function(x){ return b * x + a; }], ['y = ' + (a + b) + 'x', function(x){ return (a + b) * x; }]];
+    if (a === b) return this.g(); var g = F[t], ys = xs.map(g[1]); var ch = shuffle(F.filter(function(f){ return f !== g && xs.some(function(x){ return f[1](x) !== g[1](x); }); }).slice(0, 3).map(function(f){ return f[0]; }).concat([g[0]]));
+    return {type: 'ch', q: 'Quelle formule ?', svg: tableSvg([['x'].concat(xs.map(fr)), ['y'].concat(ys.map(fr))]), ch: ch, ans: ch.indexOf(g[0]), steps: ['Avec ' + g[0] + ' : ' + xs.map(function(x, i){ return 'x = ' + x + ' donne ' + ys[i]; }).join(' ; ') + '. Les autres formules ne marchent pas pour toutes les colonnes.'], key: g[0]}; }},
+ {id: 'n21e', lv: 3, n: 'N21', nq: 4, t: 'Formule et graphique', d: 'Quelle courbe correspond ?', c: 'Quelle courbe représente la formule donnée ?', a: 'Calcule quelques valeurs (pour x = 0, x = 2…) et cherche la courbe qui passe par ces points.',
+  g: function(){ var a = pick([1, 2, 3]), b = rnd(1, 6), F = [
+      ['y = ' + (a === 1 ? '' : a) + 'x + ' + b, function(x){ return a * x + b; }], ['y = ' + (a + 1) + 'x', function(x){ return (a + 1) * x; }], ['y = 20 ' + MINUS + ' ' + (a === 1 ? '' : a) + 'x', function(x){ return 20 - a * x; }], ['y = x²', function(x){ return x * x; }]];
+    var cols = ['var(--accent)', 'var(--ko)', 'var(--ok)', 'var(--mid)'], names = ['bleue', 'rouge', 'verte', 'orange'], order = shuffle([0, 1, 2, 3]), items = [];
+    order.forEach(function(fi, j){ var P = []; for (var x = 0; x <= 10; x += 0.25){ var y = F[fi][1](x); if (y >= 0 && y <= 20) P.push([x, y]); } items.push({type: 'poly', p: P, col: cols[j]}); });
+    var k = rnd(0, 3), j = order.indexOf(k);
+    return {type: 'ch', q: 'Quelle courbe représente ' + F[k][0] + ' ?', svg: graphSvg({xm: 10, ym: 20, sx: 1, sy: 2, items: items}), ch: names, ans: j, steps: ['Pour x = 0, y = ' + fr(F[k][1](0)) + ' ; pour x = 2, y = ' + fr(F[k][1](2)) + ' : c’est la courbe ' + names[j] + '.'], key: F[k][0] + order.join()}; }}
+];
+var NOTIONS = [{n: 'N21', t: 'Exprimer et représenter une dépendance entre grandeurs', r: 'quand une grandeur dépend d’une autre, on peut la décrire par un tableau, une formule ou un graphique. Sur un graphique, on lit la valeur de la grandeur verticale à partir de l’horizontale, et inversement.'}];
+
+M.start({key: '4e-s09', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>

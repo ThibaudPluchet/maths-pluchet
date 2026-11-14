@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S'entraîner : volumes, agrandissements et réductions (4e, séquence 17) – M. Pluchet</title>
+<meta name="description" content="Exercices interactifs de 4e, séquence 17 : volume d’une pyramide et d’un cône, effet d’un agrandissement ou d’une réduction.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="moteur.css">
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Tous les exercices</button></div>
+  <p class="kick">4e · Séquence 17 · Géométrie dans l’espace (2)</p>
+  <h1>S’entraîner</h1>
+  <p class="sub">Des exercices classiques, différents à chaque série, corrigés tout de suite. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var rnd = M.rnd, rnz = M.rnz, pick = M.pick, shuffle = M.shuffle, fr = M.fr, pf = M.pf, cl = M.cl, sq = M.sq, SQ = M.SQ, MINUS = M.MINUS, rd = M.rd;
+var PI = Math.PI;
+var EX = [
+ {id: 'n40a', lv: 1, n: 'N40', t: 'Volume d’une pyramide', d: 'Aire de base et hauteur données.', c: 'Calcule le volume.', a: 'V = (aire de la base × hauteur) ÷ 3.',
+  g: function(){ var B = rnd(2, 40) * 3, h = rnd(2, 20), u = pick(['cm', 'm', 'dm']), v = B * h / 3; if (Math.random() < 0.4){ B = rnd(5, 60); h = rnd(1, 10) * 3; v = B * h / 3; }
+    return {type: 'num', q: 'Une pyramide a une base d’aire ' + B + ' ' + u + '² et une hauteur de ' + h + ' ' + u + '. Volume ?', v: v, unit: u + '³', steps: ['V = ' + B + ' × ' + h + ' ÷ 3 = ' + fr(v) + ' ' + u + '³.'], traps: [[B * h, 'N’oublie pas de diviser par 3.']]}; }},
+ {id: 'n40b', lv: 2, n: 'N40', nq: 4, t: 'Calculer d’abord l’aire de la base', d: 'Base carrée, rectangulaire ou triangulaire.', c: 'Calcule le volume de la pyramide.', a: 'Calcule l’aire de la base (carré : c × c ; rectangle : L × l ; triangle rectangle : a × b ÷ 2), puis V = aire × hauteur ÷ 3.',
+  g: function(){ var t = rnd(0, 2), h = rnd(2, 15), u = pick(['cm', 'm']), B, q, st;
+    if (t === 0){ var c = rnd(2, 12); B = c * c; q = 'base carrée de côté ' + c + ' ' + u; st = 'Aire de la base : ' + c + ' × ' + c + ' = ' + B + ' ' + u + '².'; }
+    else if (t === 1){ var L = rnd(3, 15), l = rnd(2, L); B = L * l; q = 'base rectangulaire de ' + L + ' ' + u + ' sur ' + l + ' ' + u; st = 'Aire de la base : ' + L + ' × ' + l + ' = ' + B + ' ' + u + '².'; }
+    else { var a = rnd(2, 12), b = rnd(2, 12); B = a * b / 2; q = 'base en triangle rectangle dont les côtés de l’angle droit mesurent ' + a + ' ' + u + ' et ' + b + ' ' + u; st = 'Aire de la base : ' + a + ' × ' + b + ' ÷ 2 = ' + fr(B) + ' ' + u + '².'; }
+    var v = cl(B * h / 3), ex = M.isInt(v * 100);
+    return {type: 'num', q: 'Une pyramide a une ' + q + ', et une hauteur de ' + h + ' ' + u + '. Volume' + (ex ? ' ?' : ' (arrondi au dixième) ?'), v: ex ? v : rd(B * h / 3, 1), x: B * h / 3, d: ex ? undefined : 1, unit: u + '³', steps: [st, 'V = ' + fr(B) + ' × ' + h + ' ÷ 3 ' + (ex ? '= ' : '≈ ') + fr(ex ? v : rd(B * h / 3, 1)) + ' ' + u + '³.'], traps: [[cl(B * h), 'N’oublie pas de diviser par 3.']]}; }},
+ {id: 'n40c', lv: 2, n: 'N40', nq: 4, t: 'Volume d’un cône', d: 'V = π × r² × h ÷ 3.', c: 'Calcule le volume du cône, arrondi au dixième.', a: 'L’aire de la base est π × r². Attention : si on te donne le diamètre, le rayon est la moitié.',
+  g: function(){ var r = rnd(1, 12), h = rnd(2, 20), dia = Math.random() < 0.35, u = pick(['cm', 'm', 'mm']), x = PI * r * r * h / 3;
+    return {type: 'num', q: 'Un cône de révolution a ' + (dia ? 'une base de diamètre ' + 2 * r : 'une base de rayon ' + r) + ' ' + u + ' et une hauteur de ' + h + ' ' + u + '. Volume ?', v: rd(x, 1), x: x, d: 1, unit: u + '³', steps: [(dia ? 'Rayon : ' + 2 * r + ' ÷ 2 = ' + r + ' ' + u + '. ' : '') + 'V = π × ' + r + '² × ' + h + ' ÷ 3 ≈ ' + fr(rd(x, 1)) + ' ' + u + '³.'], traps: [[rd(PI * 4 * r * r * h / 3, 1), 'Le rayon est la moitié du diamètre.'], [rd(PI * r * r * h, 1), 'N’oublie pas de diviser par 3.']]}; }},
+ {id: 'n40d', lv: 3, n: 'N40', nq: 3, t: 'Problèmes', d: 'Contenances, hauteur inconnue…', c: 'Lis l’énoncé et calcule.', a: '1 L = 1 dm³ = 1 000 cm³. Pour retrouver une hauteur : h = 3 × V ÷ aire de la base.',
+  g: function(k){ if (k === undefined) k = rnd(0, 5); var q, v, u, st, x, d;
+    if (k === 0){ var r = rnd(3, 6), h = rnd(8, 15); x = PI * r * r * h / 3; v = rd(x, 0); d = 0; q = 'Un cornet de glace conique a un rayon de ' + r + ' cm et une profondeur de ' + h + ' cm. Quel volume de glace peut-il contenir, en cm³, arrondi à l’unité ?'; u = 'cm³'; st = ['V = π × ' + r + '² × ' + h + ' ÷ 3 ≈ ' + v + ' cm³.']; }
+    else if (k === 1){ var c = rnd(10, 30), hh = rnd(10, 30) * 3; v = c * c * hh / 3 / 1000; q = 'Une bouteille de parfum a la forme d’une pyramide à base carrée de côté ' + c + ' cm et de hauteur ' + hh + ' cm. Quelle est sa contenance en litres ?'; u = 'L'; st = ['V = ' + c + ' × ' + c + ' × ' + hh + ' ÷ 3 = ' + fr(c * c * hh / 3) + ' cm³ = ' + fr(v) + ' L.']; if (!M.isInt(v * 1000)) return this.g(k); }
+    else if (k === 2){ var B = rnd(4, 20) * 3, H = rnd(2, 12), V = B * H / 3; v = H; q = 'Une pyramide a un volume de ' + V + ' cm³ et une base d’aire ' + B + ' cm². Quelle est sa hauteur ?'; u = 'cm'; st = ['h = 3 × ' + V + ' ÷ ' + B + ' = ' + H + ' cm.']; }
+    else if (k === 3){ var side = 230, ht = 146; x = side * side * ht / 3; v = rd(x / 1000000, 2); d = 2; q = 'La pyramide de Khéops avait une base carrée d’environ 230 m de côté et une hauteur d’environ 146 m. Volume en millions de m³, arrondi au centième ?'; u = 'millions de m³'; st = ['V = 230 × 230 × 146 ÷ 3 ≈ ' + fr(rd(x, 0)) + ' m³ ≈ ' + fr(v) + ' millions de m³.']; return {type: 'num', q: q, v: v, x: x / 1000000, d: d, unit: u, steps: st, key: 'k' + k}; }
+    else if (k === 4){ var rr = rnd(2, 5) * 10, h2 = rnd(5, 15) * 10; x = PI * rr * rr * h2 / 3 / 1000; v = rd(x, 1); d = 1; q = 'Un tas de sable a la forme d’un cône de ' + rr + ' cm de rayon et ' + h2 + ' cm de haut. Volume de sable en litres, arrondi au dixième ?'; u = 'L'; st = ['V = π × ' + rr + '² × ' + h2 + ' ÷ 3 ≈ ' + fr(rd(x * 1000, 0)) + ' cm³ ≈ ' + fr(v) + ' L.']; }
+    else { var a = rnd(4, 10), V2 = a * a * rnd(1, 6); v = cl(3 * V2 / (a * a)); q = 'Une pyramide à base carrée de côté ' + a + ' cm a un volume de ' + V2 + ' cm³. Quelle est sa hauteur ?'; u = 'cm'; st = ['Aire de la base : ' + a * a + ' cm² ; h = 3 × ' + V2 + ' ÷ ' + a * a + ' = ' + fr(v) + ' cm.']; }
+    return d === undefined ? {type: 'num', q: q, v: v, unit: u, steps: st, key: 'k' + k} : {type: 'num', q: q, v: v, x: x, d: d, unit: u, steps: st, key: 'k' + k}; }}
+];
+EX.push(
+ {id: 'n41a', lv: 1, n: 'N41', t: 'Longueurs agrandies ou réduites', d: 'Multiplier par k.', c: 'Calcule la nouvelle longueur.', a: 'Dans un agrandissement ou une réduction de rapport k, toutes les longueurs sont multipliées par k (k > 1 : agrandissement ; k < 1 : réduction).',
+  g: function(){ var k = pick([2, 3, 1.5, 2.5, 4, 0.5, 0.25, 0.2, 0.75, 10, 0.1]), L = rnd(2, 40), v = cl(L * k);
+    return {type: 'num', q: 'On ' + (k > 1 ? 'agrandit' : 'réduit') + ' une figure avec le rapport k = ' + fr(k) + '. Un côté mesure ' + L + ' cm. Combien mesure-t-il après ?', v: v, unit: 'cm', steps: [L + ' × ' + fr(k) + ' = ' + fr(v) + ' cm.']}; }},
+ {id: 'n41b', lv: 2, n: 'N41', t: 'Effet sur les aires et les volumes', d: 'k² et k³.', c: 'Calcule.', a: 'Si les longueurs sont multipliées par k, les aires sont multipliées par k² et les volumes par k³.',
+  g: function(){ var k = pick([2, 3, 0.5, 10, 4, 0.1, 1.5]), w = Math.random() < 0.5, A = rnd(2, 60), v = cl(A * (w ? k * k * k : k * k)), u = w ? 'cm³' : 'cm²';
+    return {type: 'num', q: (w ? 'Un solide a un volume de ' : 'Une figure a une aire de ') + A + ' ' + u + '. On ' + (k > 1 ? 'l’agrandit' : 'la réduit').replace('la réduit', w ? 'le réduit' : 'la réduit') + ' avec le rapport ' + fr(k) + '. ' + (w ? 'Nouveau volume ?' : 'Nouvelle aire ?'), v: v, unit: u, steps: [(w ? 'Les volumes sont multipliés par k³ = ' + fr(k) + '³ = ' + fr(cl(k * k * k)) : 'Les aires sont multipliées par k² = ' + fr(k) + '² = ' + fr(cl(k * k))) + ' : ' + A + ' × ' + fr(cl(w ? k * k * k : k * k)) + ' = ' + fr(v) + ' ' + u + '.'], traps: [[cl(A * k), 'Les ' + (w ? 'volumes' : 'aires') + ' ne sont pas multipliés par k mais par k' + (w ? '³' : '²') + '.']]}; }},
+ {id: 'n41c', lv: 2, n: 'N41', t: 'Retrouver le rapport', d: 'À partir des longueurs ou des aires.', c: 'Donne le rapport k.', a: 'k = longueur de l’image ÷ longueur de départ. Si les aires sont multipliées par 9, k = 3 (car 3² = 9).',
+  g: function(){ var k = pick([2, 3, 4, 5, 0.5, 1.5, 2.5, 10]), w = rnd(0, 2), L = rnd(2, 20), q, st;
+    if (w === 0){ q = 'Un segment de ' + L + ' cm devient un segment de ' + fr(cl(L * k)) + ' cm. Rapport ?'; st = [fr(cl(L * k)) + ' ÷ ' + L + ' = ' + fr(k) + '.']; }
+    else if (w === 1){ q = 'Les aires ont été multipliées par ' + fr(cl(k * k)) + '. Par combien les longueurs ont-elles été multipliées ?'; st = [fr(k) + '² = ' + fr(cl(k * k)) + ', donc k = ' + fr(k) + '.']; }
+    else { q = 'Les volumes ont été multipliés par ' + fr(cl(k * k * k)) + '. Par combien les longueurs ont-elles été multipliées ?'; st = [fr(k) + '³ = ' + fr(cl(k * k * k)) + ', donc k = ' + fr(k) + '.']; }
+    return {type: 'num', q: q, lab: 'k =', v: k, steps: st}; }},
+ {id: 'n41d', lv: 3, n: 'N41', nq: 3, t: 'Problèmes', d: 'Maquettes, photos, tailles de bouteilles…', c: 'Lis l’énoncé et calcule.', a: 'Repère le rapport k, puis multiplie les longueurs par k, les aires par k², les volumes par k³.',
+  g: function(k){ if (k === undefined) k = rnd(0, 7); var q, v, u, st;
+    switch (k){
+     case 0: var e = pick([10, 20, 50, 100]), L = rnd(2, 30); q = 'Une maquette au 1/' + e + ' d’un bateau mesure ' + L + ' cm. Longueur réelle du bateau en mètres ?'; v = cl(L * e / 100); u = 'm'; st = [L + ' × ' + e + ' = ' + L * e + ' cm = ' + fr(v) + ' m.']; break;
+     case 1: var p = pick([10, 15]), K = pick([2, 3]); q = 'Une photo de ' + p + ' cm sur ' + (p + 5) + ' cm est agrandie avec le rapport ' + K + '. Aire de la photo agrandie ?'; v = p * (p + 5) * K * K; u = 'cm²'; st = ['Aire de départ : ' + p * (p + 5) + ' cm² ; × ' + K + '² = ' + v + ' cm².']; break;
+     case 2: var V = pick([25, 50, 33]), K2 = 2; q = 'Une bouteille de ' + V + ' cL est agrandie : toutes ses dimensions sont doublées. Quelle est la contenance de la grande bouteille ?'; v = V * 8; u = 'cL'; st = ['Volumes × 2³ = 8 : ' + V + ' × 8 = ' + v + ' cL.']; break;
+     case 3: var c = rnd(2, 6), K3 = pick([0.5, 0.25]); q = 'Un cube de ' + c * 4 + ' cm d’arête est réduit avec le rapport ' + fr(K3) + '. Volume du petit cube ?'; v = cl(Math.pow(c * 4 * K3, 3)); u = 'cm³'; st = ['Arête : ' + c * 4 + ' × ' + fr(K3) + ' = ' + fr(c * 4 * K3) + ' cm ; volume : ' + fr(c * 4 * K3) + '³ = ' + fr(v) + ' cm³.']; break;
+     case 4: var S = rnd(2, 9) * 100, K4 = pick([2, 3, 5]); q = 'On agrandit le dessin d’un jardin, d’aire ' + S + ' cm², avec le rapport ' + K4 + '. Quelle est l’aire du nouveau dessin ?'; v = S * K4 * K4; u = 'cm²'; st = [S + ' × ' + K4 + '² = ' + v + ' cm².']; break;
+     case 5: var h = rnd(10, 40), H = h * pick([2, 3, 4]); q = 'Un cône de ' + h + ' cm de haut a un volume de 300 cm³. Un cône semblable mesure ' + H + ' cm de haut. Son volume ?'; v = 300 * Math.pow(H / h, 3); u = 'cm³'; st = ['k = ' + H + ' ÷ ' + h + ' = ' + H / h + ' ; volume × ' + H / h + '³ : 300 × ' + Math.pow(H / h, 3) + ' = ' + fr(v) + ' cm³.']; break;
+     case 6: var t = pick([2, 4, 5]); q = 'Une carte au 1/' + fr(t * 25000) + ' : un lac y a une aire de 4 cm². Quelle est son aire réelle en hectares (1 ha = 10 000 m²) ?'; var km = t * 25000 / 100; v = cl(4 * km * km / 10000); u = 'ha'; st = ['1 cm représente ' + fr(km) + ' m, donc 1 cm² représente ' + fr(km * km) + ' m².', '4 × ' + fr(km * km) + ' = ' + fr(4 * km * km) + ' m² = ' + fr(v) + ' ha.']; break;
+     default: var r = rnd(2, 5), K5 = 3; q = 'Une balle de rayon ' + r + ' cm est agrandie avec le rapport 3. Par combien son volume est-il multiplié ?'; v = 27; u = ''; st = ['Volumes × 3³ = 27.'];
+    }
+    return {type: 'num', q: q, v: v, unit: u, steps: st, key: 'k' + k}; }}
+);
+var NOTIONS = [
+ {n: 'N40', t: 'Calculer le volume d’une pyramide et d’un cône', r: 'V = aire de la base × hauteur ÷ 3 ; pour un cône : V = π × r² × h ÷ 3.'},
+ {n: 'N41', t: 'Agrandir, réduire : effet sur longueurs, aires, volumes', r: 'dans un agrandissement ou une réduction de rapport k, les longueurs sont multipliées par k, les aires par k² et les volumes par k³.'}
+];
+
+M.start({key: '4e-s17', EX: EX, NOTIONS: NOTIONS});
+})();
+</script>
+</body>
+</html>
