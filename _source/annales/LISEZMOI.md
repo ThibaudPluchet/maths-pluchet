@@ -12,3 +12,12 @@
 - `full.py` : sujets complets (PDF officiel, copie dans `annales/<année>/<id>-sujet-complet.pdf`) et corrigés complets
   (toutes les parties d'un centre réunies, `<id>-corrige-complet.pdf`) ; catalogue `_source/annales-sujets.json`
   (ordre chronologique), affiché en 3e dans le bloc « Sujets complets ».
+
+## Mise à jour mensuelle et roulement sur 5 sessions
+- `rotation.py <dépôt>` : fenêtre [R−4 ; R], R = année de la dernière rentrée (en 2026-2027 : 2022 à 2026) ;
+  retire des catalogues et du dépôt les sessions plus anciennes (`--simuler` pour voir sans rien changer).
+- `sources.py <dépôt>` : liste les sujets de la fenêtre publiés sur site2wouf.fr et pas encore traités
+  (un spec est « présent » si son `SOURCE` cite le PDF ; écartés volontairement : `exclus.txt`).
+- `publish.py <dépôt> <travail> <année> <db>` : publie une session à partir de TOUS ses specs (anciens recopiés
+  depuis `_source/annales/<année>/` + nouveaux), garde les PDF déjà publiés, trie les sujets complets
+  par date, met à jour data.json / data.js et les parties visibles par classe.
