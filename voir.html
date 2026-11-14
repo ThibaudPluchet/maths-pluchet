@@ -48,7 +48,7 @@ canvas{background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.25);max-width:none}
   // Seuls les PDF du site sont acceptés
   // Correction chiffrée (enc/…bin) : déchiffrée dans le navigateur avec la clé de la classe (#k=…)
   if (e && !(/^enc\/[0-9a-f]{20}\.bin$/.test(e) && key)){ msg('Document introuvable. <a href="./">Retour au site</a>'); return; }
-  if (!e && (!/^docs\/[a-z0-9\/._-]+\.pdf$/i.test(f) || f.indexOf('..') > -1)){ msg('Document introuvable. <a href="./">Retour au site</a>'); return; }
+  if (!e && (!/^(docs|annales)\/[a-z0-9\/._-]+\.pdf$/i.test(f) || f.indexOf('..') > -1)){ msg('Document introuvable. <a href="./">Retour au site</a>'); return; }
   document.getElementById('title').textContent = t;
   document.title = t + ' – Maths M. Pluchet';
   var dl = document.getElementById('dl');
