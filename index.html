@@ -766,6 +766,8 @@ function addSecret(D){
               var k = n.items.map(function(o){ return o.type; }).indexOf('anim'), v = n.items.map(function(o){ return o.type; }).indexOf('video'), at = k > -1 ? k : v > -1 ? v : n.items.length;
               n.items.splice(at, 0, it); } }); }); });
         }); }); });
+        // sujets complets du brevet ajoutés depuis la dernière synchro : repris du data.json public
+        if (D.dnb && D.dnb.sujets && got.dnb && !got.dnb.sujets) got.dnb.sujets = D.dnb.sujets;
         return got; }
       got.forEach(function(it){
         (D.niveaux[it.lv] || []).forEach(function(s){ s.notions.forEach(function(n){
