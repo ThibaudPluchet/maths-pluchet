@@ -171,7 +171,7 @@ var EX = [
   c: 'Développe puis réduis chaque expression.', a: 'Règle des signes : (−) × (+) = (−) et (−) × (−) = (+). Par exemple −3(x − 2) = −3x + 6 et (5 − 2x) × (−4) = −20 + 8x.',
   g: function(){ var k = rnz(-9, 9), a = rnz(-9, 9), b = rnz(-9, 9); if ((k > 0 && a > 0 && b > 0) || k === 1) k = -k;
     return dev(k, 0, [a, b]); }},
- {id: 'n01c', n: 'N01', t: 'Avec x devant la parenthèse', d: 'On obtient des x².',
+ {id: 'n01c', n: 'N01', t: 'Multiplier par un facteur en x', d: 'Le facteur contient x : on obtient des x².',
   c: 'Développe puis réduis chaque expression (x × x = x²).', a: 'x × x = x² et 3x × 2x = 6x². Par exemple x(2x + 5) = 2x² + 5x et (4 − x) × (−3x) = −12x + 3x².',
   g: function(){ return dev(pick([1, 1, -1, rnz(-6, 6)]), 1, [rnz(-7, 7), rnz(-9, 9)]); }},
  {id: 'n01d', n: 'N01', t: 'Calculer astucieusement', d: 'La distributivité en calcul mental.',
