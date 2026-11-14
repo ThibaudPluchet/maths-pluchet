@@ -150,29 +150,30 @@ function parse(s){
 function parseNum(s){ s = String(s || '').replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/,/g, '.');
   return /^-?\d+(\.\d+)?$/.test(s) ? parseFloat(s) : null; }
 
+// développement d'un facteur k·x^kd par (a x + b) : x parfois en 2e position, facteur parfois derrière la parenthèse
+function dev(k, kd, ab){
+  var inner = pick([true, false]) ? [[ab[0], 1], [ab[1], 0]] : [[ab[1], 0], [ab[0], 1]];
+  var after = Math.random() < 0.4, F = mono(k, kd), Fp = k < 0 ? '(' + F + ')' : F;
+  var tp = function(t){ var m = mono(t[0], t[1]); return t[0] < 0 ? '(' + m + ')' : m; };
+  var q = after ? '(' + terms(inner) + ') × ' + Fp : (kd === 0 && k === -1 ? MINUS : F) + '(' + terms(inner) + ')';
+  var T = inner.map(function(t){ return [k * t[0], t[1] + kd]; });
+  var s1 = inner.map(function(t){ return after ? tp(t) + ' × ' + Fp : Fp + ' × ' + tp(t); }).join(' + ');
+  return {q: q, P: sumT(T), key: q, steps: [s1, terms(T)]};
+}
 /* ---------- exercices ----------
    chaque générateur renvoie {q, P (réponse attendue) | v (nombre) | vf (true/false), steps: [lignes], aide?} */
 var EX = [
  // ===== N01 : simple distributivité =====
  {id: 'n01a', n: 'N01', t: 'Développer k(ax + b)', d: 'Coefficients positifs, pour démarrer.',
-  c: 'Développe puis réduis chaque expression.', a: 'On multiplie le nombre devant la parenthèse par chaque terme : k(a + b) = k × a + k × b.',
-  g: function(){ var k = rnd(2, 9), a = rnd(1, 9), b = rnd(1, 9), x = pick([true, false]);
-    var T = x ? [[k * a, 1], [k * b, 0]] : [[k * b, 0], [k * a, 1]];
-    var e = x ? mono(a, 1) + ' + ' + b : b + ' + ' + mono(a, 1);
-    return {q: k + '(' + e + ')', P: sumT(T),
-      steps: [k + ' × ' + (x ? mono(a, 1) : b) + ' + ' + k + ' × ' + (x ? b : mono(a, 1)), terms(T)]}; }},
- {id: 'n01b', n: 'N01', t: 'Avec des nombres négatifs', d: 'Attention aux signes !',
-  c: 'Développe puis réduis chaque expression.', a: 'Règle des signes : (−) × (+) = (−) et (−) × (−) = (+). Par exemple −3(x − 2) = −3x + 6.',
-  g: function(){ var k = rnz(-9, 9), a = rnz(-9, 9), b = rnz(-9, 9); if (k > 0 && a > 0 && b > 0) k = -k;
-    var T = [[k * a, 1], [k * b, 0]];
-    return {q: (k === -1 ? MINUS : n(k)) + '(' + terms([[a, 1], [b, 0]]) + ')', P: sumT(T),
-      steps: [pn(k) + ' × ' + pn(a) + 'x + ' + pn(k) + ' × ' + pn(b), terms(T)]}; }},
+  c: 'Développe puis réduis chaque expression.', a: 'On multiplie le nombre par chaque terme de la parenthèse : k(a + b) = k × a + k × b, et (a + b) × k = a × k + b × k.',
+  g: function(){ return dev(rnd(2, 9), 0, [rnd(1, 9), rnd(1, 9)]); }},
+ {id: 'n01b', n: 'N01', t: 'Avec des nombres relatifs', d: 'Attention aux signes !',
+  c: 'Développe puis réduis chaque expression.', a: 'Règle des signes : (−) × (+) = (−) et (−) × (−) = (+). Par exemple −3(x − 2) = −3x + 6 et (5 − 2x) × (−4) = −20 + 8x.',
+  g: function(){ var k = rnz(-9, 9), a = rnz(-9, 9), b = rnz(-9, 9); if ((k > 0 && a > 0 && b > 0) || k === 1) k = -k;
+    return dev(k, 0, [a, b]); }},
  {id: 'n01c', n: 'N01', t: 'Avec x devant la parenthèse', d: 'On obtient des x².',
-  c: 'Développe puis réduis chaque expression (x × x = x²).', a: 'x × x = x² et 3x × 2x = 6x². Par exemple x(2x + 5) = 2x² + 5x.',
-  g: function(){ var k = pick([1, 1, rnz(-6, 6)]), a = rnz(-7, 7), b = rnz(-9, 9);
-    var T = [[k * a, 2], [k * b, 1]];
-    return {q: mono(k, 1) + '(' + terms([[a, 1], [b, 0]]) + ')', P: sumT(T),
-      steps: [mono(k, 1) + ' × ' + (a < 0 ? '(' + mono(a, 1) + ')' : mono(a, 1)) + ' + ' + mono(k, 1) + ' × ' + pn(b), terms(T)]}; }},
+  c: 'Développe puis réduis chaque expression (x × x = x²).', a: 'x × x = x² et 3x × 2x = 6x². Par exemple x(2x + 5) = 2x² + 5x et (4 − x) × (−3x) = −12x + 3x².',
+  g: function(){ return dev(pick([1, 1, -1, rnz(-6, 6)]), 1, [rnz(-7, 7), rnz(-9, 9)]); }},
  {id: 'n01d', n: 'N01', t: 'Calculer astucieusement', d: 'La distributivité en calcul mental.',
   c: 'Calcule de tête en utilisant la distributivité.', a: 'Par exemple 7 × 102 = 7 × (100 + 2) = 700 + 14 = 714, et 6 × 99 = 6 × (100 − 1) = 600 − 6 = 594.',
   g: function(){ var k = rnd(3, 9), base = pick([10, 100, 1000]), e = rnz(-3, 3), m = base + e;
