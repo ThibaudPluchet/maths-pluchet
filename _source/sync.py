@@ -289,6 +289,29 @@ def dm_items(html, dbdir, levels, classes):
     return out
 
 
+def prof_dm(html, levels, classes, public):
+    """Version enseignant de l'onglet DM : tous les DM de la page enseignant, donnés ou non, PDF complet chiffré."""
+    dms, tk, out = js_const_opt(html, "DMS"), profkey(), []
+    given = {(d["lv"], d["f"]): d for d in public}
+    for lv in level_list(levels):
+        for meta in dms.get(lv, []):
+            slug = meta.get("f")
+            if not isinstance(slug, str) or not re.fullmatch(r"[a-z0-9-]+", slug):
+                continue
+            pub = given.get((lv, slug), {})
+            src = f"dm/{lv}/{slug}.pdf"
+            e = encname(tk, f"prof:{src}:{meta.get('b')}")
+            it = {"lv": lv, "f": slug, "titre": meta.get("t") or slug, "modalite": meta.get("m") or "", "notions": meta.get("n") or "",
+                  "resume": meta.get("r") or "", "href": e, "enc": e, "src": src, "full": 1,
+                  "cls": list(classes.get(lv) or []), "dates": pub.get("dates", {})}
+            if pub.get("anim"):
+                it["anim"] = pub["anim"]
+            elif ANIM_RE.match(meta.get("a") or ""):
+                it["anim"] = meta["a"]
+            out.append(it)
+    return out
+
+
 def dm_prev(repo):
     """Taille des PDF source des DM déjà publiés (data.json précédent), pour repérer un PDF modifié."""
     try:
@@ -459,6 +482,9 @@ def main():
         for it, e in lst:
             SRC_ENC.setdefault(it["src"], (classkey(c), e))
     tplan = prof_plan(tdata, twanted, tsecret, wanted) if tdata else []
+    if tdata:
+        tdata["dm"] = prof_dm(open(page, encoding="utf-8").read(), js_const(open(page, encoding="utf-8").read(), "LEVELS"), data["classes"], data["dm"])
+        tplan += [(d["src"], d["enc"]) for d in tdata["dm"]]
     if mode == "plan":
         missing = [p for p, b in wanted.items() if not os.path.exists(os.path.join(repo, p)) or (b and os.path.getsize(os.path.join(repo, p)) != b)]
         # PDF rangés dans un paquet evaluations.json : on demande le paquet (une seule fois) plutôt que le PDF
@@ -562,7 +588,7 @@ def main():
                 open(dst, "wb").write(encrypt(tk, raw))
             keep.add(e)
         if tdata:
-            tdata["dm"], tdata["planned"] = data["dm"], data["planned"]
+            tdata["planned"] = data["planned"]
             e = encname(tk, "manifest")
             open(os.path.join(repo, e), "wb").write(encrypt(tk, json.dumps(tdata, ensure_ascii=False, sort_keys=True).encode()))
             keep.add(e)

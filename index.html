@@ -365,7 +365,7 @@ function start(D){
     var all = []; full.forEach(function(s){ s.notions.forEach(function(n){ all = all.concat(n.items); }); });
     // DM donnés à la classe (onglet « DM »), du plus récent au plus ancien
     var dms = (D.dm || []).filter(function(d){ return d.cls.indexOf(current) > -1; })
-      .sort(function(a, b){ return a.dates[current] < b.dates[current] ? 1 : -1; });
+      .sort(function(a, b){ return (a.dates[current] || '') < (b.dates[current] || '') ? 1 : -1; });
     dms.forEach(function(d){ all.push({href: d.href}); if (d.anim) all.push({href: d.anim}); });
     if (!full.length && !dms.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
 
@@ -600,7 +600,7 @@ function start(D){
     sec.appendChild(el('p','intro','Tes devoirs maison : le sujet à ouvrir, imprimer ou relire, avec un exemple d’affiche.'));
     dms.forEach(function(d){
       var box = el('article','notion evcard dmcard');
-      box.appendChild(el('p','evkind','DM · donné ' + dayTxt(d.dates[current]).replace(/^\S+ /, 'le ')));
+      box.appendChild(el('p','evkind', d.dates[current] ? 'DM · donné ' + dayTxt(d.dates[current]).replace(/^\S+ /, 'le ') : 'DM · pas encore donné à la ' + current));
       var h3 = el('h3'); h3.appendChild(el('span','code','DM')); h3.appendChild(document.createTextNode(d.titre)); box.appendChild(h3);
       var tags = el('div','evns');
       [d.modalite, d.notions].forEach(function(x){ if (x) tags.appendChild(el('span', null, x)); });
@@ -608,7 +608,7 @@ function start(D){
       if (d.resume) box.appendChild(el('p','dmres', d.resume));
       var gr = el('div','groups'), g = el('div','grp g4'); g.appendChild(el('h4', null, 'Le DM'));
       var ls = el('div','links');
-      ls.appendChild(link({type:'dm', label:'Sujet du DM (exemple d’affiche + mission)', href:d.href}));
+      ls.appendChild(link({type:'dm', label: d.full ? 'PDF complet (affiche, mission, cartes et corrigé)' : 'Sujet du DM (exemple d’affiche + mission)', href:d.href, enc:d.enc}));
       if (d.anim) ls.appendChild(link({type:'anim', label:'Animation : les patrons qui se plient', href:d.anim}));
       g.appendChild(ls); gr.appendChild(g); box.appendChild(gr);
       box.appendChild(el('p','dmtip','✂ Avant de rendre : découpe le bas de la page 2 (barème et « Avant de rendre, je coche ») et colle-le au dos de ton affiche.'));
