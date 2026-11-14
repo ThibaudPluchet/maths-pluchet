@@ -1,0 +1,1980 @@
+[
+ {
+  "id": "2025-anor-1s1",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Situation 1",
+  "theme": "Probabilités",
+  "s3": 22,
+  "n3": [],
+  "s4": 20,
+  "n4": [
+   47
+  ],
+  "e": "annales/2025/2025-anor-1s1.pdf",
+  "c": "annales/2025/2025-anor-1s1-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-1s2",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Situation 2",
+  "theme": "Décomposition en facteurs premiers",
+  "s3": 24,
+  "n3": [],
+  "s4": 6,
+  "n4": [
+   14
+  ],
+  "e": "annales/2025/2025-anor-1s2.pdf",
+  "c": "annales/2025/2025-anor-1s2-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-1s3",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Situation 3",
+  "theme": "Pourcentages",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   34
+  ],
+  "e": "annales/2025/2025-anor-1s3.pdf",
+  "c": "annales/2025/2025-anor-1s3-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-1s4",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Situation 4",
+  "theme": "Agrandissement et aires",
+  "s3": 21,
+  "n3": [],
+  "s4": 17,
+  "n4": [
+   41
+  ],
+  "e": "annales/2025/2025-anor-1s4.pdf",
+  "c": "annales/2025/2025-anor-1s4-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-1s5",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Situation 5",
+  "theme": "Moyenne, médiane",
+  "s3": 23,
+  "n3": [],
+  "s4": 11,
+  "n4": [
+   24
+  ],
+  "e": "annales/2025/2025-anor-1s5.pdf",
+  "c": "annales/2025/2025-anor-1s5-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-2a",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Géométrie, questions 1 à 3",
+  "theme": "Pythagore, parallélisme, Thalès",
+  "s3": 9,
+  "n3": [],
+  "s4": 19,
+  "n4": [
+   10,
+   22
+  ],
+  "e": "annales/2025/2025-anor-2a.pdf",
+  "c": "annales/2025/2025-anor-2a-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-2b",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Géométrie, questions 4 et 5",
+  "theme": "Trigonométrie, aire",
+  "s3": 15,
+  "n3": [
+   24
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-anor-2b.pdf",
+  "c": "annales/2025/2025-anor-2b-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-3a",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Le programme A, questions 1 à 3",
+  "theme": "Programme de calcul, calcul littéral",
+  "s3": 1,
+  "n3": [],
+  "s4": 8,
+  "n4": [
+   6,
+   19
+  ],
+  "e": "annales/2025/2025-anor-3a.pdf",
+  "c": "annales/2025/2025-anor-3a-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-3b",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Le programme B, questions 4 et 5",
+  "theme": "Équation produit",
+  "s3": 19,
+  "n3": [
+   32
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-anor-3b.pdf",
+  "c": "annales/2025/2025-anor-3b-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-4",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – L'entraînement de Malo",
+  "theme": "Lecture graphique, vitesses",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   12,
+   35
+  ],
+  "e": "annales/2025/2025-anor-4.pdf",
+  "c": "annales/2025/2025-anor-4-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-5a",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Les motifs, partie 1 (Scratch)",
+  "theme": "Algorithmique (Scratch)",
+  "s3": 0,
+  "n3": [],
+  "s4": 0,
+  "n4": [],
+  "e": "annales/2025/2025-anor-5a.pdf",
+  "c": "annales/2025/2025-anor-5a-corrige.pdf"
+ },
+ {
+  "id": "2025-anor-5b",
+  "an": 2025,
+  "src": "Amérique du Nord, 4 juin 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Le script principal, partie 2",
+  "theme": "Scratch, probabilités, fréquences",
+  "s3": 22,
+  "n3": [],
+  "s4": 20,
+  "n4": [
+   47,
+   48
+  ],
+  "e": "annales/2025/2025-anor-5b.pdf",
+  "c": "annales/2025/2025-anor-5b-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-1q1",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 1",
+  "theme": "Probabilités",
+  "s3": 22,
+  "n3": [],
+  "s4": 20,
+  "n4": [
+   47
+  ],
+  "e": "annales/2025/2025-asie-1q1.pdf",
+  "c": "annales/2025/2025-asie-1q1-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-1q2",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 2",
+  "theme": "Pourcentages",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   34
+  ],
+  "e": "annales/2025/2025-asie-1q2.pdf",
+  "c": "annales/2025/2025-asie-1q2-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-1q3",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 3",
+  "theme": "Étendue, médiane, moyenne",
+  "s3": 23,
+  "n3": [],
+  "s4": 11,
+  "n4": [
+   24
+  ],
+  "e": "annales/2025/2025-asie-1q3.pdf",
+  "c": "annales/2025/2025-asie-1q3-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-1q4",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 4",
+  "theme": "Fonction affine : expression",
+  "s3": 17,
+  "n3": [
+   28
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-asie-1q4.pdf",
+  "c": "annales/2025/2025-asie-1q4-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-2a",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Géométrie, questions 1 à 3",
+  "theme": "Pythagore, aire, théorème de Thalès",
+  "s3": 9,
+  "n3": [],
+  "s4": 10,
+  "n4": [
+   10,
+   22
+  ],
+  "e": "annales/2025/2025-asie-2a.pdf",
+  "c": "annales/2025/2025-asie-2a-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-2b",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Géométrie, question 4",
+  "theme": "Aires, triangles semblables",
+  "s3": 10,
+  "n3": [
+   16
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-asie-2b.pdf",
+  "c": "annales/2025/2025-asie-2b-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-3a",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Rectangle et carré, partie A",
+  "theme": "Expressions littérales, périmètres",
+  "s3": 1,
+  "n3": [],
+  "s4": 8,
+  "n4": [
+   18
+  ],
+  "e": "annales/2025/2025-asie-3a.pdf",
+  "c": "annales/2025/2025-asie-3a-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-3b",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Rectangle et carré, partie B",
+  "theme": "Tableur, expression littérale, équation",
+  "s3": 7,
+  "n3": [],
+  "s4": 16,
+  "n4": [
+   8,
+   38,
+   39
+  ],
+  "e": "annales/2025/2025-asie-3b.pdf",
+  "c": "annales/2025/2025-asie-3b-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-4",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – L'hexagone (Scratch)",
+  "theme": "Algorithmique (Scratch)",
+  "s3": 0,
+  "n3": [],
+  "s4": 0,
+  "n4": [],
+  "e": "annales/2025/2025-asie-4.pdf",
+  "c": "annales/2025/2025-asie-4-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-5a",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Les poissons, partie A",
+  "theme": "Décomposition, diviseurs, répartition en lots",
+  "s3": 24,
+  "n3": [],
+  "s4": 6,
+  "n4": [
+   14,
+   15
+  ],
+  "e": "annales/2025/2025-asie-5a.pdf",
+  "c": "annales/2025/2025-asie-5a-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-5b",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Les poissons combattants, question 1",
+  "theme": "Volumes (cylindre, pavé), conversions",
+  "s3": 21,
+  "n3": [
+   34
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-asie-5b.pdf",
+  "c": "annales/2025/2025-asie-5b-corrige.pdf"
+ },
+ {
+  "id": "2025-asie-5c",
+  "an": 2025,
+  "src": "Asie, 16 juin 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Les poissons combattants, question 2",
+  "theme": "Pourcentages",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   34
+  ],
+  "e": "annales/2025/2025-asie-5c.pdf",
+  "c": "annales/2025/2025-asie-5c-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-1q1",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 1",
+  "theme": "Décomposition en facteurs premiers",
+  "s3": 24,
+  "n3": [],
+  "s4": 6,
+  "n4": [
+   14
+  ],
+  "e": "annales/2025/2025-cetr-1q1.pdf",
+  "c": "annales/2025/2025-cetr-1q1-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-1q2",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 2",
+  "theme": "Tableur, calcul avec des relatifs",
+  "s3": 1,
+  "n3": [],
+  "s4": 1,
+  "n4": [
+   2,
+   18
+  ],
+  "e": "annales/2025/2025-cetr-1q2.pdf",
+  "c": "annales/2025/2025-cetr-1q2-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-1q3",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 3",
+  "theme": "Homothétie",
+  "s3": 18,
+  "n3": [
+   30
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-cetr-1q3.pdf",
+  "c": "annales/2025/2025-cetr-1q3-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-1q4",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 4",
+  "theme": "Identité remarquable",
+  "s3": 12,
+  "n3": [
+   19
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-cetr-1q4.pdf",
+  "c": "annales/2025/2025-cetr-1q4-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-1q5",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 5",
+  "theme": "Trigonométrie (calcul de longueur)",
+  "s3": 15,
+  "n3": [
+   24
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-cetr-1q5.pdf",
+  "c": "annales/2025/2025-cetr-1q5-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-2a",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Les colis, questions 1 à 3",
+  "theme": "Moyenne, médiane, probabilité",
+  "s3": 23,
+  "n3": [],
+  "s4": 11,
+  "n4": [
+   24,
+   47
+  ],
+  "e": "annales/2025/2025-cetr-2a.pdf",
+  "c": "annales/2025/2025-cetr-2a-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-2b",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Les colis, question 4",
+  "theme": "Volume, masse volumique",
+  "s3": 14,
+  "n3": [
+   23
+  ],
+  "s4": 15,
+  "n4": [
+   36
+  ],
+  "e": "annales/2025/2025-cetr-2b.pdf",
+  "c": "annales/2025/2025-cetr-2b-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-3a",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Programme de calcul, questions 1 à 4",
+  "theme": "Programme de calcul, équation",
+  "s3": 7,
+  "n3": [],
+  "s4": 16,
+  "n4": [
+   2,
+   6,
+   38
+  ],
+  "e": "annales/2025/2025-cetr-3a.pdf",
+  "c": "annales/2025/2025-cetr-3a-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-3b",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Programme de calcul, question 5",
+  "theme": "Fonction affine : représentation graphique",
+  "s3": 17,
+  "n3": [
+   28
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-cetr-3b.pdf",
+  "c": "annales/2025/2025-cetr-3b-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-4a",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Le champ, partie A",
+  "theme": "Pythagore, parallélisme, Thalès, aire",
+  "s3": 9,
+  "n3": [],
+  "s4": 19,
+  "n4": [
+   10,
+   22
+  ],
+  "e": "annales/2025/2025-cetr-4a.pdf",
+  "c": "annales/2025/2025-cetr-4a-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-4b",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Le champ, partie B",
+  "theme": "Ratio, proportionnalité, prix",
+  "s3": 14,
+  "n3": [
+   22
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-cetr-4b.pdf",
+  "c": "annales/2025/2025-cetr-4b-corrige.pdf"
+ },
+ {
+  "id": "2025-cetr-5",
+  "an": 2025,
+  "src": "Centres étrangers, 17 juin 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Le digicode",
+  "theme": "Probabilités, nombres premiers, Scratch",
+  "s3": 22,
+  "n3": [],
+  "s4": 20,
+  "n4": [
+   14,
+   47
+  ],
+  "e": "annales/2025/2025-cetr-5.pdf",
+  "c": "annales/2025/2025-cetr-5-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-1",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Deux urnes",
+  "theme": "Probabilités, multiples, nombres premiers",
+  "s3": 22,
+  "n3": [],
+  "s4": 20,
+  "n4": [
+   13,
+   14,
+   47
+  ],
+  "e": "annales/2025/2025-metj-1.pdf",
+  "c": "annales/2025/2025-metj-1-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-2a",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Aquathlon, questions 1 à 3.a",
+  "theme": "Pythagore, réciproque de Thalès",
+  "s3": 20,
+  "n3": [],
+  "s4": 19,
+  "n4": [
+   10,
+   45
+  ],
+  "e": "annales/2025/2025-metj-2a.pdf",
+  "c": "annales/2025/2025-metj-2a-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-2b",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Aquathlon, questions 3.b et 3.c",
+  "theme": "Trigonométrie",
+  "s3": 4,
+  "n3": [
+   6
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-metj-2b.pdf",
+  "c": "annales/2025/2025-metj-2b-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-2c",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Natation, question 4",
+  "theme": "Médiane",
+  "s3": 23,
+  "n3": [],
+  "s4": 11,
+  "n4": [
+   24
+  ],
+  "e": "annales/2025/2025-metj-2c.pdf",
+  "c": "annales/2025/2025-metj-2c-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-2d",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Natation, question 5",
+  "theme": "Vitesse",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   35
+  ],
+  "e": "annales/2025/2025-metj-2d.pdf",
+  "c": "annales/2025/2025-metj-2d-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-3q1",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – QCM, question 1",
+  "theme": "Proportionnalité",
+  "s3": 14,
+  "n3": [],
+  "s4": 5,
+  "n4": [
+   11
+  ],
+  "e": "annales/2025/2025-metj-3q1.pdf",
+  "c": "annales/2025/2025-metj-3q1-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-3q2",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – QCM, question 2",
+  "theme": "Transformations",
+  "s3": 11,
+  "n3": [],
+  "s4": 7,
+  "n4": [
+   16
+  ],
+  "e": "annales/2025/2025-metj-3q2.pdf",
+  "c": "annales/2025/2025-metj-3q2-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-3q3",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – QCM, question 3",
+  "theme": "Pourcentages",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   34
+  ],
+  "e": "annales/2025/2025-metj-3q3.pdf",
+  "c": "annales/2025/2025-metj-3q3-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-3q4",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – QCM, question 4",
+  "theme": "Aire, Pythagore",
+  "s3": 2,
+  "n3": [],
+  "s4": 4,
+  "n4": [
+   10
+  ],
+  "e": "annales/2025/2025-metj-3q4.pdf",
+  "c": "annales/2025/2025-metj-3q4-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-3q5",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – QCM, question 5",
+  "theme": "Double distributivité",
+  "s3": 12,
+  "n3": [
+   18
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-metj-3q5.pdf",
+  "c": "annales/2025/2025-metj-3q5-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-3q6",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – QCM, question 6",
+  "theme": "Volume de la pyramide",
+  "s3": 21,
+  "n3": [],
+  "s4": 17,
+  "n4": [
+   40
+  ],
+  "e": "annales/2025/2025-metj-3q6.pdf",
+  "c": "annales/2025/2025-metj-3q6-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-4a",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Le programme de Zoé",
+  "theme": "Programme de calcul, calcul littéral",
+  "s3": 1,
+  "n3": [],
+  "s4": 8,
+  "n4": [
+   6,
+   19
+  ],
+  "e": "annales/2025/2025-metj-4a.pdf",
+  "c": "annales/2025/2025-metj-4a-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-4b",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Le programme de Fred (Scratch)",
+  "theme": "Expression littérale, équation, Scratch",
+  "s3": 7,
+  "n3": [],
+  "s4": 16,
+  "n4": [
+   6,
+   20,
+   38
+  ],
+  "e": "annales/2025/2025-metj-4b.pdf",
+  "c": "annales/2025/2025-metj-4b-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-5a",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Achat ou location ? (partie A)",
+  "theme": "Calculs, tableur",
+  "s3": 17,
+  "n3": [],
+  "s4": 9,
+  "n4": [
+   21
+  ],
+  "e": "annales/2025/2025-metj-5a.pdf",
+  "c": "annales/2025/2025-metj-5a-corrige.pdf"
+ },
+ {
+  "id": "2025-metj-5b",
+  "an": 2025,
+  "src": "Métropole – Antilles-Guyane, 26 juin 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Achat ou location ? (partie B)",
+  "theme": "Fonctions affines, lecture graphique",
+  "s3": 17,
+  "n3": [
+   26,
+   13
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-metj-5b.pdf",
+  "c": "annales/2025/2025-metj-5b-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-1a",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – L'escalade, questions 1 à 5",
+  "theme": "Statistiques, tableur, moyenne",
+  "s3": 23,
+  "n3": [],
+  "s4": 11,
+  "n4": [
+   24
+  ],
+  "e": "annales/2025/2025-polj-1a.pdf",
+  "c": "annales/2025/2025-polj-1a-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-1b",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – L'escalade, question 6",
+  "theme": "Pourcentages",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   34
+  ],
+  "e": "annales/2025/2025-polj-1b.pdf",
+  "c": "annales/2025/2025-polj-1b-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-2a",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Le jardin botanique, questions 1 et 2",
+  "theme": "Théorème de Pythagore",
+  "s3": 2,
+  "n3": [],
+  "s4": 4,
+  "n4": [
+   10
+  ],
+  "e": "annales/2025/2025-polj-2a.pdf",
+  "c": "annales/2025/2025-polj-2a-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-2b",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Le jardin botanique, question 3",
+  "theme": "Trigonométrie (sinus)",
+  "s3": 4,
+  "n3": [
+   6
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-polj-2b.pdf",
+  "c": "annales/2025/2025-polj-2b-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-2c",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Le jardin botanique, question 4",
+  "theme": "Parallélisme, théorème de Thalès",
+  "s3": 9,
+  "n3": [],
+  "s4": 10,
+  "n4": [
+   22
+  ],
+  "e": "annales/2025/2025-polj-2c.pdf",
+  "c": "annales/2025/2025-polj-2c-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-2d",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Le jardin botanique, question 5",
+  "theme": "Vitesse, durée",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   35
+  ],
+  "e": "annales/2025/2025-polj-2d.pdf",
+  "c": "annales/2025/2025-polj-2d-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-3q1",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – QCM, question 1",
+  "theme": "Carré d’un nombre relatif",
+  "s3": 25,
+  "n3": [],
+  "s4": 1,
+  "n4": [
+   2
+  ],
+  "e": "annales/2025/2025-polj-3q1.pdf",
+  "c": "annales/2025/2025-polj-3q1-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-3q2",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – QCM, question 2",
+  "theme": "Décomposition en facteurs premiers",
+  "s3": 24,
+  "n3": [],
+  "s4": 6,
+  "n4": [
+   14
+  ],
+  "e": "annales/2025/2025-polj-3q2.pdf",
+  "c": "annales/2025/2025-polj-3q2-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-3q3",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – QCM, questions 3 et 4",
+  "theme": "Aire, expression littérale",
+  "s3": 1,
+  "n3": [],
+  "s4": 8,
+  "n4": [
+   20
+  ],
+  "e": "annales/2025/2025-polj-3q3.pdf",
+  "c": "annales/2025/2025-polj-3q3-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-3q5",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – QCM, question 5",
+  "theme": "Translation",
+  "s3": 11,
+  "n3": [],
+  "s4": 7,
+  "n4": [
+   17
+  ],
+  "e": "annales/2025/2025-polj-3q5.pdf",
+  "c": "annales/2025/2025-polj-3q5-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-4a",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Programme de calcul, questions 1 et 2",
+  "theme": "Programme de calcul, double distributivité",
+  "s3": 12,
+  "n3": [
+   18
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-polj-4a.pdf",
+  "c": "annales/2025/2025-polj-4a-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-4b",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – La fonction f, question 3",
+  "theme": "Fonction affine : représentation, image",
+  "s3": 17,
+  "n3": [
+   26,
+   28
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-polj-4b.pdf",
+  "c": "annales/2025/2025-polj-4b-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-4c",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Programme de calcul, question 4",
+  "theme": "Équation",
+  "s3": 7,
+  "n3": [],
+  "s4": 16,
+  "n4": [
+   38
+  ],
+  "e": "annales/2025/2025-polj-4c.pdf",
+  "c": "annales/2025/2025-polj-4c-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-5a",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Le dé à 12 faces, partie A",
+  "theme": "Probabilités",
+  "s3": 22,
+  "n3": [],
+  "s4": 20,
+  "n4": [
+   13,
+   47
+  ],
+  "e": "annales/2025/2025-polj-5a.pdf",
+  "c": "annales/2025/2025-polj-5a-corrige.pdf"
+ },
+ {
+  "id": "2025-polj-5b",
+  "an": 2025,
+  "src": "Polynésie, juin 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Le dé à 12 faces, partie B (Scratch)",
+  "theme": "Algorithmique (Scratch)",
+  "s3": 0,
+  "n3": [],
+  "s4": 0,
+  "n4": [],
+  "e": "annales/2025/2025-polj-5b.pdf",
+  "c": "annales/2025/2025-polj-5b-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-1a",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Les chansons, questions 1 et 2",
+  "theme": "Effectifs, moyenne, durées",
+  "s3": 23,
+  "n3": [],
+  "s4": 11,
+  "n4": [
+   24
+  ],
+  "e": "annales/2025/2025-mets-1a.pdf",
+  "c": "annales/2025/2025-mets-1a-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-1b",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Les chansons, question 3",
+  "theme": "Probabilités, nombres premiers",
+  "s3": 22,
+  "n3": [],
+  "s4": 20,
+  "n4": [
+   14,
+   47
+  ],
+  "e": "annales/2025/2025-mets-1b.pdf",
+  "c": "annales/2025/2025-mets-1b-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-2q1",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 1",
+  "theme": "Étendue",
+  "s3": 23,
+  "n3": [],
+  "s4": 11,
+  "n4": [
+   24
+  ],
+  "e": "annales/2025/2025-mets-2q1.pdf",
+  "c": "annales/2025/2025-mets-2q1-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-2q2",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 2",
+  "theme": "Unités de volume",
+  "s3": 21,
+  "n3": [],
+  "s4": 17,
+  "n4": [],
+  "e": "annales/2025/2025-mets-2q2.pdf",
+  "c": "annales/2025/2025-mets-2q2-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-2q3",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 3",
+  "theme": "Écriture scientifique",
+  "s3": 25,
+  "n3": [],
+  "s4": 13,
+  "n4": [
+   31
+  ],
+  "e": "annales/2025/2025-mets-2q3.pdf",
+  "c": "annales/2025/2025-mets-2q3-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-2q4",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 4",
+  "theme": "Ratio",
+  "s3": 14,
+  "n3": [
+   22
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-mets-2q4.pdf",
+  "c": "annales/2025/2025-mets-2q4-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-2q5",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 5",
+  "theme": "Pourcentages",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   34
+  ],
+  "e": "annales/2025/2025-mets-2q5.pdf",
+  "c": "annales/2025/2025-mets-2q5-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-2q6",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 6",
+  "theme": "Identité remarquable",
+  "s3": 12,
+  "n3": [
+   19
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-mets-2q6.pdf",
+  "c": "annales/2025/2025-mets-2q6-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-3a",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Géométrie, question 1",
+  "theme": "Théorème de Thalès",
+  "s3": 9,
+  "n3": [],
+  "s4": 10,
+  "n4": [
+   22
+  ],
+  "e": "annales/2025/2025-mets-3a.pdf",
+  "c": "annales/2025/2025-mets-3a-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-3b",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Géométrie, question 2",
+  "theme": "Réciproque de Pythagore",
+  "s3": 13,
+  "n3": [],
+  "s4": 14,
+  "n4": [
+   32
+  ],
+  "e": "annales/2025/2025-mets-3b.pdf",
+  "c": "annales/2025/2025-mets-3b-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-3c",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Géométrie, question 3",
+  "theme": "Trigonométrie, triangles semblables",
+  "s3": 10,
+  "n3": [
+   6,
+   16
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-mets-3c.pdf",
+  "c": "annales/2025/2025-mets-3c-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-4a",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – La piscine, questions 1 et 2",
+  "theme": "Programme de calcul, expression littérale",
+  "s3": 1,
+  "n3": [],
+  "s4": 8,
+  "n4": [
+   6,
+   18,
+   20
+  ],
+  "e": "annales/2025/2025-mets-4a.pdf",
+  "c": "annales/2025/2025-mets-4a-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-4b",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – La piscine, question 3",
+  "theme": "Fonction affine, image, proportionnalité",
+  "s3": 17,
+  "n3": [
+   13,
+   26
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-mets-4b.pdf",
+  "c": "annales/2025/2025-mets-4b-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-4c",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – La piscine, question 4",
+  "theme": "Équation",
+  "s3": 7,
+  "n3": [],
+  "s4": 16,
+  "n4": [
+   38
+  ],
+  "e": "annales/2025/2025-mets-4c.pdf",
+  "c": "annales/2025/2025-mets-4c-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-4d",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – La piscine, question 5",
+  "theme": "Grandeurs composées (kWh)",
+  "s3": 14,
+  "n3": [
+   23
+  ],
+  "s4": 15,
+  "n4": [
+   36
+  ],
+  "e": "annales/2025/2025-mets-4d.pdf",
+  "c": "annales/2025/2025-mets-4d-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-5a",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – La table, questions 1 et 2",
+  "theme": "Aires, pourcentages",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   34
+  ],
+  "e": "annales/2025/2025-mets-5a.pdf",
+  "c": "annales/2025/2025-mets-5a-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-5b",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – La table, question 3",
+  "theme": "Rotation",
+  "s3": 11,
+  "n3": [
+   17
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-mets-5b.pdf",
+  "c": "annales/2025/2025-mets-5b-corrige.pdf"
+ },
+ {
+  "id": "2025-mets-5c",
+  "an": 2025,
+  "src": "Métropole, septembre 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – La table, question 4 (Scratch)",
+  "theme": "Algorithmique (Scratch)",
+  "s3": 0,
+  "n3": [],
+  "s4": 0,
+  "n4": [],
+  "e": "annales/2025/2025-mets-5c.pdf",
+  "c": "annales/2025/2025-mets-5c-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-1a",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Le carrelage, questions 1 et 2",
+  "theme": "Calculs de prix",
+  "s3": 17,
+  "n3": [],
+  "s4": 9,
+  "n4": [
+   21
+  ],
+  "e": "annales/2025/2025-pols-1a.pdf",
+  "c": "annales/2025/2025-pols-1a-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-1b",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Le carrelage, questions 3 à 5",
+  "theme": "Fonctions linéaire et affine, équation",
+  "s3": 17,
+  "n3": [
+   26,
+   27,
+   28
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-pols-1b.pdf",
+  "c": "annales/2025/2025-pols-1b-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-2q1",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 1",
+  "theme": "Formule, expression littérale",
+  "s3": 1,
+  "n3": [],
+  "s4": 8,
+  "n4": [
+   18
+  ],
+  "e": "annales/2025/2025-pols-2q1.pdf",
+  "c": "annales/2025/2025-pols-2q1-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-2q2",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 2",
+  "theme": "Trigonométrie (calcul d’angle)",
+  "s3": 4,
+  "n3": [
+   6
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-pols-2q2.pdf",
+  "c": "annales/2025/2025-pols-2q2-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-2q3",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 3",
+  "theme": "Vitesse",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   35
+  ],
+  "e": "annales/2025/2025-pols-2q3.pdf",
+  "c": "annales/2025/2025-pols-2q3-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-2q4",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 4",
+  "theme": "Échelle",
+  "s3": 14,
+  "n3": [],
+  "s4": 5,
+  "n4": [
+   11
+  ],
+  "e": "annales/2025/2025-pols-2q4.pdf",
+  "c": "annales/2025/2025-pols-2q4-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-2q5",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – QCM, question 5",
+  "theme": "Coordonnées terrestres",
+  "s3": 6,
+  "n3": [
+   9
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-pols-2q5.pdf",
+  "c": "annales/2025/2025-pols-2q5-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-3a",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Le motif de l'Alhambra, partie 1",
+  "theme": "Transformations (symétries, rotation, translation)",
+  "s3": 11,
+  "n3": [
+   17
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-pols-3a.pdf",
+  "c": "annales/2025/2025-pols-3a-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-3b",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Le motif de l'Alhambra, partie 2 (Scratch)",
+  "theme": "Algorithmique (Scratch)",
+  "s3": 0,
+  "n3": [],
+  "s4": 0,
+  "n4": [],
+  "e": "annales/2025/2025-pols-3b.pdf",
+  "c": "annales/2025/2025-pols-3b-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-4a",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Les canons à neige, partie 1",
+  "theme": "Volumes, conversions, proportionnalité, pourcentages",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   34,
+   36
+  ],
+  "e": "annales/2025/2025-pols-4a.pdf",
+  "c": "annales/2025/2025-pols-4a-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-4b",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Le ski de fond, questions 1 et 3",
+  "theme": "Pythagore, théorème de Thalès",
+  "s3": 9,
+  "n3": [],
+  "s4": 19,
+  "n4": [
+   10,
+   22
+  ],
+  "e": "annales/2025/2025-pols-4b.pdf",
+  "c": "annales/2025/2025-pols-4b-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-4c",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Le ski de fond, questions 2 et 4",
+  "theme": "Trigonométrie (calcul de longueur)",
+  "s3": 15,
+  "n3": [
+   24
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-pols-4c.pdf",
+  "c": "annales/2025/2025-pols-4c-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-5a",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – La collecte de vêtements, questions 1 et 2",
+  "theme": "Pourcentage, tableur, probabilité, moyenne, médiane",
+  "s3": 23,
+  "n3": [],
+  "s4": 11,
+  "n4": [
+   24,
+   34,
+   47
+  ],
+  "e": "annales/2025/2025-pols-5a.pdf",
+  "c": "annales/2025/2025-pols-5a-corrige.pdf"
+ },
+ {
+  "id": "2025-pols-5b",
+  "an": 2025,
+  "src": "Polynésie, septembre 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – La collecte de vêtements, question 3",
+  "theme": "Diviseurs, décomposition, répartition en lots",
+  "s3": 24,
+  "n3": [],
+  "s4": 6,
+  "n4": [
+   14,
+   15
+  ],
+  "e": "annales/2025/2025-pols-5b.pdf",
+  "c": "annales/2025/2025-pols-5b-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-1s1",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Situation 1",
+  "theme": "Décomposition en facteurs premiers",
+  "s3": 24,
+  "n3": [],
+  "s4": 6,
+  "n4": [
+   14
+  ],
+  "e": "annales/2025/2025-asud-1s1.pdf",
+  "c": "annales/2025/2025-asud-1s1-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-1s2",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Situation 2",
+  "theme": "Trigonométrie (calcul d’angle)",
+  "s3": 4,
+  "n3": [
+   6
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-asud-1s2.pdf",
+  "c": "annales/2025/2025-asud-1s2-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-1s3",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Situation 3",
+  "theme": "Probabilités",
+  "s3": 22,
+  "n3": [],
+  "s4": 20,
+  "n4": [
+   47
+  ],
+  "e": "annales/2025/2025-asud-1s3.pdf",
+  "c": "annales/2025/2025-asud-1s3-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-1s4",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Situation 4",
+  "theme": "Fonctions : image, fonction linéaire",
+  "s3": 8,
+  "n3": [
+   12,
+   13,
+   26
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-asud-1s4.pdf",
+  "c": "annales/2025/2025-asud-1s4-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-1s5",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – Situation 5",
+  "theme": "Double distributivité, identité",
+  "s3": 12,
+  "n3": [
+   18
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-asud-1s5.pdf",
+  "c": "annales/2025/2025-asud-1s5-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-2a",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Les réseaux sociaux, partie 1",
+  "theme": "Moyenne, étendue, proportion",
+  "s3": 23,
+  "n3": [],
+  "s4": 11,
+  "n4": [
+   24
+  ],
+  "e": "annales/2025/2025-asud-2a.pdf",
+  "c": "annales/2025/2025-asud-2a-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-2b",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Les réseaux sociaux, partie 2",
+  "theme": "Pourcentages, tableur",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   34
+  ],
+  "e": "annales/2025/2025-asud-2b.pdf",
+  "c": "annales/2025/2025-asud-2b-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-3",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Les triangles (Scratch)",
+  "theme": "Algorithmique (Scratch)",
+  "s3": 0,
+  "n3": [],
+  "s4": 0,
+  "n4": [],
+  "e": "annales/2025/2025-asud-3.pdf",
+  "c": "annales/2025/2025-asud-3-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-4",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Géométrie",
+  "theme": "Parallélisme, Thalès, Pythagore, aires",
+  "s3": 9,
+  "n3": [],
+  "s4": 19,
+  "n4": [
+   10,
+   22
+  ],
+  "e": "annales/2025/2025-asud-4.pdf",
+  "c": "annales/2025/2025-asud-4-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-5a",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Les glaçons, partie 1",
+  "theme": "Volume du pavé, conversions",
+  "s3": 21,
+  "n3": [],
+  "s4": 17,
+  "n4": [],
+  "e": "annales/2025/2025-asud-5a.pdf",
+  "c": "annales/2025/2025-asud-5a-corrige.pdf"
+ },
+ {
+  "id": "2025-asud-5b",
+  "an": 2025,
+  "src": "Amérique du Sud, novembre 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Les verres, partie 2",
+  "theme": "Volume du cylindre, conversions",
+  "s3": 21,
+  "n3": [
+   34
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-asud-5b.pdf",
+  "c": "annales/2025/2025-asud-5b-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-1q1",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 1",
+  "theme": "Nombres premiers",
+  "s3": 24,
+  "n3": [],
+  "s4": 6,
+  "n4": [
+   14
+  ],
+  "e": "annales/2025/2025-ncal-1q1.pdf",
+  "c": "annales/2025/2025-ncal-1q1-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-1q2",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 2",
+  "theme": "Aire d’une figure",
+  "s3": 21,
+  "n3": [],
+  "s4": 17,
+  "n4": [],
+  "e": "annales/2025/2025-ncal-1q2.pdf",
+  "c": "annales/2025/2025-ncal-1q2-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-1q3",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 3",
+  "theme": "Fonction affine",
+  "s3": 17,
+  "n3": [
+   26
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-ncal-1q3.pdf",
+  "c": "annales/2025/2025-ncal-1q3-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-1q4",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 4",
+  "theme": "Vitesse moyenne",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   35
+  ],
+  "e": "annales/2025/2025-ncal-1q4.pdf",
+  "c": "annales/2025/2025-ncal-1q4-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-1q5",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 1,
+  "titre": "Exercice 1 – QCM, question 5",
+  "theme": "Pourcentages",
+  "s3": 14,
+  "n3": [],
+  "s4": 15,
+  "n4": [
+   34
+  ],
+  "e": "annales/2025/2025-ncal-1q5.pdf",
+  "c": "annales/2025/2025-ncal-1q5-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-2a",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Le cerf-volant, question 1",
+  "theme": "Trigonométrie (calcul de longueur)",
+  "s3": 15,
+  "n3": [
+   24
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-ncal-2a.pdf",
+  "c": "annales/2025/2025-ncal-2a-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-2b",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Le cerf-volant, question 2",
+  "theme": "Théorème de Pythagore",
+  "s3": 2,
+  "n3": [],
+  "s4": 4,
+  "n4": [
+   10
+  ],
+  "e": "annales/2025/2025-ncal-2b.pdf",
+  "c": "annales/2025/2025-ncal-2b-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-2c",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 2,
+  "titre": "Exercice 2 – Le cerf-volant, question 3",
+  "theme": "Conversions de vitesse",
+  "s3": 14,
+  "n3": [
+   23
+  ],
+  "s4": 15,
+  "n4": [
+   36
+  ],
+  "e": "annales/2025/2025-ncal-2c.pdf",
+  "c": "annales/2025/2025-ncal-2c-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-3a",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Programmes de calcul, question 1",
+  "theme": "Programmes de calcul",
+  "s3": 1,
+  "n3": [],
+  "s4": 8,
+  "n4": [
+   19
+  ],
+  "e": "annales/2025/2025-ncal-3a.pdf",
+  "c": "annales/2025/2025-ncal-3a-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-3b",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 3,
+  "titre": "Exercice 3 – Programmes de calcul, questions 2 à 4",
+  "theme": "Fonctions, antécédent, équations",
+  "s3": 8,
+  "n3": [
+   5,
+   14
+  ],
+  "s4": null,
+  "n4": null,
+  "e": "annales/2025/2025-ncal-3b.pdf",
+  "c": "annales/2025/2025-ncal-3b-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-4",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 4,
+  "titre": "Exercice 4 – Jeu de hasard",
+  "theme": "Probabilités",
+  "s3": 22,
+  "n3": [],
+  "s4": 20,
+  "n4": [
+   47
+  ],
+  "e": "annales/2025/2025-ncal-4.pdf",
+  "c": "annales/2025/2025-ncal-4-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-5",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 5,
+  "titre": "Exercice 5 – Géométrie",
+  "theme": "Parallélisme, Thalès, agrandissement",
+  "s3": 9,
+  "n3": [],
+  "s4": 10,
+  "n4": [
+   22,
+   41
+  ],
+  "e": "annales/2025/2025-ncal-5.pdf",
+  "c": "annales/2025/2025-ncal-5-corrige.pdf"
+ },
+ {
+  "id": "2025-ncal-6",
+  "an": 2025,
+  "src": "Nouvelle-Calédonie, décembre 2025",
+  "ex": 6,
+  "titre": "Exercice 6 – Scratch",
+  "theme": "Algorithmique (Scratch)",
+  "s3": 0,
+  "n3": [],
+  "s4": 0,
+  "n4": [],
+  "e": "annales/2025/2025-ncal-6.pdf",
+  "c": "annales/2025/2025-ncal-6-corrige.pdf"
+ }
+]

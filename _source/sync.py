@@ -253,7 +253,32 @@ def load(page, dbdir, everything=False):
     data["classes"] = classes
     data["planned"] = planned_evals(dbdir, levels, classes, inter)
     data["dm"] = dm_items(html, dbdir, levels, classes)
+    data["dnb"] = dnb_items(dbdir, levels, classes, everything)
     return data, wanted
+
+
+def dnb_items(dbdir, levels, classes, everything=False):
+    """Exercices du brevet (_source/annales.json, découpés en parties) : une partie est proposée à une classe
+    dès que toutes les notions qu'elle demande sont cochées « Fait en classe » (n3 : notions de 3e hors programme
+    de 4e ; n4 : notions de 4e, None = jamais proposée en 4e). Version enseignant : tout le niveau."""
+    try:
+        cat = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "annales.json"), encoding="utf-8"))
+    except FileNotFoundError:
+        return {}
+    out = {"parts": cat, "cls": {}, "seqs": {}}
+    for lv, noms in classes.items():
+        key = {"3e": "n3", "4e": "n4"}.get(lv)
+        if not key:
+            continue
+        out["seqs"][lv] = {str(s["n"]): s["t"] for s in levels[lv]["seqs"]}
+        state = {}
+        for f in glob.glob(f"{dbdir}/{suivi_of(lv)}/*.json"):
+            d = json.load(open(f))
+            state[os.path.basename(f)[:-5]] = d.get("data", d) if isinstance(d, dict) else {}
+        for k, c in enumerate(noms):
+            done = lambda n: everything or bool(state.get("n%02d" % n, {}).get(f"c{k + 1}"))
+            out["cls"][c] = [p["id"] for p in cat if p.get(key) is not None and all(done(n) for n in p[key])]
+    return out
 
 
 DM_PAGES = 2          # pages publiées d'un DM : exemple d'affiche + mission (jamais les cartes ni le corrigé)

@@ -83,6 +83,19 @@ summary .badge{margin-left:4px}
 .notion h3{font-size:17px;margin:0 0 12px}
 .notion .groups{grid-template-columns:1fr}
 @media (min-width:640px){ .notion .groups{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))} }
+.dnbintro{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;color:var(--muted);font-size:15px}
+.dnbintro p{margin:0}.dnbintro .dnbmore{margin-top:6px;font-size:14px}
+.dnbseq{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.dnbseq h3{margin:0 0 6px;font-size:17px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.dnbno{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.dnbn{margin-left:auto;font-size:13px;font-weight:400;color:var(--muted)}
+.dnbrow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px dashed var(--line)}
+.dnbinfo{display:flex;flex-direction:column;gap:2px;flex:1 1 260px;min-width:0}
+.dnbsrc{font-size:13px;color:var(--muted)}
+.dnbacts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.dnbbtn{font:inherit;font-size:14px;padding:8px 12px;border-radius:10px;border:1px dashed var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.dnbbtn:hover{border-color:currentColor}
+.dnbacts .doc{border:1px solid var(--line);border-radius:10px;padding:7px 12px;text-decoration:none}
 .empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:28px;text-align:center;color:var(--muted)}
 .intro{color:var(--muted);margin:-8px 0 0;font-size:15px}
 .rev-n{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
@@ -378,7 +391,7 @@ function start(D){
 
     var up = upcoming(lv);
     var tabs = el('div','tabs'); tabs.setAttribute('role','group');
-    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(dms.length ? [['dm','DM']] : []).concat(lv === '3e' ? [['brevet','Exercices DNB']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes'], ['curio','Curiosités']]);
+    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(dms.length ? [['dm','DM']] : []).concat((D.dnb && D.dnb.parts && D.dnb.parts.length) ? [['brevet','Exercices DNB']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes'], ['curio','Curiosités']]);
     if (!tlist.some(function(t){ return t[0] === view; })) view = 'cours';
     tlist.forEach(function(t){
       var b = el('button'); b.appendChild(icon(t[0])); b.appendChild(document.createTextNode(t[1])); b.setAttribute('aria-pressed', view === t[0]);
@@ -388,7 +401,7 @@ function start(D){
     });
     main.appendChild(tabs);
     if (view === 'cours' && up.length) main.appendChild(upBanner(up));
-    if (view === 'brevet') renderBrevet(seqs);
+    if (view === 'brevet') renderBrevet();
     else if (view === 'evals') renderEvals(evals, up, full);
     else if (view === 'dm') renderDm(dms);
     else if (!seqs.length) main.appendChild(el('div','empty','Pas encore de cours pour la ' + current + '.'));
@@ -626,9 +639,43 @@ function start(D){
     main.appendChild(sec);
   }
 
-  // Onglet « Exercices DNB » : les fiches de révision et cartes mentales n'y sont plus (elles restent dans chaque notion)
-  function renderBrevet(seqs){
-    main.appendChild(el('div','empty','Les exercices de brevet arrivent bientôt ici.'));
+  // Onglet « Exercices DNB » : exercices tombés au brevet, découpés en parties et classés par séquence.
+  // Une partie apparaît quand la classe a fait (en classe) toutes les notions qu'elle demande ; le corrigé s'affiche après un clic.
+  function renderBrevet(){
+    var lv = levelOf(current), B = D.dnb || {}, parts = B.parts || [], key = lv === '3e' ? 'n3' : 'n4', sk = lv === '3e' ? 's3' : 's4';
+    var ids = allMode() ? parts.filter(function(p){ return p[key] !== null && p[key] !== undefined; }).map(function(p){ return p.id; }) : ((B.cls || {})[current] || []);
+    var mine = parts.filter(function(p){ return ids.indexOf(p.id) > -1; });
+    var total = parts.filter(function(p){ return p[key] !== null && p[key] !== undefined; }).length;
+    var intro = el('div','dnbintro');
+    intro.appendChild(el('p', null, 'De vrais exercices tombés au brevet, découpés en parties et rangés par séquence. Cherche d’abord sur ton cahier, puis ouvre le corrigé pour comparer ta rédaction.'));
+    if (total > mine.length) intro.appendChild(el('p','dnbmore', '🔒 ' + (total - mine.length) + ' autre' + (total - mine.length > 1 ? 's parties apparaîtront' : ' partie apparaîtra') + ' au fil de l’année, quand vous aurez fait en classe les notions qu’elles demandent.'));
+    main.appendChild(intro);
+    if (!mine.length){ main.appendChild(el('div','empty','Pas encore d’exercice de brevet pour la ' + current + ' : ils arrivent quand les notions sont faites en classe.')); return; }
+    var bySeq = {};
+    mine.forEach(function(p){ (bySeq[p[sk]] = bySeq[p[sk]] || []).push(p); });
+    var titles = (B.seqs || {})[lv] || {}, seen = {};
+    try { seen = JSON.parse(localStorage.getItem('mp:dnbvu') || '{}'); } catch(e){}
+    Object.keys(bySeq).map(Number).sort(function(a, b){ return (a || 99) - (b || 99); }).forEach(function(s){
+      var box = el('section','dnbseq');
+      var h = el('h3'); h.appendChild(el('span','dnbno', s ? 'Séquence ' + s : 'Algorithmique')); h.appendChild(document.createTextNode(s ? (titles[s] || '') : 'Scratch'));
+      h.appendChild(el('span','dnbn', bySeq[s].length + ' exercice' + (bySeq[s].length > 1 ? 's' : '')));
+      box.appendChild(h);
+      bySeq[s].forEach(function(p){
+        var row = el('div','dnbrow'), info = el('div','dnbinfo');
+        info.appendChild(el('b', null, p.titre));
+        info.appendChild(el('span','dnbsrc', 'Brevet ' + p.src + ' · ' + p.theme));
+        row.appendChild(info);
+        var acts = el('div','dnbacts');
+        acts.appendChild(link({type:'evaluation', label:'Énoncé', href:p.e}));
+        var showC = function(){ var c = link({type:'correction', label:'Corrigé', href:p.c}); acts.replaceChild(c, btn); };
+        var btn = el('button','dnbbtn','J’ai cherché : voir le corrigé'); btn.type = 'button';
+        btn.onclick = function(){ seen[p.id] = 1; try { localStorage.setItem('mp:dnbvu', JSON.stringify(seen)); } catch(e){} showC(); };
+        acts.appendChild(btn);
+        if (seen[p.id]) showC();
+        row.appendChild(acts); box.appendChild(row);
+      });
+      main.appendChild(box);
+    });
   }
 
   if (current) loadSeen();
