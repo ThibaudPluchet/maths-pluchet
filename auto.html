@@ -236,11 +236,15 @@ footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40
 .eqgrid{display:flex;flex-direction:column;gap:16px}
 @media (min-width:1000px){ .eqgrid{display:grid} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+#tabsat{display:none}
+header.wrap .sitetabs{margin:0 0 18px}
+@media (max-width:620px){header.wrap .sitetabs{position:sticky;top:0;z-index:6;margin:0 -16px 14px;border-radius:0;border-left:0;border-right:0}}
 </style>
 </head>
 <body>
 <header class="wrap">
   <a class="back" id="back" href="index.html">← Page d’accueil</a>
+  <div id="tabsat"></div>
   <h1 id="ttl">Automatismes</h1>
   <p class="sub">Brevet, partie 1 · 20 minutes · sans calculatrice · réponses courtes, sans justification</p>
 </header>
@@ -833,5 +837,7 @@ fetch('data.json?t=' + Date.now(), {cache:'no-store'})
 })();
 </script>
 <script src="stats.js"></script>
+<script src="lib/sitetabs.js"></script>
+<script>SiteTabs.mount(document.getElementById('tabsat'), 'auto');</script>
 </body>
 </html>

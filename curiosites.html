@@ -52,12 +52,16 @@ a.card .t::after{content:"↗";color:var(--c);font-size:14px;margin-left:auto}
 .card .tag{align-self:flex-start;font-size:12px;font-weight:700;background:var(--cs);color:var(--c);border-radius:999px;padding:2px 9px;margin-top:4px}
 .g1{--c:var(--g1);--cs:var(--g1s)} .g2{--c:var(--g2);--cs:var(--g2s)} .g3{--c:var(--g3);--cs:var(--g3s)} .g4{--c:var(--g4);--cs:var(--g4s)}
 footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40px;border-top:1px solid var(--line)}
-@media (min-width:1000px){ .wrap{max-width:1100px} .cards{grid-template-columns:repeat(3,1fr)} }
+@media (min-width:1000px){ .wrap{max-width:1200px} .cards{grid-template-columns:repeat(3,1fr)} }
+#tabsat{display:none}
+header.wrap .sitetabs{margin:0 0 18px}
+@media (max-width:620px){header.wrap .sitetabs{position:sticky;top:0;z-index:6;margin:0 -16px 14px;border-radius:0;border-left:0;border-right:0}}
 </style>
 </head>
 <body>
 <header class="wrap">
   <a class="back" id="back" href="index.html">← Page d’accueil</a>
+  <div id="tabsat"></div>
   <h1>Curiosités</h1>
   <p class="sub">Des vidéos, des jeux et des films pour voir les maths autrement. Pour le plaisir, rien d’obligatoire&nbsp;!</p>
 </header>
@@ -131,5 +135,7 @@ var cls = (location.hash.match(/^#([0-9a-zA-Z]+)\//) || [])[1];
 if (window.stat) stat('/curiosites' + (cls ? '/' + cls : ''), 'Curiosités' + (cls ? ' ' + cls : ''));
 })();
 </script>
+<script src="lib/sitetabs.js"></script>
+<script>SiteTabs.mount(document.getElementById('tabsat'), 'curio');</script>
 </body>
 </html>

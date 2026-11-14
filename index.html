@@ -224,6 +224,50 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 .pill.allpill{font-weight:700}
 .profnote{flex-basis:100%;margin:0 0 2px;padding:8px 12px;border-radius:10px;background:#fff4d6;color:#6b4a00;font-size:14px;border:1px solid #f0d27a}
 @media (prefers-color-scheme:dark){ .profnote{background:#3a2f12;color:#f3d98b;border-color:#6b5a26} }
+
+/* ---- ergonomie (nov. 2026) ---- */
+/* notions repliables (Mes cours) */
+details.notion > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;margin:-4px 0;min-height:44px}
+details.notion .fcount{white-space:nowrap}
+@media (max-width:620px){details.notion .fcount{display:none}}
+details.notion > summary::-webkit-details-marker{display:none}
+.seqview details.notion > summary h3{margin:0;flex:1 1 auto;min-width:0}
+details.notion > summary::after{content:"▾";color:var(--muted);transition:transform .2s}
+details.notion[open] > summary::after{transform:rotate(180deg)}
+details.notion[open] > summary{margin-bottom:14px}
+details.notion .fcount{font-size:13px;color:var(--muted)}
+details.notion[open] .fcount{display:none}
+.seqview .notion h3 .badge{margin-left:8px;vertical-align:2px}
+/* titres longs : jamais de débordement */
+.seqbtn .st,.seqhead h2,.notion h3{overflow-wrap:break-word}
+@media (max-width:620px){.seqbtn .st,.seqhead h2,.notion h3{hyphens:auto;-webkit-hyphens:auto}}
+/* Exercices DNB */
+.dnbok{display:inline-block;margin-left:8px;font-size:12px;font-weight:700;color:var(--g5,#0e7a6e);background:var(--g5s,#dcf3ef);border-radius:999px;padding:1px 8px;vertical-align:2px}
+.dnbrow.done .dnbinfo b{color:var(--muted)}
+.seqbtn .sdone{font-size:12px;font-weight:700;color:var(--g5,#0e7a6e)}
+.seqbtn[aria-pressed="true"] .sdone{color:var(--accent-ink);opacity:.9}
+.dnbbtn,.dnbacts .doc{min-height:44px;display:inline-flex;align-items:center}
+.seqnav > .seqbtn.sujbtn{width:100%;display:flex;margin-bottom:8px}
+@media (max-width:620px){
+  /* bandeau réduit, et seulement sur « Mes cours » */
+  .banner{height:110px}
+  body:not([data-view="cours"]) .headrow .banner{display:none}
+  header.wrap{padding-top:18px;padding-bottom:6px}
+  /* rubriques : une seule ligne qui défile, collée en haut de l'écran */
+  .sitetabs{position:sticky;top:0;z-index:6;margin:0 -16px;border-radius:0;border-left:0;border-right:0;box-shadow:0 6px 12px -10px rgba(0,0,0,.35)}
+  main.wrap{gap:20px;padding-top:12px}
+  /* séquences : une bande qui défile horizontalement */
+  .seqlist{display:flex;overflow-x:auto;scroll-snap-type:x proximity;gap:8px;padding:2px 2px 8px;margin:0 -16px;padding-left:16px;padding-right:16px;scrollbar-width:thin}
+  .seqlist .seqbtn{flex:0 0 min(74%,250px);scroll-snap-align:start}
+  .seqbtn.sujbtn .go{margin-left:0}
+  /* DNB : énoncé et corrigé côte à côte */
+  .dnbacts{flex-wrap:nowrap;width:100%}
+  .dnbacts > *{flex:1 1 0;justify-content:center}
+  /* Évaluations : les boutons N9, N10… passent sous l'intitulé */
+  .mrow{flex-wrap:wrap}
+  .mrow .chips{width:100%;padding-left:36px;flex-wrap:wrap}
+  .mrow.wide .mt{width:auto}
+}
 </style>
 </head>
 <body>
@@ -282,6 +326,7 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 <nav class="picker" aria-label="Ma classe"><div class="wrap picker-row" id="picker"></div></nav>
 <main class="wrap" id="main"></main>
 <footer class="wrap">Les documents apparaissent ici au fur et à mesure qu'ils sont distribués en classe. Vidéos : Yvan Monka. · Mesure d’audience anonyme, sans cookie (GoatCounter).</footer>
+<script src="lib/sitetabs.js"></script>
 <script>
 function start(D){
   var picker = document.getElementById('picker'), main = document.getElementById('main');
@@ -310,7 +355,9 @@ function start(D){
   // Adresse de la page (avec la classe) gardée pour le bouton « Retour » des exerciseurs
   try { localStorage.setItem('mp:retour', location.href); } catch(e){}
   window.addEventListener('hashchange', function(){ location.reload(); });
-  var view = 'cours', seen = null, firstVisit = false, seqSel = null, dnbSel = null;
+  var view = 'cours', seen = null, firstVisit = false, seqSel = null, dnbSel = null, classSeq = 0;
+  // onglet demandé depuis Automatismes ou Curiosités (barre d'onglets commune)
+  try { var vq = sessionStorage.getItem('mp:vue'); if (vq){ view = vq; sessionStorage.removeItem('mp:vue'); } } catch(e){}
   // ?vue=evals : ouvre directement l'onglet Évaluations (bouton « Retour » des exerciseurs d'évaluation)
   if (/[?&]vue=evals\b/.test(location.search)){ view = 'evals'; try { history.replaceState(null, '', location.pathname + location.hash); } catch(e){} }
 
@@ -348,11 +395,13 @@ function start(D){
     if (it.enc) a.href = 'voir.html?e=' + encodeURIComponent(it.enc) + '&t=' + encodeURIComponent(it.label) + '#k=' + KEY;
     else a.href = /\.pdf$/i.test(it.href) ? 'voir.html?v=3&f=' + encodeURIComponent(it.href) + '&t=' + encodeURIComponent(it.label) : it.href;
     a.appendChild(el('span','ic', ICON[it.type] || '•'));
-    a.appendChild(el('span','t', it.label));
+    a.appendChild(el('span','t', shortLabel(it.label)));
     if (isNew(it)) a.appendChild(el('span','badge','Nouveau'));
     else if (it.type === 'video' || it.type === 'alea' || it.type === 'anim' || it.type === 'exo' || it.type === 'blanc') a.appendChild(el('span','ext','↗'));
     return a;
   }
+  // libellés raccourcis : la colonne s'appelle déjà « S'entraîner »
+  function shortLabel(l){ return String(l).replace(/^S[’']entraîner \(exercices interactifs\)$/, 'Exercices interactifs'); }
   function groups(items){
     var box = el('div','groups');
     GROUPS.forEach(function(g){
@@ -405,16 +454,23 @@ function start(D){
     if (!full.length && !dms.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
 
     var up = upcoming(lv);
-    var tabs = el('div','tabs'); tabs.setAttribute('role','group');
     var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(dms.length ? [['dm','DM']] : []).concat((D.dnb && D.dnb.parts && D.dnb.parts.length) ? [['brevet','Exercices DNB']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes'], ['curio','Curiosités']]);
     if (!tlist.some(function(t){ return t[0] === view; })) view = 'cours';
+    document.body.setAttribute('data-view', view);
+    classSeq = full.length ? full[0].num : 0;
+    // point rouge : documents nouveaux depuis la dernière visite (cours), évaluation à venir ou nouvelle (évaluations), DM nouveau
     tlist.forEach(function(t){
-      var b = el('button'); b.appendChild(icon(t[0])); b.appendChild(document.createTextNode(t[1])); b.setAttribute('aria-pressed', view === t[0]);
-      if (t[0] === 'evals' && (up.length || evals.some(function(e){ return e.items.some(isNew); }))) b.appendChild(el('span','tdot'));
-      if (t[0] === 'dm' && dms.some(function(d){ return isNew(d); })) b.appendChild(el('span','tdot'));
-      b.onclick = t[0] === 'auto' || t[0] === 'curio' ? function(){ location.href = (t[0] === 'auto' ? 'auto.html' : 'curiosites.html') + location.hash; } : function(){ view = t[0]; render(); }; tabs.appendChild(b);
+      if (t[0] === 'cours') t[2] = seqs.some(function(s){ return s.notions.some(function(n){ return n.items.some(isNew); }); });
+      if (t[0] === 'evals') t[2] = !!(up.length || evals.some(function(e){ return e.items.some(isNew); }));
+      if (t[0] === 'dm') t[2] = dms.some(function(d){ return isNew(d); });
     });
-    main.appendChild(tabs);
+    if (window.SiteTabs){
+      SiteTabs.save(tlist.map(function(t){ return [t[0], t[1], t[0] === view ? false : !!t[2]]; }));
+      main.appendChild(SiteTabs.build(tlist, view, function(k){
+        if (k === 'auto' || k === 'curio'){ location.href = SiteTabs.href(k) + location.hash; return; }
+        if (k !== view){ view = k; render(); }
+      }));
+    }
     if (view === 'cours' && up.length) main.appendChild(upBanner(up));
     if (view === 'brevet') renderBrevet();
     else if (view === 'evals') renderEvals(evals, up, full);
@@ -471,6 +527,8 @@ function start(D){
     for (var i = 0; i < THEMES.length; i++) if (THEMES[i][0].test(t)) return icon(THEMES[i][1], 'tile t-' + THEMES[i][2]);
     return icon('autre', 'tile');
   }
+  // téléphone : la liste des séquences défile horizontalement ; on la place sur la séquence choisie
+  function keepVisible(list){ setTimeout(function(){ var a = list.querySelector('[aria-pressed="true"]'); if (a && list.scrollWidth > list.clientWidth + 4) list.scrollLeft += a.getBoundingClientRect().left - list.getBoundingClientRect().left - 16; }, 0); }
   function codeOf(num){ return typeof num === 'string' ? num : 'N' + num; }
   function domainOf(t){ return String(t).replace(/\s*\(\d+\)\s*$/, ''); }
   function renderCours(seqs){
@@ -500,7 +558,7 @@ function start(D){
       b.onclick = function(){ seqSel = d.key; render(); var t = document.getElementById('seq-notions'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
       list.appendChild(b);
     });
-    nav.appendChild(list); main.appendChild(nav);
+    nav.appendChild(list); main.appendChild(nav); keepVisible(list);
 
     var d = byKey[seqSel];
     var sec = el('section','seqview'); sec.id = 'seq-notions';
@@ -508,12 +566,22 @@ function start(D){
     hd.appendChild(seqIcon(d.key));
     var hx = el('div'); hx.appendChild(el('p','seqname', nums(d))); hx.appendChild(el('h2', null, d.key)); hd.appendChild(hx);
     sec.appendChild(hd);
-    d.notions.forEach(function(x){
-      var n = x.n, isCur = n === cur;
-      var box = el('article','notion' + (isCur ? ' current' : ''));
-      if (isCur) box.appendChild(el('p','kicker','En ce moment'));
-      var h3 = el('h3'); h3.appendChild(el('span','code', codeOf(n.num))); h3.appendChild(document.createTextNode(n.titre));
-      box.appendChild(h3); box.appendChild(groups(n.items)); sec.appendChild(box);
+    // la notion en cours (ou, dans une autre séquence, la plus récente) est ouverte ; les autres sont repliées
+    var hasCur = d.notions.some(function(x){ return x.n === cur; });
+    d.notions.forEach(function(x, i){
+      var n = x.n, isCur = n === cur, nNew = n.items.filter(isNew).length;
+      if (isCur){
+        var box = el('article','notion current');
+        box.appendChild(el('p','kicker','En ce moment'));
+        var h3 = el('h3'); h3.appendChild(el('span','code', codeOf(n.num))); h3.appendChild(document.createTextNode(n.titre));
+        if (nNew) h3.appendChild(el('span','badge', nNew > 1 ? nNew + ' nouveaux' : 'Nouveau'));
+        box.appendChild(h3); box.appendChild(groups(n.items)); sec.appendChild(box); return;
+      }
+      var det = el('details','notion fold'); det.open = (!hasCur && i === 0) || nNew > 0;
+      var sm = el('summary'), h = el('h3'); h.appendChild(el('span','code', codeOf(n.num))); h.appendChild(document.createTextNode(n.titre));
+      if (nNew) h.appendChild(el('span','badge', nNew > 1 ? nNew + ' nouveaux' : 'Nouveau'));
+      sm.appendChild(h); sm.appendChild(el('span','fcount', n.items.length + ' document' + (n.items.length > 1 ? 's' : '')));
+      det.appendChild(sm); det.appendChild(groups(n.items)); sec.appendChild(det);
     });
     main.appendChild(sec);
   }
@@ -584,7 +652,7 @@ function start(D){
           return;
         }
         if (nums.length < 2 || tl.length < 2){ tl.forEach(function(it){ ls.appendChild(link(it)); }); return; }
-        var row = el('div', 'mrow'); var mt = el('span', 'mt'); mt.appendChild(el('span', 'ic', ICON[ty] || '•')); mt.appendChild(el('span', 't', tl[0]._base)); row.appendChild(mt);
+        var row = el('div', 'mrow'); var mt = el('span', 'mt'); mt.appendChild(el('span', 'ic', ICON[ty] || '•')); mt.appendChild(el('span', 't', shortLabel(tl[0]._base))); row.appendChild(mt);
         var ch = el('div', 'chips');
         tl.forEach(function(it){ var a = link(it); a.classList.add('chip'); var ic = a.querySelector('.ic'); if (ic) a.removeChild(ic); a.querySelector('.t').textContent = 'N' + it._n;
           a.title = ((e.ns.filter(function(y){ return y.num === it._n; })[0] || {}).titre) || ''; ch.appendChild(a); });
@@ -673,6 +741,12 @@ function start(D){
     // Séquences de même nom (« Fonctions (1) », « Fonctions (2) »…) regroupées en un seul bloc, comme dans Mes cours
     var bySeq = {}, groups = [], byKey = {}, last = 0;
     mine.forEach(function(p){ (bySeq[p[sk]] = bySeq[p[sk]] || []).push(p); });
+    // du sujet le plus récent au plus ancien (année, puis mois), dans l'ordre du sujet pour un même brevet
+    var MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+    function when(p){ var t = String(p.src || '').toLowerCase(), y = (t.match(/(20\d\d)/) || [0, 0])[1], m = 0;
+      MOIS.forEach(function(x, i){ if (t.indexOf(x) > -1) m = i + 1; }); return +y * 100 + m; }
+    Object.keys(bySeq).forEach(function(k){ var L = bySeq[k].map(function(p, i){ return {p: p, i: i, w: when(p)}; });
+      L.sort(function(a, b){ return b.w - a.w || a.i - b.i; }); bySeq[k] = L.map(function(x){ return x.p; }); });
     Object.keys(bySeq).map(Number).sort(function(a, b){ return (a || 99) - (b || 99); }).forEach(function(s){
       var k = s ? domainOf(titles[s] || ('Séquence ' + s)) : 'Algorithmique';
       if (!byKey[k]){ byKey[k] = {key:k, nums:[], n:0}; groups.push(byKey[k]); }
@@ -680,21 +754,24 @@ function start(D){
       if (s > last) last = s;
     });
     if (sujets.length){ byKey[SK] = {key:SK, nums:[], n:sujets.length, sujets:true}; groups.unshift(byKey[SK]); }
-    var curKey = last ? domainOf(titles[last] || ('Séquence ' + last)) : groups[groups.length > 1 && sujets.length ? 1 : 0].key;
+    // séquence ouverte par défaut : celle où en est la classe (sinon la plus proche avant elle)
+    var curS = 0; Object.keys(bySeq).map(Number).forEach(function(s){ if (s && s <= (classSeq || 99) && s > curS) curS = s; });
+    if (!curS) curS = last;
+    var curKey = curS ? domainOf(titles[curS] || ('Séquence ' + curS)) : groups[groups.length > 1 && sujets.length ? 1 : 0].key;
     if (!byKey[dnbSel]) dnbSel = curKey;
     var ans = []; sujets.forEach(function(p){ if (ans.indexOf(p.an) < 0) ans.push(p.an); }); ans.sort(function(a, b){ return b - a; });
     function nums(g){ if (g.sujets) return 'Brevet ' + ans.join(', '); var n = g.nums.filter(Boolean); return n.length ? (n.length > 1 ? 'Séquences ' : 'Séquence ') + n.join(' et ') : 'Scratch'; }
     function count(n, g){ return n + (g && g.sujets ? ' sujet' : ' exercice') + (n > 1 ? 's' : ''); }
     function row(p, title, src, first){
-      var row = el('div','dnbrow' + (first ? ' first' : '')), info = el('div','dnbinfo');
-      info.appendChild(el('b', null, title));
+      var row = el('div','dnbrow' + (first ? ' first' : '') + (seen[p.id] ? ' done' : '')), info = el('div','dnbinfo');
+      var tt = el('b', null, title); if (seen[p.id]){ var ok = el('span','dnbok','✓ cherché'); tt.appendChild(ok); } info.appendChild(tt);
       info.appendChild(el('span','dnbsrc', src));
       row.appendChild(info);
       var acts = el('div','dnbacts');
       acts.appendChild(link({type:'evaluation', label:p.c.indexOf('complet') > -1 ? 'Sujet' : 'Énoncé', href:p.e}));
       var showC = function(){ var c = link({type:'correction', label:'Corrigé', href:p.c}); acts.replaceChild(c, btn); };
-      var btn = el('button','dnbbtn','J’ai cherché : voir le corrigé'); btn.type = 'button';
-      btn.onclick = function(){ seen[p.id] = 1; try { localStorage.setItem('mp:dnbvu', JSON.stringify(seen)); } catch(e){} showC(); };
+      var btn = el('button','dnbbtn','Voir le corrigé'); btn.type = 'button'; btn.title = 'Cherche d’abord sur ton cahier, puis compare avec le corrigé';
+      btn.onclick = function(){ seen[p.id] = 1; try { localStorage.setItem('mp:dnbvu', JSON.stringify(seen)); } catch(e){} showC(); row.classList.add('done'); if (!tt.querySelector('.dnbok')) tt.appendChild(el('span','dnbok','✓ cherché')); };
       acts.appendChild(btn);
       if (seen[p.id]) showC();
       row.appendChild(acts);
@@ -715,16 +792,19 @@ function start(D){
         t2.appendChild(el('span','sd', sujets.length + ' sujets entiers, comme le jour de l’épreuve, avec leurs corrigés complets'));
         b.appendChild(t2); b.appendChild(el('span','go','Voir les sujets →'));
         b.onclick = function(){ dnbSel = g.key; render(); var t = document.getElementById('dnb-list'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
-        list.appendChild(b); return;
+        nav.appendChild(b); return;
       }
       b.appendChild(seqIcon(g.key));
       var tx = el('span','txt');
+      var nd = 0; g.nums.forEach(function(s){ bySeq[s].forEach(function(p){ if (seen[p.id]) nd++; }); });
       tx.appendChild(el('span','sn', nums(g) + ' · ' + count(g.n, g)));
-      tx.appendChild(el('span','st', g.key)); b.appendChild(tx);
+      tx.appendChild(el('span','st', g.key));
+      if (nd) tx.appendChild(el('span','sdone', nd === g.n ? '✓ tout cherché' : nd + ' / ' + g.n + ' cherché' + (nd > 1 ? 's' : '')));
+      b.appendChild(tx);
       b.onclick = function(){ dnbSel = g.key; render(); var t = document.getElementById('dnb-list'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
       list.appendChild(b);
     });
-    nav.appendChild(list); main.appendChild(nav);
+    nav.appendChild(list); main.appendChild(nav); keepVisible(list);
 
     var g = byKey[dnbSel];
     var sec = el('section','dnbview'); sec.id = 'dnb-list';
