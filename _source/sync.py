@@ -265,6 +265,10 @@ def dnb_items(dbdir, levels, classes, everything=False):
     except FileNotFoundError:
         return {}
     out = {"parts": cat, "cls": {}, "seqs": {}}
+    try:  # sujets complets + corrigés complets (affichés en 3e)
+        out["sujets"] = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "annales-sujets.json"), encoding="utf-8"))
+    except FileNotFoundError:
+        pass
     for lv, noms in classes.items():
         key = {"3e": "n3", "4e": "n4"}.get(lv)
         if not key:

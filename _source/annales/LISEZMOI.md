@@ -9,3 +9,6 @@
 - `check.py` : signale les lignes coupées en bord de zone ; `dump.py` : positions des questions dans un sujet.
 - Les PDF publiés sont dans `annales/<année>/`, le catalogue dans `_source/annales.json` ;
   `sync.py` publie pour chaque classe les parties dont toutes les notions sont cochées « Fait en classe ».
+- `full.py` : sujets complets (PDF officiel, copie dans `annales/<année>/<id>-sujet-complet.pdf`) et corrigés complets
+  (toutes les parties d'un centre réunies, `<id>-corrige-complet.pdf`) ; catalogue `_source/annales-sujets.json`
+  (ordre chronologique), affiché en 3e dans le bloc « Sujets complets ».

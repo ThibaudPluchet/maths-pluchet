@@ -96,6 +96,7 @@ summary .badge{margin-left:4px}
 .dnbbtn{font:inherit;font-size:14px;padding:8px 12px;border-radius:10px;border:1px dashed var(--line);background:transparent;color:var(--ink);cursor:pointer}
 .dnbbtn:hover{border-color:currentColor}
 .dnbview{display:flex;flex-direction:column;gap:14px;scroll-margin-top:84px}
+.dnbview > .dnbmore{margin:0;color:var(--muted);font-size:15px}
 .dnbrow.first{border-top:0;padding-top:2px}
 .dnbacts .doc{border:1px solid var(--line);border-radius:10px;padding:7px 12px;text-decoration:none}
 .empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:28px;text-align:center;color:var(--muted)}
@@ -653,7 +654,9 @@ function start(D){
     intro.appendChild(el('p', null, 'De vrais exercices tombés au brevet, découpés en parties et rangés par séquence. Cherche d’abord sur ton cahier, puis ouvre le corrigé pour comparer ta rédaction.'));
     if (total > mine.length) intro.appendChild(el('p','dnbmore', '🔒 ' + (total - mine.length) + ' autre' + (total - mine.length > 1 ? 's parties apparaîtront' : ' partie apparaîtra') + ' au fil de l’année, quand vous aurez fait en classe les notions qu’elles demandent.'));
     main.appendChild(intro);
-    if (!mine.length){ main.appendChild(el('div','empty','Pas encore d’exercice de brevet pour la ' + current + ' : ils arrivent quand les notions sont faites en classe.')); return; }
+    // Sujets complets et corrigés complets : 3e uniquement (en 4e, seules les parties déjà au programme)
+    var sujets = lv === '3e' ? (B.sujets || []) : [], SK = 'Sujets complets';
+    if (!mine.length && !sujets.length){ main.appendChild(el('div','empty','Pas encore d’exercice de brevet pour la ' + current + ' : ils arrivent quand les notions sont faites en classe.')); return; }
     var titles = (B.seqs || {})[lv] || {}, seen = {};
     try { seen = JSON.parse(localStorage.getItem('mp:dnbvu') || '{}'); } catch(e){}
     // Séquences de même nom (« Fonctions (1) », « Fonctions (2) »…) regroupées en un seul bloc, comme dans Mes cours
@@ -665,10 +668,26 @@ function start(D){
       byKey[k].nums.push(s); byKey[k].n += bySeq[s].length;
       if (s > last) last = s;
     });
-    var curKey = last ? domainOf(titles[last] || ('Séquence ' + last)) : groups[0].key;
+    if (sujets.length){ byKey[SK] = {key:SK, nums:[], n:sujets.length, sujets:true}; groups.unshift(byKey[SK]); }
+    var curKey = last ? domainOf(titles[last] || ('Séquence ' + last)) : groups[groups.length > 1 && sujets.length ? 1 : 0].key;
     if (!byKey[dnbSel]) dnbSel = curKey;
-    function nums(g){ var n = g.nums.filter(Boolean); return n.length ? (n.length > 1 ? 'Séquences ' : 'Séquence ') + n.join(' et ') : 'Scratch'; }
-    function count(n){ return n + ' exercice' + (n > 1 ? 's' : ''); }
+    function nums(g){ if (g.sujets) return 'Brevet ' + sujets[0].an; var n = g.nums.filter(Boolean); return n.length ? (n.length > 1 ? 'Séquences ' : 'Séquence ') + n.join(' et ') : 'Scratch'; }
+    function count(n, g){ return n + (g && g.sujets ? ' sujet' : ' exercice') + (n > 1 ? 's' : ''); }
+    function row(p, title, src, first){
+      var row = el('div','dnbrow' + (first ? ' first' : '')), info = el('div','dnbinfo');
+      info.appendChild(el('b', null, title));
+      info.appendChild(el('span','dnbsrc', src));
+      row.appendChild(info);
+      var acts = el('div','dnbacts');
+      acts.appendChild(link({type:'evaluation', label:p.c.indexOf('complet') > -1 ? 'Sujet' : 'Énoncé', href:p.e}));
+      var showC = function(){ var c = link({type:'correction', label:'Corrigé', href:p.c}); acts.replaceChild(c, btn); };
+      var btn = el('button','dnbbtn','J’ai cherché : voir le corrigé'); btn.type = 'button';
+      btn.onclick = function(){ seen[p.id] = 1; try { localStorage.setItem('mp:dnbvu', JSON.stringify(seen)); } catch(e){} showC(); };
+      acts.appendChild(btn);
+      if (seen[p.id]) showC();
+      row.appendChild(acts);
+      return row;
+    }
 
     var nav = el('nav','seqnav'); nav.setAttribute('aria-label','Séquences');
     nav.appendChild(el('p','kicker','Choisis une séquence'));
@@ -678,7 +697,7 @@ function start(D){
       b.setAttribute('aria-pressed', g.key === dnbSel);
       b.appendChild(seqIcon(g.key));
       var tx = el('span','txt');
-      tx.appendChild(el('span','sn', nums(g) + ' · ' + count(g.n)));
+      tx.appendChild(el('span','sn', nums(g) + ' · ' + count(g.n, g)));
       tx.appendChild(el('span','st', g.key)); b.appendChild(tx);
       b.onclick = function(){ dnbSel = g.key; render(); var t = document.getElementById('dnb-list'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
       list.appendChild(b);
@@ -689,8 +708,14 @@ function start(D){
     var sec = el('section','dnbview'); sec.id = 'dnb-list';
     var hd = el('div','seqhead withico');
     hd.appendChild(seqIcon(g.key));
-    var hx = el('div'); hx.appendChild(el('p','seqname', nums(g) + ' · ' + count(g.n))); hx.appendChild(el('h2', null, g.key)); hd.appendChild(hx);
+    var hx = el('div'); hx.appendChild(el('p','seqname', nums(g) + ' · ' + count(g.n, g))); hx.appendChild(el('h2', null, g.key)); hd.appendChild(hx);
     sec.appendChild(hd);
+    if (g.sujets){
+      sec.appendChild(el('p','dnbmore','Le sujet entier, comme le jour de l’épreuve (2 h, 100 points). Il peut contenir des notions pas encore vues en classe : passe ces questions.'));
+      var sb = el('section','dnbseq');
+      sujets.forEach(function(p, i){ sb.appendChild(row(p, 'Brevet ' + p.src, 'Sujet officiel complet · corrigé complet rédigé', !i)); });
+      sec.appendChild(sb);
+    }
     g.nums.forEach(function(s){
       var box = el('section','dnbseq');
       if (g.nums.length > 1){
@@ -699,18 +724,7 @@ function start(D){
         box.appendChild(h);
       }
       bySeq[s].forEach(function(p, i){
-        var row = el('div','dnbrow' + (i || g.nums.length > 1 ? '' : ' first')), info = el('div','dnbinfo');
-        info.appendChild(el('b', null, p.titre));
-        info.appendChild(el('span','dnbsrc', 'Brevet ' + p.src + ' · ' + p.theme));
-        row.appendChild(info);
-        var acts = el('div','dnbacts');
-        acts.appendChild(link({type:'evaluation', label:'Énoncé', href:p.e}));
-        var showC = function(){ var c = link({type:'correction', label:'Corrigé', href:p.c}); acts.replaceChild(c, btn); };
-        var btn = el('button','dnbbtn','J’ai cherché : voir le corrigé'); btn.type = 'button';
-        btn.onclick = function(){ seen[p.id] = 1; try { localStorage.setItem('mp:dnbvu', JSON.stringify(seen)); } catch(e){} showC(); };
-        acts.appendChild(btn);
-        if (seen[p.id]) showC();
-        row.appendChild(acts); box.appendChild(row);
+        box.appendChild(row(p, p.titre, 'Brevet ' + p.src + ' · ' + p.theme, !i && g.nums.length < 2));
       });
       sec.appendChild(box);
     });

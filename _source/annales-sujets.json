@@ -1,0 +1,65 @@
+[
+{
+"id": "2025-anor",
+"an": 2025,
+"src": "Amérique du Nord, 4 juin 2025",
+"e": "annales/2025/2025-anor-sujet-complet.pdf",
+"c": "annales/2025/2025-anor-corrige-complet.pdf"
+},
+{
+"id": "2025-asie",
+"an": 2025,
+"src": "Asie, 16 juin 2025",
+"e": "annales/2025/2025-asie-sujet-complet.pdf",
+"c": "annales/2025/2025-asie-corrige-complet.pdf"
+},
+{
+"id": "2025-cetr",
+"an": 2025,
+"src": "Centres étrangers, 17 juin 2025",
+"e": "annales/2025/2025-cetr-sujet-complet.pdf",
+"c": "annales/2025/2025-cetr-corrige-complet.pdf"
+},
+{
+"id": "2025-metj",
+"an": 2025,
+"src": "Métropole – Antilles-Guyane, 26 juin 2025",
+"e": "annales/2025/2025-metj-sujet-complet.pdf",
+"c": "annales/2025/2025-metj-corrige-complet.pdf"
+},
+{
+"id": "2025-polj",
+"an": 2025,
+"src": "Polynésie, juin 2025",
+"e": "annales/2025/2025-polj-sujet-complet.pdf",
+"c": "annales/2025/2025-polj-corrige-complet.pdf"
+},
+{
+"id": "2025-mets",
+"an": 2025,
+"src": "Métropole, septembre 2025",
+"e": "annales/2025/2025-mets-sujet-complet.pdf",
+"c": "annales/2025/2025-mets-corrige-complet.pdf"
+},
+{
+"id": "2025-pols",
+"an": 2025,
+"src": "Polynésie, septembre 2025",
+"e": "annales/2025/2025-pols-sujet-complet.pdf",
+"c": "annales/2025/2025-pols-corrige-complet.pdf"
+},
+{
+"id": "2025-asud",
+"an": 2025,
+"src": "Amérique du Sud, novembre 2025",
+"e": "annales/2025/2025-asud-sujet-complet.pdf",
+"c": "annales/2025/2025-asud-corrige-complet.pdf"
+},
+{
+"id": "2025-ncal",
+"an": 2025,
+"src": "Nouvelle-Calédonie, décembre 2025",
+"e": "annales/2025/2025-ncal-sujet-complet.pdf",
+"c": "annales/2025/2025-ncal-corrige-complet.pdf"
+}
+]
