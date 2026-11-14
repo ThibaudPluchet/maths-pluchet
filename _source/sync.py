@@ -409,7 +409,7 @@ def secret_plan():
     return out
 
 
-def prof_plan(tdata, twanted, tsecret, wanted):
+def prof_plan(tdata, twanted, tsecret, wanted, repo="."):
     """Version enseignant : chaque PDF non publié pour les élèves devient un fichier chiffré avec la clé enseignant ;
     les liens de tdata sont réécrits (href = enc = fichier chiffré). Renvoie [(source, fichier chiffré)]."""
     tk, plan, done = profkey(), [], {}
@@ -421,8 +421,10 @@ def prof_plan(tdata, twanted, tsecret, wanted):
     for lv, seqs in tdata["niveaux"].items():
         for sq in seqs:
             for n in sq["notions"]:
-                # hors fenêtre de la page enseignant et pas en ligne : introuvable dans le cloud, laissé de côté
-                n["items"] = [it for it in n["items"] if not (it.pop("_x", None) and it["href"] not in wanted)]
+                # hors fenêtre de la page enseignant : gardé s'il est en ligne pour les élèves, ou déjà chiffré pour
+                # l'enseignant par /maj-page-progression (mode profenc, depuis le PC) ; sinon introuvable dans le cloud
+                n["items"] = [it for it in n["items"] if not (it.pop("_x", None) and it["href"] not in wanted
+                              and not os.path.exists(os.path.join(repo, encname(tk, f"prof:{it['href']}:{twanted.get(it['href'])}"))))]
                 for it in n["items"]:
                     if it["href"].startswith("docs/") and it["href"] not in wanted:
                         it["href"] = it["enc"] = enc_of(it["href"], twanted.get(it["href"]))
@@ -430,7 +432,7 @@ def prof_plan(tdata, twanted, tsecret, wanted):
     # corrections de fiches d'exercices (chiffrées par classe pour les élèves) : une seule fois chacune
     for c, its in tsecret.items():
         for it in its:
-            if it.get("x") and it["src"] not in SRC_ENC:
+            if it.get("x") and it["src"] not in SRC_ENC and not os.path.exists(os.path.join(repo, encname(tk, f"prof:{it['src']}:{it['b']}"))):
                 continue                        # hors fenêtre et jamais publiée pour une classe : introuvable
             e = enc_of(it["src"], it["b"])
             for sq in tdata["niveaux"].get(it["lv"], []):
@@ -468,7 +470,62 @@ def read_pdf(src, pdfdir, bundles, repo=""):
     return raw
 
 
+def prof_useful(d):
+    """Document repris dans la version enseignant (mêmes types que pour les élèves, versions PROF utiles, jamais les PAP)."""
+    if d["w"] == "PROF":
+        return d["l"] in PROF_OK
+    return d["l"] in TYPES and d["l"] != "Cours à trous"      # cours : la version PROF (complétée) seulement
+
+
+def prof_todo(page, found, repo):
+    """PDF hors fenêtre de la page enseignant (x) utiles à l'adresse enseignant, ni publiés ni encore chiffrés."""
+    html = open(page, encoding="utf-8").read()
+    docs, evals, tk = js_const(html, "DOCS"), js_const_opt(html, "EVALS"), profkey()
+    ds = [d for lv in docs["levels"].values() for L in lv.values() for d in L]
+    ds += [d for L in evals.values() for e in L for d in e.get("docs", [])]
+    out = []
+    for d in ds:
+        if not d.get("x") or not prof_useful(d) or d["p"] not in found or os.path.exists(os.path.join(repo, d["p"])):
+            continue
+        e = encname(tk, f"prof:{d['p']}:{d.get('b')}")
+        if not os.path.exists(os.path.join(repo, e)):
+            out.append((d["p"], e))
+    return out
+
+
 def main():
+    # Appelé par /maj-page-progression (avec l'ordinateur) : PDF hors fenêtre chiffrés pour l'adresse enseignant.
+    #   profneed <page> <found.json> <repo> <dossier> : écrit <dossier>/prof-stage-<k>.json (chemins sur le PC, 50 par lot)
+    #   profenc  <page> <found.json> <repo>          : chiffre les PDF copiés (champ « up » de found.json) dans <repo>/enc/
+    if sys.argv[1] in ("profneed", "profenc"):
+        if not re.fullmatch(r"[0-9a-f]{64}", MASTER):
+            sys.exit("SITE_KEY absente")
+        page, found, repo = sys.argv[2], json.load(open(sys.argv[3], encoding="utf-8")), sys.argv[4]
+        todo = prof_todo(page, found, repo)
+        if sys.argv[1] == "profneed":
+            out = sys.argv[5]
+            for f in glob.glob(os.path.join(out, "prof-stage-*.json")):
+                os.remove(f)
+            for k in range(0, len(todo), 50):
+                json.dump([found[p]["dev"] for p, e in todo[k:k + 50]], open(os.path.join(out, f"prof-stage-{k // 50}.json"), "w"), ensure_ascii=False)
+            print(f"{len(todo)} PDF à chiffrer pour l'adresse enseignant ({sum(found[p]['b'] for p, e in todo) / 1e6:.1f} Mo), {(len(todo) + 49) // 50} lot(s)")
+            return
+        tk, n = profkey(), 0
+        os.makedirs(os.path.join(repo, "enc"), exist_ok=True)
+        for p, e in todo:
+            up = found[p].get("up")
+            if not up or not os.path.exists(up):
+                # copie faite depuis un dossier connecté plus haut (ex. …\Maths) : uploads/<dossier>/<chemin relatif>
+                parts = (found[p].get("dev") or "").split("\\")
+                up = next((c for c in ("/mnt/user-data/uploads/" + "/".join(parts[i:]) for i in range(1, len(parts))) if os.path.exists(c)), None)
+            if not up:
+                print("non copié :", p); continue
+            raw = open(up, "rb").read()
+            if raw[:5] != b"%PDF-":
+                sys.exit(f"Contenu invalide : {up}")
+            open(os.path.join(repo, e), "wb").write(encrypt(tk, raw)); n += 1
+        print(f"{n} PDF chiffrés pour l'adresse enseignant")
+        return
     if sys.argv[1] == "collections":
         levels = js_const(open(sys.argv[2], encoding="utf-8").read(), "LEVELS")
         print(json.dumps([c for lv in level_list(levels) for c in (suivi_of(lv), evals_of(lv))] + ["config", "evaluations", "dm"]))
@@ -481,7 +538,7 @@ def main():
     for c, lst in secret_plan().items():
         for it, e in lst:
             SRC_ENC.setdefault(it["src"], (classkey(c), e))
-    tplan = prof_plan(tdata, twanted, tsecret, wanted) if tdata else []
+    tplan = prof_plan(tdata, twanted, tsecret, wanted, repo) if tdata else []
     if tdata:
         tdata["dm"] = prof_dm(open(page, encoding="utf-8").read(), js_const(open(page, encoding="utf-8").read(), "LEVELS"), data["classes"], data["dm"])
         tplan += [(d["src"], d["enc"]) for d in tdata["dm"]]
