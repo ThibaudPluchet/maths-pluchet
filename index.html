@@ -194,6 +194,7 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
   .seqlist{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.pill.allpill{font-weight:700}
 .profnote{margin:0 0 10px;padding:8px 12px;border-radius:10px;background:#fff4d6;color:#6b4a00;font-size:14px;border:1px solid #f0d27a}
 @media (prefers-color-scheme:dark){ .profnote{background:#3a2f12;color:#f3d98b;border-color:#6b5a26} }
 </style>
@@ -265,7 +266,7 @@ function start(D){
   ];
   var ICON = {dm:'🎨', blanc:'📝', exo:'🎮', anim:'✨', cours:'📘', activite:'💡', video:'▶', exercices:'✏️', alea:'💻', revision:'📝', carte:'🧠', evaluation:'📄', correction:'✅', 'correction-exo':'✔️'};
   function store(k, v){ try{ if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
-  function levelOf(c){ for (var l in D.classes) if (D.classes[l].indexOf(c) > -1) return l; }
+  function levelOf(c){ if (D.prof && D.classes[c]) return c; for (var l in D.classes) if (D.classes[l].indexOf(c) > -1) return l; }
   function find(c){ c = (c || '').toLowerCase(); for (var l in D.classes) for (var i = 0; i < D.classes[l].length; i++) if (D.classes[l][i].toLowerCase() === c) return D.classes[l][i]; return ''; }
   // Adresse de classe (#3eE) : la classe est fixée et le choix des classes est masqué (accès élèves).
   // Adresse sans # : choix des classes affiché (accès enseignant).
@@ -275,7 +276,7 @@ function start(D){
   if (locked){ picker.parentNode.hidden = true; document.title = 'Maths ' + locked + ' – M. Pluchet'; }
   if (D.prof){
     document.title = 'Maths – accès enseignant';
-    var pn = el('p', 'profnote', 'Accès enseignant : tous les documents de la page enseignant, que les cases soient cochées ou non. Choisissez une classe pour voir ses sujets d’évaluation.');
+    var pn = el('p', 'profnote', 'Accès enseignant : tous les documents de la page enseignant, que les cases soient cochées ou non. « Toutes les 4e / 3e » montre tout le niveau ; une classe montre ses propres sujets d’évaluation.');
     picker.parentNode.insertBefore(pn, picker);
   }
   // Adresse de la page (avec la classe) gardée pour le bouton « Retour » des exerciseurs
@@ -288,8 +289,9 @@ function start(D){
   Object.keys(D.classes).forEach(function(l){
     if (!D.classes[l].length) return;
     var g = el('div','lvl'); g.setAttribute('role','group'); g.setAttribute('aria-label','Classes de ' + l);
-    D.classes[l].forEach(function(c){
-      var b = el('button','pill',c); b.dataset.c = c;
+    // accès enseignant : « Toutes les 4e » / « Toutes les 3e » montre tout le niveau, toutes classes confondues
+    (D.prof ? [l] : []).concat(D.classes[l]).forEach(function(c){
+      var b = el('button','pill' + (c === l ? ' allpill' : ''), c === l ? 'Toutes les ' + l : c); b.dataset.c = c;
       b.onclick = function(){ current = c; store('classe', c); seqSel = null; view = 'cours'; loadSeen(); render(); };
       g.appendChild(b);
     });
@@ -297,7 +299,11 @@ function start(D){
   });
 
   function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-  function mine(list){ return list.filter(function(x){ return x.cls.indexOf(current) > -1; }); }
+  // « Toutes les 4e » (accès enseignant) : current vaut le niveau lui-même
+  function allMode(){ return !!(D.prof && D.classes[current]); }
+  function mine(list){ return allMode() ? list : list.filter(function(x){ return x.cls.indexOf(current) > -1; }); }
+  // date d'une évaluation à venir pour la classe choisie (toutes classes : la plus proche)
+  function dOf(e){ if (!allMode()) return e.dates[current]; var t = todayIso(), v = Object.keys(e.dates).map(function(k){ return e.dates[k]; }).filter(function(x){ return x >= t; }).sort(); return v[0]; }
 
   // « Nouveau » : tout ce qui n'était pas là à la dernière visite de cette classe sur cet appareil
   function loadSeen(){
@@ -364,8 +370,9 @@ function start(D){
     }).filter(function(s){ return s.notions.length; });
     var all = []; full.forEach(function(s){ s.notions.forEach(function(n){ all = all.concat(n.items); }); });
     // DM donnés à la classe (onglet « DM »), du plus récent au plus ancien
-    var dms = (D.dm || []).filter(function(d){ return d.cls.indexOf(current) > -1; })
-      .sort(function(a, b){ return (a.dates[current] || '') < (b.dates[current] || '') ? 1 : -1; });
+    var dkey = function(d){ return allMode() ? Object.keys(d.dates).map(function(k){ return d.dates[k]; }).sort().pop() || '' : d.dates[current] || ''; };
+    var dms = (D.dm || []).filter(function(d){ return allMode() ? d.lv === lv : d.cls.indexOf(current) > -1; })
+      .sort(function(a, b){ return dkey(a) < dkey(b) ? 1 : -1; });
     dms.forEach(function(d){ all.push({href: d.href}); if (d.anim) all.push({href: d.anim}); });
     if (!full.length && !dms.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
 
@@ -488,8 +495,8 @@ function start(D){
   function todayIso(){ var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
   function upcoming(lv){
     var t = todayIso();
-    return (D.planned || []).filter(function(p){ return p.lv === lv && p.dates[current] && p.dates[current] >= t; })
-      .sort(function(a, b){ return a.dates[current] < b.dates[current] ? -1 : 1; });
+    return (D.planned || []).filter(function(p){ return p.lv === lv && dOf(p) && dOf(p) >= t; })
+      .sort(function(a, b){ return dOf(a) < dOf(b) ? -1 : 1; });
   }
   function dayTxt(iso){ var p = iso.split('-'), d = new Date(+p[0], +p[1] - 1, +p[2]); return d.toLocaleDateString('fr-FR', {weekday: 'long', day: 'numeric', month: 'long'}); }
   function whenTxt(iso){
@@ -499,8 +506,8 @@ function start(D){
   function upTitle(e){ return e.nom || 'Évaluation'; }
   function upBanner(list){
     var e = list[0], b = el('div', 'upbanner'), t = el('span');
-    t.appendChild(el('b', null, '📅 ' + upTitle(e) + ' ' + dayTxt(e.dates[current])));
-    t.appendChild(document.createTextNode(' (' + whenTxt(e.dates[current]) + ') · ' + e.ns.map(function(x){ return 'N' + x.num; }).join(', ')));
+    t.appendChild(el('b', null, '📅 ' + upTitle(e) + ' ' + dayTxt(dOf(e))));
+    t.appendChild(document.createTextNode(' (' + whenTxt(dOf(e)) + ') · ' + e.ns.map(function(x){ return 'N' + x.num; }).join(', ')));
     // tout le bandeau est cliquable : il ouvre l'onglet Évaluations (comme le bouton « Réviser »)
     var go = el('button', null, 'Réviser →'); go.type = 'button'; go.tabIndex = -1;
     function open(){ view = 'evals'; render(); window.scrollTo(0, 0); }
@@ -511,7 +518,7 @@ function start(D){
   var REV = [['Revoir le cours', 'g1', ['revision', 'carte', 'cours']], ['S’entraîner', 'g2', ['exo', 'correction-exo']], ['Revoir en vidéo', 'g3', ['video']], ['Animations', 'g3', ['anim']]];
   function upCard(e, full){
     var box = el('article', 'notion evcard upcard');
-    var k = el('p', 'evkind', 'Évaluation à venir · ' + dayTxt(e.dates[current])); k.appendChild(el('span', 'when', whenTxt(e.dates[current]))); box.appendChild(k);
+    var k = el('p', 'evkind', 'Évaluation à venir · ' + dayTxt(dOf(e))); k.appendChild(el('span', 'when', whenTxt(dOf(e)))); box.appendChild(k);
     var h3 = el('h3'); if (e.doc) h3.appendChild(el('span', 'code', e.doc)); h3.appendChild(document.createTextNode(e.ns.length > 1 ? upTitle(e) : (e.ns[0] ? e.ns[0].titre : upTitle(e)))); box.appendChild(h3);
     if (e.ns.length){ var ns = el('div', 'evns'); e.ns.forEach(function(x){ var sp = el('span'); sp.appendChild(el('b', null, 'N' + x.num)); sp.appendChild(document.createTextNode(x.titre)); ns.appendChild(sp); }); box.appendChild(ns); }
     if (e.blanc){
@@ -600,7 +607,9 @@ function start(D){
     sec.appendChild(el('p','intro','Tes devoirs maison : le sujet à ouvrir, imprimer ou relire, avec un exemple d’affiche.'));
     dms.forEach(function(d){
       var box = el('article','notion evcard dmcard');
-      box.appendChild(el('p','evkind', d.dates[current] ? 'DM · donné ' + dayTxt(d.dates[current]).replace(/^\S+ /, 'le ') : 'DM · pas encore donné à la ' + current));
+      var given = Object.keys(d.dates || {}).sort();
+      box.appendChild(el('p','evkind', allMode() ? (given.length ? 'DM · donné en ' + given.join(', ') : 'DM · pas encore donné')
+        : d.dates[current] ? 'DM · donné ' + dayTxt(d.dates[current]).replace(/^\S+ /, 'le ') : 'DM · pas encore donné à la ' + current));
       var h3 = el('h3'); h3.appendChild(el('span','code','DM')); h3.appendChild(document.createTextNode(d.titre)); box.appendChild(h3);
       var tags = el('div','evns');
       [d.modalite, d.notions].forEach(function(x){ if (x) tags.appendChild(el('span', null, x)); });
