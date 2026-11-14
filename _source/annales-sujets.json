@@ -124,5 +124,68 @@
 "src": "Amérique du Sud, 2 décembre 2024",
 "e": "annales/2024/2024-asud-sujet-complet.pdf",
 "c": "annales/2024/2024-asud-corrige-complet.pdf"
+},
+{
+"id": "2023-anor",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"e": "annales/2023/2023-anor-sujet-complet.pdf",
+"c": "annales/2023/2023-anor-corrige-complet.pdf"
+},
+{
+"id": "2023-cetr",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"e": "annales/2023/2023-cetr-sujet-complet.pdf",
+"c": "annales/2023/2023-cetr-corrige-complet.pdf"
+},
+{
+"id": "2023-asie",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"e": "annales/2023/2023-asie-sujet-complet.pdf",
+"c": "annales/2023/2023-asie-corrige-complet.pdf"
+},
+{
+"id": "2023-polj",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"e": "annales/2023/2023-polj-sujet-complet.pdf",
+"c": "annales/2023/2023-polj-corrige-complet.pdf"
+},
+{
+"id": "2023-metj",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"e": "annales/2023/2023-metj-sujet-complet.pdf",
+"c": "annales/2023/2023-metj-corrige-complet.pdf"
+},
+{
+"id": "2023-pols",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"e": "annales/2023/2023-pols-sujet-complet.pdf",
+"c": "annales/2023/2023-pols-corrige-complet.pdf"
+},
+{
+"id": "2023-mets",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"e": "annales/2023/2023-mets-sujet-complet.pdf",
+"c": "annales/2023/2023-mets-corrige-complet.pdf"
+},
+{
+"id": "2023-asud",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"e": "annales/2023/2023-asud-sujet-complet.pdf",
+"c": "annales/2023/2023-asud-corrige-complet.pdf"
+},
+{
+"id": "2023-ncal",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"e": "annales/2023/2023-ncal-sujet-complet.pdf",
+"c": "annales/2023/2023-ncal-corrige-complet.pdf"
 }
 ]

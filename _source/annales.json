@@ -3859,5 +3859,1739 @@
 "n4": [],
 "e": "annales/2024/2024-asud-5.pdf",
 "c": "annales/2024/2024-asud-5-corrige.pdf"
+},
+{
+"id": "2023-anor-1s1",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 1,
+"titre": "Exercice 1 – Situation 1",
+"theme": "Décomposition en facteurs premiers",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14
+],
+"e": "annales/2023/2023-anor-1s1.pdf",
+"c": "annales/2023/2023-anor-1s1-corrige.pdf"
+},
+{
+"id": "2023-anor-1s2",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 1,
+"titre": "Exercice 1 – Situation 2",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2023/2023-anor-1s2.pdf",
+"c": "annales/2023/2023-anor-1s2-corrige.pdf"
+},
+{
+"id": "2023-anor-1s3",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 1,
+"titre": "Exercice 1 – Situation 3",
+"theme": "Double distributivité",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-anor-1s3.pdf",
+"c": "annales/2023/2023-anor-1s3-corrige.pdf"
+},
+{
+"id": "2023-anor-1s4",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 1,
+"titre": "Exercice 1 – Situation 4",
+"theme": "Volume d’un prisme, conversion",
+"s3": 21,
+"n3": [],
+"s4": 17,
+"n4": [],
+"e": "annales/2023/2023-anor-1s4.pdf",
+"c": "annales/2023/2023-anor-1s4-corrige.pdf"
+},
+{
+"id": "2023-anor-1s5",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 1,
+"titre": "Exercice 1 – Situation 5",
+"theme": "Agrandissement et aires",
+"s3": 21,
+"n3": [],
+"s4": 17,
+"n4": [
+41
+],
+"e": "annales/2023/2023-anor-1s5.pdf",
+"c": "annales/2023/2023-anor-1s5-corrige.pdf"
+},
+{
+"id": "2023-anor-2a",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 2,
+"titre": "Exercice 2 – La figure, questions 1 et 2",
+"theme": "Réciproque de Pythagore, théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 19,
+"n4": [
+22,
+32
+],
+"e": "annales/2023/2023-anor-2a.pdf",
+"c": "annales/2023/2023-anor-2a-corrige.pdf"
+},
+{
+"id": "2023-anor-2b",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 2,
+"titre": "Exercice 2 – La figure, questions 3 à 5",
+"theme": "Trigonométrie, triangles semblables, aires",
+"s3": 10,
+"n3": [
+6,
+16
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-anor-2b.pdf",
+"c": "annales/2023/2023-anor-2b-corrige.pdf"
+},
+{
+"id": "2023-anor-3a",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 3,
+"titre": "Exercice 3 – Les visiteurs, partie A",
+"theme": "Lecture de diagramme, pourcentage",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2023/2023-anor-3a.pdf",
+"c": "annales/2023/2023-anor-3a-corrige.pdf"
+},
+{
+"id": "2023-anor-3b",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 3,
+"titre": "Exercice 3 – Les prix des hôtels, partie B",
+"theme": "Étendue, moyenne, médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2023/2023-anor-3b.pdf",
+"c": "annales/2023/2023-anor-3b-corrige.pdf"
+},
+{
+"id": "2023-anor-4",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 4,
+"titre": "Exercice 4 – Le motif « Fleur » (Scratch)",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2023/2023-anor-4.pdf",
+"c": "annales/2023/2023-anor-4-corrige.pdf"
+},
+{
+"id": "2023-anor-5",
+"an": 2023,
+"src": "Amérique du Nord, 31 mai 2023",
+"ex": 5,
+"titre": "Exercice 5 – L’hippodrome",
+"theme": "Périmètre, vitesse, coût minimum",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35,
+36
+],
+"e": "annales/2023/2023-anor-5.pdf",
+"c": "annales/2023/2023-anor-5-corrige.pdf"
+},
+{
+"id": "2023-cetr-1a",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, partie A (Scratch)",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2023/2023-cetr-1a.pdf",
+"c": "annales/2023/2023-cetr-1a-corrige.pdf"
+},
+{
+"id": "2023-cetr-1b1",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, partie B, question 1",
+"theme": "Calculs avec des fractions",
+"s3": 5,
+"n3": [],
+"s4": 18,
+"n4": [
+42,
+43
+],
+"e": "annales/2023/2023-cetr-1b1.pdf",
+"c": "annales/2023/2023-cetr-1b1-corrige.pdf"
+},
+{
+"id": "2023-cetr-1b2",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, partie B, question 2",
+"theme": "Écriture scientifique",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+30,
+31
+],
+"e": "annales/2023/2023-cetr-1b2.pdf",
+"c": "annales/2023/2023-cetr-1b2-corrige.pdf"
+},
+{
+"id": "2023-cetr-1b3",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, partie B, question 3",
+"theme": "Médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2023/2023-cetr-1b3.pdf",
+"c": "annales/2023/2023-cetr-1b3-corrige.pdf"
+},
+{
+"id": "2023-cetr-2a",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – La cabane, partie A (toboggan)",
+"theme": "Trigonométrie, théorème de Pythagore",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-cetr-2a.pdf",
+"c": "annales/2023/2023-cetr-2a-corrige.pdf"
+},
+{
+"id": "2023-cetr-2b",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – La cabane, partie B (échelle)",
+"theme": "Parallélisme, théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2023/2023-cetr-2b.pdf",
+"c": "annales/2023/2023-cetr-2b-corrige.pdf"
+},
+{
+"id": "2023-cetr-2c",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – La cabane, partie C (bac à sable)",
+"theme": "Volume, ratio, coût",
+"s3": 14,
+"n3": [
+22
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-cetr-2c.pdf",
+"c": "annales/2023/2023-cetr-2c-corrige.pdf"
+},
+{
+"id": "2023-cetr-3a",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – Les programmes de calcul, questions 1 et 2",
+"theme": "Programmes de calcul, tableur",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+2,
+19
+],
+"e": "annales/2023/2023-cetr-3a.pdf",
+"c": "annales/2023/2023-cetr-3a-corrige.pdf"
+},
+{
+"id": "2023-cetr-3b",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – Les programmes de calcul, question 3",
+"theme": "Expression littérale, équation produit",
+"s3": 19,
+"n3": [
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-cetr-3b.pdf",
+"c": "annales/2023/2023-cetr-3b-corrige.pdf"
+},
+{
+"id": "2023-cetr-4a",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 4,
+"titre": "Exercice 4 – Le jeu, partie A",
+"theme": "Probabilités (une et deux épreuves)",
+"s3": 22,
+"n3": [
+39
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-cetr-4a.pdf",
+"c": "annales/2023/2023-cetr-4a-corrige.pdf"
+},
+{
+"id": "2023-cetr-4b",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 4,
+"titre": "Exercice 4 – Les lots, partie B",
+"theme": "Diviseurs, décomposition, répartition",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14,
+15
+],
+"e": "annales/2023/2023-cetr-4b.pdf",
+"c": "annales/2023/2023-cetr-4b-corrige.pdf"
+},
+{
+"id": "2023-cetr-5",
+"an": 2023,
+"src": "Centres étrangers, 14 juin 2023",
+"ex": 5,
+"titre": "Exercice 5 – La location de bateaux",
+"theme": "Proportionnalité, fonctions linéaires et affines",
+"s3": 17,
+"n3": [
+26,
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-cetr-5.pdf",
+"c": "annales/2023/2023-cetr-5-corrige.pdf"
+},
+{
+"id": "2023-asie-1a",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – Le centre de loisirs, questions 1 à 3",
+"theme": "Théorème de Pythagore, théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+10,
+22
+],
+"e": "annales/2023/2023-asie-1a.pdf",
+"c": "annales/2023/2023-asie-1a-corrige.pdf"
+},
+{
+"id": "2023-asie-1b",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – Le centre de loisirs, questions 4 et 5",
+"theme": "Aires, coût",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [],
+"e": "annales/2023/2023-asie-1b.pdf",
+"c": "annales/2023/2023-asie-1b-corrige.pdf"
+},
+{
+"id": "2023-asie-2q1",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 1",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2023/2023-asie-2q1.pdf",
+"c": "annales/2023/2023-asie-2q1-corrige.pdf"
+},
+{
+"id": "2023-asie-2q2",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 2",
+"theme": "Pourcentages",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2023/2023-asie-2q2.pdf",
+"c": "annales/2023/2023-asie-2q2-corrige.pdf"
+},
+{
+"id": "2023-asie-2q3",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 3",
+"theme": "Homothétie",
+"s3": 18,
+"n3": [
+30
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-asie-2q3.pdf",
+"c": "annales/2023/2023-asie-2q3-corrige.pdf"
+},
+{
+"id": "2023-asie-2q4",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 4",
+"theme": "Fonctions linéaires et affines",
+"s3": 17,
+"n3": [
+26
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-asie-2q4.pdf",
+"c": "annales/2023/2023-asie-2q4-corrige.pdf"
+},
+{
+"id": "2023-asie-2q5",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 5",
+"theme": "Puissances de 10, écriture scientifique",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+30,
+31
+],
+"e": "annales/2023/2023-asie-2q5.pdf",
+"c": "annales/2023/2023-asie-2q5-corrige.pdf"
+},
+{
+"id": "2023-asie-2q6",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – QCM, question 6",
+"theme": "Trigonométrie",
+"s3": 15,
+"n3": [
+24
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-asie-2q6.pdf",
+"c": "annales/2023/2023-asie-2q6-corrige.pdf"
+},
+{
+"id": "2023-asie-3a",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – Le programme de calcul, partie A",
+"theme": "Programme de calcul, expression littérale",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+2,
+18,
+20
+],
+"e": "annales/2023/2023-asie-3a.pdf",
+"c": "annales/2023/2023-asie-3a-corrige.pdf"
+},
+{
+"id": "2023-asie-3b",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – Le programme de calcul, partie B",
+"theme": "Antécédents, tableur, équation x² = a",
+"s3": 19,
+"n3": [
+13,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-asie-3b.pdf",
+"c": "annales/2023/2023-asie-3b-corrige.pdf"
+},
+{
+"id": "2023-asie-4",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 4,
+"titre": "Exercice 4 – Les frises (Scratch)",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2023/2023-asie-4.pdf",
+"c": "annales/2023/2023-asie-4-corrige.pdf"
+},
+{
+"id": "2023-asie-5a",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 5,
+"titre": "Exercice 5 – Le marchand de glaces, questions 1 et 2",
+"theme": "Moyenne, pourcentage",
+"s3": 23,
+"n3": [],
+"s4": 15,
+"n4": [
+24,
+34
+],
+"e": "annales/2023/2023-asie-5a.pdf",
+"c": "annales/2023/2023-asie-5a-corrige.pdf"
+},
+{
+"id": "2023-asie-5b",
+"an": 2023,
+"src": "Asie, 19 juin 2023",
+"ex": 5,
+"titre": "Exercice 5 – Le marchand de glaces, question 3",
+"theme": "Volume de la boule, conversion",
+"s3": 21,
+"n3": [
+36
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-asie-5b.pdf",
+"c": "annales/2023/2023-asie-5b-corrige.pdf"
+},
+{
+"id": "2023-polj-1q1",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 1",
+"theme": "Représentation d’une fonction affine",
+"s3": 17,
+"n3": [
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-polj-1q1.pdf",
+"c": "annales/2023/2023-polj-1q1-corrige.pdf"
+},
+{
+"id": "2023-polj-1q2",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 2",
+"theme": "Lecture graphique d’une image",
+"s3": 8,
+"n3": [
+13
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-polj-1q2.pdf",
+"c": "annales/2023/2023-polj-1q2-corrige.pdf"
+},
+{
+"id": "2023-polj-1q3",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 3",
+"theme": "Fonction, tableur",
+"s3": 3,
+"n3": [
+5
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-polj-1q3.pdf",
+"c": "annales/2023/2023-polj-1q3-corrige.pdf"
+},
+{
+"id": "2023-polj-1q4",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 4",
+"theme": "Développer (double distributivité)",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-polj-1q4.pdf",
+"c": "annales/2023/2023-polj-1q4-corrige.pdf"
+},
+{
+"id": "2023-polj-2a",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – Les panneaux solaires, questions 1 et 4",
+"theme": "Théorème de Pythagore, pourcentage, longueurs",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [
+10,
+34
+],
+"e": "annales/2023/2023-polj-2a.pdf",
+"c": "annales/2023/2023-polj-2a-corrige.pdf"
+},
+{
+"id": "2023-polj-2b",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – Les panneaux solaires, questions 2 et 3",
+"theme": "Trigonométrie, théorème de Thalès",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-polj-2b.pdf",
+"c": "annales/2023/2023-polj-2b-corrige.pdf"
+},
+{
+"id": "2023-polj-3a",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – Les deux jeux, partie A",
+"theme": "Probabilités, nombres premiers",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+14,
+47
+],
+"e": "annales/2023/2023-polj-3a.pdf",
+"c": "annales/2023/2023-polj-3a-corrige.pdf"
+},
+{
+"id": "2023-polj-3b",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – Les deux jeux, partie B",
+"theme": "Probabilités (deux épreuves)",
+"s3": 22,
+"n3": [
+39
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-polj-3b.pdf",
+"c": "annales/2023/2023-polj-3b-corrige.pdf"
+},
+{
+"id": "2023-polj-4a",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 4,
+"titre": "Exercice 4 – Le programme de calcul, questions 1 et 2",
+"theme": "Programme de calcul, Scratch",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+2,
+18
+],
+"e": "annales/2023/2023-polj-4a.pdf",
+"c": "annales/2023/2023-polj-4a-corrige.pdf"
+},
+{
+"id": "2023-polj-4b",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 4,
+"titre": "Exercice 4 – Le programme de calcul, question 3",
+"theme": "Expression littérale, équation produit",
+"s3": 19,
+"n3": [
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-polj-4b.pdf",
+"c": "annales/2023/2023-polj-4b-corrige.pdf"
+},
+{
+"id": "2023-polj-5a",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 5,
+"titre": "Exercice 5 – Le karting, questions 1 à 3",
+"theme": "Longueurs, périmètre du cercle, vitesses",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+35,
+36
+],
+"e": "annales/2023/2023-polj-5a.pdf",
+"c": "annales/2023/2023-polj-5a-corrige.pdf"
+},
+{
+"id": "2023-polj-5b",
+"an": 2023,
+"src": "Polynésie, 23 juin 2023",
+"ex": 5,
+"titre": "Exercice 5 – Le karting, question 4",
+"theme": "Décomposition, multiples communs",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14,
+15
+],
+"e": "annales/2023/2023-polj-5b.pdf",
+"c": "annales/2023/2023-polj-5b-corrige.pdf"
+},
+{
+"id": "2023-metj-1",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 1,
+"titre": "Exercice 1 – Les lunettes de soleil",
+"theme": "Tableur, étendue, moyenne",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2023/2023-metj-1.pdf",
+"c": "annales/2023/2023-metj-1-corrige.pdf"
+},
+{
+"id": "2023-metj-2a",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – Rectangle et triangles, questions 1 et 2",
+"theme": "Aires, théorème de Pythagore",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [
+10
+],
+"e": "annales/2023/2023-metj-2a.pdf",
+"c": "annales/2023/2023-metj-2a-corrige.pdf"
+},
+{
+"id": "2023-metj-2b",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 2,
+"titre": "Exercice 2 – Rectangle et triangles, question 3",
+"theme": "Parallélisme, théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2023/2023-metj-2b.pdf",
+"c": "annales/2023/2023-metj-2b-corrige.pdf"
+},
+{
+"id": "2023-metj-3q1",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – QCM, question 1",
+"theme": "Pourcentages",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2023/2023-metj-3q1.pdf",
+"c": "annales/2023/2023-metj-3q1-corrige.pdf"
+},
+{
+"id": "2023-metj-3q2",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – QCM, question 2",
+"theme": "Décomposition en facteurs premiers",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14
+],
+"e": "annales/2023/2023-metj-3q2.pdf",
+"c": "annales/2023/2023-metj-3q2-corrige.pdf"
+},
+{
+"id": "2023-metj-3q3",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – QCM, question 3",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2023/2023-metj-3q3.pdf",
+"c": "annales/2023/2023-metj-3q3-corrige.pdf"
+},
+{
+"id": "2023-metj-3q4",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – QCM, question 4",
+"theme": "Rotation",
+"s3": 11,
+"n3": [
+17
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-metj-3q4.pdf",
+"c": "annales/2023/2023-metj-3q4-corrige.pdf"
+},
+{
+"id": "2023-metj-3q5",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 3,
+"titre": "Exercice 3 – QCM, question 5",
+"theme": "Volume du pavé, conversion",
+"s3": 21,
+"n3": [],
+"s4": 15,
+"n4": [
+36
+],
+"e": "annales/2023/2023-metj-3q5.pdf",
+"c": "annales/2023/2023-metj-3q5-corrige.pdf"
+},
+{
+"id": "2023-metj-4a",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 4,
+"titre": "Exercice 4 – L’escalier, questions 1 et 2",
+"theme": "Trigonométrie",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-metj-4a.pdf",
+"c": "annales/2023/2023-metj-4a-corrige.pdf"
+},
+{
+"id": "2023-metj-4b",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 4,
+"titre": "Exercice 4 – L’escalier, question 3 (Scratch)",
+"theme": "Algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2023/2023-metj-4b.pdf",
+"c": "annales/2023/2023-metj-4b-corrige.pdf"
+},
+{
+"id": "2023-metj-5a",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 5,
+"titre": "Exercice 5 – Deux programmes, questions 1 et 2",
+"theme": "Programmes de calcul, expression littérale",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+2,
+6,
+19
+],
+"e": "annales/2023/2023-metj-5a.pdf",
+"c": "annales/2023/2023-metj-5a-corrige.pdf"
+},
+{
+"id": "2023-metj-5b",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 26 juin 2023",
+"ex": 5,
+"titre": "Exercice 5 – Deux programmes, questions 3 et 4",
+"theme": "Fonctions affines, équation",
+"s3": 17,
+"n3": [
+13,
+26,
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-metj-5b.pdf",
+"c": "annales/2023/2023-metj-5b-corrige.pdf"
+},
+{
+"id": "2023-pols-1q1",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 1",
+"theme": "Pourcentages",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2023/2023-pols-1q1.pdf",
+"c": "annales/2023/2023-pols-1q1-corrige.pdf"
+},
+{
+"id": "2023-pols-1q2",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 2",
+"theme": "Théorème de Thalès",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2023/2023-pols-1q2.pdf",
+"c": "annales/2023/2023-pols-1q2-corrige.pdf"
+},
+{
+"id": "2023-pols-1q3",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, questions 3 et 4",
+"theme": "Probabilités, tableau à double entrée",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2023/2023-pols-1q3.pdf",
+"c": "annales/2023/2023-pols-1q3-corrige.pdf"
+},
+{
+"id": "2023-pols-2a",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"ex": 2,
+"titre": "Exercice 2 – Programme de calcul, question 1",
+"theme": "Programme de calcul, équation produit",
+"s3": 19,
+"n3": [
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-pols-2a.pdf",
+"c": "annales/2023/2023-pols-2a-corrige.pdf"
+},
+{
+"id": "2023-pols-2b",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"ex": 2,
+"titre": "Exercice 2 – Les fonctions f et g, questions 2 et 3",
+"theme": "Double distributivité, image, lecture graphique, tableur",
+"s3": 17,
+"n3": [
+5,
+13,
+18,
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-pols-2b.pdf",
+"c": "annales/2023/2023-pols-2b-corrige.pdf"
+},
+{
+"id": "2023-pols-3",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"ex": 3,
+"titre": "Exercice 3 – Les dix carrés (Scratch)",
+"theme": "Algorithmique (Scratch), pourcentages",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2023/2023-pols-3.pdf",
+"c": "annales/2023/2023-pols-3-corrige.pdf"
+},
+{
+"id": "2023-pols-4a",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"ex": 4,
+"titre": "Exercice 4 – La rampe d’accès, questions 1 et 2",
+"theme": "Trigonométrie, théorème de Pythagore",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-pols-4a.pdf",
+"c": "annales/2023/2023-pols-4a-corrige.pdf"
+},
+{
+"id": "2023-pols-4b",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"ex": 4,
+"titre": "Exercice 4 – La rampe d’accès, questions 3 et 4",
+"theme": "Volume d’un prisme, équation",
+"s3": 21,
+"n3": [],
+"s4": 16,
+"n4": [
+38
+],
+"e": "annales/2023/2023-pols-4b.pdf",
+"c": "annales/2023/2023-pols-4b-corrige.pdf"
+},
+{
+"id": "2023-pols-5a",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"ex": 5,
+"titre": "Exercice 5 – La transat Jacques Vabre, question 1",
+"theme": "Latitude et longitude",
+"s3": 6,
+"n3": [
+9
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-pols-5a.pdf",
+"c": "annales/2023/2023-pols-5a-corrige.pdf"
+},
+{
+"id": "2023-pols-5b",
+"an": 2023,
+"src": "Polynésie, 11 septembre 2023",
+"ex": 5,
+"titre": "Exercice 5 – La transat Jacques Vabre, question 2",
+"theme": "Durées, moyenne, vitesse, périmètre",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+24,
+35
+],
+"e": "annales/2023/2023-pols-5b.pdf",
+"c": "annales/2023/2023-pols-5b-corrige.pdf"
+},
+{
+"id": "2023-mets-1q1",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 1",
+"theme": "Diviseurs",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+13
+],
+"e": "annales/2023/2023-mets-1q1.pdf",
+"c": "annales/2023/2023-mets-1q1-corrige.pdf"
+},
+{
+"id": "2023-mets-1q2",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 2",
+"theme": "Agrandissement et volumes",
+"s3": 21,
+"n3": [],
+"s4": 17,
+"n4": [
+41
+],
+"e": "annales/2023/2023-mets-1q2.pdf",
+"c": "annales/2023/2023-mets-1q2-corrige.pdf"
+},
+{
+"id": "2023-mets-1q3",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 3",
+"theme": "Calculer une expression littérale",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+2,
+18
+],
+"e": "annales/2023/2023-mets-1q3.pdf",
+"c": "annales/2023/2023-mets-1q3-corrige.pdf"
+},
+{
+"id": "2023-mets-1q4",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 4",
+"theme": "Probabilités",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+47
+],
+"e": "annales/2023/2023-mets-1q4.pdf",
+"c": "annales/2023/2023-mets-1q4-corrige.pdf"
+},
+{
+"id": "2023-mets-1q5",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 5",
+"theme": "Homothétie",
+"s3": 18,
+"n3": [
+30
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-mets-1q5.pdf",
+"c": "annales/2023/2023-mets-1q5-corrige.pdf"
+},
+{
+"id": "2023-mets-2",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 2,
+"titre": "Exercice 2 – Les losanges (Scratch)",
+"theme": "Algorithmique (Scratch), rotation",
+"s3": 0,
+"n3": [
+17
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-mets-2.pdf",
+"c": "annales/2023/2023-mets-2-corrige.pdf"
+},
+{
+"id": "2023-mets-3a",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 3,
+"titre": "Exercice 3 – La piscine, questions 1 à 3",
+"theme": "Fonctions linéaires et affines, équation",
+"s3": 17,
+"n3": [
+26
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-mets-3a.pdf",
+"c": "annales/2023/2023-mets-3a-corrige.pdf"
+},
+{
+"id": "2023-mets-3b",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 3,
+"titre": "Exercice 3 – La piscine, questions 4 et 5",
+"theme": "Moyenne, étendue, volume",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2023/2023-mets-3b.pdf",
+"c": "annales/2023/2023-mets-3b-corrige.pdf"
+},
+{
+"id": "2023-mets-4",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 4,
+"titre": "Exercice 4 – Le funiculaire",
+"theme": "Pourcentage de réduction, vitesse, pente",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34,
+35
+],
+"e": "annales/2023/2023-mets-4.pdf",
+"c": "annales/2023/2023-mets-4-corrige.pdf"
+},
+{
+"id": "2023-mets-5a",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 5,
+"titre": "Exercice 5 – Le triangle ABC, questions 1 à 4",
+"theme": "Théorème de Pythagore, trigonométrie",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-mets-5a.pdf",
+"c": "annales/2023/2023-mets-5a-corrige.pdf"
+},
+{
+"id": "2023-mets-5b",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 5,
+"titre": "Exercice 5 – Le triangle ABC, questions 5 et 6",
+"theme": "Théorème de Thalès, aire",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22
+],
+"e": "annales/2023/2023-mets-5b.pdf",
+"c": "annales/2023/2023-mets-5b-corrige.pdf"
+},
+{
+"id": "2023-mets-3equ",
+"an": 2023,
+"src": "Métropole – Antilles-Guyane, 18 septembre 2023",
+"ex": 3,
+"titre": "Exercice 3 – La piscine, une équation",
+"theme": "Résoudre une équation du premier degré",
+"s3": 7,
+"n3": [],
+"s4": 16,
+"n4": [
+38
+],
+"e": "annales/2023/2023-mets-3equ.pdf",
+"c": "annales/2023/2023-mets-3equ-corrige.pdf"
+},
+{
+"id": "2023-asud-1a",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – Les triangles, questions 1 et 2",
+"theme": "Réciproque de Pythagore, trigonométrie",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-asud-1a.pdf",
+"c": "annales/2023/2023-asud-1a-corrige.pdf"
+},
+{
+"id": "2023-asud-1b",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – Les triangles, questions 3 à 5",
+"theme": "Triangles semblables, agrandissement",
+"s3": 10,
+"n3": [
+16
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-asud-1b.pdf",
+"c": "annales/2023/2023-asud-1b-corrige.pdf"
+},
+{
+"id": "2023-asud-2a",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 2,
+"titre": "Exercice 2 – La feuille découpée, questions 1 à 3",
+"theme": "Aires, expression littérale",
+"s3": 1,
+"n3": [],
+"s4": 8,
+"n4": [
+20
+],
+"e": "annales/2023/2023-asud-2a.pdf",
+"c": "annales/2023/2023-asud-2a-corrige.pdf"
+},
+{
+"id": "2023-asud-2b",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 2,
+"titre": "Exercice 2 – La feuille découpée, questions 4 et 5",
+"theme": "Tableur, lecture graphique, équation x² = a",
+"s3": 19,
+"n3": [
+13,
+26,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-asud-2b.pdf",
+"c": "annales/2023/2023-asud-2b-corrige.pdf"
+},
+{
+"id": "2023-asud-3a",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 3,
+"titre": "Exercice 3 – Vrai ou faux, affirmation 1",
+"theme": "Proportionnalité",
+"s3": 14,
+"n3": [],
+"s4": 5,
+"n4": [
+11
+],
+"e": "annales/2023/2023-asud-3a.pdf",
+"c": "annales/2023/2023-asud-3a-corrige.pdf"
+},
+{
+"id": "2023-asud-3b",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 3,
+"titre": "Exercice 3 – Vrai ou faux, affirmation 2",
+"theme": "Droite graduée, nombres décimaux",
+"s3": 5,
+"n3": [],
+"s4": 12,
+"n4": [],
+"e": "annales/2023/2023-asud-3b.pdf",
+"c": "annales/2023/2023-asud-3b-corrige.pdf"
+},
+{
+"id": "2023-asud-3c",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 3,
+"titre": "Exercice 3 – Vrai ou faux, affirmation 3",
+"theme": "Multiples (engrenage)",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+13
+],
+"e": "annales/2023/2023-asud-3c.pdf",
+"c": "annales/2023/2023-asud-3c-corrige.pdf"
+},
+{
+"id": "2023-asud-3d",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 3,
+"titre": "Exercice 3 – Vrai ou faux, affirmation 4",
+"theme": "Double distributivité",
+"s3": 12,
+"n3": [
+18
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-asud-3d.pdf",
+"c": "annales/2023/2023-asud-3d-corrige.pdf"
+},
+{
+"id": "2023-asud-4a",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 4,
+"titre": "Exercice 4 – Les bougies, question 1",
+"theme": "Volume du cylindre, masse",
+"s3": 21,
+"n3": [
+34
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-asud-4a.pdf",
+"c": "annales/2023/2023-asud-4a-corrige.pdf"
+},
+{
+"id": "2023-asud-4b",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 4,
+"titre": "Exercice 4 – Les bougies, questions 2 et 3",
+"theme": "Diagramme circulaire, pourcentages, moyenne",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+23,
+24
+],
+"e": "annales/2023/2023-asud-4b.pdf",
+"c": "annales/2023/2023-asud-4b-corrige.pdf"
+},
+{
+"id": "2023-asud-5a",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 5,
+"titre": "Exercice 5 – La roue et l’urne, questions 1 à 4",
+"theme": "Probabilités, nombres premiers",
+"s3": 22,
+"n3": [],
+"s4": 20,
+"n4": [
+14,
+47
+],
+"e": "annales/2023/2023-asud-5a.pdf",
+"c": "annales/2023/2023-asud-5a-corrige.pdf"
+},
+{
+"id": "2023-asud-5b",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 5,
+"titre": "Exercice 5 – La roue et l’urne, question 5 (Scratch)",
+"theme": "Algorithmique (Scratch), simulation",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2023/2023-asud-5b.pdf",
+"c": "annales/2023/2023-asud-5b-corrige.pdf"
+},
+{
+"id": "2023-asud-1rec",
+"an": 2023,
+"src": "Amérique du Sud, 16 novembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – Le triangle EFG est-il rectangle ?",
+"theme": "Réciproque du théorème de Pythagore",
+"s3": 13,
+"n3": [],
+"s4": 14,
+"n4": [
+32
+],
+"e": "annales/2023/2023-asud-1rec.pdf",
+"c": "annales/2023/2023-asud-1rec-corrige.pdf"
+},
+{
+"id": "2023-ncal-1q1",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 1",
+"theme": "Puissances de 10",
+"s3": 25,
+"n3": [],
+"s4": 13,
+"n4": [
+30,
+31
+],
+"e": "annales/2023/2023-ncal-1q1.pdf",
+"c": "annales/2023/2023-ncal-1q1-corrige.pdf"
+},
+{
+"id": "2023-ncal-1q2",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 2",
+"theme": "Calculs avec des fractions",
+"s3": 5,
+"n3": [],
+"s4": 18,
+"n4": [
+42,
+43
+],
+"e": "annales/2023/2023-ncal-1q2.pdf",
+"c": "annales/2023/2023-ncal-1q2-corrige.pdf"
+},
+{
+"id": "2023-ncal-1q3",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 3",
+"theme": "Pourcentage de réduction",
+"s3": 14,
+"n3": [],
+"s4": 15,
+"n4": [
+34
+],
+"e": "annales/2023/2023-ncal-1q3.pdf",
+"c": "annales/2023/2023-ncal-1q3-corrige.pdf"
+},
+{
+"id": "2023-ncal-1q4",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 4",
+"theme": "Homothétie",
+"s3": 18,
+"n3": [
+30
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-ncal-1q4.pdf",
+"c": "annales/2023/2023-ncal-1q4-corrige.pdf"
+},
+{
+"id": "2023-ncal-1q5",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 1,
+"titre": "Exercice 1 – QCM, question 5",
+"theme": "Médiane",
+"s3": 23,
+"n3": [],
+"s4": 11,
+"n4": [
+24
+],
+"e": "annales/2023/2023-ncal-1q5.pdf",
+"c": "annales/2023/2023-ncal-1q5-corrige.pdf"
+},
+{
+"id": "2023-ncal-2",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 2,
+"titre": "Exercice 2 – Paniers de légumes",
+"theme": "Décomposition, diviseurs, multiples",
+"s3": 24,
+"n3": [],
+"s4": 6,
+"n4": [
+14,
+15
+],
+"e": "annales/2023/2023-ncal-2.pdf",
+"c": "annales/2023/2023-ncal-2-corrige.pdf"
+},
+{
+"id": "2023-ncal-3a",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 3,
+"titre": "Exercice 3 – Isolation, questions 1 à 3",
+"theme": "Trigonométrie, aire",
+"s3": 4,
+"n3": [
+6
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-ncal-3a.pdf",
+"c": "annales/2023/2023-ncal-3a-corrige.pdf"
+},
+{
+"id": "2023-ncal-3b",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 3,
+"titre": "Exercice 3 – Isolation, questions 4 et 5",
+"theme": "Théorème de Pythagore, volume, masse",
+"s3": 2,
+"n3": [],
+"s4": 4,
+"n4": [
+10,
+36
+],
+"e": "annales/2023/2023-ncal-3b.pdf",
+"c": "annales/2023/2023-ncal-3b-corrige.pdf"
+},
+{
+"id": "2023-ncal-4",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 4,
+"titre": "Exercice 4 – Les roches de la Ouaïème",
+"theme": "Théorème de Thalès, vitesse, durée",
+"s3": 9,
+"n3": [],
+"s4": 10,
+"n4": [
+22,
+35
+],
+"e": "annales/2023/2023-ncal-4.pdf",
+"c": "annales/2023/2023-ncal-4-corrige.pdf"
+},
+{
+"id": "2023-ncal-5a",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 5,
+"titre": "Exercice 5 – Fonctions, questions 1 et 2",
+"theme": "Lecture graphique, tableur, fonction affine",
+"s3": 17,
+"n3": [
+13,
+14,
+26,
+28
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-ncal-5a.pdf",
+"c": "annales/2023/2023-ncal-5a-corrige.pdf"
+},
+{
+"id": "2023-ncal-5b",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 5,
+"titre": "Exercice 5 – Fonctions, question 3",
+"theme": "Double distributivité, équation x² = a",
+"s3": 19,
+"n3": [
+18,
+32
+],
+"s4": null,
+"n4": null,
+"e": "annales/2023/2023-ncal-5b.pdf",
+"c": "annales/2023/2023-ncal-5b-corrige.pdf"
+},
+{
+"id": "2023-ncal-6",
+"an": 2023,
+"src": "Nouvelle-Calédonie, 7 décembre 2023",
+"ex": 6,
+"titre": "Exercice 6 – Hexagone régulier (Scratch)",
+"theme": "Angles, algorithmique (Scratch)",
+"s3": 0,
+"n3": [],
+"s4": 0,
+"n4": [],
+"e": "annales/2023/2023-ncal-6.pdf",
+"c": "annales/2023/2023-ncal-6-corrige.pdf"
 }
 ]
