@@ -242,10 +242,10 @@ var EX = [
     else { do { n = rnd(2, 150); } while (isInt(Math.sqrt(n))); d = pick([1, 1, 2, 0]); x = Math.sqrt(n); v = rd(x, d); q = sqrtTxt(n) + ' (arrondi ' + ARR[d] + ')';
       st = [sqrtTxt(n) + ' ≈ ' + fn(rd(x, 4)) + '… ≈ ' + fn(v) + ' (' + ARR[d] + ')']; traps = [[cl(n / 2), 'La racine carrée n’est pas la moitié du nombre.']]; }
     return numQ({q: q, lab: q.split(' (')[0] + (d === undefined ? ' =' : ' ≈'), v: v, x: x === undefined ? v : x, d: d, traps: traps, steps: st, key: q}); }},
- {id: 'n04c', lv: 2, n: 'N04', t: 'Calculer l’hypoténuse', d: 'On additionne les carrés.',
+ {id: 'n04c', lv: 2, nq: 4, n: 'N04', t: 'Calculer l’hypoténuse', d: 'On additionne les carrés.',
   c: 'Calcule la longueur demandée (valeur exacte, ou arrondie si c’est demandé). Calculatrice autorisée. Les figures ne sont pas en vraie grandeur.', a: 'Le triangle est rectangle : l’hypoténuse au carré est égale à la somme des carrés des deux autres côtés. Exemple : EG² = 6² + 8² = 100, donc EG = √100 = 10 cm.',
   g: function(){ return pyth(true, Math.random() < 0.7); }},
- {id: 'n04d', lv: 2, n: 'N04', t: 'Calculer un côté de l’angle droit', d: 'On soustrait les carrés.',
+ {id: 'n04d', lv: 2, nq: 4, n: 'N04', t: 'Calculer un côté de l’angle droit', d: 'On soustrait les carrés.',
   c: 'Calcule la longueur demandée (valeur exacte, ou arrondie si c’est demandé). Calculatrice autorisée. Les figures ne sont pas en vraie grandeur.', a: 'On écrit l’égalité avec l’hypoténuse seule, puis on soustrait. Exemple : KM² = KL² + LM² donne 13² = 5² + LM², donc LM² = 169 − 25 = 144 et LM = 12 cm.',
   g: function(){ return pyth(false, Math.random() < 0.7); }},
  {id: 'n04e', lv: 2, n: 'N04', t: 'Vrai ou faux ?', d: 'Trouver les erreurs classiques.',
@@ -267,9 +267,9 @@ var EX = [
       ['Si ' + PQ + SQ + ' = 74, alors ' + PQ + ' ≈ 8,6.', true, '√74 ≈ 8,602… ≈ 8,6.'],
       ['Si ' + PQ + SQ + ' = 74, alors ' + PQ + ' = 37.', false, '37 est la moitié de 74, pas sa racine carrée : ' + PQ + ' = √74 ≈ 8,6.']];
     var i = rnd(0, L.length - 1), p = L[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
- {id: 'n04f', lv: 3, n: 'N04', t: 'Problèmes', d: 'Situations concrètes, unités à convertir.',
+ {id: 'n04f', lv: 3, nq: 3, n: 'N04', t: 'Problèmes', d: '3 situations concrètes par série, unités à convertir.',
   c: 'Lis l’énoncé, fais une figure à main levée, repère le triangle rectangle, puis calcule. Calculatrice autorisée.', a: 'Repère l’angle droit (mur vertical et sol horizontal, côtés d’un rectangle…), puis l’hypoténuse. Mets toutes les longueurs dans la même unité avant de calculer, et contrôle que l’hypoténuse reste le plus long côté.',
-  g: function(){ var k = rnd(0, 6), q, ask, u, v, x, d = 1, st = [], traps = [], A, B, C;
+  g: function(k){ if (k === undefined) k = rnd(0, 12); var q, ask, u, v, x, d = 1, st = [], traps = [], A, B, C;
     function hyp(a, b){ x = Math.sqrt(sq(a) + sq(b)); return x; }
     function leg(c, b){ x = Math.sqrt(sq(c) - sq(b)); return x; }
     if (k === 0){ do { C = cl(rnd(30, 80) / 10); B = cl(rnd(8, 20) / 10); } while (B >= C / 2); leg(C, B); u = 'm';
@@ -296,15 +296,40 @@ var EX = [
       q = 'Un bateau quitte le port et parcourt ' + fn(A) + ' km vers l’est, puis ' + fn(B) + ' km vers le nord. À quelle distance du port est-il, à vol d’oiseau ? Arrondis au dixième.'; ask = 'd';
       st = ['L’est et le nord sont perpendiculaires : la distance cherchée est l’hypoténuse.', 'd' + SQ + ' = ' + fn(A) + SQ + ' + ' + fn(B) + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
       traps = [[cl(A + B), 'On additionne les carrés, pas les longueurs.']]; }
-    else { do { C = rnd(20, 60); B = rnd(8, 30); } while (B >= C - 5); leg(C, B); u = 'm';
+    else if (k === 6){ do { C = rnd(20, 60); B = rnd(8, 30); } while (B >= C - 5); leg(C, B); u = 'm';
       q = 'Le fil d’un cerf-volant, bien tendu, mesure ' + C + ' m. L’enfant qui le tient est à ' + B + ' m du point du sol situé juste sous le cerf-volant. À quelle hauteur est le cerf-volant (on néglige la taille de l’enfant) ? Arrondis au dixième.'; ask = 'h';
       st = ['La hauteur est verticale, le sol horizontal : le fil est l’hypoténuse.', C + SQ + ' = h' + SQ + ' + ' + B + SQ, 'h' + SQ + ' = ' + fn(sq(C)) + ' − ' + fn(sq(B)) + ' = ' + fn(sq(C) - sq(B))];
       traps = [[Math.sqrt(sq(C) + sq(B)), 'Le fil est l’hypoténuse : il faut soustraire les carrés.'], [C - B, 'On soustrait les carrés, pas les longueurs.']]; }
+    else if (k === 7){ var hc = rnd(20, 60), hm = cl(hc / 100); A = cl(rnd(30, 90) / 10); hyp(A, hm); u = 'm'; d = 2;
+      q = 'Une rampe d’accès pour fauteuil roulant monte de ' + hc + ' cm sur une distance horizontale de ' + fn(A) + ' m. Quelle est la longueur de la rampe, en mètres, arrondie au centième ?'; ask = 'L';
+      st = ['Même unité d’abord : ' + hc + ' cm = ' + fn(hm) + ' m. La hauteur est verticale, le sol horizontal : la rampe est l’hypoténuse.', 'L' + SQ + ' = ' + fn(A) + SQ + ' + ' + fn(hm) + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(hm)) + ' = ' + fn(sq(A) + sq(hm))];
+      traps = [[Math.sqrt(sq(A) + hc * hc), 'Les deux longueurs doivent être dans la même unité : convertis ' + hc + ' cm en m.'], [cl(A + hm), 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 8){ A = rnd(6, 15); B = rnd(3, 9); hyp(A, B); u = 'm';
+      q = 'Un câble relie le haut d’un mât vertical de ' + A + ' m à un piquet planté dans le sol horizontal, à ' + B + ' m du pied du mât. Quelle est la longueur du câble, arrondie au dixième ?'; ask = 'L';
+      st = ['Le mât est vertical, le sol horizontal : le câble est l’hypoténuse.', 'L' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[A + B, 'On additionne les carrés, pas les longueurs.']]; }
+    else if (k === 9){ var W = 2 * rnd(3, 6), hw = W / 2; C = cl(hw + rnd(2, 8) / 2); leg(C, hw); u = 'm';
+      q = 'Le toit d’une maison a la forme d’un triangle isocèle : la façade mesure ' + W + ' m de large et chaque pan du toit mesure ' + fn(C) + ' m. Quelle est la hauteur du toit (du milieu de la façade jusqu’au sommet), arrondie au dixième ?'; ask = 'h';
+      st = ['La hauteur tombe au milieu de la façade et lui est perpendiculaire : on obtient un triangle rectangle de côtés ' + hw + ' m (moitié de ' + W + ' m) et h, d’hypoténuse le pan du toit.', fn(C) + SQ + ' = h' + SQ + ' + ' + hw + SQ, 'h' + SQ + ' = ' + fn(sq(C)) + ' − ' + sq(hw) + ' = ' + fn(sq(C) - sq(hw))];
+      traps = [[Math.sqrt(sq(C) - sq(W)), 'La hauteur tombe au milieu de la façade : utilise la moitié de la largeur, ' + hw + ' m.'], [Math.sqrt(sq(C) + sq(hw)), 'Le pan du toit est l’hypoténuse : il faut soustraire les carrés.']]; }
+    else if (k === 10){ var t2 = pick([[3, 4, 5, 4], [3, 4, 5, 5], [3, 4, 5, 6], [5, 12, 13, 2], [8, 15, 17, 1], [6, 8, 10, 2]]); A = t2[1] * t2[3]; B = t2[0] * t2[3]; C = t2[2] * t2[3]; d = undefined; x = B; u = 'cm';
+      q = 'L’écran rectangulaire d’une tablette a une diagonale de ' + C + ' cm et une largeur de ' + A + ' cm. Calcule sa hauteur.'; ask = 'h';
+      st = ['Les côtés de l’écran sont perpendiculaires : la diagonale est l’hypoténuse.', C + SQ + ' = ' + A + SQ + ' + h' + SQ, 'h' + SQ + ' = ' + fn(C * C) + ' − ' + fn(A * A) + ' = ' + fn(B * B)];
+      traps = [[Math.sqrt(C * C + A * A), 'La diagonale est l’hypoténuse : il faut soustraire les carrés.'], [C - A, 'On soustrait les carrés, pas les longueurs.']]; }
+    else if (k === 11){ A = rnd(30, 80); B = rnd(15, 45); var dg = Math.sqrt(sq(A) + sq(B)); x = A + B - dg; d = 0; u = 'm';
+      q = 'Pour traverser une pelouse rectangulaire de ' + A + ' m sur ' + B + ' m, Léa coupe en diagonale au lieu de longer deux côtés. Combien de mètres gagne-t-elle ? Arrondis au mètre.'; ask = 'gain';
+      st = ['La diagonale est l’hypoténuse : d' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B)) + ', donc d = √' + fn(sq(A) + sq(B)) + ' ≈ ' + fn(rd(dg, 2)) + ' m.', 'En longeant deux côtés : ' + A + ' + ' + B + ' = ' + (A + B) + ' m.', 'gain ≈ ' + (A + B) + ' − ' + fn(rd(dg, 2)) + ' ≈ ' + fn(rd(x, 0)) + ' m'];
+      v = rd(x, 0); traps = [[rd(dg, 0), 'Tu as calculé la diagonale : il reste à la comparer au trajet le long des deux côtés.'], [A + B, 'C’est le trajet le long des côtés : calcule la diagonale, puis la différence.']];
+      return numQ({q: q, lab: 'gain ≈', unit: u, v: v, x: x, d: 0, traps: traps, steps: st, key: 'k' + k}); }
+    else if (k === 12){ A = rnd(40, 150); B = rnd(6, 25); hyp(A, B); u = 'm'; d = pick([0, 1]);
+      q = 'Le câble d’une tyrolienne part du haut d’une plateforme de ' + B + ' m et arrive au sol, à ' + A + ' m de la plateforme (mesurés horizontalement). On suppose le câble bien tendu. Quelle est sa longueur, arrondie ' + ARR[d] + ' ?'; ask = 'L';
+      st = ['La plateforme est verticale, le sol horizontal : le câble est l’hypoténuse.', 'L' + SQ + ' = ' + A + SQ + ' + ' + B + SQ + ' = ' + fn(sq(A)) + ' + ' + fn(sq(B)) + ' = ' + fn(sq(A) + sq(B))];
+      traps = [[A + B, 'On additionne les carrés, pas les longueurs.']]; }
     var s2 = cl(x * x);
     if (d === undefined){ v = cl(x); st.push(ask + ' = ' + sqrtTxt(s2) + ' = ' + fn(v) + ' ' + u); }
     else { v = rd(x, d); st.push(ask + ' = ' + sqrtTxt(s2) + ' ≈ ' + fn(v) + ' ' + u + ' (' + ARR[d] + ')'); }
     traps.push([s2, 'Tu as trouvé le carré de la longueur : il reste à prendre la racine carrée.']);
-    return numQ({q: q, lab: ask + (d === undefined ? ' =' : ' ≈'), unit: u, v: v, x: x, d: d, traps: traps, steps: st, key: q}); }}
+    return numQ({q: q, lab: ask + (d === undefined ? ' =' : ' ≈'), unit: u, v: v, x: x, d: d, traps: traps, steps: st, key: 'k' + k}); }}
 ];
 var NOTIONS = [
   {n: 'N04', t: 'Utiliser le théorème de Pythagore pour calculer une longueur', r: 'si ABC est rectangle en A, alors BC² = AB² + AC². On cherche l’hypoténuse : on additionne les carrés ; un côté de l’angle droit : on soustrait.'}
@@ -326,7 +351,7 @@ function menu(focus){
     EX.filter(function(x){ return x.n === no.n; }).sort(function(a, b){ return a.lv - b.lv; }).forEach(function(x){
       var b = el('button', 'tile'); b.type = 'button';
       b.appendChild(lvl(x.lv)); b.appendChild(el('b', null, x.t)); b.appendChild(el('span', 'd', x.d));
-      var r = best(x.id); if (r) b.appendChild(el('span', 'rec', 'Meilleur score : ' + r + ' / ' + N + (r === N ? ' ✓' : '')));
+      var r = best(x.id), nq = x.nq || N; if (r) b.appendChild(el('span', 'rec', 'Meilleur score : ' + r + ' / ' + nq + (r === nq ? ' ✓' : '')));
       b.onclick = function(){ location.hash = x.id; };
       g.appendChild(b);
     });
@@ -339,10 +364,12 @@ function run(x){
   var p = el('section', 'panel'), ph = el('div', 'ph'), no = NOTIONS.filter(function(z){ return z.n === x.n; })[0];
   ph.appendChild(el('p', 'kick', x.n + ' · ' + no.t)); ph.appendChild(el('h2', null, x.t)); ph.appendChild(lvl(x.lv)); p.appendChild(ph);
   p.appendChild(el('p', 'consigne', x.c)); p.appendChild(el('p', 'aide', '💡 ' + x.a));
-  var items = el('div', 'items'), qs = [], seen = {};
-  for (var i = 0; i < N; i++) qs.push(item(i));
+  var NQ = x.nq || N, items = el('div', 'items'), qs = [], seen = {};
+  (x.last || []).forEach(function(k){ seen[k] = 1; });          // pas les mêmes situations que la série précédente
+  for (var i = 0; i < NQ; i++) qs.push(item(i));
+  x.last = qs.map(function(Q){ return Q.key || Q.q; });
   function item(i){
-    var Q, k = 0; do { Q = x.g(); } while (seen[Q.key || Q.q] && ++k < 30); seen[Q.key || Q.q] = 1;
+    var Q, k = 0; do { Q = x.g(); } while (seen[Q.key || Q.q] && ++k < 80); seen[Q.key || Q.q] = 1;
     var it = el('div', 'item'), q = el('div', 'q'); q.appendChild(el('span', 'nm', (i + 1) + '.')); q.appendChild(document.createTextNode(Q.q));
     it.appendChild(q);
     if (Q.svg){ var fw = el('div', 'figw'); fw.innerHTML = Q.svg; it.appendChild(fw); }   // SVG produit par la page elle-même
@@ -394,9 +421,9 @@ function run(x){
       if (ok || (Q.type === 'ch' && !blank)) { Q.done = true; Q.ok = ok; if (Q.f) Q.f.disabled = ok; }
       score += ok ? 1 : 0;
     });
-    res.hidden = false; res.className = 'res ' + (score === N ? 'ok' : score >= 3 ? 'mid' : 'ko');
-    res.textContent = score + ' / ' + N + (score === N ? ' : parfait !' : '');
-    res.appendChild(el('small', null, score === N ? 'Tu peux passer à l’exercice suivant ou faire une nouvelle série.' : 'Corrige les réponses en rouge puis clique à nouveau sur « Vérifier », ou lis la correction.'));
+    res.hidden = false; res.className = 'res ' + (score === NQ ? 'ok' : score >= NQ / 2 ? 'mid' : 'ko');
+    res.textContent = score + ' / ' + NQ + (score === NQ ? ' : parfait !' : '');
+    res.appendChild(el('small', null, score === NQ ? 'Tu peux passer à l’exercice suivant ou faire une nouvelle série.' : 'Corrige les réponses en rouge puis clique à nouveau sur « Vérifier », ou lis la correction.'));
     if (score > best(x.id)) store(SKEY + x.id, String(score));
     res.scrollIntoView({block: 'nearest'});
   }
