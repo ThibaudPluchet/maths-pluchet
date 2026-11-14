@@ -329,6 +329,10 @@ details.notion[open] .fcount{display:none}
 <script src="lib/sitetabs.js"></script>
 <script>
 function start(D){
+  // Accès enseignant : FULL = tous les documents (« Toutes les 3e / 4e ») ; PUB = données publiques du site,
+  // pour qu'un clic sur une classe montre exactement ce que voient ses élèves.
+  var FULL = D, PUB = D.pub || null;
+  if (PUB){ PUB.prof = true; PUB.classes = FULL.classes; delete FULL.pub; }
   var picker = document.getElementById('picker'), main = document.getElementById('main');
   var GROUPS = [
     {key:'comprendre', title:'Comprendre', cls:'g1', types:['activite','cours','video']},
@@ -349,7 +353,7 @@ function start(D){
   if (locked){ picker.parentNode.hidden = true; document.title = 'Maths ' + locked + ' – M. Pluchet'; }
   if (D.prof){
     document.title = 'Maths – accès enseignant';
-    var pn = el('p', 'profnote', 'Accès enseignant : tous les documents de la page enseignant, que les cases soient cochées ou non. « Toutes les 4e / 3e » montre tout le niveau ; une classe montre ses propres sujets d’évaluation.');
+    var pn = el('p', 'profnote', 'Accès enseignant : « Toutes les 4e / 3e » montre tous les documents de la page enseignant, que les cases soient cochées ou non. Une classe montre exactement ce que voient ses élèves (sauf les corrections de fiches d’exercices, réservées à l’adresse de la classe).');
     picker.insertBefore(pn, picker.firstChild);   // dans la colonne du site (même largeur que le reste)
   }
   // Adresse de la page (avec la classe) gardée pour le bouton « Retour » des exerciseurs
@@ -424,6 +428,7 @@ function start(D){
     stat((levelOf(current) || '') + ' ' + (code ? code.textContent : '') + ' · ' + lab, lab + ' (' + current + ')', true);
   });
   function render(){
+    D = (PUB && current && !FULL.classes[current]) ? PUB : FULL;
     if (window.stat && counted !== current){ counted = current; stat(current ? '/' + current : '/', current ? 'Classe ' + current : 'Accueil sans classe'); }
     [].forEach.call(picker.querySelectorAll('.pill'), function(b){ b.setAttribute('aria-pressed', b.dataset.c === current); });
     main.innerHTML = '';
@@ -744,7 +749,7 @@ function start(D){
     if (total > mine.length) intro.appendChild(el('p','dnbmore', '🔒 ' + (total - mine.length) + ' autre' + (total - mine.length > 1 ? 's parties apparaîtront' : ' partie apparaîtra') + ' au fil de l’année, quand vous aurez fait en classe les notions qu’elles demandent.'));
     main.appendChild(intro);
     // Sujets complets et corrigés complets : 3e (et vue enseignant) ; en 4e, élèves : seules les parties déjà au programme
-    var sujets = (lv === '3e' || D.prof) ? (B.sujets || []) : [], SK = 'Sujets complets';
+    var sujets = (lv === '3e' || allMode()) ? (B.sujets || []) : [], SK = 'Sujets complets';
     if (!mine.length && !sujets.length){ main.appendChild(el('div','empty','Pas encore d’exercice de brevet pour la ' + current + ' : ils arrivent quand les notions sont faites en classe.')); return; }
     var titles = (B.seqs || {})[lv] || {}, seen = {};
     try { seen = JSON.parse(localStorage.getItem('mp:dnbvu') || '{}'); } catch(e){}
@@ -883,6 +888,7 @@ function addSecret(D){
         }); }); });
         // catalogue du brevet (parties, sujets complets) : toujours celui du data.json public, le plus récent
         if (D.encours) got.encours = D.encours;
+        got.pub = D;
         if (D.dnb && D.dnb.parts){ got.dnb = got.dnb || {}; got.dnb.parts = D.dnb.parts; got.dnb.seqs = got.dnb.seqs || D.dnb.seqs; if (D.dnb.sujets) got.dnb.sujets = D.dnb.sujets; }
         return got; }
       got.forEach(function(it){
