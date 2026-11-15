@@ -143,7 +143,7 @@ window.addEventListener('hashchange', cible); cible();
 if (window.stat) stat('/cahier-vacances' + location.hash, 'Cahier de vacances ' + location.hash);
 })();
 </script>
-<script src="lib/sitetabs.js"></script>
+<script src="lib/sitetabs.js?v=2"></script>
 <script>
 // barre d'onglets seulement pour l'adresse enseignant (onglet « Cahier de vacances » enregistré par index.html)
 (function(){ var l = null; try { l = JSON.parse(localStorage.getItem('mp:tabs') || 'null'); } catch(e){}
