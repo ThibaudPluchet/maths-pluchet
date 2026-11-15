@@ -67,9 +67,9 @@ var EX = [
     else if (t === 1){ q = '? + ' + pf(a) + ' = ' + fr(a + x); st = ['? = ' + fr(a + x) + ' ' + MINUS + ' ' + pf(a) + ' = ' + fr(x) + '.']; }
     else { q = '? ' + MINUS + ' ' + pf(a) + ' = ' + fr(x - a); st = ['? = ' + fr(x - a) + ' + ' + pf(a) + ' = ' + fr(x) + '.']; }
     return {type: 'num', q: q.replace(/^\(([^)]*)\)/, '$1'), v: x, steps: st.concat(['Vérification : on remplace ? par ' + fr(x) + ' et on retrouve l’égalité.'])}; }},
- {id: 'n01d', lv: 2, n: 'N01', t: 'Suites d’additions et de soustractions', d: '3 à 5 nombres, entiers ou décimaux.', c: 'Calcule.', a: 'Transforme les soustractions en additions de l’opposé, puis regroupe les positifs d’un côté et les négatifs de l’autre.',
-  g: function(){ var k = rnd(3, 5), dec = Math.random() < 0.3, T = [], ops = [], s = 0;
-    for (var i = 0; i < k; i++){ var v = dec ? cl(rnz(-90, 90) / 10) : rnz(-25, 25); T.push(v); ops.push(i ? pick(['+', MINUS]) : '+'); s = cl(s + (ops[i] === '+' ? v : -v)); }
+ {id: 'n01d', lv: 2, n: 'N01', t: 'Suites d’additions et de soustractions', d: '3 à 5 nombres relatifs entiers.', c: 'Calcule.', a: 'Transforme les soustractions en additions de l’opposé, puis regroupe les positifs d’un côté et les négatifs de l’autre.',
+  g: function(){ var k = rnd(3, 5), T = [], ops = [], s = 0;
+    for (var i = 0; i < k; i++){ var v = rnz(-25, 25); T.push(v); ops.push(i ? pick(['+', MINUS]) : '+'); s = cl(s + (ops[i] === '+' ? v : -v)); }
     var q = T.map(function(v, i){ return i ? ' ' + ops[i] + ' ' + pf(v) : fr(v); }).join('') + ' = ?';
     var ad = T.map(function(v, i){ return ops[i] === '+' ? v : cl(-v); }), pos = ad.filter(function(v){ return v > 0; }), neg = ad.filter(function(v){ return v < 0; });
     var sp = cl(pos.reduce(function(a, b){ return a + b; }, 0)), sn = cl(neg.reduce(function(a, b){ return a + b; }, 0));
