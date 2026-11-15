@@ -285,6 +285,15 @@ var E = [
 ];
 function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
 var main = document.getElementById('main');
+// ----- Le cahier en PDF : visible pour l'adresse enseignant, et pour tous du 15 juin au 31 août -----
+(function(){ var d = new Date(), m = d.getMonth();
+  if (!(/^#prof\//.test(location.hash) || (m === 5 && d.getDate() >= 15) || m === 6 || m === 7)) return;
+  var sec = el('section', 'etape'), h = el('h2'); h.appendChild(el('span', 'num', '📘')); h.appendChild(document.createTextNode('Ton cahier en PDF'));
+  sec.appendChild(h); sec.appendChild(el('p', 'theme', 'Tu as perdu ton cahier ou tu veux le refaire ? Ouvre-le ici, puis télécharge-le ou imprime-le.'));
+  var g = el('div', 'res'), a = el('a', 'corr', '📄 Ouvrir le cahier de vacances (PDF)');
+  a.href = 'voir.html?v=3&f=' + encodeURIComponent('vacances/mission-seconde-3e-2nde.pdf') + '&t=' + encodeURIComponent('Mission Seconde – cahier de vacances 3e → 2de'); a.target = '_blank'; a.rel = 'noopener';
+  a.onclick = function(){ if (window.stat) stat('vacances · cahier PDF 3e', 'Cahier de vacances 3e (PDF)', true); };
+  g.appendChild(a); var dv = el('div', 'seance'); dv.appendChild(g); sec.appendChild(dv); main.appendChild(sec); })();
 E.forEach(function(e){
   var sec = el('section', 'etape'); sec.id = 'etape' + e.n;
   var h = el('h2'); h.appendChild(el('span', 'num', String(e.n))); h.appendChild(document.createTextNode('Étape ' + e.n + ' · ' + e.lieu));
@@ -373,11 +382,13 @@ window.addEventListener('hashchange', cible); cible();
 if (window.stat) stat('/cahier-vacances' + location.hash, 'Cahier de vacances ' + location.hash);
 })();
 </script>
-<script src="lib/sitetabs.js?v=2"></script>
+<script src="lib/sitetabs.js?v=3"></script>
 <script>
-// barre d'onglets seulement pour l'adresse enseignant (onglet « Cahier de vacances » enregistré par index.html)
+// barre d'onglets : adresse enseignant, ou élèves quand index.html a enregistré l'onglet « Cahier de vacances » (15 juin – 31 août)
 (function(){ var l = null; try { l = JSON.parse(localStorage.getItem('mp:tabs') || 'null'); } catch(e){}
-  if (/^#prof\//.test(location.hash) && Array.isArray(l) && l.some(function(t){ return t[0] === 'vacances'; })) SiteTabs.mount(document.getElementById('tabsat'), 'vacances'); })();
+  if (!Array.isArray(l)) return;
+  var k = l.some(function(t){ return t[0] === 'vacances'; }) ? 'vacances' : l.some(function(t){ return t[0] === 'vacances'; }) ? 'vacances' : '';
+  if (k && (/^#prof\//.test(location.hash) || /^#[0-9a-zA-Z]+\//.test(location.hash))) SiteTabs.mount(document.getElementById('tabsat'), k); })();
 </script>
 </body>
 </html>

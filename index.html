@@ -326,7 +326,7 @@ details.notion[open] .fcount{display:none}
 <nav class="picker" aria-label="Ma classe"><div class="wrap picker-row" id="picker"></div></nav>
 <main class="wrap" id="main"></main>
 <footer class="wrap">Les documents apparaissent ici au fur et à mesure qu'ils sont distribués en classe. Vidéos : Yvan Monka. · Mesure d’audience anonyme, sans cookie (GoatCounter).</footer>
-<script src="lib/sitetabs.js?v=2"></script>
+<script src="lib/sitetabs.js?v=3"></script>
 <script>
 function start(D){
   // Accès enseignant : FULL = tous les documents (« Toutes les 3e / 4e ») ; PUB = données publiques du site,
@@ -458,8 +458,10 @@ function start(D){
     dms.forEach(function(d){ all.push({href: d.href}); if (d.anim) all.push({href: d.anim}); });
     if (!full.length && !dms.length){ main.appendChild(el('div','empty','Aucun document pour la ' + current + ' pour le moment.')); return; }
 
+    // cahier de vacances : onglet ouvert aux élèves de 3e (→ 2de) et de 4e (→ 3e) du 15 juin au 31 août
+    function vacOuvert(){ var d = new Date(), m = d.getMonth(); return (m === 5 && d.getDate() >= 15) || m === 6 || m === 7; }
     var up = upcoming(lv);
-    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(dms.length ? [['dm','DM']] : []).concat((D.dnb && D.dnb.parts && D.dnb.parts.length) ? [['brevet','Exercices DNB']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes'], ['lexique','Lexique'], ['curio','Curiosités']]).concat(D.prof ? [['vacances','Cahier de vacances']] : []);
+    var tlist = [['cours','Mes cours'],['evals','Évaluations']].concat(dms.length ? [['dm','DM']] : []).concat((D.dnb && D.dnb.parts && D.dnb.parts.length) ? [['brevet','Exercices DNB']] : []).concat([['auto', lv === '3e' ? 'Automatismes DNB' : 'Automatismes'], ['lexique','Lexique'], ['curio','Curiosités']]).concat(D.prof ? [['vacances','Cahier de vacances']] : (vacOuvert() && (lv === '3e' || lv === '4e')) ? [[lv === '4e' ? 'vacances4e' : 'vacances','Cahier de vacances']] : []);
     if (!tlist.some(function(t){ return t[0] === view; })) view = 'cours';
     document.body.setAttribute('data-view', view);
     var ec0 = enCours(seqs); classSeq = ec0 ? ec0.s.num : (full.length ? full[0].num : 0);
