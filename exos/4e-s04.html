@@ -94,7 +94,7 @@ var EX = [
  {id: 'n09b', lv: 1, n: 'N09', t: 'Carrés et racines carrées', d: 'Les calculs de base, de tête ou à la calculatrice.',
   c: 'Calcule. Quand on te demande un arrondi, utilise la calculatrice.', a: 'Le carré de a est a² = a × a. La racine carrée de a (a positif) est le nombre positif dont le carré est a : √49 = 7 car 7² = 49.',
   g: function(){ var k = rnd(0, 4), n, q, v, st, d, x, traps = [];
-    if (k === 0){ n = pick([rnd(2, 15), rnd(2, 15), 20, 30, 0.5, 1.5, 2.5, 0.1, 1.2, 0.3]); q = fn(n) + SQ; v = sq(n); st = [fn(n) + SQ + ' = ' + fn(n) + ' × ' + fn(n) + ' = ' + fn(v)]; traps = [[cl(2 * n), 'a² = a × a, pas 2 × a.']]; }
+    if (k === 0){ n = pick([rnd(2, 15), rnd(2, 15), -rnd(2, 15), -rnd(2, 15), pick([20, 30, -20, -30])]); var nt = n < 0 ? '(' + fn(n) + ')' : fn(n); q = nt + SQ; v = n * n; st = [nt + SQ + ' = ' + nt + ' × ' + nt + ' = ' + fn(v) + (n < 0 ? ' (moins par moins donne plus)' : '')]; traps = [[2 * n, 'a² = a × a, pas 2 × a.'], [-v, 'Un carré n’est jamais négatif : ' + nt + ' × ' + nt + ' est positif.']]; }
     else if (k <= 2){ n = pick([rnd(1, 15), rnd(1, 15), 20, 30, 0.5, 1.5, 1.2, 0.3]); var s = sq(n); q = sqrtTxt(s); v = n; st = [sqrtTxt(s) + ' = ' + fn(n) + ' car ' + fn(n) + SQ + ' = ' + fn(s)]; traps = [[cl(s / 2), 'La racine carrée n’est pas la moitié : cherche le nombre dont le carré vaut ' + fn(s) + '.']]; }
     else { do { n = rnd(2, 150); } while (isInt(Math.sqrt(n))); d = pick([1, 1, 2, 0]); x = Math.sqrt(n); v = rd(x, d); q = sqrtTxt(n) + ' (arrondi ' + ARR[d] + ')';
       st = [sqrtTxt(n) + ' ≈ ' + fn(rd(x, 4)) + '… ≈ ' + fn(v) + ' (' + ARR[d] + ')']; traps = [[cl(n / 2), 'La racine carrée n’est pas la moitié du nombre.']]; }
