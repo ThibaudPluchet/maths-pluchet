@@ -72,6 +72,15 @@ header.wrap .sitetabs{margin:0 0 18px}
 .res a:hover{border-color:currentColor}
 .res span.soon{color:var(--muted);font-weight:400;font-style:italic;background:transparent;border-style:dashed}
 .bientot{color:var(--muted);font-style:italic;margin:4px 0 0}
+.mdp{margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--soft);display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.mdp label{font-weight:700;flex-basis:100%}
+.mdp input{font:700 20px/1 "Atkinson Hyperlegible",monospace;letter-spacing:.25em;text-transform:uppercase;width:11em;max-width:100%;padding:9px 12px;border-radius:9px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.mdp input:focus{border-color:var(--accent);outline:none}
+.mdp button{font:700 16px "Atkinson Hyperlegible",sans-serif;padding:10px 16px;border-radius:9px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer;min-height:44px}
+.mdp .msg{flex-basis:100%;font-weight:700;min-height:1.4em}
+.mdp .msg.ok{color:#1e7a46} .mdp .msg.ko{color:var(--g4)}
+@media (prefers-color-scheme: dark){ .mdp .msg.ok{color:#6fd39a} }
+.etape h2 .valide{font:700 13px "Atkinson Hyperlegible",sans-serif;background:#1e7a46;color:#fff;border-radius:999px;padding:3px 10px;margin-left:10px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -87,12 +96,14 @@ header.wrap .sitetabs{margin:0 0 18px}
 <script>
 (function(){
 // ----- Contenu : une entrée par étape, une liste de ressources par séance -----
+// mdp : empreinte SHA-256 du mot de passe de l'étape, en majuscules sans accent (le mot lui-même n'apparaît pas dans la page)
 // type : "video" (Digiview), "exo" (exercices interactifs du site), "anim" (animation du site) ; pas de lien = « bientôt »
 var E = [
  {n:1, lieu:"Cany", theme:"Fractions, priorités, puissances — un pas vers la 2de : les ensembles de nombres", seances:null},
  {n:2, lieu:"Veulettes", theme:"Racines carrées, notation scientifique — un pas vers la 2de : calculer avec les racines", seances:null},
  {n:3, lieu:"Fécamp", theme:"Développer, factoriser, identités remarquables", seances:null},
- {n:4, lieu:"Étretat", theme:"Le secret de l’Aiguille creuse : équations, inéquations et premiers intervalles", seances:[
+ {n:4, lieu:"Étretat", theme:"Le secret de l’Aiguille creuse : équations, inéquations et premiers intervalles",
+  mdp:"c500c127600ba2a48a44284bcfb1f6448bdc5caea2fe180cf57942d7f61d1d03", seances:[
    {t:"Séance 1 · Résoudre une équation", r:[
      {type:"video", t:"Vidéo : tester une solution", u:"https://ladigitale.dev/digiview/#/v/04b302f985c7ed2f"},
      {type:"video", t:"Vidéo : résoudre une équation", u:"https://ladigitale.dev/digiview/#/v/db1a724f21e11d4c"},
@@ -131,9 +142,43 @@ E.forEach(function(e){
     });
     d.appendChild(g); sec.appendChild(d);
   });
+  if (e.mdp) sec.appendChild(formMdp(e, h));
   main.appendChild(sec);
 });
 document.getElementById('back').href = 'index.html' + (/^#etape/.test(location.hash) ? '' : location.hash);
+// ----- Vérification du mot de passe de Lupin -----
+function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){ return null; } }
+function norm(t){ return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z]/g, ''); }
+function sha(t){
+  if (!(window.crypto && crypto.subtle)) return Promise.reject();
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function(b){
+    return Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); });
+}
+function badge(h){ if (!h.querySelector('.valide')) h.appendChild(el('span', 'valide', '✔ Étape validée')); }
+function formMdp(e, h){
+  var f = el('form', 'mdp'), id = 'mdp' + e.n;
+  var lab = el('label', null, '🔑 Ton mot de passe de l’étape ' + e.n + ' : tape-le pour vérifier'); lab.htmlFor = id;
+  var inp = el('input'); inp.id = id; inp.autocomplete = 'off'; inp.spellcheck = false; inp.maxLength = 20; inp.placeholder = '• • • • •';
+  var bt = el('button', null, 'Vérifier'); bt.type = 'submit';
+  var msg = el('p', 'msg'); msg.setAttribute('role', 'status');
+  f.appendChild(lab); f.appendChild(inp); f.appendChild(bt); f.appendChild(msg);
+  if (store('mp:vac' + e.n) === '1') badge(h);
+  f.onsubmit = function(ev){
+    ev.preventDefault();
+    var t = norm(inp.value);
+    if (!t){ msg.className = 'msg ko'; msg.textContent = 'Tape d’abord ton mot de passe !'; return; }
+    sha(t).then(function(x){
+      if (x === e.mdp){
+        msg.className = 'msg ok'; msg.textContent = 'Bravo, c’est le bon mot de passe ! L’étape ' + e.n + ' est validée. Rendez-vous à l’étape suivante.';
+        store('mp:vac' + e.n, '1'); badge(h);
+        if (window.stat) stat('vacances · étape ' + e.n + ' validée', 'Cahier de vacances : étape ' + e.n + ' validée', true);
+      } else {
+        msg.className = 'msg ko'; msg.textContent = 'Ce n’est pas encore ça… Vérifie chaque lettre-clé : retourne voir la séance dont la lettre « coince ».';
+      }
+    }, function(){ msg.className = 'msg ko'; msg.textContent = 'Vérification impossible sur ce navigateur.'; });
+  };
+  return f;
+}
 function cible(){
   var m = location.hash.match(/^#etape(\d)/);
   document.querySelectorAll('.etape').forEach(function(s){ s.classList.remove('cible'); });
