@@ -51,15 +51,35 @@ var EX = [
   g: function(){ var k = rnd(3, 49), e = pick([-2, -1, 1, 2, 3, -3]), base = pick([10, 100, 1000]), m = base + e;
     if (base === 10 && Math.abs(e) > 2) return this.g(); var v = k * m;
     return {type: 'num', q: k + ' × ' + fr(m) + ' = ?', v: v, steps: [k + ' × ' + fr(m) + ' = ' + k + ' × (' + base + (e > 0 ? ' + ' : ' ' + MINUS + ' ') + Math.abs(e) + ') = ' + fr(k * base) + (e > 0 ? ' + ' : ' ' + MINUS + ' ') + Math.abs(k * e) + ' = ' + fr(v) + '.']}; }},
- {id: 'n06d', lv: 3, n: 'N06', nq: 4, t: 'Développer puis réduire une somme', d: 'Deux parenthèses, signe − devant.', c: 'Développe et réduis.', a: 'Développe chaque produit séparément, en gardant le signe devant chaque facteur (−2(x − 4) = −2x + 8), puis regroupe les termes en x et les nombres.',
-  g: function(){ var k1 = nz(7), a1 = nz(6), b1 = nz(9), k2 = rnd(2, 7), a2 = nz(6), b2 = nz(9), op = pick(['+', MINUS]), xk = Math.random() < 0.3;
-    var K1 = xk ? {1: pick([1, 2, 3])} : {0: Math.abs(k1)}, P1 = pmul(K1, {1: a1, 0: b1}), s = op === '+' ? 1 : -1, P2 = pmul({0: s * k2}, {1: a2, 0: b2}), P = padd(P1, P2, 1);
-    var k1t = xk ? mono(K1[1], 1) : fr(Math.abs(k1));
-    var q = k1t + '(' + lin(a1, b1) + ') ' + op + ' ' + k2 + '(' + lin(a2, b2) + ')';
-    if (!Object.keys(P).length) return this.g();
-    var P2k = pmul({0: k2}, {1: a2, 0: b2}), TT = [[P1[2] || 0, 2], [P1[1] || 0, 1], [P1[0] || 0, 0], [P2[1], 1], [P2[0], 0]].filter(function(t){ return t[0]; });
-    return {type: 'expr', mode: 'dev', q: 'C = ' + q, lab: 'C =', P: P, steps: ['C = ' + poly(P1) + ' ' + op + ' (' + poly(P2k) + ')', 'C = ' + terms(TT), 'C = ' + poly(P)],
-      traps: op === MINUS ? [[padd(P1, pmul({0: -k2}, {1: a2, 0: -b2}), 1), 'Le signe − devant ' + k2 + ' s’applique aussi au deuxième terme de la parenthèse.']] : []}; }}
+ {id: 'n06d', lv: 3, n: 'N06', nq: 4, t: 'Développer puis réduire une somme', d: 'Une à trois parenthèses, signe − devant.', c: 'Développe et réduis.', a: 'Développe chaque produit séparément, en gardant le signe devant chaque facteur (−2(x − 4) = −2x + 8), puis regroupe les termes de même nature : les x², les x, les nombres.',
+  g: function(){
+    var np = pick([1, 1, 1, 2, 2, 3, 3]), nl = np === 1 ? rnd(1, 2) : np === 2 ? pick([0, 0, 1]) : pick([0, 0, 0, 1]), xi = Math.random() < 0.35 ? rnd(0, np - 1) : -1;
+    var parts = [], i;
+    for (i = 0; i < np; i++){
+      var kx = i === xi, m = kx ? 2 : pick([2, 2, 2, 3]), D = m === 3 ? shuffle([2, 1, 0]) : (Math.random() < 0.75 ? [1, 0] : [0, 1]);
+      var IN = D.map(function(d){ return [d === 2 ? pick([1, 1, -1, 2, -2, 3]) : nz(9), d]; });
+      var k = kx ? pick([1, 1, 2, 3, -1, -2]) : nz(9);
+      parts.push({t: 'p', k: k, kx: kx, IN: IN});
+    }
+    for (i = 0; i < nl; i++) parts.splice(rnd(0, parts.length), 0, {t: 'l', T: [nz(12), pick([1, 0, 0])]});
+    var P = {}, q = '', dev = [], TT = [], sub = null;
+    parts.forEach(function(o, j){
+      if (o.t === 'l'){ var c = o.T[0]; q += j ? (c < 0 ? ' ' + MINUS + ' ' : ' + ') + mono(Math.abs(c), o.T[1]) : mono(c, o.T[1]);
+        dev.push(j ? (c < 0 ? MINUS + ' ' : '+ ') + mono(Math.abs(c), o.T[1]) : mono(c, o.T[1])); TT.push(o.T); P = padd(P, (function(){ var z = {}; z[o.T[1]] = c; return z; })(), 1); return; }
+      var KP = o.kx ? {1: o.k} : {0: o.k}, IP = {}; o.IN.forEach(function(t){ IP[t[1]] = t[0]; });
+      var R = pmul(KP, IP), ka = Math.abs(o.k), kt = o.kx ? mono(ka, 1) : fr(ka), inner = '(' + terms(o.IN) + ')';
+      if (j === 0) q += (o.k < 0 ? MINUS : '') + kt + inner; else q += (o.k < 0 ? ' ' + MINUS + ' ' : ' + ') + kt + inner;
+      var Rabs = pmul(KP, IP); if (o.k < 0) Rabs = pmul({0: -1}, Rabs);
+      if (o.k < 0 && j > 0){ dev.push(MINUS + ' (' + poly(Rabs) + ')'); if (!sub) sub = {R: R, IN: o.IN, KP: KP}; }
+      else { var pr = poly(R); dev.push(j ? (pr.charAt(0) === MINUS ? MINUS + ' ' + pr.slice(1) : '+ ' + pr) : pr); }
+      [4, 3, 2, 1, 0].forEach(function(d){ if (R[d]) TT.push([R[d], d]); });
+      P = padd(P, R, 1);
+    });
+    var nd = Object.keys(P).length;
+    if (!nd || TT.length <= nd + 1 || q.length > 60) return this.g();     // il doit y avoir vraiment des termes à regrouper
+    var traps = [];
+    if (sub){ var W = {}; sub.IN.forEach(function(t, n){ W[t[1]] = n ? -t[0] : t[0]; }); traps.push([padd(padd(P, sub.R, -1), pmul(sub.KP, W), 1), 'Le signe − devant la parenthèse s’applique à tous les termes de la parenthèse.']); }
+    return {type: 'expr', mode: 'dev', q: 'C = ' + q, lab: 'C =', P: P, key: q, steps: ['C = ' + dev.join(' '), 'C = ' + terms(TT), 'C = ' + poly(P)].filter(function(z, n, A){ return !n || z !== A[n - 1]; }), traps: traps}; }}
 ];
 function fact(k, a, b, kx){ // k(ax+b) avec k entier (ou kx : facteur k·x)
   var P = pmul(kx ? {1: k} : {0: k}, {1: a, 0: b}), kt = kx ? mono(k, 1) : fr(k), s = kt + '(' + lin(a, b) + ')';
