@@ -130,10 +130,6 @@ EX.push(
       ['0 ÷ (' + MINUS + b + ') = 0', true, '0 divisé par un nombre non nul donne 0.'],
       ['(' + MINUS + b + ') ÷ (' + MINUS + b + ') = ' + MINUS + '1', false, 'Un nombre non nul divisé par lui-même donne 1.']];
     var i = rnd(0, L.length - 1), p = L[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
- {id: 'n03c', lv: 2, n: 'N03', t: 'Quotients décimaux', d: 'Résultat décimal.', c: 'Calcule (résultat exact).', a: 'Le signe d’abord, puis la division des distances à zéro, posée si besoin.',
-  g: function(){ var b = pick([2, 4, 5, 8, 10, 20, 25]), x = cl(rnz(-99, 99) / pick([10, 100, 4, 2])); var a = cl(b * x); if (M.isInt(x) || Math.abs(a) > 300 || !M.isInt(a * 10)) return this.g();
-    var sb = pick([1, -1]), B = b * sb, X = cl(x * sb);
-    return {type: 'num', q: (a < 0 ? '(' + fr(a) + ')' : fr(a)) + ' ÷ ' + pf(B) + ' = ?', v: X, steps: [(a * B > 0 ? 'Même signe : positif.' : 'Signes contraires : négatif.'), fr(Math.abs(a)) + ' ÷ ' + Math.abs(B) + ' = ' + fr(Math.abs(X)) + ', donc ' + fr(X) + '.'], traps: [[-X, 'Attention au signe.']]}; }},
  {id: 'n03d', lv: 2, n: 'N03', t: 'Nombre manquant', d: 'Dividende ou diviseur.', c: 'Trouve le nombre manquant.', a: '? ÷ b = c donne ? = c × b. a ÷ ? = c donne ? = a ÷ c.',
   g: function(){ var b = rnz(-9, 9), c = rnz(-12, 12); if (Math.abs(b) < 2 || Math.abs(c) < 2) return this.g(); var a = b * c, t = Math.random() < 0.5;
     return t ? {type: 'num', q: '? ÷ ' + pf(b) + ' = ' + fr(c), v: a, steps: ['? = ' + fr(c) + ' × ' + pf(b) + ' = ' + fr(a) + '.']} : {type: 'num', q: (a < 0 ? '(' + fr(a) + ')' : fr(a)) + ' ÷ ? = ' + fr(c), v: b, steps: ['? = ' + fr(a) + ' ÷ ' + pf(c) + ' = ' + fr(b) + '.']}; }},
