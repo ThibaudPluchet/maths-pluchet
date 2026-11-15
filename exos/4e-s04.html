@@ -189,12 +189,11 @@ var EX = [
     return numQ({q: q, lab: ask + (d === undefined ? ' =' : ' ≈'), unit: u, v: v, x: x, d: d, traps: traps, steps: st, key: 'k' + k}); }}
 ];
 EX.push(
- {id: 'n09a', lv: 1, n: 'N09', t: 'Carrés parfaits', d: 'Reconnaître les carrés de 0 à 15².', c: 'Ce nombre est-il un carré parfait (le carré d’un nombre entier) ?', a: 'Les carrés parfaits jusqu’à 225 : 0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225.',
-  g: function(){ var yes = Math.random() < 0.5, n, r; if (yes){ r = rnd(2, 15); n = r * r; } else { do { n = rnd(10, 230); } while (isInt(Math.sqrt(n))); r = Math.floor(Math.sqrt(n)); }
-    return {type: 'ch', q: fn(n) + ' est-il un carré parfait ?', ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: [yes ? fn(n) + ' = ' + r + ' × ' + r + ' = ' + r + SQ + '.' : r + SQ + ' = ' + r * r + ' et ' + (r + 1) + SQ + ' = ' + (r + 1) * (r + 1) + ' : ' + n + ' est entre les deux, ce n’est pas un carré parfait.'], key: 'c' + n}; }},
- {id: 'n09c', lv: 2, n: 'N09', t: 'Encadrer une racine carrée', d: 'Entre deux entiers consécutifs.', c: 'Complète l’encadrement par deux entiers consécutifs : on te demande le plus petit.', a: 'Cherche les deux carrés parfaits qui entourent le nombre : 49 < 52 < 64, donc 7 < √52 < 8.',
+ {id: 'n09c', lv: 2, n: 'N09', t: 'Encadrer une racine carrée', d: 'Entre deux entiers consécutifs.', c: 'Complète l’encadrement par deux entiers consécutifs.', a: 'Cherche les deux carrés parfaits qui entourent le nombre : 49 < 52 < 64, donc 7 < √52 < 8.',
   g: function(){ var n; do { n = rnd(3, 220); } while (isInt(Math.sqrt(n))); var r = Math.floor(Math.sqrt(n));
-    return {type: 'num', q: '… < ' + RAC + n + ' < …  Quel est l’entier de gauche ?', lab: 'entier :', v: r, steps: [r + SQ + ' = ' + r * r + ' < ' + n + ' < ' + (r + 1) * (r + 1) + ' = ' + (r + 1) + SQ + ', donc ' + r + ' < ' + RAC + n + ' < ' + (r + 1) + '.'], traps: [[r + 1, 'C’est l’entier de droite : on demande le plus petit.'], [Math.round(n / 2), 'La racine carrée n’est pas la moitié du nombre.']], key: 'e' + n}; }},
+    return {type: 'multi', q: 'Encadre ' + RAC + n + ' entre deux entiers consécutifs.', form: [null, ' < ' + RAC + n + ' < ', null], vals: [r, r + 1],
+      check: function(v){ if (v[0] === v[1] - 1 && v[0] * v[0] < n && v[1] * v[1] > n) return ''; if (Math.abs(v[0] - n / 2) < 1 || Math.abs(v[1] - n / 2) < 1) return 'La racine carrée n’est pas la moitié du nombre.'; if (v[0] === v[1] + 1) return 'Les bons entiers, mais dans le mauvais ordre : le plus petit se met à gauche.'; if (v[1] !== v[0] + 1) return 'Les deux entiers doivent être consécutifs (l’un suit l’autre).'; return 'Compare les carrés : ' + v[0] + '² = ' + v[0] * v[0] + ' et ' + v[1] + '² = ' + v[1] * v[1] + '. Cherche les deux carrés qui entourent ' + n + '.'; },
+      steps: [r + SQ + ' = ' + r * r + ' < ' + n + ' < ' + (r + 1) * (r + 1) + ' = ' + (r + 1) + SQ + ', donc ' + r + ' < ' + RAC + n + ' < ' + (r + 1) + '.'], key: 'e' + n}; }},
  {id: 'n09d', lv: 3, n: 'N09', t: 'Vrai ou faux ?', d: 'Les pièges des racines carrées.', c: 'L’affirmation est-elle vraie ou fausse ?', a: '√a est le nombre positif dont le carré est a. Attention : la racine d’une somme n’est pas la somme des racines.',
   g: function(){ var a = rnd(2, 12), b = rnd(2, 9), T = [
     [RAC + (a * a) + ' = ' + a, true, a + SQ + ' = ' + a * a + ' et ' + a + ' est positif.'],

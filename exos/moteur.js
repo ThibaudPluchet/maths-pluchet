@@ -120,6 +120,16 @@ function nDec(s){ s = String(s || '').replace(/\s+/g, '').replace(/[a-zA-Z°²%�
 
 /* ---------- vérification ---------- */
 function checkQ(Q, raw){
+  if (Q.type === 'multi'){
+    var vs = raw.map(function(z){ return String(z || '').trim() ? parseNum(z) : undefined; });
+    if (vs.every(function(z){ return z === undefined; })) return {blank: true};
+    if (vs.some(function(z){ return z === null; })) return {why: 'Je n’arrive pas à lire ta réponse : écris seulement un nombre dans chaque case.'};
+    Q.multiOk = vs.map(function(z, n){ return z !== undefined && Math.abs(z - Q.vals[n]) < 1e-9; });
+    if (Q.multiOk.every(Boolean)) return {ok: true};
+    if (vs.some(function(z){ return z === undefined; })) return {why: 'Remplis toutes les cases.'};
+    if (Q.check){ var wm = Q.check(vs); if (wm) return {why: wm}; }
+    return {why: Q.multiOk.some(Boolean) ? 'Une des cases est juste, l’autre non (la case en rouge).' : 'Ce n’est pas le bon résultat.'};
+  }
   if (!String(raw || '').trim()) return {blank: true};
   var tr = Q.traps || [], i;
   if (Q.type === 'num'){
@@ -220,6 +230,15 @@ function run(x){
       var vf = el('div', 'vf'); Q.btns = Q.ch.map(function(lab, j){ var b = el('button', null, lab); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
         b.onclick = function(){ if (Q.done) return; Q.btns.forEach(function(o){ o.setAttribute('aria-pressed', String(o === b)); }); Q.choice = j; }; vf.appendChild(b); return b; });
       it.appendChild(vf);
+    } else if (Q.type === 'multi'){
+      var lm = el('div', 'ln'); Q.inps = [];
+      Q.form.forEach(function(part){ if (part !== null){ lm.appendChild(el('span', 'eq', part)); return; }
+        var g = el('input', 'w'); g.type = 'text'; g.autocomplete = 'off'; g.inputMode = 'decimal'; g.placeholder = '…'; g.style.width = '5.5em'; g.style.flex = 'none';
+        g.setAttribute('aria-label', 'Réponse ' + (i + 1) + ', case ' + (Q.inps.length + 1));
+        g.onfocus = function(){ lastInput = this; };
+        g.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); var all = main.querySelectorAll('input.w'), j = [].indexOf.call(all, this); if (all[j + 1]) all[j + 1].focus(); else check(); } };
+        lm.appendChild(g); Q.inps.push(g); });
+      it.appendChild(lm);
     } else {
       var ln = el('div', 'ln'); if (Q.lab) ln.appendChild(el('span', 'eq', Q.lab));
       var f = el('input', 'w'); f.type = 'text'; f.autocomplete = 'off'; f.spellcheck = false; f.setAttribute('autocapitalize', 'off');
@@ -227,7 +246,7 @@ function run(x){
       f.setAttribute('aria-label', 'Réponse ' + (i + 1));
       f.onfocus = function(){ lastInput = this; };
       f.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); var all = main.querySelectorAll('input.w'), j = [].indexOf.call(all, this); if (all[j + 1]) all[j + 1].focus(); else check(); } };
-      ln.appendChild(f); if (Q.unit) ln.appendChild(el('span', 'un', Q.unit)); it.appendChild(ln); Q.f = f;
+      ln.appendChild(f); if (Q.unit) ln.appendChild(el('span', 'un', Q.unit)); it.appendChild(ln); Q.inp = f;
     }
     Q.it = it; items.appendChild(it); return Q;
   }
@@ -249,9 +268,9 @@ function run(x){
       if (Q.type === 'ch'){
         if (Q.choice === undefined) blank = true; else ok = Q.choice === Q.ans;
         Q.btns.forEach(function(b){ b.classList.remove('okF', 'koF'); if (b.getAttribute('aria-pressed') === 'true') b.classList.add(ok ? 'okF' : 'koF'); });
-      } else { var r = checkQ(Q, Q.f.value); ok = !!r.ok; blank = !!r.blank; why = r.why || ''; }
+      } else { var r = checkQ(Q, Q.inps ? Q.inps.map(function(z){ return z.value; }) : Q.inp.value); ok = !!r.ok; blank = !!r.blank; why = r.why || ''; }
       if (blank) why = 'Tu n’as pas répondu.';
-      if (Q.f){ Q.f.classList.remove('okF', 'koF'); Q.f.classList.add(ok ? 'okF' : 'koF'); }
+      (Q.inps || (Q.inp ? [Q.inp] : [])).forEach(function(z, n){ var g = Q.multiOk ? Q.multiOk[n] : ok; z.classList.remove('okF', 'koF'); z.classList.add(g ? 'okF' : 'koF'); });
       Q.it.classList.remove('okI', 'koI'); Q.it.classList.add(ok ? 'okI' : 'koI');
       var old = Q.it.querySelector('.corr'); if (old) old.remove();
       var c = el('div', 'corr ' + (ok ? 'ok' : 'ko')); c.appendChild(el('span', 'cv', ok ? '✓ Bravo !' : '✗ ' + (why || 'Ce n’est pas ça.')));
@@ -265,7 +284,7 @@ function run(x){
       else if (!ok && !blank){ var sb = el('button', 'btn', 'Voir la correction'); sb.type = 'button'; sb.style.alignSelf = 'flex-start'; sb.style.minHeight = '36px'; sb.style.padding = '6px 12px';
         sb.onclick = function(){ sb.remove(); showSol(); Q.tries = 2; }; c.appendChild(sb); c.appendChild(el('span', null, 'Essaie de corriger ta réponse, puis clique à nouveau sur « Vérifier ».')); }
       Q.it.appendChild(c);
-      if (ok || (Q.type === 'ch' && !blank)) { Q.done = true; Q.ok = ok; if (Q.f) Q.f.disabled = ok; }
+      if (ok || (Q.type === 'ch' && !blank)) { Q.done = true; Q.ok = ok; (Q.inps || (Q.inp ? [Q.inp] : [])).forEach(function(z){ z.disabled = ok; }); }
       score += ok ? 1 : 0;
     });
     res.hidden = false; res.className = 'res ' + (score === NQ ? 'ok' : score >= NQ / 2 ? 'mid' : 'ko');
