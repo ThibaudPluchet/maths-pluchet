@@ -52,7 +52,7 @@ var EX = [
     return {type: 'ch', q: 'Les triangles ' + P.join('') + ' et ' + Q.join('') + ' sont semblables, avec ' + eg + '. Quel côté est homologue à [' + P[i] + P[j] + '] ?', ch: ch, ans: ch.indexOf(good),
       steps: [P[i] + ' correspond à ' + Q[perm[i]] + ' et ' + P[j] + ' à ' + Q[perm[j]] + ' : [' + P[i] + P[j] + '] est homologue à ' + good + '.'], key: eg + i}; }},
  {id: 'n16c', lv: 2, n: 'N16', t: 'Coefficient d’agrandissement', d: 'Ou de réduction.',
-  c: 'Calcule le coefficient demandé (valeur exacte, décimale si possible).', a: 'Coefficient = longueur d’un côté du triangle image / longueur du côté homologue du triangle de départ. Plus grand que 1 : agrandissement ; plus petit que 1 : réduction.',
+  c: 'Calcule le coefficient demandé (valeur exacte, décimale si possible).', a: 'Coefficient = (longueur d’un côté du triangle image)/(longueur du côté homologue du triangle de départ). Plus grand que 1 : agrandissement ; plus petit que 1 : réduction.',
   g: function(){ var s = sides(), m = pick([2, 3, 4, 1.5, 2.5, 0.5, 0.25, 0.75, 1.2]), t = s.map(function(v){ return cl(v * m); }), L = M.letters(6), i = rnd(0, 2);
     var q = 'Le triangle ' + L.slice(3).join('') + ' est ' + (m > 1 ? 'un agrandissement' : 'une réduction') + ' du triangle ' + L.slice(0, 3).join('') + '. Le côté ' + L[i] + L[(i + 1) % 3] + ' = ' + fr(s[i]) + ' cm a pour homologue ' + L[3 + i] + L[3 + (i + 1) % 3] + ' = ' + fr(t[i]) + ' cm. Quel est le coefficient ?';
     return {type: 'num', q: q, lab: 'k =', v: m, x: m, traps: [[cl(1 / m), 'On divise la longueur du triangle IMAGE par celle du triangle de départ.']].filter(function(z){ return Math.abs(z[0] - m) > 1e-9; }),
@@ -120,5 +120,6 @@ var NOTIONS = [{n: 'N16', t: 'Reconnaître des triangles semblables et calculer 
 M.start({key: '3e-s10', EX: EX, NOTIONS: NOTIONS});
 })();
 </script>
+<script src="fractions.js"></script>
 </body>
 </html>

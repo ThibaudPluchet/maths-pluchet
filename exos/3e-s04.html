@@ -104,7 +104,7 @@ var EX = [
     function res(fn, n, d, txt, nn, dn){ var x = DEG * (fn === 'cos' ? Math.acos(n / d) : fn === 'sin' ? Math.asin(n / d) : Math.atan(n / d)), v = rd(x, 0);
       return {type: 'num', q: txt, lab: 'angle ≈', unit: '°', v: v, x: x, d: 0, key: 'k' + k,
         traps: [[rd(90 - x, 0), 'Tu as calculé l’autre angle aigu du triangle.']].concat(['cos', 'sin', 'tan'].filter(function(g){ return g !== fn; }).map(function(g){ var y = DEG * (g === 'cos' ? Math.acos(Math.min(1, n / d)) : g === 'sin' ? Math.asin(Math.min(1, n / d)) : Math.atan(n / d)); return [rd(y, 0), 'Ce n’est pas le bon rapport trigonométrique.']; })),
-        steps: [st, fn + '(angle) = ' + nn + ' / ' + dn + ' = ' + fr(n) + ' / ' + fr(d), 'angle = ' + fn + '⁻¹(' + fr(n) + ' / ' + fr(d) + ') ≈ ' + fr(v) + '°']}; }
+        steps: [st, fn + '(angle) = ' + (/[\s-]/.test(nn) ? '(' + nn + ')' : nn) + ' / ' + (/[\s-]/.test(dn) ? '(' + dn + ')' : dn) + ' = ' + fr(n) + ' / ' + fr(d), 'angle = ' + fn + '⁻¹(' + fr(n) + ' / ' + fr(d) + ') ≈ ' + fr(v) + '°']}; }
     if (k === 0){ a = cl(rnd(30, 70) / 10); b = cl(rnd(8, 20) / 10); st = 'Le mur et le sol sont perpendiculaires : l’échelle est l’hypoténuse, le pied est adjacent à l’angle avec le sol.';
       return res('cos', b, a, 'Une échelle de ' + fr(a) + ' m est posée contre un mur vertical ; son pied est à ' + fr(b) + ' m du mur. Quel angle fait-elle avec le sol ?', 'distance au mur', 'longueur de l’échelle'); }
     if (k === 1){ a = rnd(30, 120); b = rnd(5, 12); st = 'La rampe monte de ' + b + ' cm (côté opposé) sur ' + a + ' cm à l’horizontale (côté adjacent).';
@@ -134,5 +134,6 @@ var NOTIONS = [{n: 'N06', t: 'Déterminer un angle par la trigonométrie', r: 'd
 M.start({key: '3e-s04', EX: EX, NOTIONS: NOTIONS});
 })();
 </script>
+<script src="fractions.js"></script>
 </body>
 </html>

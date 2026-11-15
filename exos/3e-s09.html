@@ -103,7 +103,7 @@ var EX = [
   c: 'Fais une figure à main levée, puis calcule la longueur demandée.', a: 'Sur la figure à main levée, place les points alignés et code les droites parallèles. Repère le petit et le grand triangle avant d’écrire l’égalité.',
   g: function(){ return thales(Math.random() < 0.4, false); }},
  {id: 'n15e', lv: 2, n: 'N15', t: 'Vrai ou faux ?', d: 'Les conditions et les pièges.',
-  c: 'Chaque affirmation est-elle vraie ou fausse ?', a: 'Pour utiliser le théorème de Thalès, il faut des points alignés dans le même ordre et des droites parallèles. Les rapports s’écrivent petit triangle / grand triangle, dans le même ordre.',
+  c: 'Chaque affirmation est-elle vraie ou fausse ?', a: 'Pour utiliser le théorème de Thalès, il faut des points alignés dans le même ordre et des droites parallèles. Les rapports s’écrivent (petit triangle)/(grand triangle), dans le même ordre.',
   g: function(){ var T = M.letters(5), A = T[0], B = T[1], C = T[2], Mm = T[3], Nn = T[4], L = [
       ['Si (' + nm(Mm, Nn) + ') et (' + nm(B, C) + ') ne sont pas parallèles, on peut quand même utiliser le théorème de Thalès.', false, 'Le théorème de Thalès exige que les droites soient parallèles.'],
       ['Dans la configuration de Thalès, ' + nm(A, Mm) + '/' + nm(A, B) + ' = ' + nm(Mm, Nn) + '/' + nm(B, C) + '.', true, 'Ce sont deux des trois rapports égaux.'],
@@ -166,5 +166,6 @@ var NOTIONS = [{n: 'N15', t: 'Calculer une longueur par le théorème de Thalès
 M.start({key: '3e-s09', EX: EX, NOTIONS: NOTIONS});
 })();
 </script>
+<script src="fractions.js"></script>
 </body>
 </html>
