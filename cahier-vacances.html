@@ -70,6 +70,7 @@ header.wrap .sitetabs{margin:0 0 18px}
 .res a.exo{background:var(--g1s);color:var(--g1);border-color:var(--g1s)}
 .res a.anim{background:var(--g3s);color:var(--g3);border-color:var(--g3s)}
 .res a:hover{border-color:currentColor}
+.res a.corr{background:var(--ink);color:var(--card);border-color:var(--ink)}
 .res span.soon{color:var(--muted);font-weight:400;font-style:italic;background:transparent;border-style:dashed}
 .bientot{color:var(--muted);font-style:italic;margin:4px 0 0}
 .mdp{margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--soft);display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
@@ -103,6 +104,7 @@ header.wrap .sitetabs{margin:0 0 18px}
 (function(){
 // ----- Contenu : une entrée par étape, une liste de ressources par séance -----
 // mdp.lettres : pour chaque lettre, les 16 premiers caractères de SHA-256("etape<n>:<position>:<LETTRE>") (le mot n'apparaît pas en clair)
+// corrige : PDF du corrigé de l'étape (dossier vacances/, hors de docs/ que sync.py nettoie)
 // mdp.src : d'où vient chaque lettre (séance du cahier), pour dire à l'élève quoi revoir
 // type : "video" (Digiview), "exo" (exercices interactifs du site), "anim" (animation du site) ; pas de lien = « bientôt »
 var E = [
@@ -111,7 +113,8 @@ var E = [
  {n:3, lieu:"Fécamp", theme:"Développer, factoriser, identités remarquables", seances:null},
  {n:4, lieu:"Étretat", theme:"Le secret de l’Aiguille creuse : équations, inéquations et premiers intervalles",
   mdp:{lettres:["87484636c40da6a2","72bf7af91bfb25cd","d55b67410e561121","d69fdef1e6e4e4c1","6d0a1c94e7304e48"],
-       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]}, seances:[
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/etape4-corrige.pdf", seances:[
    {t:"Séance 1 · Résoudre une équation", r:[
      {type:"video", t:"Vidéo : tester une solution", u:"https://ladigitale.dev/digiview/#/v/04b302f985c7ed2f"},
      {type:"video", t:"Vidéo : résoudre une équation", u:"https://ladigitale.dev/digiview/#/v/db1a724f21e11d4c"},
@@ -150,6 +153,15 @@ E.forEach(function(e){
     });
     d.appendChild(g); sec.appendChild(d);
   });
+  if (e.corrige){
+    var cd = el('div', 'seance'); cd.appendChild(el('h3', null, 'Corrigé de l’étape'));
+    var cg = el('div', 'res'), ca = el('a', 'corr', '✔ Corrigé de l’étape ' + e.n + ' (PDF)');
+    ca.href = e.corrige; ca.target = '_blank'; ca.rel = 'noopener';
+    ca.onclick = function(){ if (window.stat) stat('vacances · corrigé étape ' + e.n, 'Corrigé étape ' + e.n + ' (cahier de vacances)', true); };
+    cg.appendChild(ca); cd.appendChild(cg);
+    cd.appendChild(el('p', 'bientot', 'Cherche d’abord seul, puis vérifie tes réponses ici.'));
+    sec.appendChild(cd);
+  }
   if (e.mdp) sec.appendChild(formMdp(e, h));
   main.appendChild(sec);
 });
