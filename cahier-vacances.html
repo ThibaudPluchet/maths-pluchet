@@ -77,7 +77,13 @@ header.wrap .sitetabs{margin:0 0 18px}
 .mdp input{font:700 20px/1 "Atkinson Hyperlegible",monospace;letter-spacing:.25em;text-transform:uppercase;width:11em;max-width:100%;padding:9px 12px;border-radius:9px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
 .mdp input:focus{border-color:var(--accent);outline:none}
 .mdp button{font:700 16px "Atkinson Hyperlegible",sans-serif;padding:10px 16px;border-radius:9px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer;min-height:44px}
-.mdp .msg{flex-basis:100%;font-weight:700;min-height:1.4em}
+.mdp .msg{flex-basis:100%;font-weight:700;min-height:1.4em;margin:0}
+.mdp .det{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px}
+.mdp .det span{display:inline-flex;flex-direction:column;align-items:center;min-width:74px;padding:6px 8px;border-radius:9px;font-size:13px;font-weight:700;border:2px solid}
+.mdp .det b{font-size:22px;line-height:1.1}
+.mdp .det .bon{color:#1e7a46;border-color:#1e7a46;background:#e3f4ea}
+.mdp .det .faux{color:var(--g4);border-color:var(--g4);background:var(--g4s)}
+@media (prefers-color-scheme: dark){ .mdp .det .bon{color:#6fd39a;border-color:#6fd39a;background:#173323} }
 .mdp .msg.ok{color:#1e7a46} .mdp .msg.ko{color:var(--g4)}
 @media (prefers-color-scheme: dark){ .mdp .msg.ok{color:#6fd39a} }
 .etape h2 .valide{font:700 13px "Atkinson Hyperlegible",sans-serif;background:#1e7a46;color:#fff;border-radius:999px;padding:3px 10px;margin-left:10px;vertical-align:middle}
@@ -96,14 +102,16 @@ header.wrap .sitetabs{margin:0 0 18px}
 <script>
 (function(){
 // ----- Contenu : une entrée par étape, une liste de ressources par séance -----
-// mdp : empreinte SHA-256 du mot de passe de l'étape, en majuscules sans accent (le mot lui-même n'apparaît pas dans la page)
+// mdp.lettres : pour chaque lettre, les 16 premiers caractères de SHA-256("etape<n>:<position>:<LETTRE>") (le mot n'apparaît pas en clair)
+// mdp.src : d'où vient chaque lettre (séance du cahier), pour dire à l'élève quoi revoir
 // type : "video" (Digiview), "exo" (exercices interactifs du site), "anim" (animation du site) ; pas de lien = « bientôt »
 var E = [
  {n:1, lieu:"Cany", theme:"Fractions, priorités, puissances — un pas vers la 2de : les ensembles de nombres", seances:null},
  {n:2, lieu:"Veulettes", theme:"Racines carrées, notation scientifique — un pas vers la 2de : calculer avec les racines", seances:null},
  {n:3, lieu:"Fécamp", theme:"Développer, factoriser, identités remarquables", seances:null},
  {n:4, lieu:"Étretat", theme:"Le secret de l’Aiguille creuse : équations, inéquations et premiers intervalles",
-  mdp:"c500c127600ba2a48a44284bcfb1f6448bdc5caea2fe180cf57942d7f61d1d03", seances:[
+  mdp:{lettres:["87484636c40da6a2","72bf7af91bfb25cd","d55b67410e561121","d69fdef1e6e4e4c1","6d0a1c94e7304e48"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]}, seances:[
    {t:"Séance 1 · Résoudre une équation", r:[
      {type:"video", t:"Vidéo : tester une solution", u:"https://ladigitale.dev/digiview/#/v/04b302f985c7ed2f"},
      {type:"video", t:"Vidéo : résoudre une équation", u:"https://ladigitale.dev/digiview/#/v/db1a724f21e11d4c"},
@@ -163,17 +171,32 @@ function formMdp(e, h){
   var msg = el('p', 'msg'); msg.setAttribute('role', 'status');
   f.appendChild(lab); f.appendChild(inp); f.appendChild(bt); f.appendChild(msg);
   if (store('mp:vac' + e.n) === '1') badge(h);
+  var det = el('div', 'det');
+  f.appendChild(det);
   f.onsubmit = function(ev){
     ev.preventDefault();
-    var t = norm(inp.value);
+    var t = norm(inp.value), L = e.mdp.lettres;
+    det.textContent = '';
     if (!t){ msg.className = 'msg ko'; msg.textContent = 'Tape d’abord ton mot de passe !'; return; }
-    sha(t).then(function(x){
-      if (x === e.mdp){
+    Promise.all(L.map(function(x, i){ return t[i] ? sha('etape' + e.n + ':' + (i + 1) + ':' + t[i]) : Promise.resolve(''); })).then(function(H){
+      var ok = H.map(function(x, i){ return x.slice(0, 16) === L[i]; });
+      ok.forEach(function(b, i){
+        var c = el('span', b ? 'bon' : 'faux');
+        c.appendChild(el('b', null, t[i] || '?'));
+        c.appendChild(document.createTextNode((b ? '✔ ' : '✘ ') + e.mdp.src[i]));
+        det.appendChild(c);
+      });
+      var nb = ok.filter(Boolean).length;
+      if (nb === L.length && t.length === L.length){
         msg.className = 'msg ok'; msg.textContent = 'Bravo, c’est le bon mot de passe ! L’étape ' + e.n + ' est validée. Rendez-vous à l’étape suivante.';
         store('mp:vac' + e.n, '1'); badge(h);
         if (window.stat) stat('vacances · étape ' + e.n + ' validée', 'Cahier de vacances : étape ' + e.n + ' validée', true);
       } else {
-        msg.className = 'msg ko'; msg.textContent = 'Ce n’est pas encore ça… Vérifie chaque lettre-clé : retourne voir la séance dont la lettre « coince ».';
+        var faux = e.mdp.src.filter(function(x, i){ return !ok[i]; });
+        msg.className = 'msg ko';
+        msg.textContent = (t.length > L.length ? 'Ton mot est trop long : le mot de passe a ' + L.length + ' lettres. ' : '') +
+          nb + ' lettre' + (nb > 1 ? 's' : '') + ' sur ' + L.length + ' correcte' + (nb > 1 ? 's' : '') + '. ' +
+          (faux.length ? 'Reprends : ' + faux.join(', ') + '.' : '');
       }
     }, function(){ msg.className = 'msg ko'; msg.textContent = 'Vérification impossible sur ce navigateur.'; });
   };
