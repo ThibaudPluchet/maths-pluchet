@@ -83,17 +83,22 @@ function prod(T){ return T.reduce(function(a, b){ return cl(a * b); }, 1); }
 function nNeg(T){ return T.filter(function(v){ return v < 0; }).length; }
 EX.push(
  {id: 'n02a', lv: 1, n: 'N02', t: 'Multiplier deux relatifs', d: 'La règle des signes.', c: 'Calcule.', a: 'Le produit de deux nombres de même signe est positif ; de signes contraires, il est négatif.',
-  g: function(){ var dec = Math.random() < 0.25, a = dec ? cl(rnz(-9, 9) * pick([0.1, 0.5, 1.5, 2.5])) : rnz(-12, 12), b = rnz(-12, 12); if (Math.abs(a) === 1 || Math.abs(b) === 1) return this.g();
+  g: function(){ var a = rnz(-12, 12), b = rnz(-12, 12); if (Math.abs(a) === 1 || Math.abs(b) === 1) return this.g();
     if (a > 0 && b > 0) a = -a; var p = cl(a * b), st = Math.random() < 0.5;
     return {type: 'num', q: (st ? sg(a) : fr(a)) + ' × ' + (st ? sg(b) : pf(b)) + ' = ?', v: p, steps: [(a * b > 0 ? 'Les deux nombres ont le même signe : le produit est positif.' : 'Les deux nombres sont de signes contraires : le produit est négatif.'), fr(Math.abs(a)) + ' × ' + fr(Math.abs(b)) + ' = ' + fr(Math.abs(p)) + ', donc le résultat est ' + fr(p) + '.'], traps: [[-p, 'Attention à la règle des signes.']]}; }},
  {id: 'n02b', lv: 1, n: 'N02', t: 'Signe d’un produit', d: 'Compter les facteurs négatifs.', c: 'Sans calculer, dis si le produit est positif ou négatif.', a: 'Un produit de facteurs non nuls est positif si le nombre de facteurs négatifs est pair, négatif s’il est impair.',
-  g: function(){ var k = rnd(3, 6), T = []; for (var i = 0; i < k; i++) T.push(Math.random() < 0.75 ? rnz(-12, 12) : cl(rnz(-50, 50) / 10)); var n = nNeg(T); if (n === 0 && Math.random() < 0.8) return this.g();
+  g: function(){ var k = rnd(3, 9), T = []; for (var i = 0; i < k; i++) T.push(Math.random() < 0.75 ? rnz(-12, 12) : cl(rnz(-50, 50) / 10)); var n = nNeg(T); if (n === 0 && Math.random() < 0.8) return this.g();
     return {type: 'ch', q: T.map(function(v, i){ return i ? pf(v) : fr(v); }).join(' × '), ch: ['Positif', 'Négatif'], ans: n % 2 ? 1 : 0, steps: ['Il y a ' + n + ' facteur' + (n > 1 ? 's' : '') + ' négatif' + (n > 1 ? 's' : '') + ' : c’est un nombre ' + (n % 2 ? 'impair' : 'pair') + ', donc le produit est ' + (n % 2 ? 'négatif.' : 'positif.')]}; }},
- {id: 'n02c', lv: 2, n: 'N02', t: 'Produits de plusieurs facteurs', d: '3 ou 4 facteurs.', c: 'Calcule.', a: 'Détermine d’abord le signe (nombre de facteurs négatifs), puis multiplie les distances à zéro, en regroupant astucieusement (par exemple 2 × 5 = 10).',
+ {id: 'n02c', lv: 2, n: 'N02', t: 'Produits de plusieurs facteurs', d: '3 ou 4 facteurs.', c: 'Calcule, en regroupant astucieusement si possible.', a: 'Détermine d’abord le signe (nombre de facteurs négatifs), puis multiplie les distances à zéro, en regroupant astucieusement (par exemple 2 × 5 = 10).',
   g: function(){ var k = rnd(3, 4), T = []; for (var i = 0; i < k; i++) T.push(rnz(-9, 9)); if (T.some(function(v){ return Math.abs(v) === 1; }) || !nNeg(T)) return this.g();
-    if (Math.random() < 0.3) T[rnd(0, k - 1)] = pick([-0.5, 0.5, -0.2, 2.5, -2.5, 0.1]);
-    var p = prod(T), n = nNeg(T), A = T.map(Math.abs);
-    return {type: 'num', q: T.map(function(v, i){ return i ? pf(v) : fr(v); }).join(' × ') + ' = ?', v: p, steps: [n + ' facteur' + (n > 1 ? 's' : '') + ' négatif' + (n > 1 ? 's' : '') + ' : le produit est ' + (n % 2 ? 'négatif.' : 'positif.'), A.map(fr).join(' × ') + ' = ' + fr(Math.abs(p)) + ', donc le résultat est ' + fr(p) + '.'], traps: [[-p, 'Attention au signe : compte les facteurs négatifs.']]}; }},
+    if (Math.random() < 0.5){ var i5 = rnd(0, k - 1), j5 = (i5 + rnd(1, k - 1)) % k; T[i5] = pick([-5, 5]); T[j5] = pick([-2, 2, -4, 4, -6, 6, -8, 8]); if (!nNeg(T)) T[i5] = -T[i5]; }
+    var p = prod(T), n = nNeg(T), A = T.map(Math.abs), i, j, pr = null;
+    for (i = 0; i < k && !pr; i++) for (j = i + 1; j < k && !pr; j++) if ((A[i] * A[j]) % 10 === 0) pr = [i, j];
+    var calc;
+    if (pr){ var r = A.filter(function(v, m){ return m !== pr[0] && m !== pr[1]; }), q10 = A[pr[0]] * A[pr[1]];
+      calc = 'On regroupe astucieusement : ' + A[pr[0]] + ' × ' + A[pr[1]] + ' = ' + q10 + ', puis ' + [q10].concat(r).join(' × ') + ' = ' + fr(Math.abs(p)) + ', donc le résultat est ' + fr(p) + '.'; }
+    else calc = A.map(fr).join(' × ') + ' = ' + fr(Math.abs(p)) + ', donc le résultat est ' + fr(p) + '.';
+    return {type: 'num', q: T.map(function(v, i){ return i ? pf(v) : fr(v); }).join(' × ') + ' = ?', v: p, steps: [n + ' facteur' + (n > 1 ? 's' : '') + ' négatif' + (n > 1 ? 's' : '') + ' : le produit est ' + (n % 2 ? 'négatif.' : 'positif.'), calc], traps: [[-p, 'Attention au signe : compte les facteurs négatifs.']]}; }},
  {id: 'n02d', lv: 2, n: 'N02', t: 'Facteur manquant', d: 'Compléter une multiplication.', c: 'Trouve le nombre manquant.', a: 'Cherche d’abord la distance à zéro (table de multiplication), puis le signe avec la règle des signes.',
   g: function(){ var a = rnz(-10, 10), x = rnz(-10, 10); if (Math.abs(a) < 2 || Math.abs(x) < 2) return this.g(); var p = a * x, f = Math.random() < 0.5;
     return {type: 'num', q: f ? fr(a) + ' × ? = ' + fr(p) : '? × ' + pf(a) + ' = ' + fr(p), v: x, steps: [Math.abs(a) + ' × ' + Math.abs(x) + ' = ' + Math.abs(p) + ' : la distance à zéro du nombre cherché est ' + Math.abs(x) + '.', 'Le produit est ' + (p > 0 ? 'positif' : 'négatif') + ' et ' + fr(a) + ' est ' + (a > 0 ? 'positif' : 'négatif') + ' : le nombre cherché est ' + (x > 0 ? 'positif' : 'négatif') + ', c’est ' + fr(x) + '.'], traps: [[-x, 'Attention au signe.']]}; }},
