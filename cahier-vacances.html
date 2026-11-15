@@ -73,6 +73,9 @@ header.wrap .sitetabs{margin:0 0 18px}
 .res a.corr{background:var(--ink);color:var(--card);border-color:var(--ink)}
 .res span.soon{color:var(--muted);font-weight:400;font-style:italic;background:transparent;border-style:dashed}
 .bientot{color:var(--muted);font-style:italic;margin:4px 0 0}
+.choix{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.choix a{font-weight:700;font-size:15px;text-decoration:none;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted)}
+.choix a[aria-current="page"]{background:var(--soft);color:var(--accent);border-color:var(--accent)}
 .mdp{margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--soft);display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
 .mdp label{font-weight:700;flex-basis:100%}
 .mdp input{font:700 20px/1 "Atkinson Hyperlegible",monospace;letter-spacing:.25em;text-transform:uppercase;width:11em;max-width:100%;padding:9px 12px;border-radius:9px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
@@ -96,6 +99,10 @@ header.wrap .sitetabs{margin:0 0 18px}
   <div id="tabsat"></div>
   <h1>Mission Seconde</h1>
   <p class="sub">Cahier de vacances 3<sup>e</sup> → 2<sup>de</sup> : les vidéos et les exercices en ligne de chaque étape. Le QR code de ton cahier t’amène directement à la bonne étape.</p>
+  <nav class="choix" aria-label="Choisir le cahier">
+    <a id="c3e" href="cahier-vacances.html" aria-current="page">Cahier 3<sup>e</sup> → 2<sup>de</sup></a>
+    <a id="c4e" href="cahier-vacances-4e.html">Cahier 4<sup>e</sup> → 3<sup>e</sup></a>
+  </nav>
 </header>
 <main class="wrap" id="main"></main>
 <footer class="wrap">Vidéos d’Yvan Monka, partagées via Digiview. Bon été et bonne mission !</footer>
@@ -307,6 +314,7 @@ E.forEach(function(e){
   if (e.mdp) sec.appendChild(formMdp(e, h));
   main.appendChild(sec);
 });
+if (/^#prof\//.test(location.hash)){ document.getElementById('c3e').href += location.hash; document.getElementById('c4e').href += location.hash; }
 document.getElementById('back').href = 'index.html' + (/^#etape/.test(location.hash) ? '' : location.hash);
 // ----- Vérification du mot de passe de Lupin -----
 function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){ return null; } }

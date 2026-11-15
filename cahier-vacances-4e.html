@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cahier de vacances 4e → 3e – M. Pluchet</title>
+<meta name="description" content="Mission Troisième : les vidéos et exercices en ligne du cahier de vacances de 4e.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --ink:#1b2333; --muted:#596277; --line:#e2ded3;
+  --accent:#2f5bd3; --accent-ink:#ffffff; --soft:#e8eefc; --gridc:#e9e5da;
+  --g1:#2f5bd3; --g1s:#e8eefc; --g2:#b85c00; --g2s:#fbeedd; --g3:#7a3fb8; --g3s:#f1e8fb; --g4:#b3261e; --g4s:#fbe6e4;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#13161d; --card:#1b1f28; --ink:#eaedf3; --muted:#a3abbc; --line:#2b313e;
+    --accent:#86a4ff; --accent-ink:#0f1320; --soft:#222a3e; --gridc:#1a1e27;
+    --g1:#8fa9ff; --g1s:#1f2840; --g2:#f0a050; --g2s:#33261a; --g3:#c49bf0; --g3s:#2a2238; --g4:#ff8a80; --g4s:#3a1f1d; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;
+  background-image:linear-gradient(var(--gridc) 1px,transparent 1px),linear-gradient(90deg,var(--gridc) 1px,transparent 1px);background-size:22px 22px}
+.wrap{max-width:820px;margin:0 auto;padding-left:16px;padding-right:16px}
+header.wrap{padding-top:22px;padding-bottom:12px}
+.back{display:inline-block;color:var(--accent);font-weight:700;text-decoration:none;margin-bottom:10px;font-size:15px}
+.back:hover{text-decoration:underline}
+h1{font:700 clamp(30px,7vw,42px)/1.05 "Bricolage Grotesque",system-ui,sans-serif;margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0;font-size:15px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+main.wrap{padding-top:18px;padding-bottom:56px;display:flex;flex-direction:column;gap:26px}
+section h2{font:700 22px/1.2 "Bricolage Grotesque",system-ui,sans-serif;margin:0 0 4px;color:var(--c)}
+section h2 span{margin-right:8px}
+section > p{color:var(--muted);margin:0 0 12px;font-size:15px}
+.cards{display:grid;gap:10px}
+@media (min-width:640px){ .cards{grid-template-columns:1fr 1fr} }
+.card{display:flex;flex-direction:row;align-items:flex-start;gap:14px;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);
+  border-radius:12px;padding:14px 16px;text-decoration:none;color:var(--ink);min-height:46px}
+a.card:hover{border-color:var(--c)}
+.card .body{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+svg.art{width:56px;height:56px;flex:none;color:var(--c);fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
+a.card:hover svg.art{transform:rotate(-6deg) scale(1.06)}
+svg.art .f{fill:var(--cs)} svg.art .s{fill:currentColor;stroke:none}
+svg.art text{fill:currentColor;stroke:none;font-family:"Bricolage Grotesque",Georgia,serif;font-weight:700;text-anchor:middle}
+.card .t{font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px}
+a.card .t::after{content:"↗";color:var(--c);font-size:14px;margin-left:auto}
+.card .d{color:var(--muted);font-size:15px}
+.card .tag{align-self:flex-start;font-size:12px;font-weight:700;background:var(--cs);color:var(--c);border-radius:999px;padding:2px 9px;margin-top:4px}
+.g1{--c:var(--g1);--cs:var(--g1s)} .g2{--c:var(--g2);--cs:var(--g2s)} .g3{--c:var(--g3);--cs:var(--g3s)} .g4{--c:var(--g4);--cs:var(--g4s)}
+footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40px;border-top:1px solid var(--line)}
+@media (min-width:1000px){ .wrap{max-width:1200px} .cards{grid-template-columns:repeat(3,1fr)} }
+#tabsat{display:none}
+header.wrap .sitetabs{margin:0 0 18px}
+@media (max-width:620px){header.wrap .sitetabs{position:sticky;top:0;z-index:6;margin:0 -16px 14px;border-radius:0;border-left:0;border-right:0}}
+
+.etape{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;scroll-margin-top:16px}
+.etape.cible{border:2px solid var(--accent);box-shadow:0 0 0 5px var(--soft)}
+.etape h2{color:var(--ink)}
+.etape h2 .num{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--card);font-size:17px;margin-right:10px}
+.etape .theme{color:var(--muted);font-size:15px;margin:0 0 10px}
+.seance{margin-top:12px}
+.seance h3{font:700 16px/1.3 "Atkinson Hyperlegible",system-ui,sans-serif;margin:0 0 6px}
+.res{display:flex;flex-wrap:wrap;gap:8px}
+.res a,.res span{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 13px;font-size:15px;font-weight:700;text-decoration:none;border:1px solid var(--line)}
+.res a.video{background:var(--g4s);color:var(--g4);border-color:var(--g4s)}
+.res a.exo{background:var(--g1s);color:var(--g1);border-color:var(--g1s)}
+.res a.anim{background:var(--g3s);color:var(--g3);border-color:var(--g3s)}
+.res a:hover{border-color:currentColor}
+.res a.corr{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.res span.soon{color:var(--muted);font-weight:400;font-style:italic;background:transparent;border-style:dashed}
+.bientot{color:var(--muted);font-style:italic;margin:4px 0 0}
+.choix{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.choix a{font-weight:700;font-size:15px;text-decoration:none;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted)}
+.choix a[aria-current="page"]{background:var(--soft);color:var(--accent);border-color:var(--accent)}
+.mdp{margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--soft);display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.mdp label{font-weight:700;flex-basis:100%}
+.mdp input{font:700 20px/1 "Atkinson Hyperlegible",monospace;letter-spacing:.25em;text-transform:uppercase;width:11em;max-width:100%;padding:9px 12px;border-radius:9px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.mdp input:focus{border-color:var(--accent);outline:none}
+.mdp button{font:700 16px "Atkinson Hyperlegible",sans-serif;padding:10px 16px;border-radius:9px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer;min-height:44px}
+.mdp .msg{flex-basis:100%;font-weight:700;min-height:1.4em;margin:0}
+.mdp .det{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px}
+.mdp .det span{display:inline-flex;flex-direction:column;align-items:center;min-width:74px;padding:6px 8px;border-radius:9px;font-size:13px;font-weight:700;border:2px solid}
+.mdp .det b{font-size:22px;line-height:1.1}
+.mdp .det .bon{color:#1e7a46;border-color:#1e7a46;background:#e3f4ea}
+.mdp .det .faux{color:var(--g4);border-color:var(--g4);background:var(--g4s)}
+@media (prefers-color-scheme: dark){ .mdp .det .bon{color:#6fd39a;border-color:#6fd39a;background:#173323} }
+.mdp .msg.ok{color:#1e7a46} .mdp .msg.ko{color:var(--g4)}
+@media (prefers-color-scheme: dark){ .mdp .msg.ok{color:#6fd39a} }
+.etape h2 .valide{font:700 13px "Atkinson Hyperlegible",sans-serif;background:#1e7a46;color:#fff;border-radius:999px;padding:3px 10px;margin-left:10px;vertical-align:middle}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <a class="back" id="back" href="index.html">← Page d’accueil</a>
+  <div id="tabsat"></div>
+  <h1>Mission Troisième</h1>
+  <p class="sub">Cahier de vacances 4<sup>e</sup> → 3<sup>e</sup> : les vidéos et les exercices en ligne de chaque étape. Le QR code de ton cahier t’amène directement à la bonne étape.</p>
+  <nav class="choix" aria-label="Choisir le cahier">
+    <a id="c3e" href="cahier-vacances.html">Cahier 3<sup>e</sup> → 2<sup>de</sup></a>
+    <a id="c4e" href="cahier-vacances-4e.html" aria-current="page">Cahier 4<sup>e</sup> → 3<sup>e</sup></a>
+  </nav>
+</header>
+<main class="wrap" id="main"></main>
+<footer class="wrap">Vidéos d’Yvan Monka, partagées via Digiview. Bon été et bonne mission !</footer>
+<script src="stats.js"></script>
+<script>
+(function(){
+// ----- Contenu : une entrée par étape, une liste de ressources par séance -----
+// mdp.lettres : pour chaque lettre, les 16 premiers caractères de SHA-256("etape<n>:<position>:<LETTRE>") (le mot n'apparaît pas en clair)
+// corrige : PDF du corrigé de l'étape (dossier vacances/, hors de docs/ que sync.py nettoie)
+// mdp.src : d'où vient chaque lettre (séance du cahier), pour dire à l'élève quoi revoir
+// type : "video" (Digiview), "exo" (exercices interactifs du site), "anim" (animation du site) ; pas de lien = « bientôt »
+var E = [
+ {n:1, lieu:"Rouen", theme:"Au pied de la cathédrale : nombres relatifs, priorités, supprimer des parenthèses",
+  mdp:{lettres:["f5496032182cc43b", "9d27df5b025cf2f9", "b32ea3fb50c8646b", "617ef204b7cf0257", "3a897f8f34ca237c"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/4e-etape1-corrige.pdf", seances:[
+   {t:"Séance 1 · Additionner et soustraire des relatifs", r:[
+     {type:"video", t:"Vidéo : additionner sans parenthèses", u:"https://ladigitale.dev/digiview/#/v/8e6c196899155961"},
+     {type:"video", t:"Vidéo : une longue somme", u:"https://ladigitale.dev/digiview/#/v/8beb9ef4509d565d"},
+     {type:"video", t:"Vidéo : signes qui se suivent", u:"https://ladigitale.dev/digiview/#/v/a9a1347db10f0634"},
+     {type:"anim", t:"Animation : droite graduée", u:"anim/6ZU3UiVVJY3o9UF9QSS7aA.html#droite"},
+     {type:"anim", t:"Animation : les jetons", u:"anim/6ZU3UiVVJY3o9UF9QSS7aA.html#jetons"},
+     {type:"exo", t:"S’entraîner : additionner, soustraire", u:"exos/4e-s01.html#n01"}]},
+   {t:"Séance 2 · Multiplier et diviser des relatifs", r:[
+     {type:"video", t:"Vidéo : multiplier", u:"https://ladigitale.dev/digiview/#/v/2c500411f15e5f69"},
+     {type:"video", t:"Vidéo : diviser", u:"https://ladigitale.dev/digiview/#/v/853cab60fd8348b4"},
+     {type:"anim", t:"Animation : règle des signes", u:"anim/6ZU3UiVVJY3o9UF9QSS7aA.html#signes"},
+     {type:"exo", t:"S’entraîner : multiplier", u:"exos/4e-s01.html#n02"},
+     {type:"exo", t:"S’entraîner : diviser", u:"exos/4e-s01.html#n03"}]},
+   {t:"Séance 3 · Enchaîner les opérations", r:[
+     {type:"video", t:"Vidéo : enchaîner les opérations", u:"https://ladigitale.dev/digiview/#/v/7a1a23c3ce5013aa"},
+     {type:"exo", t:"S’entraîner : priorités", u:"exos/4e-s01.html#n04"}]},
+   {t:"Séance 4 · Supprimer des parenthèses", r:[
+     {type:"video", t:"Vidéo : supprimer les parenthèses", u:"https://ladigitale.dev/digiview/#/v/782f97acca586952"},
+     {type:"anim", t:"Animation : jetons et opposé", u:"anim/6ZU3UiVVJY3o9UF9QSS7aA.html#jetons"}]}
+ ]},
+ {n:2, lieu:"Le Havre", theme:"La ville en damier : calcul littéral, équations, double distributivité",
+  mdp:{lettres:["e6badefa2782f99a", "3ac4fd10e6ce3e21", "a81459353e97565a", "d1ae16059b6b0aae", "35cff8bfae6c0903"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/4e-etape2-corrige.pdf", seances:[
+   {t:"Séance 1 · Développer et réduire", r:[
+     {type:"video", t:"Vidéo : développer (1)", u:"https://ladigitale.dev/digiview/#/v/3a3a9cb8566a4ae0"},
+     {type:"video", t:"Vidéo : développer (2)", u:"https://ladigitale.dev/digiview/#/v/c376d7b6fc91407d"},
+     {type:"video", t:"Vidéo : réduire", u:"https://ladigitale.dev/digiview/#/v/0b1bdcea2ec02152"},
+     {type:"anim", t:"Animation : distributivité", u:"anim/WBpQDN5b4MhUqYisJ5uwzu.html#simple"},
+     {type:"anim", t:"Animation : réduire", u:"anim/WBpQDN5b4MhUqYisJ5uwzu.html#reduire"},
+     {type:"exo", t:"S’entraîner : développer", u:"exos/4e-s03.html#n06"},
+     {type:"exo", t:"S’entraîner : réduire", u:"exos/4e-s03.html#n08"}]},
+   {t:"Séance 2 · Factoriser, calculer une expression", r:[
+     {type:"video", t:"Vidéo : factoriser (1)", u:"https://ladigitale.dev/digiview/#/v/55b659d3505f627e"},
+     {type:"video", t:"Vidéo : factoriser (2)", u:"https://ladigitale.dev/digiview/#/v/c82b72452f402655"},
+     {type:"video", t:"Vidéo : appliquer une formule", u:"https://ladigitale.dev/digiview/#/v/2a1a62ba1f02f1ef"},
+     {type:"anim", t:"Animation : factoriser", u:"anim/WBpQDN5b4MhUqYisJ5uwzu.html#simple"},
+     {type:"exo", t:"S’entraîner : factoriser", u:"exos/4e-s03.html#n07"},
+     {type:"exo", t:"S’entraîner : valeur d’une expression", u:"exos/4e-s08.html#n18"},
+     {type:"exo", t:"S’entraîner : programmes de calcul", u:"exos/4e-s08.html#n19"}]},
+   {t:"Séance 3 · Résoudre une équation", r:[
+     {type:"video", t:"Vidéo : résoudre une équation", u:"https://ladigitale.dev/digiview/#/v/db1a724f21e11d4c"},
+     {type:"anim", t:"Animation : la balance", u:"anim/GuZhDTkbrdWUhMUsBNaTHo.html#resoudre"},
+     {type:"exo", t:"S’entraîner : résoudre", u:"exos/4e-s16.html#n38"},
+     {type:"exo", t:"S’entraîner : mettre en équation", u:"exos/4e-s16.html#n39"}]},
+   {t:"Séance 4 · La double distributivité", r:[
+     {type:"video", t:"Vidéo : double distributivité", u:"https://ladigitale.dev/digiview/#/v/f84aafdbc8fd04dd"},
+     {type:"video", t:"Vidéo : avec un moins devant", u:"https://ladigitale.dev/digiview/#/v/5b653f02eb94d3fe"},
+     {type:"exo", t:"S’entraîner : double distributivité", u:"exos/3e-s12.html#n18"}]}
+ ]},
+ {n:3, lieu:"Étretat", theme:"Sous les arches de craie : racines carrées, Pythagore, cosinus",
+  mdp:{lettres:["0000242ac34e1653", "be8f3a9d60d9a985", "ed4dc0a1c4db97d1", "173da94977dc56f5", "b250f1bfd3b89817"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/4e-etape3-corrige.pdf", seances:[
+   {t:"Séance 1 · Carrés et racines carrées", r:[
+     {type:"video", t:"Vidéo : racine carrée", u:"https://ladigitale.dev/digiview/#/v/df2e2c5c708e897f"},
+     {type:"video", t:"Vidéo : encadrer", u:"https://ladigitale.dev/digiview/#/v/4bfdc5d4f116e9d7"},
+     {type:"anim", t:"Animation : carrés parfaits", u:"anim/NSFAyJKxJn1Qd8mgeH5mAj.html#carres"},
+     {type:"anim", t:"Animation : racine carrée", u:"anim/NSFAyJKxJn1Qd8mgeH5mAj.html#racine"},
+     {type:"anim", t:"Animation : encadrer", u:"anim/NSFAyJKxJn1Qd8mgeH5mAj.html#encadrer"},
+     {type:"exo", t:"S’entraîner : racines carrées", u:"exos/4e-s04.html#n09"}]},
+   {t:"Séance 2 · Le théorème de Pythagore", r:[
+     {type:"video", t:"Vidéo : calculer l’hypoténuse", u:"https://ladigitale.dev/digiview/#/v/be5abe0735199a40"},
+     {type:"video", t:"Vidéo : calculer un côté", u:"https://ladigitale.dev/digiview/#/v/acfb94f71721ee59"},
+     {type:"video", t:"Vidéo : un problème", u:"https://ladigitale.dev/digiview/#/v/0e7648dc690a1608"},
+     {type:"anim", t:"Animation : Pythagore", u:"anim/2Ya5H6AzHwzoGVE85YH76K.html#theoreme"},
+     {type:"anim", t:"Animation : puzzle de Pythagore", u:"anim/2Ya5H6AzHwzoGVE85YH76K.html#puzzle"},
+     {type:"exo", t:"S’entraîner : Pythagore", u:"exos/4e-s04.html#n10"}]},
+   {t:"Séance 3 · La réciproque de Pythagore", r:[
+     {type:"video", t:"Vidéo : triangle rectangle", u:"https://ladigitale.dev/digiview/#/v/07e3bf53d9b1114b"},
+     {type:"video", t:"Vidéo : triangle non rectangle", u:"https://ladigitale.dev/digiview/#/v/8e1d7c675b12352a"},
+     {type:"exo", t:"S’entraîner : rectangle ou non ?", u:"exos/4e-s14.html#n32"}]},
+   {t:"Séance 4 · Le cosinus", r:[
+     {type:"video", t:"Vidéo : angle avec le cosinus", u:"https://ladigitale.dev/digiview/#/v/24c9f4200e98fbcc"},
+     {type:"anim", t:"Animation : trigonométrie", u:"anim/SEUxz45N7ArbsAHpGtXwhE.html#rapports"}]}
+ ]},
+ {n:4, lieu:"Fécamp", theme:"Le port des terre-neuvas : fractions et ratios",
+  mdp:{lettres:["2725464c4c98cb1f", "b3d4005de10b8b15", "65e631c74cdbb690", "3b7948837475ba28", "6d0a1c94e7304e48"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/4e-etape4-corrige.pdf", seances:[
+   {t:"Séance 1 · Simplifier et comparer", r:[
+     {type:"exo", t:"S’entraîner : simplifier", u:"exos/4e-s12.html#n25"},
+     {type:"exo", t:"S’entraîner : comparer", u:"exos/4e-s12.html#n27"},
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 2 · Additionner et soustraire", r:[
+     {type:"anim", t:"Animation : additionner", u:"anim/4CkzriTXy9yyyYktv8D3K5.html#additionner"},
+     {type:"exo", t:"S’entraîner : additionner, soustraire", u:"exos/4e-s12.html#n28"}]},
+   {t:"Séance 3 · Multiplier et diviser", r:[
+     {type:"video", t:"Vidéo : multiplier", u:"https://ladigitale.dev/digiview/#/v/7b63ba00b52fa987"},
+     {type:"video", t:"Vidéo : diviser", u:"https://ladigitale.dev/digiview/#/v/5dbf999cc91e9dc1"},
+     {type:"anim", t:"Animation : multiplier", u:"anim/4CkzriTXy9yyyYktv8D3K5.html#multiplier"},
+     {type:"anim", t:"Animation : diviser", u:"anim/4CkzriTXy9yyyYktv8D3K5.html#diviser"},
+     {type:"exo", t:"S’entraîner : multiplier, diviser", u:"exos/4e-s18.html#n42"},
+     {type:"exo", t:"S’entraîner : problèmes", u:"exos/4e-s18.html#n44"}]},
+   {t:"Séance 4 · Les ratios", r:[
+     {type:"video", t:"Vidéo : déterminer un ratio", u:"https://ladigitale.dev/digiview/#/v/999c221bbd4921e9"},
+     {type:"video", t:"Vidéo : utiliser un ratio", u:"https://ladigitale.dev/digiview/#/v/00897591e05a7cd6"},
+     {type:"video", t:"Vidéo : partager", u:"https://ladigitale.dev/digiview/#/v/80f17bfd31829f6f"},
+     {type:"exo", t:"S’entraîner : ratios", u:"exos/3e-s14.html#n22"}]}
+ ]},
+ {n:5, lieu:"Saint-Valery-en-Caux", theme:"À la vitesse du vent : proportionnalité, pourcentages, vitesses",
+  mdp:{lettres:["9c706d78f2a09bf0", "07f5026b97d95eb4", "af045faacbe6d363", "8d410d32299e9626", "903b02a9335505b3"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/4e-etape5-corrige.pdf", seances:[
+   {t:"Séance 1 · Proportionnalité", r:[
+     {type:"video", t:"Vidéo : produits en croix", u:"https://ladigitale.dev/digiview/#/v/a6a762092195c76d"},
+     {type:"video", t:"Vidéo : quatrième proportionnelle", u:"https://ladigitale.dev/digiview/#/v/e98708edf95494c5"},
+     {type:"video", t:"Vidéo : reconnaître sur un graphique", u:"https://ladigitale.dev/digiview/#/v/9b51ca3eee148a1f"},
+     {type:"exo", t:"S’entraîner : quatrième proportionnelle", u:"exos/4e-s05.html#n11"}]},
+   {t:"Séance 2 · Pourcentages", r:[
+     {type:"video", t:"Vidéo : augmenter, diminuer", u:"https://ladigitale.dev/digiview/#/v/2faa0188db3f762e"},
+     {type:"exo", t:"S’entraîner : pourcentages", u:"exos/4e-s15.html#n34"}]},
+   {t:"Séance 3 · Vitesse, distance, durée", r:[
+     {type:"video", t:"Vidéo : vitesse", u:"https://ladigitale.dev/digiview/#/v/ac9619c51156f5ac"},
+     {type:"video", t:"Vidéo : conversions", u:"https://ladigitale.dev/digiview/#/v/f4bdf902375d7fcd"},
+     {type:"exo", t:"S’entraîner : vitesse, distance, durée", u:"exos/4e-s15.html#n35"}]},
+   {t:"Séance 4 · Les fonctions linéaires", r:[
+     {type:"video", t:"Vidéo : calculer une image", u:"https://ladigitale.dev/digiview/#/v/cd503afa7b58d49f"},
+     {type:"exo", t:"S’entraîner : linéaire ou affine ?", u:"exos/3e-s17.html#n26"},
+     {type:"exo", t:"S’entraîner : images et antécédents", u:"exos/3e-s17.html#n27"}]}
+ ]},
+ {n:6, lieu:"Paluel", theme:"Les nombres de la centrale : puissances, nombres premiers",
+  mdp:{lettres:["f344d604d1b1df34", "3a92d5294aaf1da4", "a77a332498de2821", "e4de0480f6c97c2e", "88667d296c935953"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/4e-etape6-corrige.pdf", seances:[
+   {t:"Séance 1 · Les puissances", r:[
+     {type:"exo", t:"S’entraîner : puissances", u:"exos/4e-s13.html#n29"},
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 2 · Puissances de 10, notation scientifique", r:[
+     {type:"exo", t:"S’entraîner : puissances de 10", u:"exos/4e-s13.html#n30"},
+     {type:"exo", t:"S’entraîner : notation scientifique", u:"exos/4e-s13.html#n31"},
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 3 · Multiples, diviseurs, premiers", r:[
+     {type:"video", t:"Vidéo : multiples", u:"https://ladigitale.dev/digiview/#/v/319462b576fa1fe5"},
+     {type:"video", t:"Vidéo : diviseurs", u:"https://ladigitale.dev/digiview/#/v/3b641ddf176c74ed"},
+     {type:"video", t:"Vidéo : critères", u:"https://ladigitale.dev/digiview/#/v/45b88d6b8028951e"},
+     {type:"video", t:"Vidéo : nombres premiers", u:"https://ladigitale.dev/digiview/#/v/a8205977fbf0a730"},
+     {type:"exo", t:"S’entraîner : multiples, diviseurs", u:"exos/4e-s06.html#n13"},
+     {type:"exo", t:"S’entraîner : nombres premiers", u:"exos/4e-s06.html#n14"}]},
+   {t:"Séance 4 · Décomposer en facteurs premiers", r:[
+     {type:"video", t:"Vidéo : décomposer", u:"https://ladigitale.dev/digiview/#/v/7a24a94dee3d513e"},
+     {type:"exo", t:"S’entraîner : décomposer", u:"exos/3e-s24.html#n43"},
+     {type:"exo", t:"S’entraîner : fraction irréductible", u:"exos/3e-s24.html#n44"}]}
+ ]},
+ {n:7, lieu:"Veulettes-sur-Mer", theme:"Maquettes sur la digue : Thalès, volumes, agrandissement",
+  mdp:{lettres:["4485e53bbdbdbb0f", "3d32468ab21d9dfe", "a6fb80033fc992ac", "84ac18e4967c18c9", "967c46fe59f48b82"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/4e-etape7-corrige.pdf", seances:[
+   {t:"Séance 1 · Le théorème de Thalès", r:[
+     {type:"video", t:"Vidéo : triangles emboîtés", u:"https://ladigitale.dev/digiview/#/v/21972db6dbd487b0"},
+     {type:"exo", t:"S’entraîner : Thalès", u:"exos/4e-s10.html#n22"}]},
+   {t:"Séance 2 · Volumes de la pyramide et du cône", r:[
+     {type:"video", t:"Vidéo : pyramides et cônes", u:"https://ladigitale.dev/digiview/#/v/811a964381de0df4"},
+     {type:"anim", t:"Animation : pyramides et cônes", u:"anim/R3YCmuQPkrnkeMfRGxScWN.html#pyramide"},
+     {type:"anim", t:"Animation : le cône", u:"anim/R3YCmuQPkrnkeMfRGxScWN.html#cone"},
+     {type:"exo", t:"S’entraîner : volumes", u:"exos/4e-s17.html#n40"}]},
+   {t:"Séance 3 · Agrandir, réduire", r:[
+     {type:"exo", t:"S’entraîner : agrandir, réduire", u:"exos/4e-s17.html#n41"},
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 4 · La réciproque de Thalès", r:[
+     {type:"exo", t:"S’entraîner : parallèles ou non ?", u:"exos/4e-s19.html#n45"},
+     {type:"exo", t:"S’entraîner : réciproque de Thalès", u:"exos/3e-s20.html#n33"}]}
+ ]},
+ {n:8, lieu:"Cany", theme:"Retour au collège : statistiques et probabilités",
+  mdp:{lettres:["f337a2ce21e88085", "28c5fc08b9836196", "8f4c4746e7cf2072", "cdfe22662f1d3cde", "71786c549101c4f5"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/4e-etape8-corrige.pdf", seances:[
+   {t:"Séance 1 · Moyenne et médiane", r:[
+     {type:"video", t:"Vidéo : la moyenne", u:"https://ladigitale.dev/digiview/#/v/a8c93a101d26c07a"},
+     {type:"video", t:"Vidéo : la médiane", u:"https://ladigitale.dev/digiview/#/v/8ab913744d8ecd90"},
+     {type:"exo", t:"S’entraîner : moyenne, médiane", u:"exos/4e-s11.html#n24"}]},
+   {t:"Séance 2 · Fréquences et diagrammes", r:[
+     {type:"video", t:"Vidéo : fréquences", u:"https://ladigitale.dev/digiview/#/v/e0a1fec337cd924c"},
+     {type:"video", t:"Vidéo : diagramme circulaire", u:"https://ladigitale.dev/digiview/#/v/9d0c7028d18ac67a"},
+     {type:"exo", t:"S’entraîner : représenter des données", u:"exos/4e-s11.html#n23"}]},
+   {t:"Séance 3 · Probabilités", r:[
+     {type:"exo", t:"S’entraîner : probabilités", u:"exos/4e-s20.html#n47"},
+     {type:"exo", t:"S’entraîner : fréquence et probabilité", u:"exos/4e-s20.html#n48"},
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 4 · Étendue et deux épreuves", r:[
+     {type:"exo", t:"S’entraîner : médiane et étendue", u:"exos/3e-s23.html#n42"},
+     {type:"exo", t:"S’entraîner : deux épreuves", u:"exos/3e-s22.html#n39"}]}
+ ]}
+];
+function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+var main = document.getElementById('main');
+E.forEach(function(e){
+  var sec = el('section', 'etape'); sec.id = 'etape' + e.n;
+  var h = el('h2'); h.appendChild(el('span', 'num', String(e.n))); h.appendChild(document.createTextNode('Étape ' + e.n + ' · ' + e.lieu));
+  sec.appendChild(h); sec.appendChild(el('p', 'theme', e.theme));
+  if (!e.seances){ sec.appendChild(el('p', 'bientot', 'En préparation : les ressources arriveront avant l’été.')); }
+  else e.seances.forEach(function(s){
+    var d = el('div', 'seance'); d.appendChild(el('h3', null, s.t));
+    var g = el('div', 'res');
+    s.r.forEach(function(r){
+      if (!r.u){ g.appendChild(el('span', 'soon', r.t)); return; }
+      var a = el('a', r.type, (r.type === 'video' ? '▶ ' : r.type === 'exo' ? '✎ ' : '◆ ') + r.t);
+      a.href = r.u; a.target = '_blank'; a.rel = 'noopener';
+      a.onclick = function(){ if (window.stat) stat('vacances 4e · ' + r.t, r.t + ' (cahier de vacances)', true); };
+      g.appendChild(a);
+    });
+    d.appendChild(g); sec.appendChild(d);
+  });
+  if (e.corrige){
+    var cd = el('div', 'seance'); cd.appendChild(el('h3', null, 'Corrigé de l’étape'));
+    var cg = el('div', 'res'), ca = el('a', 'corr', '✔ Corrigé de l’étape ' + e.n + ' (PDF)');
+    ca.href = e.corrige; ca.target = '_blank'; ca.rel = 'noopener';
+    ca.onclick = function(){ if (window.stat) stat('vacances 4e · corrigé étape ' + e.n, 'Corrigé étape ' + e.n + ' (cahier de vacances)', true); };
+    cg.appendChild(ca); cd.appendChild(cg);
+    cd.appendChild(el('p', 'bientot', 'Cherche d’abord seul, puis vérifie tes réponses ici.'));
+    sec.appendChild(cd);
+  }
+  if (e.mdp) sec.appendChild(formMdp(e, h));
+  main.appendChild(sec);
+});
+if (/^#prof\//.test(location.hash)){ document.getElementById('c3e').href += location.hash; document.getElementById('c4e').href += location.hash; }
+document.getElementById('back').href = 'index.html' + (/^#etape/.test(location.hash) ? '' : location.hash);
+// ----- Vérification du mot de passe de Lupin -----
+function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){ return null; } }
+function norm(t){ return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z]/g, ''); }
+function sha(t){
+  if (!(window.crypto && crypto.subtle)) return Promise.reject();
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function(b){
+    return Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); });
+}
+function badge(h){ if (!h.querySelector('.valide')) h.appendChild(el('span', 'valide', '✔ Étape validée')); }
+function formMdp(e, h){
+  var f = el('form', 'mdp'), id = 'mdp' + e.n;
+  var lab = el('label', null, '🔑 Ton mot de passe de l’étape ' + e.n + ' : tape-le pour vérifier'); lab.htmlFor = id;
+  var inp = el('input'); inp.id = id; inp.autocomplete = 'off'; inp.spellcheck = false; inp.maxLength = 20; inp.placeholder = '• • • • •';
+  var bt = el('button', null, 'Vérifier'); bt.type = 'submit';
+  var msg = el('p', 'msg'); msg.setAttribute('role', 'status');
+  f.appendChild(lab); f.appendChild(inp); f.appendChild(bt); f.appendChild(msg);
+  if (store('mp:vac4e' + e.n) === '1') badge(h);
+  var det = el('div', 'det');
+  f.appendChild(det);
+  f.onsubmit = function(ev){
+    ev.preventDefault();
+    var t = norm(inp.value), L = e.mdp.lettres;
+    det.textContent = '';
+    if (!t){ msg.className = 'msg ko'; msg.textContent = 'Tape d’abord ton mot de passe !'; return; }
+    Promise.all(L.map(function(x, i){ return t[i] ? sha('etape' + e.n + ':' + (i + 1) + ':' + t[i]) : Promise.resolve(''); })).then(function(H){
+      var ok = H.map(function(x, i){ return x.slice(0, 16) === L[i]; });
+      ok.forEach(function(b, i){
+        var c = el('span', b ? 'bon' : 'faux');
+        c.appendChild(el('b', null, t[i] || '?'));
+        c.appendChild(document.createTextNode((b ? '✔ ' : '✘ ') + e.mdp.src[i]));
+        det.appendChild(c);
+      });
+      var nb = ok.filter(Boolean).length;
+      if (nb === L.length && t.length === L.length){
+        msg.className = 'msg ok'; msg.textContent = 'Bravo, c’est le bon mot de passe ! L’étape ' + e.n + ' est validée. Rendez-vous à l’étape suivante.';
+        store('mp:vac4e' + e.n, '1'); badge(h);
+        if (window.stat) stat('vacances 4e · étape ' + e.n + ' validée', 'Cahier de vacances : étape ' + e.n + ' validée', true);
+      } else {
+        var faux = e.mdp.src.filter(function(x, i){ return !ok[i]; });
+        msg.className = 'msg ko';
+        msg.textContent = (t.length > L.length ? 'Ton mot est trop long : le mot de passe a ' + L.length + ' lettres. ' : '') +
+          nb + ' lettre' + (nb > 1 ? 's' : '') + ' sur ' + L.length + ' correcte' + (nb > 1 ? 's' : '') + '. ' +
+          (faux.length ? 'Reprends : ' + faux.join(', ') + '.' : '');
+      }
+    }, function(){ msg.className = 'msg ko'; msg.textContent = 'Vérification impossible sur ce navigateur.'; });
+  };
+  return f;
+}
+function cible(){
+  var m = location.hash.match(/^#etape(\d)/);
+  document.querySelectorAll('.etape').forEach(function(s){ s.classList.remove('cible'); });
+  if (m){ var s = document.getElementById('etape' + m[1]); if (s){ s.classList.add('cible'); s.scrollIntoView(); } }
+}
+window.addEventListener('hashchange', cible); cible();
+if (window.stat) stat('/cahier-vacances-4e' + location.hash, 'Cahier de vacances ' + location.hash);
+})();
+</script>
+<script src="lib/sitetabs.js?v=2"></script>
+<script>
+// barre d'onglets seulement pour l'adresse enseignant (onglet « Cahier de vacances » enregistré par index.html)
+(function(){ var l = null; try { l = JSON.parse(localStorage.getItem('mp:tabs') || 'null'); } catch(e){}
+  if (/^#prof\//.test(location.hash) && Array.isArray(l) && l.some(function(t){ return t[0] === 'vacances'; })) SiteTabs.mount(document.getElementById('tabsat'), 'vacances'); })();
+</script>
+</body>
+</html>
