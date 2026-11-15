@@ -70,7 +70,7 @@ var EX = [
     var opts = ['Cône de révolution', 'Cylindre de révolution', 'Prisme droit'].concat([3, 4, 5, 6].map(function(m){ return 'Pyramide ' + BASEN[m]; }));
     ch = shuffle([good].concat(shuffle(opts.filter(function(o){ return o !== good; })).slice(0, 3)));
     var why = k === 'pyr' ? 'Sa base est un ' + POLY[n] + ' et ses ' + n + ' faces latérales sont des triangles qui se rejoignent au sommet.' : k === 'cone' ? 'Sa base est un disque et sa surface latérale se termine en un sommet.' : k === 'cyl' ? 'Il a deux bases qui sont des disques identiques et parallèles.' : 'Il a deux bases identiques et parallèles (des ' + POLY[n] + 's) et ses faces latérales sont des rectangles.';
-    return {type: 'ch', q: 'Quel est ce solide ?', svg: solid(k, n), ch: ch, ans: ch.indexOf(good), steps: [why], key: k + (k === 'pyr' || k === 'prism' ? n : '') + Math.random().toFixed(1)}; }},
+    return {type: 'ch', q: 'Quel est ce solide ?', svg: solid(k, n), ch: ch, ans: ch.indexOf(good), steps: [why], key: k + (k === 'pyr' || k === 'prism' ? n : '')}; }},
  {id: 'n05b', lv: 1, n: 'N05', t: 'Faces, arêtes, sommets', d: 'Compter sur une pyramide.', c: 'Réponds par un nombre.', a: 'Une pyramide dont la base a n côtés a n + 1 faces (la base et n faces latérales), 2n arêtes et n + 1 sommets.',
   g: function(){ var n = pick([3, 4, 5, 6, 8]), w = rnd(0, 3), q, v, st;
     var nm = 'une pyramide ' + BASEN[n] + (n === 4 ? '' : '');
@@ -96,7 +96,7 @@ var EX = [
     else if (w === 2){ q = 'Que représente le segment [' + S + A + '] ?'; good = 'Une génératrice'; st = ['Il relie le sommet à un point du cercle de base : c’est une génératrice.']; }
     else if (w === 3){ q = 'Que représente le segment [' + A + B + '] ?'; good = 'Un diamètre de la base'; st = ['Il passe par le centre ' + O + ' et relie deux points du cercle : c’est un diamètre.']; }
     else { q = 'Quelle est la nature du triangle ' + S + O + A + ' ?'; all = ['Rectangle en ' + O, 'Rectangle en ' + S, 'Équilatéral', 'Rectangle en ' + A]; good = all[0]; st = ['La hauteur [' + S + O + '] est perpendiculaire à la base, donc à [' + O + A + '] : le triangle est rectangle en ' + O + '.']; }
-    ch = all.slice(); return {type: 'ch', q: q, svg: solid('cone', 0, [S, O, A, B], true), ch: ch, ans: ch.indexOf(good), steps: st, key: 'c' + w + L.join('')}; }},
+    ch = all.slice(); return {type: 'ch', q: q, svg: solid('cone', 0, [S, O, A, B], true), ch: ch, ans: ch.indexOf(good), steps: st, key: 'c' + w}; }},
  {id: 'n05e', lv: 2, n: 'N05', t: 'Vrai ou faux ?', d: 'Pyramides et cônes.', c: 'L’affirmation est-elle vraie ou fausse ?', a: 'Relis les définitions : la base d’une pyramide est un polygone, ses faces latérales sont des triangles ; la base d’un cône est un disque.',
   g: function(){ var T = [
     ['Les faces latérales d’une pyramide sont des triangles.', true, 'Elles relient le sommet à chaque côté de la base.'],
@@ -121,7 +121,7 @@ var EX = [
     else if (w === 1){ q = 'Une pyramide a ' + (n + 1) + ' faces. Combien d’arêtes a-t-elle ?'; v = 2 * n; st = ['n + 1 = ' + (n + 1) + ', donc la base a ' + n + ' côtés ; arêtes : 2 × ' + n + ' = ' + 2 * n + '.']; }
     else if (w === 2){ q = 'Une pyramide a ' + 2 * n + ' arêtes. Combien de sommets a-t-elle ?'; v = n + 1; st = ['La base a ' + n + ' côtés (2 × ' + n + ' = ' + 2 * n + '), donc ' + (n + 1) + ' sommets.']; }
     else { q = 'La base d’une pyramide est un ' + bn + '. Combien a-t-elle de faces, arêtes et sommets en tout (on additionne les trois nombres) ?'; v = (n + 1) + 2 * n + (n + 1); st = [(n + 1) + ' faces + ' + 2 * n + ' arêtes + ' + (n + 1) + ' sommets = ' + v + '.']; }
-    return {type: 'num', q: q, v: v, steps: st, key: 'w' + w + 'n' + n}; }}
+    return {type: 'num', q: q, v: v, steps: st, key: 'w' + w}; }}
 ];
 var NOTIONS = [{n: 'N05', t: 'Connaître le vocabulaire des pyramides et des cônes', r: 'une pyramide a un sommet, une base polygonale et des faces latérales triangulaires ; un cône de révolution a un sommet et une base en forme de disque. La hauteur est perpendiculaire à la base.'}];
 

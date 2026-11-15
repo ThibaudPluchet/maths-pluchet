@@ -204,12 +204,15 @@ function run(x){
   var p = el('section', 'panel'), ph = el('div', 'ph'), no = P.NOTIONS.filter(function(z){ return z.n === x.n; })[0];
   ph.appendChild(el('p', 'kick', x.n + ' · ' + no.t)); ph.appendChild(el('h2', null, x.t)); ph.appendChild(lvl(x.lv)); p.appendChild(ph);
   p.appendChild(el('p', 'consigne', x.c)); p.appendChild(el('p', 'aide', '💡 ' + x.a));
-  var NQ = x.nq || N, items = el('div', 'items'), qs = [], seen = {};
+  var NQ = x.nq || N, items = el('div', 'items'), qs = [], seen = {}, cur = {};
   (x.last || []).forEach(function(k){ seen[k] = 1; });          // pas les mêmes questions que la série précédente
   for (var i = 0; i < NQ; i++) qs.push(item(i));
   x.last = qs.map(function(Q){ return Q.key || Q.q; });
   function item(i){
-    var Q, k = 0; do { Q = x.g(); } while (seen[Q.key || Q.q] && ++k < 80); seen[Q.key || Q.q] = 1;
+    // jamais deux fois la même clé dans une série ; si possible, pas non plus une clé de la série précédente
+    var Q, k = 0; do { Q = x.g(); } while (seen[Q.key || Q.q] && ++k < 80);
+    if (seen[Q.key || Q.q]){ k = 0; do { Q = x.g(); } while (cur[Q.key || Q.q] && ++k < 400); }
+    seen[Q.key || Q.q] = cur[Q.key || Q.q] = 1;
     var it = el('div', 'item'), q = el('div', 'q'); q.appendChild(el('span', 'nm', (i + 1) + '.')); q.appendChild(document.createTextNode(Q.q));
     it.appendChild(q);
     if (Q.svg){ var fw = el('div', 'figw' + (Q.wide ? ' wide' : '')); fw.innerHTML = Q.svg; it.appendChild(fw); }   // SVG produit par la page elle-même
