@@ -108,9 +108,75 @@ header.wrap .sitetabs{margin:0 0 18px}
 // mdp.src : d'où vient chaque lettre (séance du cahier), pour dire à l'élève quoi revoir
 // type : "video" (Digiview), "exo" (exercices interactifs du site), "anim" (animation du site) ; pas de lien = « bientôt »
 var E = [
- {n:1, lieu:"Cany", theme:"Fractions, priorités, puissances — un pas vers la 2de : les ensembles de nombres", seances:null},
- {n:2, lieu:"Veulettes", theme:"Racines carrées, notation scientifique — un pas vers la 2de : calculer avec les racines", seances:null},
- {n:3, lieu:"Fécamp", theme:"Développer, factoriser, identités remarquables", seances:null},
+ {n:1, lieu:"Cany", theme:"Le message du poète : fractions, priorités, puissances et ensembles de nombres",
+  mdp:{lettres:["6a4a0a465079f882", "f58640e11e59c57b", "d6023abf82364154", "0b56d6029e5b9993", "c2bb7eb0c897c8c0"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/etape1-corrige.pdf", seances:[
+   {t:"Séance 1 · Calculer avec des fractions", r:[
+     {type:"video", t:"Vidéo : multiplier des fractions", u:"https://ladigitale.dev/digiview/#/v/7b63ba00b52fa987"},
+     {type:"video", t:"Vidéo : diviser des fractions", u:"https://ladigitale.dev/digiview/#/v/5dbf999cc91e9dc1"},
+     {type:"anim", t:"Animation : additionner", u:"anim/4CkzriTXy9yyyYktv8D3K5.html#additionner"},
+     {type:"anim", t:"Animation : multiplier", u:"anim/4CkzriTXy9yyyYktv8D3K5.html#multiplier"},
+     {type:"anim", t:"Animation : diviser", u:"anim/4CkzriTXy9yyyYktv8D3K5.html#diviser"},
+     {type:"exo", t:"S’entraîner : additionner, soustraire", u:"exos/4e-s12.html#n28"},
+     {type:"exo", t:"S’entraîner : multiplier, diviser", u:"exos/4e-s18.html#n42"}]},
+   {t:"Séance 2 · Priorités et nombres relatifs", r:[
+     {type:"video", t:"Vidéo : enchaîner les opérations", u:"https://ladigitale.dev/digiview/#/v/7a1a23c3ce5013aa"},
+     {type:"video", t:"Vidéo : multiplier des relatifs", u:"https://ladigitale.dev/digiview/#/v/2c500411f15e5f69"},
+     {type:"anim", t:"Animation : la règle des signes", u:"anim/6ZU3UiVVJY3o9UF9QSS7aA.html#signes"},
+     {type:"exo", t:"S’entraîner : enchaîner les opérations", u:"exos/4e-s01.html#n04"}]},
+   {t:"Séance 3 · Les puissances", r:[
+     {type:"exo", t:"S’entraîner : puissances", u:"exos/4e-s13.html#n29"},
+     {type:"exo", t:"S’entraîner : calculer avec des puissances", u:"exos/3e-s25.html#n46"}]},
+   {t:"Séance 4 · Les ensembles de nombres", r:[
+     {t:"Vidéo bientôt disponible"}]}
+ ]},
+ {n:2, lieu:"Veulettes-sur-Mer", theme:"L’énergie de la côte : racines carrées, notation scientifique, puissances de 10",
+  mdp:{lettres:["4c1e4d81700a6061", "1f1b46d2b2234e9f", "6a47b7dd16e574c1", "61db943c47062574", "1aeb6c0149ad1d49"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/etape2-corrige.pdf", seances:[
+   {t:"Séance 1 · Racines carrées", r:[
+     {type:"video", t:"Vidéo : calculer une racine carrée", u:"https://ladigitale.dev/digiview/#/v/df2e2c5c708e897f"},
+     {type:"video", t:"Vidéo : encadrer une racine", u:"https://ladigitale.dev/digiview/#/v/4bfdc5d4f116e9d7"},
+     {type:"anim", t:"Animation : carrés parfaits", u:"anim/NSFAyJKxJn1Qd8mgeH5mAj.html#carres"},
+     {type:"anim", t:"Animation : racine carrée", u:"anim/NSFAyJKxJn1Qd8mgeH5mAj.html#racine"},
+     {type:"anim", t:"Animation : encadrer", u:"anim/NSFAyJKxJn1Qd8mgeH5mAj.html#encadrer"},
+     {type:"exo", t:"S’entraîner : racines carrées", u:"exos/4e-s04.html#n09"}]},
+   {t:"Séance 2 · Notation scientifique", r:[
+     {type:"exo", t:"S’entraîner : notation scientifique (4e)", u:"exos/4e-s13.html#n31"},
+     {type:"exo", t:"S’entraîner : notation scientifique (3e)", u:"exos/3e-s25.html#n47"},
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 3 · Calculer avec les racines carrées", r:[
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 4 · Puissances de 10 et préfixes", r:[
+     {type:"exo", t:"S’entraîner : puissances de 10 et préfixes", u:"exos/4e-s13.html#n30"},
+     {type:"exo", t:"S’entraîner : problèmes avec les puissances de 10", u:"exos/3e-s25.html#n48"}]}
+ ]},
+ {n:3, lieu:"Fécamp", theme:"Les secrets de l’abbatiale : développer, factoriser, identités remarquables",
+  mdp:{lettres:["83f6168b81f41414", "be8f3a9d60d9a985", "8670bf7823b8dc09", "e4981a1eddf05b09", "b250f1bfd3b89817"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/etape3-corrige.pdf", seances:[
+   {t:"Séance 1 · Développer et réduire", r:[
+     {type:"video", t:"Vidéo : développer", u:"https://ladigitale.dev/digiview/#/v/cf1231541fbeb0fb"},
+     {type:"video", t:"Vidéo : réduire", u:"https://ladigitale.dev/digiview/#/v/090b72569ade2f2f"},
+     {type:"video", t:"Vidéo : supprimer les parenthèses", u:"https://ladigitale.dev/digiview/#/v/782f97acca586952"},
+     {type:"anim", t:"Animation : la distributivité", u:"anim/WBpQDN5b4MhUqYisJ5uwzu.html#simple"},
+     {type:"anim", t:"Animation : réduire", u:"anim/WBpQDN5b4MhUqYisJ5uwzu.html#reduire"}]},
+   {t:"Séance 2 · Double distributivité", r:[
+     {type:"video", t:"Vidéo : double distributivité", u:"https://ladigitale.dev/digiview/#/v/f84aafdbc8fd04dd"},
+     {type:"video", t:"Vidéo : avec un moins devant", u:"https://ladigitale.dev/digiview/#/v/5b653f02eb94d3fe"},
+     {type:"exo", t:"S’entraîner : double distributivité", u:"exos/3e-s12.html#n18"}]},
+   {t:"Séance 3 · Factoriser", r:[
+     {type:"video", t:"Vidéo : factoriser avec a² − b²", u:"https://ladigitale.dev/digiview/#/v/3dfeb282364e7ae4"},
+     {type:"video", t:"Vidéo : factoriser (niveau 1)", u:"https://ladigitale.dev/digiview/#/v/55b659d3505f627e"},
+     {type:"video", t:"Vidéo : factoriser (niveau 2)", u:"https://ladigitale.dev/digiview/#/v/c82b72452f402655"},
+     {type:"anim", t:"Animation : factoriser", u:"anim/WBpQDN5b4MhUqYisJ5uwzu.html#simple"},
+     {type:"exo", t:"S’entraîner : facteur commun", u:"exos/3e-s16.html#n25"},
+     {type:"exo", t:"S’entraîner : a² − b²", u:"exos/3e-s12.html#n19"}]},
+   {t:"Séance 4 · Les identités (a + b)² et (a − b)²", r:[
+     {type:"video", t:"Vidéo : développer (a − b)(a + b)", u:"https://ladigitale.dev/digiview/#/v/9d1e7cfff75d9737"},
+     {t:"Vidéo bientôt disponible"}]}
+ ]},
  {n:4, lieu:"Étretat", theme:"Le secret de l’Aiguille creuse : équations, inéquations et premiers intervalles",
   mdp:{lettres:["87484636c40da6a2","72bf7af91bfb25cd","d55b67410e561121","d69fdef1e6e4e4c1","6d0a1c94e7304e48"],
        src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
@@ -129,10 +195,86 @@ var E = [
      {t:"Vidéo produit nul bientôt disponible"}]},
    {t:"Séance 4 · Inéquations et intervalles", r:[{t:"Vidéo bientôt disponible"}]}
  ]},
- {n:5, lieu:"Le Havre", theme:"Fonctions linéaires et affines — un pas vers la 2de : le coefficient directeur", seances:null},
- {n:6, lieu:"Saint-Valery-en-Caux", theme:"Pythagore, Thalès, trigonométrie — un pas vers la 2de : les vecteurs", seances:null},
- {n:7, lieu:"Paluel", theme:"Pourcentages, statistiques, probabilités", seances:null},
- {n:8, lieu:"Rouen", theme:"Algorithmique : de Scratch à Python", seances:null}
+ {n:5, lieu:"Le Havre", theme:"La ville d’Auguste Perret : fonctions, fonctions affines, coefficient directeur",
+  mdp:{lettres:["b4d3cc16d567e06b", "4129c20bd9d0edf3", "7d1d324bea1257d4", "0e844b4b45841bad", "3025e8bf137e5943"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/etape5-corrige.pdf", seances:[
+   {t:"Séance 1 · Image et antécédent", r:[
+     {type:"video", t:"Vidéo : calculer une image", u:"https://ladigitale.dev/digiview/#/v/cd503afa7b58d49f"},
+     {type:"video", t:"Vidéo : calculer un antécédent", u:"https://ladigitale.dev/digiview/#/v/c879e9dc478cbdcf"},
+     {type:"anim", t:"Animation : la petite usine", u:"anim/XcuGWJMFRSsgqEDaEbaJCp.html#machine"},
+     {type:"exo", t:"S’entraîner : antécédents", u:"exos/3e-s08.html#n14"}]},
+   {t:"Séance 2 · Fonctions linéaires et affines", r:[
+     {type:"exo", t:"S’entraîner : linéaire ou affine ?", u:"exos/3e-s17.html#n26"},
+     {type:"exo", t:"S’entraîner : images et antécédents", u:"exos/3e-s17.html#n27"},
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 3 · Lecture graphique", r:[
+     {type:"video", t:"Vidéo : lecture graphique", u:"https://ladigitale.dev/digiview/#/v/394f1874b6413fef"},
+     {type:"exo", t:"S’entraîner : lire sur un graphique", u:"exos/3e-s08.html#n13"},
+     {type:"exo", t:"S’entraîner : représenter une fonction affine", u:"exos/3e-s17.html#n28"}]},
+   {t:"Séance 4 · Le coefficient directeur", r:[
+     {type:"exo", t:"S’entraîner : problèmes avec des fonctions affines", u:"exos/3e-s17.html#n29"},
+     {t:"Vidéo bientôt disponible"}]}
+ ]},
+ {n:6, lieu:"Saint-Valery-en-Caux", theme:"Cap sur le port : Pythagore, Thalès, trigonométrie et vecteurs",
+  mdp:{lettres:["93b0c699aa610859", "f3fab0f75d96f143", "b81630d93de99c5a", "275c1f26d3421c69", "e91b2fe951501a8e"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/etape6-corrige.pdf", seances:[
+   {t:"Séance 1 · Pythagore et sa réciproque", r:[
+     {type:"video", t:"Vidéo : calculer l’hypoténuse", u:"https://ladigitale.dev/digiview/#/v/53b3d6aff7914dde"},
+     {type:"video", t:"Vidéo : calculer un côté", u:"https://ladigitale.dev/digiview/#/v/070c20cfd8e38a7f"},
+     {type:"video", t:"Vidéo : triangle rectangle", u:"https://ladigitale.dev/digiview/#/v/07e3bf53d9b1114b"},
+     {type:"video", t:"Vidéo : triangle non rectangle", u:"https://ladigitale.dev/digiview/#/v/8e1d7c675b12352a"},
+     {type:"anim", t:"Animation : Pythagore", u:"anim/2Ya5H6AzHwzoGVE85YH76K.html#theoreme"},
+     {type:"anim", t:"Animation : puzzle de Pythagore", u:"anim/2Ya5H6AzHwzoGVE85YH76K.html#puzzle"},
+     {type:"exo", t:"S’entraîner : réciproque", u:"exos/3e-s13.html#n20"}]},
+   {t:"Séance 2 · Le théorème de Thalès", r:[
+     {type:"video", t:"Vidéo : triangles emboîtés", u:"https://ladigitale.dev/digiview/#/v/21972db6dbd487b0"},
+     {type:"video", t:"Vidéo : configuration papillon", u:"https://ladigitale.dev/digiview/#/v/13ccfabea02d15ff"},
+     {type:"exo", t:"S’entraîner : Thalès", u:"exos/3e-s09.html#n15"}]},
+   {t:"Séance 3 · Trigonométrie", r:[
+     {type:"video", t:"Vidéo : angle avec le cosinus", u:"https://ladigitale.dev/digiview/#/v/24c9f4200e98fbcc"},
+     {type:"video", t:"Vidéo : angle avec la tangente", u:"https://ladigitale.dev/digiview/#/v/5be350fe022fcd06"},
+     {type:"anim", t:"Animation : trigonométrie", u:"anim/SEUxz45N7ArbsAHpGtXwhE.html#rapports"},
+     {type:"anim", t:"Animation : calcul d’angle", u:"anim/SEUxz45N7ArbsAHpGtXwhE.html#angle"},
+     {type:"exo", t:"S’entraîner : calculer une longueur", u:"exos/3e-s15.html#n24"}]},
+   {t:"Séance 4 · Les vecteurs", r:[
+     {type:"video", t:"Vidéo : translation d’un point", u:"https://ladigitale.dev/digiview/#/v/284d97bb659ac684"},
+     {type:"video", t:"Vidéo : translation d’une figure", u:"https://ladigitale.dev/digiview/#/v/a67832c3929219ec"},
+     {type:"exo", t:"S’entraîner : translations", u:"exos/4e-s07.html#n17"}]}
+ ]},
+ {n:7, lieu:"Paluel", theme:"Les chiffres de la centrale : pourcentages, statistiques, probabilités",
+  mdp:{lettres:["58f34544b3f245c7", "31130f1647a20c2a", "6a1fa97991477343", "1a29ee71a03a85da", "967c46fe59f48b82"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/etape7-corrige.pdf", seances:[
+   {t:"Séance 1 · Pourcentages", r:[
+     {type:"video", t:"Vidéo : augmenter, diminuer", u:"https://ladigitale.dev/digiview/#/v/2faa0188db3f762e"},
+     {type:"exo", t:"S’entraîner : pourcentages", u:"exos/3e-s14.html#n21"}]},
+   {t:"Séance 2 · Statistiques", r:[
+     {type:"video", t:"Vidéo : la moyenne", u:"https://ladigitale.dev/digiview/#/v/a8c93a101d26c07a"},
+     {type:"video", t:"Vidéo : la médiane", u:"https://ladigitale.dev/digiview/#/v/8ab913744d8ecd90"},
+     {type:"exo", t:"S’entraîner : moyenne", u:"exos/3e-s23.html#n41"},
+     {type:"exo", t:"S’entraîner : médiane et étendue", u:"exos/3e-s23.html#n42"}]},
+   {t:"Séance 3 · Probabilités", r:[
+     {type:"exo", t:"S’entraîner : probabilités (une épreuve)", u:"exos/3e-s22.html#n38"},
+     {type:"exo", t:"S’entraîner : probabilités (deux épreuves)", u:"exos/3e-s22.html#n39"},
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 4 · Le coefficient multiplicateur", r:[
+     {type:"video", t:"Vidéo : le coefficient multiplicateur", u:"https://ladigitale.dev/digiview/#/v/3c0b2bc6878cb00f"}]}
+ ]},
+ {n:8, lieu:"Rouen", theme:"De Scratch à Python : algorithmique et premiers programmes",
+  mdp:{lettres:["3da28d27b97e3f67", "843fe269a9fd6536", "d63d49c4a1d945d3", "474c71ea63953cca", "4507289f92ae56d8"],
+       src:["Séance 1","Séance 2","Séance 3","Séance 4","Défi"]},
+  corrige:"vacances/etape8-corrige.pdf", seances:[
+   {t:"Séance 1 · Scratch", r:[
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 2 · Premiers pas en Python", r:[
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 3 · Conditions et boucles", r:[
+     {t:"Vidéo bientôt disponible"}]},
+   {t:"Séance 4 · Les fonctions en Python", r:[
+     {t:"Vidéo bientôt disponible"}]}
+ ]}
 ];
 function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
 var main = document.getElementById('main');
