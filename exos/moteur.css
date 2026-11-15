@@ -37,8 +37,9 @@ main{padding:14px 0 70px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
 .ph h2{font:700 22px/1.15 "Bricolage Grotesque",system-ui,sans-serif;margin:0}
 .ph .kick{margin-bottom:2px}
-.consigne{margin:0;color:var(--muted);font-size:15px}
-.aide{margin:0;font-size:15px;background:var(--soft);border-radius:12px;padding:10px 12px}
+.consigne{margin:2px 0 0;color:var(--ink);font:700 19px/1.35 "Bricolage Grotesque",system-ui,sans-serif;background:var(--soft);border-left:6px solid var(--accent);border-radius:10px;padding:12px 14px}
+.consigne::before{content:"✏️ ";font-weight:400}
+.aide{margin:0;font-size:15px;color:var(--muted);background:transparent;border:1px dashed var(--line);border-radius:12px;padding:8px 12px}
 .items{display:grid;gap:16px}
 .item{border-left:3px solid var(--line);padding:4px 0 4px 12px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .item.okI{border-color:var(--ok)} .item.koI{border-color:var(--ko)}
