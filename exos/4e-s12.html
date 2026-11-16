@@ -83,7 +83,22 @@ EX.push(
     for (i = 0; i < 4; i++){ var q = pick(D), n = rnd(1, 2 * q); L.push([n, q]); }
     var vals = L.map(function(f){ return f[0] / f[1]; }), mx = Math.max.apply(0, vals); if (vals.filter(function(v){ return Math.abs(v - mx) < 1e-9; }).length > 1 || new Set(L.map(function(f){ return f.join(); })).size < 4) return this.g();
     var good = F(L[vals.indexOf(mx)][0], L[vals.indexOf(mx)][1]), ch = L.map(function(f){ return F(f[0], f[1]); });
-    return {type: 'ch', q: 'Laquelle est la plus grande : ' + ch.join(' ; ') + ' ?', ch: ch, ans: ch.indexOf(good), steps: ['Au dénominateur ' + d + ' : ' + L.map(function(f){ return F(f[0] * d / f[1], d); }).join(' ; ') + '.', 'La plus grande est ' + good + '.']}; }}
+    return {type: 'ch', q: 'Laquelle est la plus grande : ' + ch.join(' ; ') + ' ?', ch: ch, ans: ch.indexOf(good), steps: ['Au dénominateur ' + d + ' : ' + L.map(function(f){ return F(f[0] * d / f[1], d); }).join(' ; ') + '.', 'La plus grande est ' + good + '.']}; }},
+ {id: 'n27d', lv: 2, n: 'N27', t: 'Entre deux entiers', d: 'Encadrer une fraction.', c: 'Complète l’encadrement par deux entiers consécutifs : donne l’entier de gauche.', a: 'Cherche les multiples du dénominateur qui entourent le numérateur : par exemple 21 < 22 < 28, donc 21/7 < 22/7 < 28/7, soit 3 < 22/7 < 4.',
+  g: function(){ var d = rnd(2, 12), e = rnd(0, 9), r = rnd(1, d - 1), neg = Math.random() < 0.25, n = e * d + r; if (gcd(n, d) !== 1 && Math.random() < 0.7) return this.g();
+    var lo = neg ? -(e + 1) : e, fs = (neg ? '−' : '') + F(n, d);
+    return {type: 'num', q: '… < ' + fs + ' < …', v: lo, key: (neg ? '-' : '') + n + '/' + d, steps: [e * d + ' = ' + d + ' × ' + e + ' et ' + (e + 1) * d + ' = ' + d + ' × ' + (e + 1) + ', donc ' + e + ' < ' + F(n, d) + ' < ' + (e + 1) + '.', neg ? 'Pour l’opposé, l’ordre s’inverse : ' + (-(e + 1)) + ' < ' + fs + ' < ' + (-e) + '.' : 'L’entier de gauche est ' + e + '.']}; }},
+ {id: 'n27e', lv: 3, n: 'N27', t: 'Dénominateurs quelconques, et négatifs', d: 'Réduire, comparer, attention au signe.', c: 'Choisis le bon signe.', a: 'Réduis au même dénominateur (le plus petit multiple commun), compare les numérateurs. Pour deux nombres négatifs, l’ordre s’inverse ; un négatif est plus petit qu’un positif.',
+  g: function(){ var a = [rnd(1, 11), rnd(2, 12)], b = [rnd(1, 11), rnd(2, 12)]; if (gcd(a[0], a[1]) !== 1 || gcd(b[0], b[1]) !== 1 || a[1] === b[1] || a[1] % b[1] === 0 || b[1] % a[1] === 0) return this.g();
+    var D = a[1] * b[1] / gcd(a[1], b[1]), A = a[0] * D / a[1], B = b[0] * D / b[1]; if (A === B) return this.g();
+    var t = rnd(0, 2), sa = t === 2 ? -1 : (t === 1 && Math.random() < 0.5 ? -1 : 1), sb = t === 2 ? -1 : (t === 1 && sa === 1 ? -1 : 1);
+    if (t === 0){ sa = 1; sb = 1; }
+    var va = sa * A, vb = sb * B, s = va < vb ? '<' : '>', ch = ['<', '>', '='], m = function(sg, f){ return (sg < 0 ? '−' : '') + F(f[0], f[1]); };
+    var st = ['Au dénominateur ' + D + ' : ' + F(a[0], a[1]) + ' = ' + F(A, D) + ' et ' + F(b[0], b[1]) + ' = ' + F(B, D) + '.'];
+    if (sa < 0 && sb < 0) st.push((A > B ? F(a[0], a[1]) + ' > ' + F(b[0], b[1]) : F(a[0], a[1]) + ' < ' + F(b[0], b[1])) + ', et l’ordre s’inverse pour les négatifs.');
+    else if (sa !== sb) st.push('Un nombre négatif est plus petit qu’un nombre positif.');
+    st.push(m(sa, a) + ' ' + s + ' ' + m(sb, b) + '.');
+    return {type: 'ch', q: m(sa, a) + ' … ' + m(sb, b), ch: ch, ans: ch.indexOf(s), steps: st}; }}
 );
 EX.push(
  {id: 'n28a', lv: 1, n: 'N28', t: 'Même dénominateur', d: 'Additionner les numérateurs.', c: 'Calcule et donne le résultat sous forme irréductible.', a: 'Quand les dénominateurs sont égaux, on additionne (ou soustrait) les numérateurs et on garde le dénominateur, puis on simplifie.',
