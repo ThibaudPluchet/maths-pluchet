@@ -127,13 +127,79 @@ EX.push(
     ['La distance parcourue à vitesse constante est proportionnelle à la durée.', true, 'd = v × t.'],
     ['Le prix d’un abonnement de 10 € par mois plus 2 € par film est proportionnel au nombre de films.', false, 'À 0 film on paie 10 € : pas d’origine.']];
     var i = rnd(0, T.length - 1), p = T[i]; return {type: 'ch', q: p[0], ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: 'vf' + i}; }},
- {id: 'n12d', lv: 3, n: 'N12', nq: 4, t: 'Comparer deux offres', d: 'Deux droites sur le même graphique.', c: 'Lis le graphique pour répondre.', a: 'Pour chaque quantité, la droite la plus basse correspond à l’offre la moins chère. Le point d’intersection donne la quantité pour laquelle les prix sont égaux.',
-  g: function(){ var a = pick([2, 3, 4]), c = pick([1, 1.5, 2]); if (c >= a) c = a - 1; var X = pick([4, 5, 6, 8]), b = cl((a - c) * X); if (b > 20) return this.g();
-    var o = {xm: 10, ym: Math.ceil(a * 10 / 5) * 5, sx: 1, sy: Math.ceil(a * 10 / 5) * 5 / 10, xl: 'nombre de séances', yl: 'prix (€)', items: [{type: 'line', a: a}, {type: 'line', a: c, b: b, col: 'var(--ko)'}, {type: 'lab', x: 0.4, y: Math.min(a * 9, o ? 0 : 0) + a * 1.6, t: 'A'}, {type: 'lab', x: 0.4, y: b + 2.2, t: 'B', col: 'var(--ko)'}]};
-    var w = rnd(0, 1);
-    if (w === 0) return {type: 'num', q: 'Offre A (bleue) : proportionnelle. Offre B (rouge) : un abonnement plus un prix par séance. Pour combien de séances les deux offres coûtent-elles le même prix ?', svg: graphSvg(o), v: X, unit: 'séances', steps: ['Les deux droites se coupent au point d’abscisse ' + X + ' (prix ' + fr(a * X) + ' €).'], key: 'i' + a + c + X};
-    var n = pick([1, 2, 3, X + 1, X + 2, 9].filter(function(z){ return z !== X; })), ch = ['Offre A', 'Offre B'], best = a * n < c * n + b ? 0 : 1;
-    return {type: 'ch', q: 'Offre A (bleue) et offre B (rouge). Quelle offre est la moins chère pour ' + n + ' séances ?', svg: graphSvg(o), ch: ch, ans: best, steps: ['Pour ' + n + ' séances, on lit A : ' + fr(a * n) + ' € et B : ' + fr(cl(c * n + b)) + ' €. La moins chère est l’offre ' + (best ? 'B' : 'A') + '.'], key: 'c' + a + c + X + n}; }}
+ {id: 'n12d', lv: 3, n: 'N12', nq: 4, t: 'Comparer des offres', d: 'Deux ou trois tarifs, graphique ou énoncé.', c: 'Lis l’énoncé (et le graphique s’il y en a un) pour répondre.', a: 'Pour une quantité donnée, l’offre la moins chère est celle dont le point est le plus bas. Les droites se coupent quand les prix sont égaux. Sans graphique, calcule le prix de chaque offre.',
+  g: function(){
+    var S = [
+      ['À la piscine de Cany-Barville', 'séance', 'séances', 'tarif à la séance', 'carte annuelle', 'pass illimité'],
+      ['Au cinéma de Fécamp', 'place', 'places', 'place au tarif normal', 'carte de fidélité', 'abonnement illimité'],
+      ['À la salle d’escalade', 'entrée', 'entrées', 'entrée simple', 'adhésion au club', 'forfait saison'],
+      ['Pour louer un kayak à Veulettes-sur-Mer', 'heure', 'heures', 'location à l’heure', 'formule « membre »', 'forfait journée'],
+      ['Pour louer un vélo électrique', 'heure', 'heures', 'location à l’heure', 'formule avec caution', 'forfait journée'],
+      ['Au cours de musique', 'cours', 'cours', 'cours à l’unité', 'inscription annuelle', 'forfait trimestre'],
+      ['À la laverie', 'lavage', 'lavages', 'lavage à l’unité', 'carte rechargeable', 'abonnement mensuel'],
+      ['Au parking de la gare', 'heure', 'heures', 'tarif horaire', 'badge résident', 'forfait journée'],
+      ['Au musée Les Pêcheries de Fécamp', 'visite', 'visites', 'billet à l’unité', 'carte d’ami du musée', 'pass annuel'],
+      ['Pour le bus de la ligne régionale', 'trajet', 'trajets', 'ticket à l’unité', 'carte « jeune »', 'abonnement mensuel'],
+      ['À la patinoire', 'entrée', 'entrées', 'entrée simple', 'carte membre', 'pass saison'],
+      ['Au club de tennis', 'heure de court', 'heures de court', 'location à l’heure', 'adhésion au club', 'forfait illimité'],
+      ['Pour les cours de paddle à Saint-Valery-en-Caux', 'séance', 'séances', 'séance à l’unité', 'adhésion à l’école', 'forfait été']
+    ], ci = rnd(0, S.length - 1), C = S[ci], une = /^(cours|lavage|trajet)$/.test(C[1]) ? 'un' : 'une', de = function(z){ return (/^[aeiouhéèê]/.test(z) ? 'd’' : 'de ') + z; };
+    var big = Math.random() < 0.4, xm = big ? 20 : 10, sx = big ? 2 : 1, a, c, X, b;
+    do { a = big ? rnd(2, 5) : rnd(3, 9); c = rnd(1, a - 1); X = big ? 2 * rnd(2, 8) : rnd(2, 8); b = (a - c) * X; } while (b > 60 || b < 6);
+    var top = Math.max(a * xm, c * xm + b), sy = [2, 5, 10, 20, 25, 50].find(function(z){ return top / z <= 10; }), ym = Math.ceil(top / sy) * sy;
+    var three = Math.random() < 0.4, F = 0;
+    if (three){ F = sy * rnd(Math.ceil((c * X + b) / sy) + 1, Math.floor((c * xm + b) / sy) - 1); if (!(F > c * X + b && F < c * xm + b && F < a * xm)) { three = false; F = 0; } }
+    var graph = Math.random() < 0.6, u1 = C[1], u = C[2];
+    var A = function(n){ return a * n; }, B = function(n){ return c * n + b; }, Cf = function(){ return F; };
+    var tx = 'Offre A (' + C[3] + ') : ' + a + ' € par ' + u1 + '. Offre B (' + C[4] + ') : ' + b + ' € d’abonnement, puis ' + c + ' € par ' + u1 + '.' + (three ? ' Offre C (' + C[5] + ') : ' + F + ' € quel que soit le nombre ' + de(u) + '.' : '');
+    var intro = C[0] + ', trois formules sont proposées (tarifs fictifs).'.replace('trois', three ? 'trois' : 'deux');
+    var o = null;
+    if (graph){
+      var lab = function(f, ka, kb, t, col){ var x = xm * 0.88, y = f(x); if (y > ym * 0.9){ x = (ym * 0.9 - kb) / (ka || 1e-9) - xm * 0.08; y = ym * 0.9; } return {type: 'lab', x: Math.max(x, xm * 0.05), y: y + ym * 0.06, t: t, col: col}; };
+      var it = [{type: 'line', a: a}, {type: 'line', a: c, b: b, col: 'var(--ko)'}, lab(A, a, 0, 'A', 'var(--accent)'), lab(B, c, b, 'B', 'var(--ko)')];
+      if (three){ it.push({type: 'line', a: 0, b: F, col: 'var(--ok)'}); it.push({type: 'lab', x: xm * 0.04, y: F + ym * 0.05, t: 'C', col: 'var(--ok)'}); }
+      o = {xm: xm, ym: ym, sx: sx, sy: sy, xl: 'nombre ' + de(u), yl: 'prix (€)', items: it};
+      intro = C[0] + ', le graphique donne le prix payé selon le nombre ' + de(u) + ' : offre A en bleu, offre B en rouge' + (three ? ', offre C en vert' : '') + ' (tarifs fictifs).';
+    }
+    var head = graph ? intro + ' ' : intro + ' ' + tx + ' ';
+    var rd = graph ? 'On lit sur le graphique' : 'On calcule', w = rnd(0, three ? 6 : 5), n, st, v, Q;
+    var pn = function(n){ return 'A : ' + a + ' × ' + n + ' = ' + A(n) + ' € ; B : ' + b + ' + ' + c + ' × ' + n + ' = ' + B(n) + ' €' + (three ? ' ; C : ' + F + ' €' : ''); };
+    if (w === 0){
+      Q = {type: 'num', q: head + 'Pour combien ' + de(u) + ' les offres A et B coûtent-elles le même prix ?', v: X, unit: u,
+        steps: graph ? ['Les droites A et B se coupent au point d’abscisse ' + X + '.', 'Vérification : ' + pn(X) + '.'] : ['On cherche n tel que ' + a + ' × n = ' + b + ' + ' + c + ' × n, soit ' + (a - c) + ' × n = ' + b + '.', 'n = ' + b + ' ÷ ' + (a - c) + ' = ' + X + '. Vérification : ' + pn(X) + '.'],
+        traps: [[A(X), 'C’est le prix, pas le nombre ' + de(u) + '.']]};
+    } else if (w === 1 || w === 6 && !three){
+      var opts = three ? ['Offre A', 'Offre B', 'Offre C'] : ['Offre A', 'Offre B'], P;
+      do { n = big ? 2 * rnd(1, 9) : rnd(1, 9); P = [A(n), B(n)].concat(three ? [F] : []); } while (n === X || P.some(function(z, k){ return P.indexOf(z) !== k; }));
+      var best = P.indexOf(Math.min.apply(null, P));
+      Q = {type: 'ch', q: head + 'Quelle offre est la moins chère pour ' + n + ' ' + (n > 1 ? u : u1) + ' ?', ch: opts, ans: best, steps: [rd + ' les prix pour ' + n + ' ' + (n > 1 ? u : u1) + ' : ' + pn(n) + '.', 'La moins chère est l’offre ' + 'ABC'[best] + '.']};
+    } else if (w === 2){
+      do { n = big ? 2 * rnd(1, 9) : rnd(1, 9); } while (n === X);
+      v = Math.abs(A(n) - B(n));
+      Q = {type: 'num', q: head + 'Pour ' + n + ' ' + (n > 1 ? u : u1) + ', combien économise-t-on en choisissant la moins chère des offres A et B ?', v: v, unit: '€', steps: [rd + ' : ' + pn(n).replace(/ ; C.*$/, '') + '.', 'Économie : ' + Math.max(A(n), B(n)) + ' − ' + Math.min(A(n), B(n)) + ' = ' + v + ' €.'], traps: [[Math.min(A(n), B(n)), 'C’est le prix de l’offre la moins chère, pas l’économie.']]};
+    } else if (w === 3){
+      var m = rnd(Math.max(2, X - 3), xm - 1), r = rnd(0, c - 1), Pb = c * m + b + r;
+      Q = {type: 'num', q: head + 'Avec un budget de ' + Pb + ' €, combien ' + de(u) + ' peut-on payer au maximum avec l’offre B ?', v: m, unit: u,
+        steps: ['Avec l’offre B, on paie d’abord ' + b + ' € d’abonnement : il reste ' + Pb + ' − ' + b + ' = ' + (Pb - b) + ' €.', (Pb - b) + ' ÷ ' + c + (r ? ' ≈ ' + fr(cl((Pb - b) / c)) + ' : on ne peut payer que ' + m + ' ' + u + ' entières.' : ' = ' + m + '.') + ' (Avec ' + (m + 1) + ' ' + u + ', on paierait ' + B(m + 1) + ' €.)'],
+        traps: [[Math.floor(Pb / a), 'C’est le nombre ' + de(u) + ' avec l’offre A.'], [Math.floor(Pb / c), 'N’oublie pas l’abonnement de ' + b + ' €.']]};
+    } else if (w === 4){
+      var k = graph ? rnd(0, 2) : 2;
+      if (k === 0) Q = {type: 'num', q: head + 'Quel est le montant de l’abonnement de l’offre B ?', v: b, unit: '€', steps: ['Pour 0 ' + u1 + ', on paie seulement l’abonnement : la droite B coupe l’axe des prix à ' + b + ' €.']};
+      else if (k === 1) Q = {type: 'num', q: head + 'Quel est le prix d’' + une + ' ' + u1 + ' supplémentaire avec l’offre B ?', v: c, unit: '€', steps: ['Pour 0 ' + u1 + ' : ' + b + ' € ; pour ' + X + ' ' + u + ' : ' + B(X) + ' €.', (une === 'un' ? 'Chaque ' : 'Chaque ') + u1 + ' coûte (' + B(X) + ' − ' + b + ') ÷ ' + X + ' = ' + c + ' €.'], traps: [[b, 'C’est l’abonnement, pas le prix d’' + une + ' ' + u1 + '.'], [cl(B(X) / X), 'Il faut d’abord enlever l’abonnement.']]};
+      else { n = big ? 2 * rnd(1, 9) : rnd(2, 9); Q = {type: 'num', q: head + 'Combien paie-t-on en tout pour ' + n + ' ' + u + ' avec l’offre B ?', v: B(n), unit: '€', steps: ['Abonnement + ' + n + ' ' + u + ' : ' + b + ' + ' + c + ' × ' + n + ' = ' + B(n) + ' €.'], traps: [[c * n, 'N’oublie pas l’abonnement de ' + b + ' €.'], [(b + c) * n, 'L’abonnement ne se paie qu’une fois.']]}; }
+    } else if (w === 5){
+      Q = {type: 'num', q: head + 'À partir de combien ' + de(u) + ' l’offre B est-elle strictement moins chère que l’offre A ?', v: X + 1, unit: u,
+        steps: ['Les offres A et B coûtent le même prix pour ' + X + ' ' + u + ' (' + A(X) + ' €).', 'Au-delà, B est moins chère : pour ' + (X + 1) + ' ' + u + ', A coûte ' + A(X + 1) + ' € et B ' + B(X + 1) + ' €. Réponse : ' + (X + 1) + '.'],
+        traps: [[X, 'Pour ' + X + ' ' + u + ', les deux offres coûtent le même prix : B n’est pas encore strictement moins chère.']]};
+    } else {
+      var nA = Math.floor(F / a) + 1;
+      Q = {type: 'num', q: head + 'À partir de combien ' + de(u) + ' l’offre C est-elle strictement moins chère que l’offre A ?', v: nA, unit: u,
+        steps: ['L’offre C coûte toujours ' + F + ' €. Avec l’offre A : ' + a + ' × ' + (nA - 1) + ' = ' + A(nA - 1) + ' € (pas plus cher que C) et ' + a + ' × ' + nA + ' = ' + A(nA) + ' € (plus cher que C).', 'Réponse : ' + nA + ' ' + u + '.'],
+        traps: [[nA - 1, 'Pour ' + (nA - 1) + ' ' + u + ', l’offre A n’est pas encore plus chère que C.']]};
+    }
+    if (o) Q.svg = graphSvg(o);
+    Q.key = ci + '-' + w;
+    return Q; }}
 );
 var NOTIONS = [
  {n: 'N11', t: 'Calculer une quatrième proportionnelle', r: 'on passe par l’unité, on utilise le coefficient de proportionnalité ou le produit en croix : si a ↔ b et c ↔ ?, alors ? = b × c ÷ a.'},
