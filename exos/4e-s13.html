@@ -50,7 +50,15 @@ var EX = [
     else if (t === 1){ q = fr(c) + ' + ' + b + sup(n); v = c + Math.pow(b, n); st = [b + sup(n) + ' = ' + Math.pow(b, n) + ', puis ' + fr(c) + ' + ' + Math.pow(b, n) + ' = ' + fr(v) + '.']; }
     else if (t === 2){ q = '(' + a + ' + ' + b + ')²'; v = (a + b) * (a + b); st = ['Parenthèses d’abord : ' + (a + b) + '² = ' + v + '.']; }
     else { q = a + '² + ' + b + '²'; v = a * a + b * b; st = [a * a + ' + ' + b * b + ' = ' + v + '.']; }
-    return {type: 'num', q: q + ' = ?', v: v, steps: st, key: q}; }}
+    return {type: 'num', q: q + ' = ?', v: v, steps: st, key: q}; }},
+ {id: 'n29e', lv: 3, n: 'N29', t: 'Avec des lettres', d: '3x², (2x)², −x² pour une valeur de x.', c: 'Calcule pour la valeur de x donnée.', a: 'Je remplace x par sa valeur entre parenthèses, puis la puissance d’abord : pour x = −2, 3x² = 3 × (−2)² = 3 × 4 = 12.',
+  g: function(){ var x = rnz(-4, 4), k = rnd(2, 5), t = rnd(0, 4), X = x < 0 ? '(' + fr(x) + ')' : fr(x), q, v, st;
+    if (t === 0){ q = k + 'x²'; v = k * x * x; st = [k + ' × ' + X + '² = ' + k + ' × ' + (x * x) + ' = ' + fr(v) + '.']; }
+    else if (t === 1){ q = '(' + k + 'x)²'; v = k * k * x * x; st = ['(' + k + ' × ' + X + ')² = ' + (k * x < 0 ? '(' + fr(k * x) + ')' : fr(k * x)) + '² = ' + fr(v) + '.']; }
+    else if (t === 2){ q = '−x²'; v = -x * x; st = ['−x² = −(' + X + '²) = −' + (x * x) + ' : on prend l’opposé du carré.']; }
+    else if (t === 3){ q = 'x³'; v = x * x * x; st = [X + ' × ' + X + ' × ' + X + ' = ' + fr(v) + '.']; }
+    else { q = 'x² + x'; v = x * x + x; st = [X + '² + ' + X + ' = ' + (x * x) + ' + ' + X + ' = ' + fr(v) + '.']; }
+    return {type: 'num', q: 'Pour x = ' + fr(x) + ' : ' + q + ' = ?', v: v, steps: st, traps: [[t === 0 ? (k * x) * (k * x) : t === 2 ? x * x : null, t === 0 ? 'La puissance passe avant la multiplication : on ne calcule pas (' + k + 'x)².' : 'Sans parenthèses, −x² est l’opposé de x², donc négatif.']].filter(function(p){ return p[0] !== null && p[0] !== v; }), key: q + x}; }}
 ];
 EX.push(
  {id: 'n30a', lv: 1, n: 'N30', t: 'Puissances de 10', d: 'Écriture décimale.', c: 'Donne l’écriture décimale.', a: '10ⁿ (n positif) : 1 suivi de n zéros. 10⁻ⁿ : 0,0…01 avec le 1 au n-ième rang après la virgule.',
