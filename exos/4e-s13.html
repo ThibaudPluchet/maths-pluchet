@@ -63,19 +63,24 @@ var EX = [
 EX.push(
  {id: 'n30a', lv: 1, n: 'N30', t: 'Puissances de 10', d: 'Écriture décimale.', c: 'Donne l’écriture décimale.', a: '10ⁿ (n positif) : 1 suivi de n zéros. 10⁻ⁿ : 0,0…01 avec le 1 au n-ième rang après la virgule.',
   g: function(){ var n = rnd(-6, 8); return {type: 'num', q: '10' + sup(n) + ' = ?', v: n >= 0 ? Math.pow(10, n) : cl(Math.pow(10, n)), steps: [n >= 0 ? '1 suivi de ' + n + ' zéro' + (n > 1 ? 's' : '') + ' : ' + strP10(n) + '.' : '10' + sup(n) + ' = 1 ÷ 10' + sup(-n) + ' = ' + strP10(n) + ' (le 1 est au ' + (-n) + 'e rang après la virgule).'], key: 'p' + n}; }},
- {id: 'n30b', lv: 2, n: 'N30', t: 'Produits et quotients', d: '10ᵃ × 10ᵇ, 10ᵃ ÷ 10ᵇ.', c: 'Écris le résultat sous la forme 10ⁿ : donne n.', a: '10ᵃ × 10ᵇ = 10ᵃ⁺ᵇ ; 10ᵃ ÷ 10ᵇ = 10ᵃ⁻ᵇ ; (10ᵃ)ᵇ = 10ᵃˣᵇ.',
-  g: function(){ var a = rnz(-7, 9), b = rnz(-6, 8), t = rnd(0, 2), q, v, st;
-    if (t === 0){ q = '10' + sup(a) + ' × 10' + sup(b); v = a + b; st = [fr(a) + ' + ' + pf(b) + ' = ' + fr(v) + '.']; }
-    else if (t === 1){ q = '10' + sup(a) + ' ÷ 10' + sup(b); v = a - b; st = [fr(a) + ' ' + MINUS + ' ' + pf(b) + ' = ' + fr(v) + '.']; }
-    else { b = rnd(2, 3); q = '(10' + sup(a) + ')' + sup(b); v = a * b; st = [fr(a) + ' × ' + b + ' = ' + fr(v) + '.']; }
-    return {type: 'num', q: q + ' = 10^?', lab: 'n =', v: v, steps: st.concat(['Résultat : 10' + sup(v) + '.']), key: q}; }},
- {id: 'n30c', lv: 2, n: 'N30', t: 'Les préfixes', d: 'kilo, méga, giga, milli, micro, nano.', c: 'Donne l’exposant n.', a: 'kilo = 10³, méga = 10⁶, giga = 10⁹, téra = 10¹² ; milli = 10⁻³, micro = 10⁻⁶, nano = 10⁻⁹.',
-  g: function(){ var P = [['kilo', 'k', 3], ['méga', 'M', 6], ['giga', 'G', 9], ['téra', 'T', 12], ['milli', 'm', -3], ['micro', 'µ', -6], ['nano', 'n', -9], ['centi', 'c', -2]], p = pick(P), U = pick([['mètre', 'm'], ['gramme', 'g'], ['octet', 'o'], ['watt', 'W']]);
+ {id: 'n30b', lv: 2, n: 'N30', t: 'Produits et quotients', d: '10ᵃ × 10ᵇ, 10ᵃ ÷ 10ᵇ, par la définition.', c: 'Écris le résultat sous la forme 10ⁿ : donne n.', a: 'Je reviens à l’écriture décimale de chaque puissance de 10, je calcule, puis je compte les zéros (ou le rang du 1 après la virgule).',
+  g: function(){ var t = rnd(0, 2), a, b, q, v, st;
+    if (t === 0){ do { a = rnd(-4, 5); b = rnd(-4, 5); v = a + b; } while (a === 0 || b === 0 || v < -6 || v > 7); q = '10' + sup(a) + ' × 10' + sup(b); st = [strP10(a) + ' × ' + strP10(b) + ' = ' + strP10(v) + ' = 10' + sup(v) + '.']; }
+    else if (t === 1){ do { a = rnd(-3, 7); b = rnd(-3, 5); v = a - b; } while (a === 0 || b === 0 || v < -6 || v > 7); q = '10' + sup(a) + ' ÷ 10' + sup(b); st = [strP10(a) + ' ÷ ' + strP10(b) + ' = ' + strP10(v) + ' = 10' + sup(v) + '.']; }
+    else { a = rnd(1, 3); b = rnd(2, 3); v = a * b; q = '(10' + sup(a) + ')' + sup(b); st = ['(10' + sup(a) + ')' + sup(b) + ' = ' + Array(b).fill('10' + sup(a)).join(' × ') + ' = ' + Array(b).fill(strP10(a)).join(' × ') + ' = ' + strP10(v) + ' = 10' + sup(v) + '.']; }
+    return {type: 'num', q: q + ' = 10^?', lab: 'n =', v: v, steps: st, traps: t === 0 && a * b !== v ? [[a * b, 'On ne multiplie pas les exposants : reviens à l’écriture décimale.']] : [], key: q}; }},
+ {id: 'n30c', lv: 2, n: 'N30', t: 'Les préfixes', d: 'kilo, méga, giga, milli, micro, nano.', c: 'Donne l’exposant n.', a: 'kilo = 10³, méga = 10⁶, giga = 10⁹ ; milli = 10⁻³, micro = 10⁻⁶, nano = 10⁻⁹.',
+  g: function(){ var P = [['kilo', 'k', 3], ['méga', 'M', 6], ['giga', 'G', 9], ['milli', 'm', -3], ['micro', 'µ', -6], ['nano', 'n', -9], ['centi', 'c', -2]], p = pick(P), U = pick([['mètre', 'm'], ['gramme', 'g'], ['octet', 'o'], ['watt', 'W']]);
     if (U[1] === 'm' && p[1] === 'm' || U[1] === 'o' && p[2] < 0 || U[1] === 'W' && p[2] < 0 && p[1] !== 'm' || U[1] === 'g' && (p[2] > 3 || p[1] === 'c')) return this.g();
     return {type: 'num', q: '1 ' + p[0] + U[0] + ' (1 ' + p[1] + U[1] + ') = 10^? ' + U[0] + 's', lab: 'n =', v: p[2], steps: ['« ' + p[0] + ' » signifie 10' + sup(p[2]) + ' : 1 ' + p[1] + U[1] + ' = 10' + sup(p[2]) + ' ' + U[1] + '.'], key: p[0] + U[0]}; }},
  {id: 'n30d', lv: 2, n: 'N30', t: 'Multiplier par une puissance de 10', d: 'Déplacer la virgule.', c: 'Donne l’écriture décimale.', a: 'Multiplier par 10ⁿ (n positif) : la virgule se déplace de n rangs vers la droite. Par 10⁻ⁿ : de n rangs vers la gauche.',
   g: function(){ var a = cl(rnd(11, 9999) / pick([1, 10, 100])), n = rnz(-4, 5), v = cl(a * Math.pow(10, n)); if (Math.abs(v) < 1e-6 || String(v).length > 12) return this.g();
-    return {type: 'num', q: fr(a) + ' × 10' + sup(n) + ' = ?', v: v, steps: ['La virgule se déplace de ' + Math.abs(n) + ' rang' + (Math.abs(n) > 1 ? 's' : '') + ' vers la ' + (n > 0 ? 'droite' : 'gauche') + ' : ' + fr(v) + '.']}; }}
+    return {type: 'num', q: fr(a) + ' × 10' + sup(n) + ' = ?', v: v, steps: ['La virgule se déplace de ' + Math.abs(n) + ' rang' + (Math.abs(n) > 1 ? 's' : '') + ' vers la ' + (n > 0 ? 'droite' : 'gauche') + ' : ' + fr(v) + '.'], key: fr(a) + 'e' + n}; }},
+ {id: 'n30e', lv: 3, n: 'N30', t: 'Convertir avec les préfixes', d: 'km, MW, GW, mg, µm, nm…', c: 'Complète la conversion.', a: 'Je remplace chaque préfixe par sa puissance de 10 (k = 10³, M = 10⁶, G = 10⁹, m = 10⁻³, µ = 10⁻⁶, n = 10⁻⁹), puis je décale la virgule.',
+  g: function(){ var C = [['km', 'm', 3, 'mètres'], ['MW', 'W', 6, ''], ['GW', 'W', 9, ''], ['GW', 'MW', 3, ''], ['MW', 'kW', 3, ''], ['mg', 'g', -3, ''], ['mL', 'L', -3, ''], ['µm', 'm', -6, ''], ['nm', 'm', -9, ''], ['µm', 'mm', -3, ''], ['nm', 'µm', -3, ''], ['ms', 's', -3, ''], ['m', 'km', -3, ''], ['W', 'kW', -3, ''], ['g', 'mg', 3, ''], ['L', 'mL', 3, '']], k = rnd(0, C.length - 1), c = C[k];
+    var x = pick([cl(rnd(2, 9)), cl(rnd(11, 99) / 10), cl(rnd(12, 450)), cl(rnd(1, 9) / 10)]), v = cl(x * Math.pow(10, c[2]));
+    var w = x * Math.pow(10, c[2]); if (String(v).length > 13 || Math.abs(v - w) > 1e-9 * Math.abs(w)) return this.g();
+    return {type: 'num', q: fr(x) + ' ' + c[0] + ' = ? ' + c[1], lab: c[1] + ' :', v: v, steps: ['1 ' + c[0] + ' = 10' + sup(c[2]) + ' ' + c[1] + ', donc ' + fr(x) + ' ' + c[0] + ' = ' + fr(x) + ' × 10' + sup(c[2]) + ' ' + c[1] + ' = ' + fr(v) + ' ' + c[1] + '.'], traps: [[cl(x * Math.pow(10, -c[2])), 'La virgule est partie dans le mauvais sens : vérifie l’ordre de grandeur.']], key: c[0] + c[1]}; }}
 );
 function sci(x){ var e = Math.floor(Math.log10(Math.abs(x)) + 1e-9), m = cl(x / Math.pow(10, e)); if (Math.abs(m) >= 10){ m = cl(m / 10); e++; } return [m, e]; }
 EX.push(
