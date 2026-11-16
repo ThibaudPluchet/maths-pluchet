@@ -355,6 +355,10 @@ function start(D){
     document.title = 'Maths – accès enseignant';
     var pn = el('p', 'profnote', 'Accès enseignant : « Toutes les 4e / 3e » montre tous les documents de la page enseignant, que les cases soient cochées ou non. Une classe montre exactement ce que voient ses élèves (sauf les corrections de fiches d’exercices, réservées à l’adresse de la classe).');
     picker.insertBefore(pn, picker.firstChild);   // dans la colonne du site (même largeur que le reste)
+    // outils de classe réservés à l'enseignant (pas de lien dans les adresses de classe)
+    try { localStorage.setItem('mp:prof', '1'); } catch(e){}
+    var ol = el('a', 'profnote', '⏱ Minuteur de classe (fenêtre flottante) ↗'); ol.href = 'outils/minuteur.html'; ol.target = '_blank'; ol.rel = 'noopener'; ol.style.display = 'inline-block'; ol.style.fontWeight = '700';
+    picker.insertBefore(ol, pn.nextSibling);
   }
   // Adresse de la page (avec la classe) gardée pour le bouton « Retour » des exerciseurs
   try { localStorage.setItem('mp:retour', location.href); } catch(e){}

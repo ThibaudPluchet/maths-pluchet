@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Minuteur de classe</title>
+<style id="css">
+:root{--bg:#0f172a;--fg:#f8fafc;--accent:#22c55e;--warn:#f59e0b;--end:#ef4444;--muted:#94a3b8;--btn:#1e293b;--line:#334155}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif}
+body{display:flex;flex-direction:column}
+button{font:inherit;font-weight:600;background:var(--btn);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:.5em .9em;cursor:pointer;font-size:clamp(13px,2.1vh,20px)}
+button:hover{background:var(--line)}
+button.primary{background:var(--accent);color:#052e16;border-color:transparent}
+button.big{font-size:clamp(15px,2.6vh,24px);padding:.6em 1.2em}
+input{font:inherit;width:4.2em;padding:.4em;border-radius:8px;border:1px solid var(--line);background:#020617;color:var(--fg);text-align:center;font-size:clamp(14px,2.1vh,20px)}
+
+/* Bloc minuteur (déplacé tel quel dans la fenêtre flottante) */
+#slot{flex:1;display:flex;align-items:center;justify-content:center;min-height:45vh}
+.widget{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6vh;padding:1.5vh 2vw;transition:background .3s}
+.time{font-variant-numeric:tabular-nums;font-weight:800;line-height:1;font-size:min(24vw,38vh);letter-spacing:-.02em;transition:color .3s}
+.bar{width:90%;height:max(6px,2.2vh);background:var(--line);border-radius:999px;overflow:hidden}
+.bar>div{height:100%;width:100%;background:var(--accent);transition:width .15s linear,background .3s}
+.ctrls{display:flex;gap:.6em;flex-wrap:wrap;justify-content:center}
+.warn .time{color:var(--warn)} .warn .bar>div{background:var(--warn)}
+.end .time{color:var(--end);animation:blink 1s steps(2,start) infinite}
+.end{background:rgba(239,68,68,.14)}
+@keyframes blink{50%{opacity:.2}}
+.away-msg{display:none;color:var(--muted);font-size:clamp(16px,3vh,26px);text-align:center}
+#slot.away .away-msg{display:block}
+
+/* Fenêtre flottante */
+.pip .time{font-size:min(30vw,55vh)}
+.pip .widget{gap:5vh;padding:3vh 3vw}
+.pip .ctrls{gap:2vw}
+.pip .ctrls button{font-size:clamp(11px,7vh,18px);padding:.25em .55em;border-radius:7px}
+.pip .lbl{display:none}
+
+/* Réglages (restent dans la page principale) */
+.setup{display:flex;flex-direction:column;align-items:center;gap:1.4vh;padding:1vh 2vw 2.5vh;border-top:1px solid var(--line)}
+.row{display:flex;gap:.6em;flex-wrap:wrap;justify-content:center;align-items:center}
+.muted{color:var(--muted)}
+#msg{min-height:1.3em;color:var(--warn);text-align:center;font-size:15px;max-width:70ch}
+label{display:flex;align-items:center;gap:.4em;cursor:pointer;font-size:clamp(13px,2vh,18px)}
+.keys{font-size:13px;color:var(--muted);text-align:center}
+kbd{border:1px solid var(--line);border-radius:4px;padding:0 .35em;font-family:inherit}
+</style>
+</head>
+<body>
+<div id="gate" style="position:fixed;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;background:#0f172a;color:#94a3b8;font:18px system-ui,sans-serif;text-align:center;padding:24px">Page réservée à l’enseignant.</div>
+<div id="slot">
+  <div id="widget" class="widget">
+    <div id="time" class="time">5:00</div>
+    <div class="bar"><div id="fill"></div></div>
+    <div class="ctrls">
+      <button id="bMinus" title="Retirer 1 minute">−1<span class="lbl"> min</span></button>
+      <button id="bPlay" class="primary">▶<span class="lbl"> Démarrer</span></button>
+      <button id="bReset" title="Recommencer">↺<span class="lbl"> Réinitialiser</span></button>
+      <button id="bPlus" title="Ajouter 1 minute">+1<span class="lbl"> min</span></button>
+    </div>
+  </div>
+  <p class="away-msg">Le minuteur est affiché dans la fenêtre flottante.<br>Fermez-la pour le ramener ici.</p>
+</div>
+
+<div class="setup">
+  <div class="row" id="presets"></div>
+  <div class="row">
+    <span class="muted">Durée :</span>
+    <input id="inMin" type="number" min="0" max="180" value="5" aria-label="minutes"> <span class="muted">min</span>
+    <input id="inSec" type="number" min="0" max="59" value="0" aria-label="secondes"> <span class="muted">s</span>
+    <button id="bSet">Régler</button>
+    <label><input id="cSound" type="checkbox" checked style="width:auto"> Sonnerie</label>
+  </div>
+  <div class="row">
+    <button id="bFloat" class="primary big">⧉ Superposer aux autres fenêtres</button>
+    <button id="bFull" class="big">⛶ Plein écran</button>
+  </div>
+  <div id="msg"></div>
+  <div class="keys"><kbd>Espace</kbd> démarrer/pause · <kbd>R</kbd> réinitialiser · <kbd>+</kbd>/<kbd>−</kbd> une minute · <kbd>F</kbd> fenêtre flottante</div>
+</div>
+
+<script>
+// Réservé à l'enseignant : navigateur déjà passé par l'accès enseignant du site, ou lien personnel minuteur.html#prof=<code>
+(function(){
+  var PROF_HASH = '5a7300999345ce2278c87b182fb492e326f26abe7aae5be0d23e14ddfda3aab7';
+  function get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function set(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+  function open(){ var g = document.getElementById('gate'); if (g) g.remove(); }
+  if (get('mp:prof') === '1') { open(); return; }
+  var m = location.hash.match(/prof=([A-Za-z0-9_-]+)/), t = m ? m[1] : get('prof');
+  if (m) try { history.replaceState(null, '', location.pathname); } catch(e){}
+  if (!t || !window.crypto || !crypto.subtle) return;
+  crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function(b){
+    var h = Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join('');
+    if (h === PROF_HASH){ set('prof', t); set('mp:prof', '1'); open(); }
+  });
+})();
+</script>
+<script>
+const $ = s => document.querySelector(s);
+const widget = $('#widget'), slot = $('#slot'), timeEl = $('#time'), fill = $('#fill'), bPlay = $('#bPlay');
+
+let total = 300, remaining = 300, running = false, endAt = 0, ended = false;
+let pipWin = null, audioCtx = null, canvas = null, ctx = null, video = null;
+
+const now = () => performance.now() / 1000;
+const cur = () => running ? Math.max(0, endAt - now()) : remaining;
+function fmt(s){ s = Math.max(0, Math.ceil(s - 1e-6)); const m = Math.floor(s/60), r = s % 60; return m + ':' + String(r).padStart(2,'0'); }
+function msg(t){ $('#msg').textContent = t || ''; }
+
+/* --- Actions --- */
+function start(){ if (running) return; if (remaining <= 0) reset(); if (remaining <= 0) return; ensureAudio(); endAt = now() + remaining; running = true; ended = false; render(); }
+function pause(){ if (!running) return; remaining = cur(); running = false; render(); }
+function toggle(){ running ? pause() : start(); }
+function reset(){ running = false; remaining = total; ended = false; render(); }
+function setDuration(sec){ sec = Math.max(1, Math.round(sec)); total = remaining = sec; running = false; ended = false; render(); }
+function add(d){
+  if (running) endAt = Math.max(now(), endAt + d); else remaining = Math.max(0, remaining + d);
+  if (cur() > 0) ended = false;
+  total = Math.max(total, Math.ceil(cur()));
+  render();
+}
+
+/* --- Son --- */
+function ensureAudio(){
+  try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch(e){}
+}
+function ring(){
+  if (!$('#cSound').checked || !audioCtx) return;
+  const t0 = audioCtx.currentTime;
+  for (let i = 0; i < 3; i++){
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = 'sine'; o.frequency.value = 880;
+    g.gain.setValueAtTime(0.0001, t0 + i*0.45);
+    g.gain.exponentialRampToValueAtTime(0.5, t0 + i*0.45 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + i*0.45 + 0.35);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(t0 + i*0.45); o.stop(t0 + i*0.45 + 0.4);
+  }
+}
+
+/* --- Affichage --- */
+function render(){
+  const r = cur();
+  timeEl.textContent = fmt(r);
+  fill.style.width = (total ? Math.min(100, r/total*100) : 0) + '%';
+  widget.classList.toggle('end', ended);
+  widget.classList.toggle('warn', !ended && r > 0 && r <= Math.min(60, total*0.25));
+  bPlay.innerHTML = running ? '⏸<span class="lbl"> Pause</span>' : '▶<span class="lbl"> Démarrer</span>';
+  if (video) drawCanvas();
+}
+function tick(){
+  if (running && endAt - now() <= 0){ running = false; remaining = 0; ended = true; ring(); }
+  render();
+}
+setInterval(tick, 100);
+
+/* --- Fenêtre flottante (toujours au premier plan) --- */
+async function openFloat(){
+  msg('');
+  if (pipWin){ pipWin.focus(); return; }
+  if ('documentPictureInPicture' in window){
+    try {
+      pipWin = await documentPictureInPicture.requestWindow({ width: 340, height: 190 });
+      const d = pipWin.document;
+      d.title = 'Minuteur';
+      d.head.appendChild($('#css').cloneNode(true));
+      d.body.classList.add('pip');
+      d.body.appendChild(widget);
+      d.addEventListener('keydown', onKey);
+      slot.classList.add('away');
+      pipWin.addEventListener('pagehide', () => { slot.prepend(widget); slot.classList.remove('away'); pipWin = null; });
+      return;
+    } catch(e){ pipWin = null; }
+  }
+  videoPip();
+}
+
+/* Solution de secours : image vidéo flottante (contrôle par la page principale) */
+async function videoPip(){
+  if (!document.pictureInPictureEnabled || !HTMLCanvasElement.prototype.captureStream){
+    msg('Ce navigateur ne permet pas de superposer le minuteur. Ouvrez ce fichier avec Chrome ou Edge sur l’ordinateur de la classe.');
+    return;
+  }
+  try {
+    canvas = document.createElement('canvas'); canvas.width = 640; canvas.height = 300; ctx = canvas.getContext('2d');
+    video = document.createElement('video'); video.muted = true; video.playsInline = true;
+    video.style.cssText = 'position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:0;pointer-events:none';
+    document.body.appendChild(video);
+    drawCanvas();
+    video.srcObject = canvas.captureStream(10);
+    await video.play();
+    await video.requestPictureInPicture();
+    video.addEventListener('leavepictureinpicture', () => { video.remove(); video = null; });
+    if ('mediaSession' in navigator){
+      navigator.mediaSession.setActionHandler('play', () => { start(); });
+      navigator.mediaSession.setActionHandler('pause', () => { pause(); });
+    }
+    msg('Mode simplifié : la fenêtre flottante affiche le temps ; utilisez les boutons de cette page (ou le bouton lecture/pause de la fenêtre).');
+  } catch(e){
+    if (video){ video.remove(); video = null; }
+    msg('Impossible d’ouvrir la fenêtre flottante ici. Ouvrez ce fichier avec Chrome ou Edge.');
+  }
+}
+function drawCanvas(){
+  const r = cur(), W = canvas.width, H = canvas.height;
+  const blinkOff = ended && Math.floor(performance.now()/500) % 2;
+  const col = ended ? '#ef4444' : (widget.classList.contains('warn') ? '#f59e0b' : '#f8fafc');
+  ctx.fillStyle = ended ? '#2a1220' : '#0f172a'; ctx.fillRect(0,0,W,H);
+  if (!blinkOff){
+    ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = '800 170px system-ui, Segoe UI, Arial, sans-serif';
+    ctx.fillText(fmt(r), W/2, H*0.44);
+  }
+  ctx.fillStyle = '#334155'; ctx.fillRect(40, H-50, W-80, 18);
+  ctx.fillStyle = ended ? '#ef4444' : (widget.classList.contains('warn') ? '#f59e0b' : '#22c55e');
+  ctx.fillRect(40, H-50, (W-80) * (total ? Math.min(1, r/total) : 0), 18);
+}
+
+/* --- Interface --- */
+const presets = [[30,'30 s'],[60,'1 min'],[120,'2 min'],[180,'3 min'],[300,'5 min'],[600,'10 min'],[900,'15 min'],[1200,'20 min']];
+for (const [s,l] of presets){ const b = document.createElement('button'); b.textContent = l; b.onclick = () => { setDuration(s); $('#inMin').value = Math.floor(s/60); $('#inSec').value = s%60; }; $('#presets').appendChild(b); }
+$('#bSet').onclick = () => setDuration((+$('#inMin').value||0)*60 + (+$('#inSec').value||0));
+bPlay.onclick = toggle;
+$('#bReset').onclick = reset;
+$('#bPlus').onclick = () => add(60);
+$('#bMinus').onclick = () => add(-60);
+$('#bFloat').onclick = openFloat;
+$('#bFull').onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(()=>{}); } catch(e){} };
+
+function onKey(e){
+  if (e.target && e.target.tagName === 'INPUT') { if (e.key === 'Enter') $('#bSet').click(); return; }
+  const k = e.key.toLowerCase();
+  if (k === ' ') { e.preventDefault(); toggle(); }
+  else if (k === 'r') reset();
+  else if (k === '+' || k === '=') add(60);
+  else if (k === '-' || k === '_') add(-60);
+  else if (k === 'f' && !pipWin) openFloat();
+}
+document.addEventListener('keydown', onKey);
+render();
+</script>
+</body>
+</html>
