@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multiples, diviseurs et nombres premiers</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Multiples, diviseurs et nombres premiers</h1><span class="sub">Le crible d'Ératosthène, les multiples d'un nombre, les critères de divisibilité.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <button class="primary" id="cr">Crible d'Ératosthène : étape suivante</button><button id="rs">Effacer</button>
+  <span class="sep"></span>
+  <label>Multiples de <input type="number" id="m" value="6" min="2" max="50" style="width:80px"></label><button id="mg">Colorier</button>
+ </div>
+ <div class="msg" id="msg">Clique sur un nombre pour voir ses diviseurs.</div>
+</div>
+<div class="card"><div id="g"></div></div>
+<style>
+#g{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;max-width:900px;margin:0 auto}
+#g div{height:62px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;border-radius:10px;background:#fff;border:2px solid #e2ded3;cursor:pointer;position:relative;transition:background .3s,color .3s}
+#g div.x{color:#c4bfb3;background:#f3f1ea}
+#g div.x::after{content:"";position:absolute;left:12%;right:12%;top:50%;border-top:3px solid #d9482b;transform:rotate(-20deg)}
+#g div.p{background:#1f9255;color:#fff;border-color:#1f9255}
+#g div.cur{background:#2563c9;color:#fff;border-color:#2563c9}
+#g div.m{background:#fbeedd;border-color:#e07a1f;color:#b85c00}
+#g div.sel{outline:4px solid #8a4fd1}
+</style>
+<script>
+const cells=[];let step=0,timer=null,pend=[];
+function flush(){clearTimeout(timer);pend.forEach(c=>{cells[c].classList.remove("cur");cells[c].classList.add("x");});pend=[];}
+for(let i=1;i<=100;i++){const d=document.createElement("div");d.textContent=i;d.onclick=()=>info(i);$("g").appendChild(d);cells[i]=d;}
+function clear(){flush();step=0;cells.forEach(c=>c&&(c.className=""));}
+function info(n){
+  cells.forEach(c=>c&&c.classList.remove("sel"));cells[n].classList.add("sel");
+  const dv=[];for(let k=1;k<=n;k++)if(n%k===0)dv.push(k);
+  const ds=String(n).split("").reduce((a,c)=>a+ +c,0),u=n%10;
+  const cr=[n%2===0?"divisible par 2 (chiffre des unités pair)":"",n%3===0?`par 3 (${String(n).split("").join(" + ")} = ${ds}, multiple de 3)`:"",u===0||u===5?"par 5 (se termine par 0 ou 5)":"",n%9===0?`par 9 (somme des chiffres ${ds})`:"",u===0?"par 10":""].filter(Boolean);
+  say(`<b>${n}</b> a ${dv.length} diviseur${dv.length>1?"s":""} : ${dv.join(" ; ")}. `+(n===1?"1 n'est <b>pas</b> un nombre premier (un seul diviseur).":dv.length===2?`<b class="ok">${n} est un nombre premier</b> (exactement deux diviseurs : 1 et lui-même).`:`${n} n'est pas premier.`)+(cr.length?`<br><span class="mut">Critères : ${cr.join(", ")}.</span>`:""));
+}
+const P=[2,3,5,7];
+function crible(){
+  flush();
+  if(step===0){cells.forEach(c=>c&&(c.className=""));cells[1].classList.add("x");say("1 n'est pas premier : on le barre.");step++;return;}
+  if(step<=4){
+    const p=P[step-1];cells[p].classList.add("p");
+    say(`${p} n'est pas barré : il est <b>premier</b>. On barre tous ses multiples : ${p*2}, ${p*3}, ${p*4}…`);
+    const ms=[];for(let k=p*2;k<=100;k+=p)ms.push(k);pend=ms.slice();let j=0;
+    (function f(){if(j<ms.length){cells[ms[j]].classList.add("cur");const c=ms[j];setTimeout(()=>{cells[c].classList.remove("cur");cells[c].classList.add("x");},180);j++;timer=setTimeout(f,70);}})();
+    step++;return;
+  }
+  if(step===5){
+    let c=0;for(let i=2;i<=100;i++)if(!cells[i].classList.contains("x")){cells[i].classList.add("p");c++;}
+    say(`Après 7, il n'y a plus rien à barrer (11 × 11 = 121 dépasse 100). Les ${c} nombres restants sont les <b>nombres premiers</b> jusqu'à 100.`,"ok");step++;
+  }
+}
+$("cr").onclick=crible;$("rs").onclick=()=>{clear();say("Clique sur un nombre pour voir ses diviseurs.","mut");};
+$("mg").onclick=()=>{clear();const m=Math.max(2,Math.min(50,parseInt($("m").value)||2));const L=[];for(let k=m;k<=100;k+=m){cells[k].classList.add("m");L.push(k);}say(`Multiples de ${m} : ${L.join(", ")}… On avance de ${m} en ${m} : ce sont les nombres de la table de ${m}.`);};
+</script>
+
+</main>
+</body></html>

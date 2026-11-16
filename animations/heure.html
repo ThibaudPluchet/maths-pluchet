@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lire l'heure et calculer une durée</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Lire l'heure et calculer une durée</h1><span class="sub">Fais tourner la grande aiguille, puis calcule une durée en passant par les heures pleines.</span></header>
+<main>
+<div class="card" style="display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:20px;align-items:center">
+ <svg id="clk" viewBox="0 0 440 440"></svg>
+ <div>
+  <div id="dig" style="font-size:72px;font-weight:800;color:#2563c9;text-align:center"></div>
+  <div id="per" class="mut" style="text-align:center;font-size:20px;margin-bottom:14px"></div>
+  <div class="row" style="justify-content:center">
+   <button data-t="-60">− 1 h</button><button data-t="-5">− 5 min</button><button data-t="5">+ 5 min</button><button data-t="60">+ 1 h</button>
+  </div>
+  <p class="mut" style="text-align:center;font-size:18px">Fais glisser la grande aiguille (bleue). La petite aiguille avance toute seule !</p>
+ </div>
+</div>
+<div class="card">
+ <div class="row">
+  <span style="font-size:21px">Durée entre</span><input type="time" id="t1" value="09:40"><span style="font-size:21px">et</span><input type="time" id="t2" value="12:15">
+  <button class="primary" id="go">Calculer pas à pas</button><button id="rnd">Au hasard</button>
+ </div>
+ <svg id="fr" viewBox="0 0 1160 220" style="margin-top:10px"></svg>
+ <div id="dur" style="font-size:32px;font-weight:700;text-align:center;min-height:46px"></div>
+</div>
+<script>
+const C=$("clk"),F=$("fr");let t=10*60+35,drag=false,lastM=35;
+const hm=m=>{m=((m%1440)+1440)%1440;return Math.floor(m/60)+" h "+String(m%60).padStart(2,"0");};
+function drawClock(){
+  let h=`<circle cx="220" cy="220" r="205" fill="#fff" stroke="#1c2333" stroke-width="6"/>`;
+  for(let i=0;i<60;i++){const a=i*6*Math.PI/180,r1=i%5?192:180;h+=`<line x1="${220+r1*Math.sin(a)}" y1="${220-r1*Math.cos(a)}" x2="${220+198*Math.sin(a)}" y2="${220-198*Math.cos(a)}" stroke="#1c2333" stroke-width="${i%5?1.5:4}"/>`;
+    if(i%5===0){h+=`<text x="${220+156*Math.sin(a)}" y="${220-156*Math.cos(a)+11}" text-anchor="middle" font-size="32" font-weight="700">${i/5||12}</text><text x="${220+224*Math.sin(a)}" y="${220-224*Math.cos(a)+6}" text-anchor="middle" font-size="13" fill="#2563c9">${i}</text>`;}}
+  const m=t%60,ha=((t%720)/2)*Math.PI/180,ma=m*6*Math.PI/180;
+  h+=`<line x1="220" y1="220" x2="${220+105*Math.sin(ha)}" y2="${220-105*Math.cos(ha)}" stroke="#d9482b" stroke-width="12" stroke-linecap="round"/>`;
+  h+=`<line x1="220" y1="220" x2="${220+165*Math.sin(ma)}" y2="${220-165*Math.cos(ma)}" stroke="#2563c9" stroke-width="7" stroke-linecap="round"/>`;
+  h+=`<circle id="mh" cx="${220+165*Math.sin(ma)}" cy="${220-165*Math.cos(ma)}" r="16" fill="#2563c9" fill-opacity=".35" style="cursor:grab"/><circle cx="220" cy="220" r="10" fill="#1c2333"/>`;
+  C.innerHTML=`<g transform="translate(0,0) scale(.95) translate(11,11)">${h}</g>`;
+  $("dig").textContent=hm(t);const H=Math.floor(t/60);
+  $("per").textContent=H<12?`le matin (ou ${H+12} h ${String(t%60).padStart(2,"0")} ${H+12>=18?"le soir":"l'après-midi"})`:H<18?`l'après-midi`:`le soir`;
+}
+C.addEventListener("pointerdown",e=>{if(e.target.id==="mh"){drag=true;C.setPointerCapture(e.pointerId);}});
+C.addEventListener("pointermove",e=>{if(!drag)return;const p=svgPt(C,e),x=(p.x-11*.95)/.95-220,y=(p.y-11*.95)/.95-220;let a=Math.atan2(x,-y)*180/Math.PI;if(a<0)a+=360;
+  const m=Math.round(a/6)%60,old=t%60;let H=Math.floor(t/60);if(old>=45&&m<15)H++;if(old<15&&m>=45)H--;t=(((H*60+m)%1440)+1440)%1440;drawClock();});
+C.addEventListener("pointerup",()=>drag=false);
+document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{t=(t+ +b.dataset.t+1440)%1440;drawClock();});
+const pm=s=>{const [a,b]=s.split(":").map(Number);return a*60+b;};
+function frise(){
+  const a=pm($("t1").value),b=pm($("t2").value);
+  if(!(b>a)){F.innerHTML="";$("dur").innerHTML=`<span class="ko" style="font-size:22px">L'heure de fin doit être après l'heure de début (le même jour).</span>`;return;}
+  const pts=[a];let h1=Math.ceil(a/60)*60;if(h1>b)h1=null;
+  if(h1!==null){if(h1!==a)pts.push(h1);const hn=Math.floor(b/60)*60;if(hn>h1)pts.push(hn);}
+  if(pts[pts.length-1]!==b)pts.push(b);
+  const X=v=>60+(v-a)/(b-a)*1040;let base=`<line x1="40" y1="120" x2="1120" y2="120" stroke="#1c2333" stroke-width="3"/>`;
+  pts.forEach((p,i)=>base+=`<line x1="${X(p)}" y1="108" x2="${X(p)}" y2="132" stroke="#1c2333" stroke-width="3"/><text x="${X(p)}" y="164" text-anchor="middle" font-size="22" font-weight="${i===0||i===pts.length-1?800:600}" fill="${i===0||i===pts.length-1?"#1c2333":"#677085"}">${hm(p)}</text>`);
+  F.innerHTML=base;$("dur").innerHTML="";
+  let i=0,acc="",parts=[];
+  (function nx(){
+    if(i>=pts.length-1){const tot=b-a;$("dur").innerHTML=parts.join(" + ")+` = <span class="ok">${Math.floor(tot/60)} h ${String(tot%60).padStart(2,"0")} min</span>`+(tot>=60?` <span class="mut" style="font-size:20px;font-weight:400">(soit ${tot} min)</span>`:"");return;}
+    const p=pts[i],q=pts[i+1],dm=q-p,lab=dm%60===0?`${dm/60} h`:`${dm} min`,col=dm%60===0?"#2563c9":"#e07a1f";
+    const x1=X(p),x2=X(q),cy=120-Math.min(95,30+(x2-x1)*.25);
+    acc+=`<path d="M${x1},112 Q${(x1+x2)/2},${cy} ${x2-4},112" fill="none" stroke="${col}" stroke-width="4"/><text x="${(x1+x2)/2}" y="${(112+cy)/2-6}" text-anchor="middle" font-size="22" font-weight="800" fill="${col}">${lab}</text>`;
+    F.innerHTML=base+acc;parts.push(`<span style="color:${col}">${lab}</span>`);$("dur").innerHTML=parts.join(" + ")+" + …";i++;setTimeout(nx,1100);
+  })();
+}
+$("go").onclick=frise;
+$("rnd").onclick=()=>{const a=R(7*12,15*12)*5,b=a+R(5,50)*5;const f=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");$("t1").value=f(a);$("t2").value=f(Math.min(b,23*60+55));frise();};
+drawClock();
+</script>
+
+</main>
+</body></html>

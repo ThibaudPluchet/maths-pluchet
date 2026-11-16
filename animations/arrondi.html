@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arrondir et tronquer</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Arrondir et tronquer</h1><span class="sub">On zoome entre les deux valeurs possibles : de laquelle le nombre est-il le plus proche ?</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <label>Nombre : <input type="text" id="n" value="7,368" style="width:140px"></label>
+  <span>arrondi</span>
+  <select id="p"><option value="0">à l'unité</option><option value="1" selected>au dixième</option><option value="2">au centième</option></select>
+  <button class="primary" id="go">Afficher</button><button id="rnd">Au hasard</button>
+  <label><input type="checkbox" id="hid" checked> Laisser deviner avant de montrer</label>
+  <button id="rev">Montrer la réponse</button>
+ </div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card" style="padding:6px"><svg id="svg" viewBox="0 0 1160 360"></svg>
+ <div id="res" style="font-size:28px;text-align:center;line-height:1.7;margin-bottom:8px"></div></div>
+<script>
+const S=$("svg"),X0=90,X1=1070;let v=0,prec=1,shown=false;
+const f3=t=>{const neg=t<0;t=Math.abs(t);const ip=Math.floor(t/1000),dp=String(t%1000).padStart(3,"0").replace(/0+$/,"");return (neg?"−":"")+(dp?ip+","+dp:ip);};
+function parse(s){s=s.trim().replace(".",",");if(!/^\d+(,\d{1,3})?$/.test(s))return null;const [a,b=""]=s.split(",");return +a*1000+ +(b.padEnd(3,"0"));}
+function draw(){
+  const st=1000/10**prec,lo=Math.floor(v/st)*st,hi=lo+st,X=t=>X0+(t-lo)/st*(X1-X0),mid=lo+st/2,Y=200;
+  const near=(v-lo<st/2)?lo:hi,exact=v%st===0;
+  let h=`<line x1="${X0-30}" y1="${Y}" x2="${X1+30}" y2="${Y}" stroke="#1c2333" stroke-width="3"/>`;
+  for(let i=0;i<=10;i++){const x=X0+i*(X1-X0)/10,big=i===0||i===10,md=i===5;h+=`<line x1="${x}" y1="${Y-(big?20:md?16:9)}" x2="${x}" y2="${Y+(big?20:md?16:9)}" stroke="#1c2333" stroke-width="${big?3.5:md?2.5:1.5}"/>`;
+    if(!big&&prec<3)h+=`<text x="${x}" y="${Y+40}" text-anchor="middle" font-size="15" fill="#677085">${f3(lo+i*st/10)}</text>`;}
+  if(shown&&!exact){h+=`<rect x="${v-lo<st/2?X0:X(mid)}" y="${Y-30}" width="${(X1-X0)/2}" height="60" fill="${v-lo<st/2?"#2563c9":"#e07a1f"}" opacity=".12"/>`;}
+  h+=`<text x="${X0}" y="${Y+52}" text-anchor="middle" font-size="30" font-weight="800" fill="#2563c9">${f3(lo)}</text><text x="${X1}" y="${Y+52}" text-anchor="middle" font-size="30" font-weight="800" fill="#e07a1f">${f3(hi)}</text>`;
+  h+=`<text x="${X(mid)}" y="${Y-30}" text-anchor="middle" font-size="16" fill="#677085">milieu ${f3(mid)}</text>`;
+  const x=X(v);h+=`<circle cx="${x}" cy="${Y}" r="11" fill="#d9482b" stroke="#fff" stroke-width="3"/><text x="${x}" y="${Y-62}" text-anchor="middle" font-size="32" font-weight="800" fill="#d9482b">${f3(v)}</text><line x1="${x}" y1="${Y-54}" x2="${x}" y2="${Y-14}" stroke="#d9482b" stroke-width="2"/>`;
+  if(shown&&!exact){const tx=X(near);h+=`<path d="M${x},${Y+22} Q${(x+tx)/2},${Y+95} ${tx},${Y+28}" fill="none" stroke="#1f9255" stroke-width="4" marker-end="url(#ar)"/>`;}
+  S.innerHTML=`<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1f9255"/></marker></defs>`+h;
+  const nm=["à l'unité","au dixième","au centième"][prec];
+  if(!shown){$("res").innerHTML=`<span class="mut">Encadrement : ${f3(lo)} &lt; ${f3(v)} &lt; ${f3(hi)}. Quelle est la troncature ? Quel est l'arrondi ${nm} ?</span>`;return;}
+  $("res").innerHTML=exact?`${f3(v)} tombe pile sur une graduation : sa troncature et son arrondi ${nm} valent ${f3(v)}.`:
+    `Encadrement ${nm} : <b>${f3(lo)} &lt; ${f3(v)} &lt; ${f3(hi)}</b><br>Troncature ${nm} : <b style="color:#2563c9">${f3(lo)}</b> <span class="mut" style="font-size:20px">(on « coupe » les chiffres suivants)</span><br>Arrondi ${nm} : <b class="ok">${f3(near)}</b> <span class="mut" style="font-size:20px">(${v-lo<st/2?"plus proche de "+f3(lo):v-lo===st/2?"pile au milieu : on arrondit à "+f3(hi):"plus proche de "+f3(hi)})</span>`;
+}
+function go(){const t=parse($("n").value);if(t===null){say("Écris un nombre décimal (3 décimales au plus).","ko");return;}v=t;prec=+$("p").value;shown=!$("hid").checked;say("","");draw();}
+$("go").onclick=go;$("p").onchange=go;$("hid").onchange=go;$("rev").onclick=()=>{shown=true;draw();};
+$("n").addEventListener("keydown",e=>{if(e.key==="Enter")go();});
+$("rnd").onclick=()=>{const p=R(0,2);$("p").value=p;let t=R(1,99)*1000+R(0,999);if(p===2&&t%10===0)t+=R(1,9);$("n").value=f3(t);go();};
+go();
+</script>
+
+</main>
+</body></html>

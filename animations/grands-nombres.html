@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lire et écrire les grands nombres</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Lire et écrire les grands nombres</h1><span class="sub">Les chiffres se rangent par classes de trois : unités, mille, millions, milliards.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <label>Nombre : <input type="text" id="n" value="40 708 015" style="width:260px"></label>
+  <button class="primary" id="go">Placer</button><button id="rnd">Au hasard</button>
+  <label><input type="checkbox" id="hl"> Cacher l'écriture en lettres</label>
+ </div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card" style="overflow-x:auto"><div id="tab"></div>
+ <div id="nb" style="font-size:44px;font-weight:800;text-align:center;margin-top:16px;letter-spacing:.02em"></div>
+ <div id="let" style="font-size:28px;text-align:center;color:#2563c9;min-height:42px;margin-top:6px"></div>
+</div>
+<style>
+table.gn{border-collapse:collapse;margin:0 auto}
+table.gn th,table.gn td{border:1px solid #c9c2b2;text-align:center}
+table.gn th.cl{font-size:18px;padding:6px}
+table.gn th.sub{font-size:13px;width:74px;height:36px;color:#677085;font-weight:600}
+table.gn td{height:86px;font-size:50px;font-weight:800;color:#2563c9;cursor:pointer}
+table.gn td.z{color:#c9c2b2}
+table.gn td.sel{background:#fff1b8}
+table.gn .b{border-left:4px solid #1c2333}
+</style>
+<script>
+const CL=[["Milliards","#f1e8fb"],["Millions","#fbeedd"],["Mille","#e3f4ea"],["Unités simples","#e8eefc"]];
+const RG=["centaines","dizaines","unités"],CN=["de milliards","de millions","de mille",""];
+const U=["zéro","un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix","onze","douze","treize","quatorze","quinze","seize"];
+function b100(n){if(n<17)return U[n];if(n<20)return "dix-"+U[n-10];const t=Math.floor(n/10),u=n%10,T={2:"vingt",3:"trente",4:"quarante",5:"cinquante",6:"soixante"};
+  if(t<7)return T[t]+(u===0?"":u===1?"-et-un":"-"+U[u]);if(t===7)return "soixante-"+(u===1?"et-onze":b100(10+u));if(t===8)return "quatre-vingt"+(u===0?"s":"-"+U[u]);return "quatre-vingt-"+b100(10+u);}
+function b1000(n){const h=Math.floor(n/100),r=n%100;if(!h)return b100(r);return (h===1?"cent":U[h]+"-cent"+(r?"":"s"))+(r?"-"+b100(r):"");}
+function words(n){
+  if(n===0)return "zéro";const g=[Math.floor(n/1e9),Math.floor(n/1e6)%1000,Math.floor(n/1e3)%1000,n%1000],p=[];
+  if(g[0])p.push(b1000(g[0])+"-milliard"+(g[0]>1?"s":""));
+  if(g[1])p.push(b1000(g[1])+"-million"+(g[1]>1?"s":""));
+  if(g[2])p.push(g[2]===1?"mille":b1000(g[2]).replace(/s$/,"")+"-mille");
+  if(g[3])p.push(b1000(g[3]));
+  return p.join("-");
+}
+let digits="";
+function place(){
+  const s=$("n").value.replace(/[\s.  ]/g,"");
+  if(!/^\d{1,12}$/.test(s)){say("Écris un nombre entier de 12 chiffres au maximum.","ko");return;}
+  const n=parseInt(s,10);digits=String(n).padStart(12,"0");const first=12-String(n).length;
+  let h=`<table class="gn"><tr>`+CL.map((c,i)=>`<th class="cl ${i?"b":""}" colspan="3" style="background:${c[1]}">${c[0]}</th>`).join("")+`</tr><tr>`;
+  for(let i=0;i<12;i++)h+=`<th class="sub ${i%3===0&&i?"b":""}" style="background:${CL[Math.floor(i/3)][1]}">${["c","d","u"][i%3]}</th>`;
+  h+=`</tr><tr>`;
+  for(let i=0;i<12;i++)h+=`<td data-i="${i}" class="${i%3===0&&i?"b":""} ${i<first?"z":""}">${i<first?"":digits[i]}</td>`;
+  $("tab").innerHTML=h+`</tr></table>`;
+  $("tab").querySelectorAll("td").forEach(td=>td.onclick=()=>{
+    const i=+td.dataset.i;if(i<first)return;
+    $("tab").querySelectorAll("td").forEach(t=>t.classList.remove("sel"));td.classList.add("sel");
+    const cl=Math.floor(i/3),rg=i%3,pw=11-i,nb=Math.floor(n/10**pw);
+    const unit=(RG[rg]+" "+CN[cl]).trim().replace("unités de mille","unités de mille").replace(/^unités $/,"unités");
+    say(`Le chiffre <b>${digits[i]}</b> est le chiffre des <b>${unit||"unités"}</b>. Nombre de ${unit||"unités"} : <b>${nb.toLocaleString("fr-FR")}</b>.`);
+  });
+  $("nb").textContent=n.toLocaleString("fr-FR");
+  $("let").textContent=$("hl").checked?"…":words(n);
+  say("Clique sur un chiffre pour connaître son rang.","mut");
+}
+$("go").onclick=place;$("n").addEventListener("keydown",e=>{if(e.key==="Enter")place();});
+$("hl").onchange=()=>{if(digits)$("let").textContent=$("hl").checked?"…":words(parseInt(digits,10));};
+$("rnd").onclick=()=>{const L=R(4,11);let s=String(R(1,9));for(let i=1;i<L;i++)s+=Math.random()<.35?"0":R(0,9);$("n").value=Number(s).toLocaleString("fr-FR");place();};
+place();
+</script>
+
+</main>
+</body></html>

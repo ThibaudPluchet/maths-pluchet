@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Les angles : nommer et comparer</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Les angles : nommer et comparer</h1><span class="sub">Aigu, droit, obtus, plat… et un angle ne dépend pas de la longueur de ses côtés !</span></header>
+<main>
+<div class="card">
+ <div class="row"><button id="mA" class="on">Types d'angles</button><button id="mC">Comparer deux angles</button>
+  <span class="sep"></span><label id="lm"><input type="checkbox" id="mes" checked> Afficher la mesure</label></div>
+ <div class="row" id="cC" style="margin-top:10px;display:none">
+  <span style="font-size:20px">Quel angle est le plus grand ?</span>
+  <button data-g="1">L'angle 1</button><button data-g="2">L'angle 2</button><button data-g="0">Ils sont égaux</button>
+  <button class="primary" id="sup">Superposer</button><button id="newC">Nouveau</button>
+ </div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card" style="padding:6px"><svg id="svg" viewBox="0 0 1160 540"></svg></div>
+<script>
+const S=$("svg"), O=[580,450];
+let mode="A", th=50, drag=false, C={}, supT=0;
+const pt=(c,r,a)=>[c[0]+r*Math.cos(a*Math.PI/180),c[1]-r*Math.sin(a*Math.PI/180)];
+function arcD(c,r,a1,a2){const p=pt(c,r,a1),q=pt(c,r,a2);return `M${p[0]},${p[1]} A${r},${r} 0 ${a2-a1>180?1:0} 0 ${q[0]},${q[1]}`;}
+function angleSVG(V,a1,t,L,col,r){
+  const e1=pt(V,L,a1),e2=pt(V,L,a1+t);let h=`<line x1="${V[0]}" y1="${V[1]}" x2="${e1[0]}" y2="${e1[1]}" stroke="#1c2333" stroke-width="4" stroke-linecap="round"/><line x1="${V[0]}" y1="${V[1]}" x2="${e2[0]}" y2="${e2[1]}" stroke="#1c2333" stroke-width="4" stroke-linecap="round"/>`;
+  if(Math.abs(t-90)<.01){const p=pt(V,26,a1),q=pt(V,26*Math.SQRT2,a1+45),w=pt(V,26,a1+90);h+=`<path d="M${p[0]},${p[1]} L${q[0]},${q[1]} L${w[0]},${w[1]}" fill="none" stroke="${col}" stroke-width="3"/>`;}
+  else if(t>0)h+=`<path d="M${V[0]},${V[1]} L${pt(V,r,a1).join(",")} ${arcD(V,r,a1,a1+t).replace(/^M[^A]*/,"")} Z" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width="3"/>`;
+  return h+`<circle cx="${V[0]}" cy="${V[1]}" r="5" fill="#1c2333"/>`;
+}
+function kind(t){return t<.5?["angle nul","#677085"]:t<89.5?["angle aigu","#1f9255"]:t<=90.5?["angle droit","#2563c9"]:t<179.5?["angle obtus","#e07a1f"]:["angle plat","#d9482b"];}
+function drawA(){
+  const [k,col]=kind(th);let h=angleSVG(O,0,th,400,col,80);
+  const hp=pt(O,330,th);h+=`<circle id="hd" cx="${hp[0]}" cy="${hp[1]}" r="16" fill="${col}" style="cursor:grab"/>`;
+  const lp=pt(O,120,th/2);if($("mes").checked)h+=`<text x="${lp[0]}" y="${lp[1]+10}" text-anchor="middle" font-size="30" font-weight="800" fill="${col}">${Math.round(th)}°</text>`;
+  h+=`<text x="580" y="60" text-anchor="middle" font-size="44" font-weight="800" fill="${col}">${k}</text>`;
+  h+=`<text x="580" y="100" text-anchor="middle" font-size="20" fill="#677085">${th<.5?"0°":th<89.5?"entre 0° et 90°":th<=90.5?"90° : on le code avec un petit carré":th<179.5?"entre 90° et 180°":"180° : les deux côtés sont dans le prolongement l'un de l'autre"}</text>`;
+  S.innerHTML=h;
+}
+function newC(){
+  const big=R(25,140),eq=Math.random()<.25,small=eq?big:big-R(5,16),swap=Math.random()<.5;
+  const t1=swap?big:small,t2=swap?small:big;
+  C={V1:[300,400],V2:[860,400],a1:R(-10,40),a2:R(-10,60),t1,t2,L1:t1<t2?330:110,L2:t2<t1?330:110};
+  if(t1===t2){C.L1=110;C.L2=330;}
+  supT=0;say("Observe bien… puis réponds.","mut");drawC();
+}
+function drawC(){
+  const {V1,V2,a1,a2,t1,t2,L1,L2}=C,m=$("mes").checked&&supT>=1;
+  let h=angleSVG(V1,a1,t1,L1,"#2563c9",Math.min(70,L1*.5));
+  const p1=pt(V1,L1*.45+30,a1+t1/2);h+=`<text x="${V1[0]-20}" y="${V1[1]+44}" font-size="24" font-weight="700" fill="#2563c9">Angle 1</text>`;
+  const D=a1-a2,tx=V2[0]+(V1[0]-V2[0])*supT,ty=V2[1]+(V1[1]-V2[1])*supT;
+  h+=`<g transform="translate(${tx},${ty}) rotate(${-D*supT}) translate(${-V2[0]},${-V2[1]})" opacity="${supT>0?.75:1}">${angleSVG(V2,a2,t2,L2,"#d9482b",Math.min(70,L2*.5)*(supT>0?1.6:1))}</g>`;
+  if(supT===0)h+=`<text x="${V2[0]-20}" y="${V2[1]+44}" font-size="24" font-weight="700" fill="#d9482b">Angle 2</text>`;
+  if(m)h+=`<text x="580" y="500" text-anchor="middle" font-size="26" font-weight="700"><tspan fill="#2563c9">Angle 1 : ${t1}°</tspan>   <tspan fill="#d9482b">Angle 2 : ${t2}°</tspan></text>`;
+  S.innerHTML=h;
+}
+document.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{
+  const g=+b.dataset.g,ans=C.t1>C.t2?1:C.t2>C.t1?2:0;
+  if(g===ans)say("✓ Bien vu ! Vérifions en superposant les angles.","ok");
+  else say("✗ Attention : la longueur des côtés ne compte pas ! Seule l'<b>ouverture</b> entre les côtés compte. Superposons pour vérifier.","ko");
+});
+$("sup").onclick=()=>tween(1600,e=>{supT=e;drawC();},()=>{supT=1;drawC();const a=C.t1>C.t2?"L'angle 1 est le plus grand":C.t2>C.t1?"L'angle 2 est le plus grand":"Les deux angles sont égaux";say(`${a} : on pose les sommets l'un sur l'autre et un côté sur un côté, puis on compare l'ouverture.`,"");});
+$("newC").onclick=newC;
+$("mes").onchange=()=>mode==="A"?drawA():drawC();
+S.addEventListener("pointerdown",e=>{if(mode==="A"&&e.target.id==="hd"){drag=true;S.setPointerCapture(e.pointerId);}});
+S.addEventListener("pointermove",e=>{if(!drag)return;const p=svgPt(S,e);let a=Math.atan2(-(p.y-O[1]),p.x-O[0])*180/Math.PI;if(a<0)a=a<-90?180:0;
+  for(const s of [0,90,180])if(Math.abs(a-s)<2.5)a=s;th=a;drawA();});
+S.addEventListener("pointerup",()=>drag=false);
+$("mA").onclick=()=>{mode="A";$("mA").classList.add("on");$("mC").classList.remove("on");$("cC").style.display="none";say("Fais tourner le côté avec la poignée.","mut");drawA();};
+$("mC").onclick=()=>{mode="C";$("mC").classList.add("on");$("mA").classList.remove("on");$("cC").style.display="flex";newC();};
+say("Fais tourner le côté avec la poignée.","mut");drawA();
+</script>
+
+</main>
+</body></html>

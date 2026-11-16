@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Le compas : triangle et médiatrice</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Le compas : triangle et médiatrice</h1><span class="sub">Construire un triangle connaissant ses trois côtés, tracer la médiatrice d'un segment.</span></header>
+<main>
+<div class="card">
+ <div class="row"><button id="mT" class="on">Construire un triangle</button><button id="mM">Tracer une médiatrice</button></div>
+ <div class="row" id="ctT" style="margin-top:10px">
+  <label>AB = <input type="number" id="a" value="7" min="1" max="9" step="0.5" style="width:80px"> cm</label>
+  <label>AC = <input type="number" id="b" value="5" min="1" max="9" step="0.5" style="width:80px"> cm</label>
+  <label>BC = <input type="number" id="c" value="4" min="1" max="9" step="0.5" style="width:80px"> cm</label>
+  <button id="goT">Recommencer</button><button class="primary" id="nextT">Étape suivante</button>
+  <button id="imp">Exemple impossible</button>
+ </div>
+ <div class="row" id="ctM" style="margin-top:10px;display:none">
+  <label>Ouverture du compas <input type="range" id="rf" min="35" max="120" value="75"></label>
+  <button class="primary" id="goM">Tracer les arcs</button><button id="clrM">Effacer</button>
+  <span class="mut">Déplace A, B et le point M.</span>
+ </div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card" style="padding:6px"><svg id="svg" viewBox="0 0 1160 600"></svg></div>
+<script>
+const S=$("svg"), SC=55;
+let mode="T", st=0, layers=[], busy=false;
+let Am=[400,380],Bm=[760,330],Mm=[600,140],built=false,drag=null;
+const pt=(c,r,a)=>[c[0]+r*Math.cos(a*Math.PI/180),c[1]-r*Math.sin(a*Math.PI/180)];
+const ang=(c,p)=>Math.atan2(-(p[1]-c[1]),p[0]-c[0])*180/Math.PI;
+function arcD(c,r,a1,a2){const p=pt(c,r,a1),q=pt(c,r,a2);return `M${p[0]},${p[1]} A${r},${r} 0 ${a2-a1>180?1:0} 0 ${q[0]},${q[1]}`;}
+function compass(c,p){
+  const m=[(c[0]+p[0])/2,(c[1]+p[1])/2],dx=p[0]-c[0],dy=p[1]-c[1],L=Math.hypot(dx,dy)||1;let n=[dy/L,-dx/L];if(n[1]>0)n=[-n[0],-n[1]];
+  const hg=Math.max(70,L*.5),ap=[m[0]+n[0]*hg,m[1]+n[1]*hg];
+  return `<g pointer-events="none"><line x1="${ap[0]}" y1="${ap[1]}" x2="${c[0]}" y2="${c[1]}" stroke="#7d8597" stroke-width="8" stroke-linecap="round"/><line x1="${ap[0]}" y1="${ap[1]}" x2="${p[0]}" y2="${p[1]}" stroke="#e07a1f" stroke-width="8" stroke-linecap="round"/><line x1="${ap[0]}" y1="${ap[1]}" x2="${ap[0]+n[0]*34}" y2="${ap[1]+n[1]*34}" stroke="#1c2333" stroke-width="7" stroke-linecap="round"/><circle cx="${ap[0]}" cy="${ap[1]}" r="10" fill="#1c2333"/><circle cx="${c[0]}" cy="${c[1]}" r="4" fill="#1c2333"/><circle cx="${p[0]}" cy="${p[1]}" r="5" fill="#1c2333"/></g>`;
+}
+const lbl=(p,t,dx,dy,col)=>`<text x="${p[0]+dx}" y="${p[1]+dy}" font-size="28" font-weight="800" fill="${col||"#1c2333"}" text-anchor="middle" pointer-events="none">${t}</text>`;
+const cross=(p,col)=>`<path d="M${p[0]-8},${p[1]-8}L${p[0]+8},${p[1]+8}M${p[0]-8},${p[1]+8}L${p[0]+8},${p[1]-8}" stroke="${col||"#1c2333"}" stroke-width="3" pointer-events="none"/>`;
+// ---------- triangle ----------
+function vals(){return ["a","b","c"].map(k=>Math.min(9,Math.max(1,parseFloat($(k).value.replace(",","."))||1)));}
+let T={};
+function resetT(){
+  const [a,b,c]=vals();const A=[580-a*SC/2,520],B=[580+a*SC/2,520];
+  const x=(b*b-c*c+a*a)/(2*a),y2=b*b-x*x;
+  T={a,b,c,A,B,possible:y2>-1e-9&&b+c>=a&&a+c>=b&&a+b>=c,flat:Math.abs(y2)<1e-9};
+  T.C=T.possible?[A[0]+x*SC,A[1]-Math.sqrt(Math.max(0,y2))*SC]:null;
+  layers=[];st=0;$("nextT").disabled=false;
+  say(`Construire le triangle ABC avec AB = ${frn(a)} cm, AC = ${frn(b)} cm et BC = ${frn(c)} cm.`,"mut");drawT("");
+}
+function drawT(extra){S.innerHTML=gridBg()+layers.join("")+extra;}
+function gridBg(){let h="";for(let x=0;x<=1160;x+=SC/2)h+=`<line x1="${x}" y1="0" x2="${x}" y2="600" stroke="#f3efe6"/>`;for(let y=0;y<=600;y+=SC/2)h+=`<line x1="0" y1="${y}" x2="1160" y2="${y}" stroke="#f3efe6"/>`;return h;}
+function animArc(c,r,a1,a2,col,done){
+  busy=true;tween(1600,e=>{const a=a1+(a2-a1)*e;drawT(`<path d="${arcD(c,r,a1,a)}" fill="none" stroke="${col}" stroke-width="2.5"/>`+compass(c,pt(c,r,a)));},()=>{layers.push(`<path d="${arcD(c,r,a1,a2)}" fill="none" stroke="${col}" stroke-width="2.5"/>`);drawT("");busy=false;done&&done();});
+}
+function nextT(){
+  if(busy)return;const {a,b,c,A,B,C}=T;
+  if(st===0){
+    busy=true;tween(900,e=>drawT(`<line x1="${A[0]}" y1="${A[1]}" x2="${A[0]+(B[0]-A[0])*e}" y2="${B[1]}" stroke="#1c2333" stroke-width="3"/>`),()=>{
+      layers.push(`<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="#1c2333" stroke-width="3"/>`+cross(A)+cross(B)+lbl(A,"A",-22,30)+lbl(B,"B",22,30)+`<text x="${(A[0]+B[0])/2}" y="${A[1]+34}" text-anchor="middle" font-size="20" fill="#677085">${frn(a)} cm</text>`);drawT("");busy=false;});
+    say(`1. On trace le segment [AB] de ${frn(a)} cm à la règle.`);
+  }else if(st===1){
+    const th=C?ang(A,C):90;say(`2. On ouvre le compas de <b>${frn(b)} cm</b> (AC), on pique en <b>A</b> et on trace un arc de cercle.`);
+    animArc(A,b*SC,C?th-24:15,C?th+24:165,"#2563c9");
+  }else if(st===2){
+    const th=C?ang(B,C):90;say(`3. On ouvre le compas de <b>${frn(c)} cm</b> (BC), on pique en <b>B</b> et on trace un arc de cercle.`);
+    animArc(B,c*SC,C?th-24:15,C?th+24:165,"#d9482b");
+  }else if(st===3){
+    if(T.possible&&!T.flat){
+      layers.push(`<line x1="${A[0]}" y1="${A[1]}" x2="${C[0]}" y2="${C[1]}" stroke="#1c2333" stroke-width="3"/><line x1="${B[0]}" y1="${B[1]}" x2="${C[0]}" y2="${C[1]}" stroke="#1c2333" stroke-width="3"/>`+cross(C)+lbl(C,"C",0,-18));drawT("");
+      say("4. Le point C est à l'intersection des deux arcs : il est à "+frn(b)+" cm de A <b>et</b> à "+frn(c)+" cm de B. On trace [AC] et [BC].","ok");
+    }else if(T.flat){layers.push(cross(C)+lbl(C,"C",0,-18));drawT("");say(`Les arcs se touchent en un seul point, <b>sur</b> le segment [AB] : AC + BC = AB. Le triangle est <b>aplati</b>.`,"ko");}
+    else{const m=Math.max(a,b,c),s=a+b+c-m;say(`Les arcs <b>ne se coupent pas</b> : le plus grand côté (${frn(m)} cm) est plus long que la somme des deux autres (${frn(s)} cm). <b>Ce triangle n'existe pas !</b>`,"ko");}
+    $("nextT").disabled=true;
+  }
+  st++;
+}
+// ---------- médiatrice ----------
+function drawM(){
+  const dx=Bm[0]-Am[0],dy=Bm[1]-Am[1],AB=Math.hypot(dx,dy),u=[dx/AB,dy/AB],n=[-u[1],u[0]],M0=[(Am[0]+Bm[0])/2,(Am[1]+Bm[1])/2];
+  const r=AB*$("rf").value/100;let h=gridBg();
+  h+=`<line x1="${Am[0]}" y1="${Am[1]}" x2="${Bm[0]}" y2="${Bm[1]}" stroke="#1c2333" stroke-width="3"/>`;
+  if(built){
+    if(r>=AB/2){
+      const hh=Math.sqrt(r*r-AB*AB/4),P=[M0[0]+n[0]*hh,M0[1]+n[1]*hh],Q=[M0[0]-n[0]*hh,M0[1]-n[1]*hh];
+      [[Am,"#2563c9"],[Bm,"#d9482b"]].forEach(([c,col])=>[P,Q].forEach(X=>{const t=ang(c,X);h+=`<path d="${arcD(c,r,t-16,t+16)}" fill="none" stroke="${col}" stroke-width="2.5"/>`;}));
+      const e1=[M0[0]+n[0]*1500,M0[1]+n[1]*1500],e2=[M0[0]-n[0]*1500,M0[1]-n[1]*1500];
+      h+=`<line x1="${e1[0]}" y1="${e1[1]}" x2="${e2[0]}" y2="${e2[1]}" stroke="#1f9255" stroke-width="3"/>`;
+      [[Am,M0],[M0,Bm]].forEach(([p,q])=>{const m=[(p[0]+q[0])/2,(p[1]+q[1])/2];[-3,3].forEach(o=>h+=`<line x1="${m[0]+u[0]*o-n[0]*9}" y1="${m[1]+u[1]*o-n[1]*9}" x2="${m[0]+u[0]*o+n[0]*9}" y2="${m[1]+u[1]*o+n[1]*9}" stroke="#1f9255" stroke-width="2.5"/>`);});
+      h+=`<polyline points="${M0[0]+u[0]*14},${M0[1]+u[1]*14} ${M0[0]+u[0]*14+n[0]*14},${M0[1]+u[1]*14+n[1]*14} ${M0[0]+n[0]*14},${M0[1]+n[1]*14}" fill="none" stroke="#1f9255" stroke-width="2"/>`;
+      h+=cross(P,"#1f9255")+cross(Q,"#1f9255");
+    }
+  }
+  const MA=Math.hypot(Mm[0]-Am[0],Mm[1]-Am[1])/SC,MB=Math.hypot(Mm[0]-Bm[0],Mm[1]-Bm[1])/SC,eqd=Math.abs(MA-MB)<.02;
+  const col=eqd?"#1f9255":"#8a4fd1";
+  h+=`<line x1="${Mm[0]}" y1="${Mm[1]}" x2="${Am[0]}" y2="${Am[1]}" stroke="${col}" stroke-width="2" stroke-dasharray="6 5"/><line x1="${Mm[0]}" y1="${Mm[1]}" x2="${Bm[0]}" y2="${Bm[1]}" stroke="${col}" stroke-width="2" stroke-dasharray="6 5"/>`;
+  [[Am,"A"],[Bm,"B"]].forEach(([p,t])=>h+=`<circle class="dg" data-k="${t}" cx="${p[0]}" cy="${p[1]}" r="13" fill="#1c2333" fill-opacity=".15" stroke="#1c2333" stroke-width="2" style="cursor:grab"/>`+cross(p)+lbl(p,t,0,40));
+  h+=`<circle class="dg" data-k="M" cx="${Mm[0]}" cy="${Mm[1]}" r="11" fill="${col}" style="cursor:grab"/>`+lbl(Mm,"M",0,-20,col);
+  S.innerHTML=h;
+  say(`MA = <b>${MA.toFixed(1).replace(".",",")} cm</b> &nbsp; MB = <b>${MB.toFixed(1).replace(".",",")} cm</b> `+(eqd?`<span class="ok">→ M est à égale distance de A et de B : il est sur la médiatrice !</span>`:"")+(built&&r<AB/2?`<br><span class="ko">Ouverture trop petite : elle doit dépasser la moitié de AB, sinon les arcs ne se coupent pas.</span>`:""));
+}
+function snapM(){
+  const dx=Bm[0]-Am[0],dy=Bm[1]-Am[1],AB=Math.hypot(dx,dy),u=[dx/AB,dy/AB],M0=[(Am[0]+Bm[0])/2,(Am[1]+Bm[1])/2];
+  const t=(Mm[0]-M0[0])*u[0]+(Mm[1]-M0[1])*u[1];if(Math.abs(t)<10){Mm=[Mm[0]-t*u[0],Mm[1]-t*u[1]];}
+}
+S.addEventListener("pointerdown",e=>{if(mode!=="M")return;const c=e.target.closest(".dg");if(!c)return;drag=c.dataset.k;S.setPointerCapture(e.pointerId);});
+S.addEventListener("pointermove",e=>{if(!drag)return;const p=svgPt(S,e),q=[Math.max(20,Math.min(1140,p.x)),Math.max(20,Math.min(580,p.y))];
+  if(drag==="A"&&Math.hypot(q[0]-Bm[0],q[1]-Bm[1])>60)Am=q;if(drag==="B"&&Math.hypot(q[0]-Am[0],q[1]-Am[1])>60)Bm=q;if(drag==="M"){Mm=q;snapM();}drawM();});
+S.addEventListener("pointerup",()=>drag=null);
+$("rf").oninput=()=>{if(mode==="M")drawM();};
+$("goM").onclick=()=>{built=true;drawM();};$("clrM").onclick=()=>{built=false;drawM();};
+$("goT").onclick=resetT;$("nextT").onclick=nextT;
+$("imp").onclick=()=>{$("a").value=8;$("b").value=3;$("c").value=4;resetT();};
+["a","b","c"].forEach(k=>$(k).onchange=resetT);
+$("mT").onclick=()=>{mode="T";$("mT").classList.add("on");$("mM").classList.remove("on");$("ctT").style.display="flex";$("ctM").style.display="none";resetT();};
+$("mM").onclick=()=>{mode="M";$("mM").classList.add("on");$("mT").classList.remove("on");$("ctM").style.display="flex";$("ctT").style.display="none";built=false;drawM();};
+resetT();
+</script>
+
+</main>
+</body></html>

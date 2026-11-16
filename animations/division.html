@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Division euclidienne : partager équitablement</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Division euclidienne : partager équitablement</h1><span class="sub">On distribue les jetons un par un dans les boîtes… jusqu'à ce qu'il n'y en ait plus assez pour faire un tour complet.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <label>Nombre de jetons <input type="number" id="n" value="23" min="1" max="60" style="width:90px"></label>
+  <label>Nombre de boîtes <input type="number" id="d" value="5" min="2" max="10" style="width:90px"></label>
+  <button class="primary" id="go">Distribuer</button><button id="rnd">Au hasard</button>
+  <label class="mut">Vitesse <input type="range" id="sp" min="40" max="500" value="220" style="width:140px;direction:rtl"></label>
+ </div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card" style="padding:6px"><svg id="svg" viewBox="0 0 1160 580"></svg>
+ <div id="eq" style="font-size:36px;font-weight:700;text-align:center;min-height:50px;margin:4px 0 10px"></div></div>
+<style>#svg g.tk{transition:transform .45s cubic-bezier(.5,0,.3,1),opacity .4s}</style>
+<script>
+const S=$("svg");let timer=null,toks=[],run=0;
+function setup(){
+  clearTimeout(timer);run++;
+  const n=Math.max(1,Math.min(60,parseInt($("n").value)||1)),d=Math.max(2,Math.min(10,parseInt($("d").value)||2));$("n").value=n;$("d").value=d;
+  const W=(1100-(d-1)*12)/d;let h="";
+  for(let b=0;b<d;b++)h+=`<rect x="${30+b*(W+12)}" y="210" width="${W}" height="340" rx="12" fill="#eef3fc" stroke="#2563c9" stroke-width="2"/><text x="${30+b*(W+12)+W/2}" y="570" text-anchor="middle" font-size="16" fill="#677085">boîte ${b+1}</text>`;
+  h+=`<text x="30" y="26" font-size="17" fill="#677085">Jetons à partager</text>`;
+  S.innerHTML=h;toks=[];
+  for(let i=0;i<n;i++){
+    const g=document.createElementNS(NS,"g");g.setAttribute("class","tk");
+    g.innerHTML=`<circle r="14" fill="#e07a1f" stroke="#fff" stroke-width="2"/>`;
+    const x=60+(i%30)*35,y=55+Math.floor(i/30)*36;g.style.transform=`translate(${x}px,${y}px)`;S.appendChild(g);toks.push(g);
+  }
+  $("eq").innerHTML="";say(`${n} jetons à partager équitablement entre ${d} boîtes.`,"mut");
+  return {n,d,W};
+}
+function go(){
+  const {n,d,W}=setup(),q=Math.floor(n/d),r=n%d,per=Math.max(1,Math.floor((W-12)/32)),me=run;
+  let i=0;
+  function step(){
+    if(me!==run)return;
+    if(i<q*d){
+      const t=toks[n-1-i],b=i%d,k=Math.floor(i/d),x=30+b*(W+12)+22+(k%per)*32,y=236+Math.floor(k/per)*32;
+      t.style.transform=`translate(${x}px,${y}px)`;
+      if(b===d-1)say(`Tour n° ${k+1} terminé : chaque boîte a ${k+1} jeton${k?"s":""}.`);
+      i++;timer=setTimeout(step,+$("sp").value);
+    }else{
+      toks.slice(0,r).forEach(t=>t.querySelector("circle").setAttribute("fill","#d9482b"));
+      say(r?`Il reste ${r} jeton${r>1?"s":""} : pas assez pour faire un tour de plus (il en faudrait ${d}). C'est le <b>reste</b>.`:"Il ne reste aucun jeton : le partage tombe juste, le reste est 0.",r?"":"ok");
+      $("eq").innerHTML=`${n} = <span style="color:#2563c9">${d}</span> × <span style="color:#e07a1f">${q}</span> + <span style="color:#d9482b">${r}</span> <span class="mut" style="font-size:22px;font-weight:400">avec ${r} &lt; ${d}</span><div style="font-size:20px;font-weight:400;color:#677085">dividende = diviseur × <b style="color:#e07a1f">quotient</b> + <b style="color:#d9482b">reste</b> &nbsp;·&nbsp; chaque boîte reçoit ${q} jeton${q>1?"s":""}</div>`;
+    }
+  }
+  setTimeout(step,500);
+}
+$("go").onclick=go;$("rnd").onclick=()=>{$("d").value=R(3,8);$("n").value=R(15,55);go();};
+["n","d"].forEach(id=>$(id).onchange=setup);
+setup();
+</script>
+
+</main>
+</body></html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Le volume en cubes unités</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Le volume en cubes unités</h1><span class="sub">On remplit le pavé avec des cubes de 1 cm³, couche par couche.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <label>Longueur <input type="range" id="L" min="1" max="6" value="4" style="width:150px"> <b id="Lv"></b></label>
+  <label>Largeur <input type="range" id="W" min="1" max="6" value="3" style="width:150px"> <b id="Wv"></b></label>
+  <label>Hauteur <input type="range" id="H" min="1" max="6" value="3" style="width:150px"> <b id="Hv"></b></label>
+ </div>
+ <div class="row" style="margin-top:10px"><button class="primary" id="go">Remplir cube par cube</button><button id="lay">Remplir couche par couche</button><button id="clr">Vider</button></div>
+</div>
+<div class="card" style="padding:6px"><svg id="svg" viewBox="0 0 1160 480"></svg>
+ <div id="f" style="font-size:28px;text-align:center;line-height:1.6;min-height:88px"></div></div>
+<script>
+const S=$("svg"),s=34,ox=560,oy=250,COL=["#2563c9","#e07a1f","#1f9255","#8a4fd1","#d9482b","#0f8b8d"];let n=0,timer=null;
+const P=(x,y,z)=>[ox+(x-y)*s*.866,oy+(x+y)*s*.5-z*s];
+const poly=(pts,fill,op,st)=>`<polygon points="${pts.map(p=>P(...p).join(",")).join(" ")}" fill="${fill}" fill-opacity="${op}" stroke="${st||"#1c2333"}" stroke-width="1.3"/>`;
+function shade(hex,k){const v=parseInt(hex.slice(1),16),r=v>>16,g=(v>>8)&255,b=v&255,f=c=>Math.round(c*k+255*(1-k)*(k<1?0:0));return `rgb(${f(r)},${f(g)},${f(b)})`;}
+function dims(){const L=+$("L").value,W=+$("W").value,H=+$("H").value;$("Lv").textContent=L;$("Wv").textContent=W;$("Hv").textContent=H;return [L,W,H];}
+function draw(){
+  const [L,W,H]=dims();let h="";
+  h+=poly([[0,0,0],[L,0,0],[L,W,0],[0,W,0]],"#f3efe5",1,"#b9b2a2");
+  const cubes=[];for(let z=0;z<H;z++)for(let y=0;y<W;y++)for(let x=0;x<L;x++)cubes.push([x,y,z]);
+  const shown=cubes.slice(0,n).sort((a,b)=>(a[0]+a[1]+a[2])-(b[0]+b[1]+b[2])||a[2]-b[2]);
+  shown.forEach(([x,y,z])=>{const c=COL[z%COL.length];
+    h+=poly([[x+1,y,z],[x+1,y+1,z],[x+1,y+1,z+1],[x+1,y,z+1]],shade(c,.75),1)+poly([[x,y+1,z],[x+1,y+1,z],[x+1,y+1,z+1],[x,y+1,z+1]],shade(c,.55),1)+poly([[x,y,z+1],[x+1,y,z+1],[x+1,y+1,z+1],[x,y+1,z+1]],c,1);});
+  const e=[[0,0,0],[L,0,0],[L,W,0],[0,W,0],[0,0,H],[L,0,H],[L,W,H],[0,W,H]],ed=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  ed.forEach(([i,j])=>{const a=P(...e[i]),b=P(...e[j]);h+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#1c2333" stroke-width="2.5" stroke-dasharray="${n<L*W*H?"6 5":""}"/>`;});
+  const pl=P(L/2,W+.6,0),pw=P(L+.6,W/2,0),ph=P(L+.3,-.3,H/2);
+  h+=`<text x="${pl[0]-14}" y="${pl[1]+18}" font-size="24" font-weight="800">${L}</text><text x="${pw[0]+14}" y="${pw[1]+18}" font-size="24" font-weight="800">${W}</text><text x="${ph[0]+14}" y="${ph[1]}" font-size="24" font-weight="800">${H}</text>`;
+  S.innerHTML=h;
+  const per=L*W,full=Math.floor(n/per);
+  $("f").innerHTML=`<b>${n}</b> cube${n>1?"s":""} de 1 cm³`+(n>=per?`<br>1 couche = ${L} × ${W} = <b>${per}</b> cubes`+(full>1?` &nbsp;·&nbsp; ${full} couches = ${full} × ${per} = ${full*per}`:""):"")+(n===L*W*H?`<br><span class="ok">Volume = L × l × h = ${L} × ${W} × ${H} = <b>${L*W*H} cm³</b></span>`:"");
+}
+function fill(byLayer){
+  clearTimeout(timer);const [L,W,H]=dims(),tot=L*W*H;n=0;draw();
+  (function st(){if(n>=tot)return;n=byLayer?Math.min(tot,n+L*W):n+1;draw();timer=setTimeout(st,byLayer?800:Math.max(40,2400/tot));})();
+}
+$("go").onclick=()=>fill(false);$("lay").onclick=()=>fill(true);$("clr").onclick=()=>{clearTimeout(timer);n=0;draw();};
+["L","W","H"].forEach(id=>$(id).oninput=()=>{clearTimeout(timer);n=0;draw();});
+draw();
+</script>
+
+</main>
+</body></html>

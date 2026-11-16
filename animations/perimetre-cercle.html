@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Le périmètre du cercle</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Le périmètre du cercle</h1><span class="sub">On fait rouler le cercle sur une droite : son périmètre fait un peu plus de 3 diamètres.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <label>Rayon <input type="range" id="r" min="10" max="25" value="16"> <b id="rv"></b></label>
+  <button class="primary" id="roll">Dérouler le cercle</button><button id="dia">Comparer avec le diamètre</button><button id="rs">Recommencer</button>
+ </div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card" style="padding:6px"><svg id="svg" viewBox="0 0 1160 470"></svg>
+ <div id="f" style="font-size:30px;font-weight:700;text-align:center;min-height:44px;margin-bottom:6px"></div></div>
+<script>
+const S=$("svg"),X0=70,G=300,PX=40;let phi=0,showD=0,busy=false;
+const rr=()=>+$("r").value/10*PX;
+function draw(){
+  const r=rr(),cx=X0+r*phi,cy=G-r;
+  let h=`<line x1="20" y1="${G}" x2="1140" y2="${G}" stroke="#1c2333" stroke-width="3"/>`;
+  if(phi>0)h+=`<line x1="${X0}" y1="${G}" x2="${X0+r*phi}" y2="${G}" stroke="#d9482b" stroke-width="7" stroke-linecap="round"/>`;
+  const rem=2*Math.PI-phi;
+  h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#eef3fc" stroke="#9fb6e3" stroke-width="2"/>`;
+  if(rem>2*Math.PI-0.001)h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#d9482b" stroke-width="7"/>`;else if(rem>0.001){const a0=Math.PI/2+phi;const p=a=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];const s=p(Math.PI/2),e=p(Math.PI/2+rem);
+    h+=`<path d="M${s[0]},${s[1]} A${r},${r} 0 ${rem>Math.PI?1:0} 1 ${e[0]},${e[1]}" fill="none" stroke="#d9482b" stroke-width="7" transform="rotate(${phi*180/Math.PI},${cx},${cy})"/>`;}
+  const mk=[cx-r*Math.sin(phi),cy+r*Math.cos(phi)];
+  h+=`<line x1="${cx}" y1="${cy}" x2="${mk[0]}" y2="${mk[1]}" stroke="#2563c9" stroke-width="2"/><circle cx="${mk[0]}" cy="${mk[1]}" r="7" fill="#1c2333"/>`;
+  const dA=[cx-r*Math.cos(phi),cy-r*Math.sin(phi)],dB=[cx+r*Math.cos(phi),cy+r*Math.sin(phi)];
+  h+=`<line x1="${dA[0]}" y1="${dA[1]}" x2="${dB[0]}" y2="${dB[1]}" stroke="#2563c9" stroke-width="4"/>`;
+  if(showD>0){
+    const d=2*r,Y=G+50;let x=X0;
+    for(let k=0;k<3;k++){const w=Math.min(1,Math.max(0,showD*3.3-k))*d;h+=`<line x1="${x}" y1="${Y}" x2="${x+w}" y2="${Y}" stroke="${k%2?"#7aa0e8":"#2563c9"}" stroke-width="10"/>`;if(w>=d-.1)h+=`<text x="${x+d/2}" y="${Y+34}" text-anchor="middle" font-size="22" font-weight="700" fill="#2563c9">${k+1} d</text>`;x+=d;}
+    if(showD>=1){h+=`<line x1="${x}" y1="${Y}" x2="${X0+2*Math.PI*r}" y2="${Y}" stroke="#e07a1f" stroke-width="10"/><text x="${x+40}" y="${Y+64}" text-anchor="middle" font-size="18" fill="#e07a1f">+ un petit bout (≈ 0,14 d)</text>`;}
+  }
+  S.innerHTML=h;
+  const rc=+$("r").value/10;$("rv").textContent=frn(rc)+" cm";
+}
+$("r").oninput=()=>{if(!busy){phi=0;showD=0;$("f").innerHTML="";say("","");draw();}};
+$("roll").onclick=()=>{if(busy)return;busy=true;phi=0;showD=0;say("Le cercle roule sans glisser : la trace rouge sur la droite a la longueur du cercle.","");
+  tween(3200,e=>{phi=e*2*Math.PI;draw();},()=>{busy=false;const rc=+$("r").value/10;say(`Un tour complet : la trace rouge mesure le <b>périmètre</b> du cercle.`);$("f").innerHTML=`Périmètre ≈ <span style="color:#d9482b">${frn(Math.round(2*Math.PI*rc*100)/100)} cm</span>`;});};
+$("dia").onclick=()=>{if(busy)return;if(phi<2*Math.PI-1e-6){phi=2*Math.PI;}busy=true;
+  tween(2600,e=>{showD=e;draw();},()=>{busy=false;const rc=+$("r").value/10,d=2*rc;$("f").innerHTML=`Périmètre = <span style="color:#2563c9">π × diamètre</span> ≈ 3,14 × ${frn(d)} ≈ <span style="color:#d9482b">${frn(Math.round(Math.PI*d*100)/100)} cm</span>`;say("Le périmètre fait un peu plus de <b>3 diamètres</b> : exactement π (≈ 3,14) diamètres, quel que soit le cercle !","ok");});};
+$("rs").onclick=()=>{phi=0;showD=0;$("f").innerHTML="";say("","");draw();};
+draw();
+</script>
+
+</main>
+</body></html>

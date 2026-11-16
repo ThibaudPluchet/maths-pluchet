@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lire une règle graduée</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Lire une règle graduée</h1><span class="sub">Mesurer un segment qui ne commence pas forcément à 0, tracer un segment au millimètre près.</span></header>
+<main>
+<div class="card">
+ <div class="row"><button id="mL" class="on">Mesurer un segment</button><button id="mT">Tracer un segment</button><span class="sep"></span><button id="new">Nouveau</button></div>
+ <div class="row" id="cL" style="margin-top:10px">
+  <span style="font-size:22px">Longueur du segment : </span><input type="text" id="ans">
+  <select id="un"><option value="cm">cm</option><option value="mm">mm</option></select>
+  <button class="primary" id="chk">Vérifier</button><button id="how">Voir la méthode</button>
+ </div>
+ <div class="row" id="cT" style="margin-top:10px;display:none">
+  <span style="font-size:22px">Trace un segment [AB] de <b id="tg"></b> : fais glisser le point B.</span>
+  <button class="primary" id="chkT">Vérifier</button>
+ </div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card" style="padding:6px"><svg id="svg" viewBox="0 0 1160 380"></svg></div>
+<script>
+const S=$("svg"), X0=52, CM=88, Y=230, xm=m=>X0+m*CM/10;
+let mode="L", s=0, len=0, shift=0, marks=false, B=0, tgt=0, drag=false;
+const cmS=m=>frn(m/10)+" cm";
+function draw(){
+  let h=`<rect x="${X0-30}" y="${Y}" width="${120*CM/10+60}" height="96" rx="6" fill="#fff6cf" stroke="#b9a24a" stroke-width="2"/>`;
+  for(let i=0;i<=120;i++){const x=xm(i),L=i%10===0?34:i%5===0?22:13;h+=`<line x1="${x}" y1="${Y}" x2="${x}" y2="${Y+L}" stroke="#3d3a2a" stroke-width="${i%10===0?2:1.2}"/>`;if(i%10===0)h+=`<text x="${x}" y="${Y+60}" text-anchor="middle" font-size="22" font-weight="700" fill="#3d3a2a">${i/10}</text>`;}
+  h+=`<text x="${xm(120)+14}" y="${Y+86}" text-anchor="end" font-size="15" fill="#8a7f4a">cm</text>`;
+  if(mode==="L"){
+    const a=xm(s-shift),b=xm(s+len-shift),yy=Y-26;
+    h+=`<line x1="${a}" y1="${yy}" x2="${b}" y2="${yy}" stroke="#2563c9" stroke-width="5" stroke-linecap="round"/><line x1="${a}" y1="${yy-14}" x2="${a}" y2="${yy+14}" stroke="#2563c9" stroke-width="3"/><line x1="${b}" y1="${yy-14}" x2="${b}" y2="${yy+14}" stroke="#2563c9" stroke-width="3"/>`;
+    if(marks){
+      h+=`<line x1="${a}" y1="${yy}" x2="${a}" y2="${Y}" stroke="#d9482b" stroke-width="2" stroke-dasharray="4 3"/><line x1="${b}" y1="${yy}" x2="${b}" y2="${Y}" stroke="#d9482b" stroke-width="2" stroke-dasharray="4 3"/>`;
+      if(!shift)h+=`<text x="${a}" y="${yy-24}" text-anchor="middle" font-size="20" fill="#d9482b" font-weight="700">${cmS(s)}</text><text x="${b}" y="${yy-24}" text-anchor="middle" font-size="20" fill="#d9482b" font-weight="700">${cmS(s+len)}</text>`;
+    }
+  }else{
+    const a=xm(s),b=xm(B),yy=Y-26;
+    h+=`<line x1="${a}" y1="${yy}" x2="${b}" y2="${yy}" stroke="#2563c9" stroke-width="5" stroke-linecap="round"/>`;
+    h+=`<line x1="${a}" y1="${yy}" x2="${a}" y2="${Y}" stroke="#2563c9" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="${b}" y1="${yy}" x2="${b}" y2="${Y}" stroke="#d9482b" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+    h+=`<circle cx="${a}" cy="${yy}" r="7" fill="#2563c9"/><text x="${a}" y="${yy-20}" text-anchor="middle" font-size="24" font-weight="800" fill="#2563c9">A</text>`;
+    h+=`<circle id="bh" cx="${b}" cy="${yy}" r="14" fill="#d9482b" style="cursor:grab"/><text x="${b}" y="${yy-24}" text-anchor="middle" font-size="24" font-weight="800" fill="#d9482b" pointer-events="none">B</text>`;
+  }
+  S.innerHTML=h;
+}
+function newL(){
+  len=R(15,72);s=Math.random()<.2?0:R(4,120-len-2);if(s+len>118)s=118-len;
+  shift=0;marks=false;$("ans").value="";say("Quelle est la longueur du segment bleu ?","mut");draw();
+}
+function newT(){s=R(0,3)*10+R(0,1)*5;tgt=R(18,85);if(s+tgt>118)s=0;B=s+20;$("tg").textContent=cmS(tgt);say("","");draw();}
+$("chk").onclick=()=>{
+  const v=parseFloat($("ans").value.replace(",","."));if(isNaN(v))return say("Écris une longueur.","ko");
+  const mm=Math.round(($("un").value==="cm"?v*10:v)*1000)/1000;
+  if(Math.abs(mm-len)<.01)say(`✓ Bravo : le segment mesure ${cmS(len)} (= ${len} mm).`,"ok");
+  else if(s&&Math.abs(mm-(s+len))<.01)say(`✗ Tu as lu la graduation de l'extrémité droite… mais le segment <b>ne commence pas à 0</b> ! Regarde où il commence.`,"ko");
+  else if(Math.abs(mm-len)===10)say("✗ Presque : tu as une erreur d'un centimètre. Compte bien les intervalles entre les grands traits.","ko");
+  else if(Math.abs(mm*10-len)<.01||Math.abs(mm/10-len)<.01)say("✗ Attention à l'unité : 1 cm = 10 mm.","ko");
+  else say("✗ Ce n'est pas ça. Lis la graduation au début et à la fin du segment.","ko");
+};
+$("how").onclick=()=>{
+  marks=true;shift=0;draw();
+  say(`Le segment commence à <b>${cmS(s)}</b> et finit à <b>${cmS(s+len)}</b> : ${frn((s+len)/10)} − ${frn(s/10)} = <b>${cmS(len)}</b>.`+(s?` On peut aussi faire glisser le segment jusqu'au 0…`:""));
+  if(s)setTimeout(()=>tween(1400,e=>{shift=s*e;draw();},()=>say(`… il commence alors à 0 et on lit directement : <b>${cmS(len)}</b>.`,"ok")),1800);
+};
+$("chkT").onclick=()=>{const l=B-s;if(l===tgt)say(`✓ Bravo : [AB] mesure bien ${cmS(tgt)}.`,"ok");else if(B===tgt&&s)say(`✗ Ton point B est sur la graduation ${cmS(tgt)}, mais A n'est pas sur le 0 ! Il faut compter ${cmS(tgt)} <b>à partir de A</b>.`,"ko");else say(`✗ Ton segment mesure ${cmS(l)} au lieu de ${cmS(tgt)}.`,"ko");};
+S.addEventListener("pointerdown",e=>{if(mode==="T"&&e.target.id==="bh"){drag=true;S.setPointerCapture(e.pointerId);}});
+S.addEventListener("pointermove",e=>{if(!drag)return;const p=svgPt(S,e);B=Math.max(s+1,Math.min(120,Math.round((p.x-X0)/(CM/10))));draw();});
+S.addEventListener("pointerup",()=>drag=false);
+$("new").onclick=()=>mode==="L"?newL():newT();
+$("ans").addEventListener("keydown",e=>{if(e.key==="Enter")$("chk").click();});
+$("mL").onclick=()=>{mode="L";$("mL").classList.add("on");$("mT").classList.remove("on");$("cL").style.display="flex";$("cT").style.display="none";newL();};
+$("mT").onclick=()=>{mode="T";$("mT").classList.add("on");$("mL").classList.remove("on");$("cT").style.display="flex";$("cL").style.display="none";newT();};
+newL();
+</script>
+
+</main>
+</body></html>

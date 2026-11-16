@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Patrons du cube</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Patrons du cube</h1><span class="sub">Est-ce un patron du cube ? Fais ta prédiction… puis plie la figure pour vérifier.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <select id="sel"></select><button id="rnd">Figure au hasard</button>
+  <span class="sep"></span>
+  <span style="font-size:20px">Est-ce un patron du cube ?</span><button data-v="1">Oui</button><button data-v="0">Non</button>
+ </div>
+ <div class="row" style="margin-top:10px">
+  <button class="primary" id="fold">Plier</button>
+  <label class="mut">Pliage manuel <input type="range" id="t" min="0" max="100" value="0"></label>
+ </div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card" style="padding:0;overflow:hidden"><div id="stage"><div id="view"></div></div></div>
+<style>
+#stage{height:540px;perspective:1300px;position:relative;background:repeating-linear-gradient(0deg,#f6f3ea 0 1px,transparent 1px 30px),repeating-linear-gradient(90deg,#f6f3ea 0 1px,transparent 1px 30px)}
+#view{position:absolute;left:50%;top:50%;transform-style:preserve-3d}
+.fc{position:absolute;width:120px;height:120px;box-sizing:border-box;border:3px solid #1c2333;transform-style:preserve-3d;display:flex;align-items:center;justify-content:center}
+.fc>span{font-size:44px;font-weight:800;color:#fff;pointer-events:none}
+</style>
+<script>
+const SZ=120,COLS=["#2563c9","#e07a1f","#1f9255","#8a4fd1","#d9482b","#0f8b8d"];
+const row=(a,b)=>[[a,0],[0,1],[1,1],[2,1],[3,1],[b,2]];
+const NETS=[
+ {c:row(0,0),ok:1},{c:row(0,1),ok:1},{c:row(0,2),ok:1},{c:row(0,3),ok:1},{c:row(1,1),ok:1},{c:row(1,2),ok:1},
+ {c:[[0,0],[1,0],[1,1],[2,1],[3,1],[1,2]],ok:1},{c:[[0,0],[1,0],[1,1],[2,1],[3,1],[2,2]],ok:1},{c:[[0,0],[1,0],[1,1],[2,1],[3,1],[3,2]],ok:1},
+ {c:[[0,0],[1,0],[1,1],[2,1],[2,2],[3,2]],ok:1},{c:[[0,0],[1,0],[2,0],[2,1],[3,1],[4,1]],ok:1},
+ {c:[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]],ok:0},{c:[[0,1],[1,1],[2,1],[3,1],[4,1],[1,0]],ok:0},{c:[[0,0],[1,0],[0,1],[1,1],[2,1],[3,1]],ok:0},{c:[[0,0],[3,0],[0,1],[1,1],[2,1],[3,1]],ok:0}
+];
+const ORDER=[3,12,7,0,13,9,5,14,10,1,11,4,8,2,6];
+$("sel").innerHTML=ORDER.map((k,i)=>`<option value="${k}">Figure ${i+1}</option>`).join("");
+let cur=0,t=0,faces=[],rootC=[0,0],busy=false,ans=null;
+function build(){
+  const net=NETS[cur].c,key=c=>c.join(","),set=new Map(net.map((c,i)=>[key(c),i]));
+  const nb=c=>[[1,0],[-1,0],[0,1],[0,-1]].map(d=>[c[0]+d[0],c[1]+d[1]]).filter(x=>set.has(key(x)));
+  let root=net.reduce((a,c)=>nb(c).length>nb(a).length?c:a,net[0]);rootC=root;
+  const maxc=Math.max(...net.map(c=>c[0])),maxr=Math.max(...net.map(c=>c[1]));
+  const V=$("view");V.innerHTML="";faces=[];
+  const mk=(c,parent,dir)=>{
+    const d=document.createElement("div");d.className="fc";const i=set.get(key(c));d.style.background=COLS[i]+"d9";d.innerHTML=`<span>${i+1}</span>`;
+    if(!parent){d.style.left=(c[0]*SZ-(maxc+1)*SZ/2)+"px";d.style.top=(c[1]*SZ-(maxr+1)*SZ/2)+"px";V.appendChild(d);}
+    else{d.style.left=(dir[0]*SZ)+"px";d.style.top=(dir[1]*SZ)+"px";d.style.transformOrigin=dir[0]===1?"0 50%":dir[0]===-1?"100% 50%":dir[1]===1?"50% 0":"50% 100%";parent.appendChild(d);faces.push({d,dir});}
+    return d;
+  };
+  const seen=new Set([key(root)]),q=[[root,mk(root,null)]];
+  while(q.length){const [c,el]=q.shift();nb(c).forEach(x=>{if(seen.has(key(x)))return;seen.add(key(x));q.push([x,mk(x,el,[x[0]-c[0],x[1]-c[1]])]);});}
+  apply();
+}
+function apply(){
+  const a=90*t;
+  faces.forEach(({d,dir})=>{d.style.transform=dir[0]===1?`rotateY(${a}deg)`:dir[0]===-1?`rotateY(${-a}deg)`:dir[1]===1?`rotateX(${-a}deg)`:`rotateX(${a}deg)`;});
+  const net=NETS[cur].c,maxc=Math.max(...net.map(c=>c[0])),maxr=Math.max(...net.map(c=>c[1]));
+  const ox=rootC[0]*SZ-(maxc+1)*SZ/2+SZ/2,oy=rootC[1]*SZ-(maxr+1)*SZ/2+SZ/2;
+  const V=$("view");V.style.transformOrigin=`${ox}px ${oy}px ${-SZ/2*t}px`;
+  V.style.transform=`translate(${-ox*t}px,${-oy*t}px) rotateX(${-32*t}deg) rotateY(${38*t}deg)`;
+  $("t").value=Math.round(t*100);
+}
+function verdict(){
+  const ok=NETS[cur].ok;
+  say(ok?"✓ Les six faces se referment sans se chevaucher : <b>c'est un patron du cube</b>.":"✗ Des faces viennent se superposer et il reste un côté ouvert : <b>ce n'est pas un patron du cube</b>.",ok?"ok":"ko");
+  if(ans!==null)$("msg").innerHTML+=ans===ok?" <b>Bonne prédiction !</b>":" <b>Ta prédiction était fausse.</b>";
+}
+function load(){cur=+$("sel").value;t=0;ans=null;build();say("Observe la figure : peut-on la plier pour former un cube ?","mut");$("fold").textContent="Plier";}
+$("sel").onchange=load;
+$("rnd").onclick=()=>{$("sel").selectedIndex=R(0,ORDER.length-1);load();};
+document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{ans=+b.dataset.v;say(`Tu as répondu « ${ans?"oui":"non"} ». Plie la figure pour vérifier !`,"");});
+$("fold").onclick=()=>{if(busy)return;busy=true;const from=t,to=t>.5?0:1;tween(2400,e=>{t=from+(to-from)*e;apply();},()=>{t=to;apply();busy=false;$("fold").textContent=to?"Déplier":"Plier";if(to)verdict();else say("","");});};
+$("t").oninput=()=>{t=$("t").value/100;apply();if(t===1)verdict();};
+load();
+</script>
+
+</main>
+</body></html>

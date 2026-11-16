@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tables de multiplication en rectangles</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Tables de multiplication en rectangles</h1><span class="sub">Un produit, c'est un rectangle de carreaux. Découpe-le pour retrouver un résultat oublié.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <label>Lignes <input type="range" id="a" min="1" max="12" value="7" style="width:180px"></label>
+  <label>Colonnes <input type="range" id="b" min="1" max="12" value="8" style="width:180px"></label>
+  <label>Découper après la colonne <input type="range" id="k" min="0" max="8" value="5" style="width:180px"></label>
+ </div>
+ <div class="row" style="margin-top:10px">
+  <button id="rot">Tourner le rectangle</button><button id="rnd">Au hasard</button>
+  <label><input type="checkbox" id="hide"> Cacher le résultat</label>
+ </div>
+</div>
+<div class="card" style="padding:6px"><svg id="svg" viewBox="0 0 1160 520"></svg>
+ <div id="f" style="font-size:34px;font-weight:700;text-align:center;margin:6px 0 10px"></div></div>
+<script>
+const S=$("svg");
+function draw(){
+  const a=+$("a").value,b=+$("b").value;$("k").max=b;let k=Math.min(+$("k").value,b);
+  const c=Math.min(42,Math.floor(900/b),Math.floor(420/a)),x0=(1160-b*c)/2+30,y0=(520-a*c)/2;
+  let h="";
+  for(let i=0;i<a;i++)for(let j=0;j<b;j++){const L=j<k;h+=`<rect x="${x0+j*c+2}" y="${y0+i*c+2}" width="${c-4}" height="${c-4}" rx="5" fill="${L?"#2563c9":"#e07a1f"}" fill-opacity="${L?.75:.75}"/>`;}
+  h+=`<rect x="${x0}" y="${y0}" width="${b*c}" height="${a*c}" fill="none" stroke="#1c2333" stroke-width="3"/>`;
+  if(k>0&&k<b)h+=`<line x1="${x0+k*c}" y1="${y0-24}" x2="${x0+k*c}" y2="${y0+a*c+24}" stroke="#d9482b" stroke-width="4" stroke-dasharray="10 6"/>`;
+  h+=`<text x="${x0-16}" y="${y0+a*c/2+10}" text-anchor="end" font-size="28" font-weight="800">${a}</text>`;
+  if(k>0)h+=`<text x="${x0+k*c/2}" y="${y0-12}" text-anchor="middle" font-size="26" font-weight="800" fill="#2563c9">${k}</text>`;
+  if(k<b)h+=`<text x="${x0+(k+b)*c/2}" y="${y0-12}" text-anchor="middle" font-size="26" font-weight="800" fill="#e07a1f">${b-k}</text>`;
+  S.innerHTML=h;
+  const hid=$("hide").checked,r=v=>hid?"?":v;
+  $("f").innerHTML=(k>0&&k<b)?`${a} × ${b} = <span style="color:#2563c9">${a} × ${k}</span> + <span style="color:#e07a1f">${a} × ${b-k}</span> = <span style="color:#2563c9">${r(a*k)}</span> + <span style="color:#e07a1f">${r(a*(b-k))}</span> = <span class="ok">${r(a*b)}</span>`:`${a} × ${b} = <span class="ok">${r(a*b)}</span> <span class="mut" style="font-size:20px;font-weight:400">(${a} lignes de ${b} carreaux)</span>`;
+}
+["a","b","k","hide"].forEach(id=>$(id).addEventListener("input",draw));
+$("rot").onclick=()=>{const a=$("a").value,b=$("b").value;S.style.transition="transform .6s";S.style.transform="rotate(90deg) scale(.6)";setTimeout(()=>{S.style.transition="none";S.style.transform="";$("a").value=b;$("b").value=a;$("k").value=Math.min(+$("k").value,+a);draw();},600);};
+$("rnd").onclick=()=>{const a=R(6,9),b=R(6,9);$("a").value=a;$("b").value=b;$("k").max=b;$("k").value=b>5?5:Math.floor(b/2);draw();};
+draw();
+</script>
+
+</main>
+</body></html>

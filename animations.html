@@ -50,7 +50,7 @@ svg.art text{fill:currentColor;stroke:none;font-family:"Bricolage Grotesque",Geo
 a.card .t::after{content:"↗";color:var(--c);font-size:14px;margin-left:auto}
 .card .d{color:var(--muted);font-size:15px}
 .card .tag{align-self:flex-start;font-size:12px;font-weight:700;background:var(--cs);color:var(--c);border-radius:999px;padding:2px 9px;margin-top:4px}
-.g1{--c:var(--g1);--cs:var(--g1s)} .g2{--c:var(--g2);--cs:var(--g2s)} .g3{--c:var(--g3);--cs:var(--g3s)} .g4{--c:var(--g4);--cs:var(--g4s)}
+.g5{--c:#0f8b8d;--cs:#e0f3f3} .g1{--c:var(--g1);--cs:var(--g1s)} .g2{--c:var(--g2);--cs:var(--g2s)} .g3{--c:var(--g3);--cs:var(--g3s)} .g4{--c:var(--g4);--cs:var(--g4s)}
 footer.wrap{color:var(--muted);font-size:14px;padding-top:18px;padding-bottom:40px;border-top:1px solid var(--line)}
 @media (min-width:1000px){ .wrap{max-width:1200px} .cards{grid-template-columns:repeat(3,1fr)} }
 #tabsat{display:none}
@@ -71,26 +71,60 @@ header.wrap .sitetabs{margin:0 0 18px}
 <script>
 (function(){
 var S = [
-  {cls:'g1', ic:'🔢', titre:'Nombres et calcul', intro:'Décimaux, fractions, relatifs et priorités opératoires.', items:[
+  {cls:'g1', ic:'🔢', titre:'Nombres et calcul', intro:'Numération, décimaux, fractions, relatifs, calcul.', items:[
     {t:'Glisse-nombre', f:'glisse-nombre', d:'Multiplier ou diviser par 10, 100, 1 000 : les chiffres glissent, la virgule reste en place.', tag:'Décimaux · puissances de 10'},
+    {t:'Les grands nombres', f:'grands-nombres', d:'Ranger les chiffres par classes et écrire le nombre en lettres.', tag:'Numération'},
     {t:'Droite graduée zoomable', f:'droite-zoom', d:'Zoomer entre deux graduations pour placer et comparer des nombres décimaux.', tag:'Comparer des décimaux'},
+    {t:'Arrondir et tronquer', f:'arrondi', d:'De quelle graduation le nombre est-il le plus proche ?', tag:'Arrondi · troncature'},
     {t:'Fractions en barres et en disques', f:'fractions', d:'Découper, colorier et comparer deux fractions. Quand sont-elles égales ?', tag:'Fractions'},
     {t:'Nombres relatifs', f:'relatifs', d:'Additionner et soustraire, sur la droite graduée ou avec des jetons + et −.', tag:'Relatifs'},
-    {t:'Priorités opératoires', f:'priorites', d:'Clique sur l’opération à effectuer en premier, étape par étape.', tag:'Calcul'}
+    {t:'Tables en rectangles', f:'tables', d:'Un produit est un rectangle de carreaux : découpe-le pour retrouver un résultat.', tag:'Tables · distributivité'},
+    {t:'Priorités opératoires', f:'priorites', d:'Clique sur l’opération à effectuer en premier, étape par étape.', tag:'Calcul'},
+    {t:'Division euclidienne', f:'division', d:'Partager des jetons équitablement : quotient et reste.', tag:'Division'},
+    {t:'Multiples et nombres premiers', f:'crible', d:'Le crible d’Ératosthène, les multiples et les critères de divisibilité.', tag:'Arithmétique'}
   ]},
   {cls:'g2', ic:'📊', titre:'Proportionnalité', intro:'Pourcentages, coefficient, passage à l’unité, graphique.', items:[
     {t:'Barre de pourcentage', f:'pourcentage', d:'Le pourcentage et la quantité avancent ensemble. Réductions et augmentations.', tag:'Pourcentages'},
     {t:'Tableau de proportionnalité', f:'proportionnalite', d:'Quatre façons de trouver une valeur manquante, et le graphique qui va avec.', tag:'Proportionnalité'}
   ]},
-  {cls:'g3', ic:'📐', titre:'Géométrie et mesures', intro:'Angles, conversions, aires, périmètres et symétries.', items:[
-    {t:'Somme des angles d’un triangle', f:'somme-angles', d:'Déplace les sommets, puis découpe les trois angles et recolle-les.', tag:'Angles'},
+  {cls:'g3', ic:'📐', titre:'Instruments et constructions', intro:'Règle, équerre, compas, rapporteur : les bons gestes.', items:[
+    {t:'Lire une règle graduée', f:'regle', d:'Mesurer un segment qui ne commence pas à 0, tracer au millimètre.', tag:'Règle'},
+    {t:'L’équerre', f:'equerre', d:'Tracer une perpendiculaire et une parallèle passant par un point.', tag:'Équerre'},
+    {t:'Le compas', f:'compas', d:'Construire un triangle connaissant ses trois côtés, tracer une médiatrice.', tag:'Compas'},
     {t:'Rapporteur virtuel', f:'rapporteur', d:'Centre, zéro sur un côté… et lis la bonne graduation !', tag:'Mesurer un angle'},
-    {t:'Tableau de conversion', f:'conversions', d:'Longueurs, masses, contenances, aires et volumes : la virgule se déplace.', tag:'Conversions'},
-    {t:'Aire et périmètre', f:'aire-perimetre', d:'Même aire mais périmètres différents… et inversement !', tag:'Aire · périmètre'},
+    {t:'Les angles', f:'angles', d:'Aigu, droit, obtus, plat… et comparer deux angles.', tag:'Angles'},
+    {t:'Somme des angles d’un triangle', f:'somme-angles', d:'Déplace les sommets, puis découpe les trois angles et recolle-les.', tag:'Angles'},
     {t:'Symétries', f:'symetries', d:'Déplace la figure, l’axe ou le centre : la figure symétrique suit en direct.', tag:'Symétrie axiale et centrale'}
+  ]},
+  {cls:'g4', ic:'📏', titre:'Grandeurs et mesures', intro:'Conversions, durées, périmètres, aires, volumes.', items:[
+    {t:'Tableau de conversion', f:'conversions', d:'Longueurs, masses, contenances, aires et volumes : la virgule se déplace.', tag:'Conversions'},
+    {t:'Lire l’heure et calculer une durée', f:'heure', d:'Une horloge à manipuler et une frise pour calculer les durées.', tag:'Durées'},
+    {t:'Aire et périmètre', f:'aire-perimetre', d:'Même aire mais périmètres différents… et inversement !', tag:'Aire · périmètre'},
+    {t:'Le périmètre du cercle', f:'perimetre-cercle', d:'On déroule le cercle : un peu plus de 3 diamètres.', tag:'Cercle'},
+    {t:'L’aire du disque', f:'aire-disque', d:'On découpe le disque en parts pour former presque un rectangle.', tag:'Disque'},
+    {t:'Le volume en cubes', f:'volume', d:'On remplit un pavé couche par couche avec des cubes de 1 cm³.', tag:'Volume'}
+  ]},
+  {cls:'g5', ic:'🧊', titre:'Espace et repérage', intro:'Patrons, solides et coordonnées.', items:[
+    {t:'Patrons du cube', f:'patron-cube', d:'Est-ce un patron ? Plie la figure en 3D pour vérifier.', tag:'Solides'},
+    {t:'Se repérer dans le plan', f:'reperage', d:'Lire et placer des points, et une bataille navale.', tag:'Coordonnées'}
   ]}
 ];
 var ART = {
+  'grands-nombres':'<rect class="f" x="4" y="20" width="56" height="24" rx="2"/><path d="M23 20v24M42 20v24" stroke-width="3.5"/><text x="13" y="37" font-size="11">40</text><text x="32" y="37" font-size="11">708</text><text x="51" y="37" font-size="11">015</text>',
+  'arrondi':'<path d="M6 38h52"/><path d="M10 32v12M54 32v12M32 34v8"/><circle class="s" cx="40" cy="38" r="4"/><path d="M40 30Q48 16 54 28" /><path d="M50 26l4 3 1-5"/>',
+  'tables':'<rect class="f" x="8" y="12" width="48" height="40"/><path d="M8 22h48M8 32h48M8 42h48M20 12v40M32 12v40M44 12v40" opacity=".4"/><path d="M38 6v52" stroke-dasharray="4 3"/>',
+  'division':'<rect class="f" x="6" y="30" width="16" height="24" rx="2"/><rect class="f" x="24" y="30" width="16" height="24" rx="2"/><rect class="f" x="42" y="30" width="16" height="24" rx="2"/><circle class="s" cx="14" cy="40" r="3"/><circle class="s" cx="32" cy="40" r="3"/><circle class="s" cx="50" cy="40" r="3"/><circle cx="26" cy="14" r="4"/><circle cx="38" cy="14" r="4"/>',
+  'crible':'<rect class="f" x="8" y="8" width="48" height="48" rx="3"/><path d="M8 24h48M8 40h48M24 8v48M40 8v48" opacity=".4"/><path d="M28 12l8 8M44 28l8 8M12 44l8 8"/><circle cx="16" cy="32" r="5"/>',
+  'regle':'<rect class="f" x="4" y="30" width="56" height="18" rx="2"/><path d="M10 30v8M18 30v5M26 30v8M34 30v5M42 30v8M50 30v5"/><path d="M18 20h28" stroke-width="4"/>',
+  'equerre':'<path class="f" d="M10 54V10l44 44z"/><path d="M10 44h10v10"/><path d="M4 58L60 2" stroke-dasharray="4 4" opacity=".5"/>',
+  'compas':'<path d="M32 8L16 54M32 8l16 46"/><circle class="s" cx="32" cy="8" r="4"/><path d="M8 50a26 26 0 0 1 48 0" class="f" fill="none" stroke-dasharray="3 3"/>',
+  'angles':'<path d="M10 50h46M10 50L40 14"/><path class="f" d="M10 50h18a18 18 0 0 0-6.5-13.8z"/>',
+  'heure':'<circle class="f" cx="32" cy="32" r="24"/><path d="M32 32V16M32 32l10 6"/><circle class="s" cx="32" cy="32" r="2.5"/>',
+  'perimetre-cercle':'<circle class="f" cx="20" cy="30" r="14"/><path d="M4 46h56"/><path d="M20 46h34" stroke-width="4"/><circle class="s" cx="20" cy="44" r="2.5"/>',
+  'aire-disque':'<path class="f" d="M8 44l6-24 6 24zM20 44l6-24 6 24zM32 44l6-24 6 24zM44 44l6-24 6 24z"/><path d="M14 20l6 24M26 20l6 24M38 20l6 24"/>',
+  'volume':'<path class="f" d="M12 22l20-10 20 10v24L32 56 12 46z"/><path d="M12 22l20 10 20-10M32 32v24"/><path d="M22 27v24M42 27v24" opacity=".4"/>',
+  'patron-cube':'<path class="f" d="M24 4h16v16H24zM8 20h16v16H8zM24 20h16v16H24zM40 20h16v16H40zM24 36h16v16H24zM24 52h16v8H24z"/>',
+  'reperage':'<path d="M8 56h50M8 56V6"/><path d="M8 26h30v30" stroke-dasharray="3 3"/><circle class="s" cx="38" cy="26" r="4"/>',
   'glisse-nombre':'<rect class="f" x="6" y="20" width="52" height="24" rx="2"/><path d="M19 20v24M32 20v24M45 20v24" opacity=".4"/><text x="25.5" y="38" font-size="15">3</text><text x="38.5" y="38" font-size="15">4</text><path d="M32 44v10" stroke-width="3.5"/><path d="M50 12H14M20 7l-6 5 6 5"/>',
   'droite-zoom':'<path d="M6 18h52M6 46h52"/><path d="M10 14v8M54 14v8M10 42v8M54 42v8M32 15v6"/><path class="f" d="M32 18h6l16 28H10z" opacity=".6"/><circle class="s" cx="36" cy="46" r="3.5"/>',
   'fractions':'<circle class="f" cx="22" cy="32" r="15"/><path d="M22 17v30M22 32l13 7.5"/><path class="s" d="M22 32V17a15 15 0 0 1 13 22.5z"/><rect x="42" y="14" width="14" height="36" rx="1"/><path class="s" d="M42 32h14v18H42z"/>',

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Se repérer dans le plan</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1;--a5:#e07a1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+select,input[type=text],input[type=number],input[type=time]{padding:7px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text],input[type=number]{width:110px;font-weight:700}
+input[type=range]{accent-color:var(--a);width:220px}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.msg{min-height:32px;font-size:22px;margin-top:8px;line-height:1.45}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.big{font-size:32px;font-weight:700}
+.sep{width:18px}
+</style>
+<script>
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+function svgPt(S,e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+function say(t,c,id){const m=$(id||"msg");if(!m)return;m.className="msg "+(c||"");m.innerHTML=t;}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const frn=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+function tween(d,f,done){const t0=performance.now();(function g(n){let p=Math.min(1,(n-t0)/d);const e=p<.5?2*p*p:1-2*(1-p)*(1-p);f(e);if(p<1)requestAnimationFrame(g);else if(done)done();})(t0);}
+</script>
+</head>
+<body>
+<header><h1>Se repérer dans le plan</h1><span class="sub">Abscisse d'abord (on avance), ordonnée ensuite (on monte) : lire, placer, et une bataille navale.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <button id="q1" class="on">De 0 à 10</button><button id="rel">Avec les nombres relatifs</button>
+  <span class="sep"></span>
+  <select id="act"><option value="lire">Lire les coordonnées d'un point</option><option value="placer">Placer un point</option><option value="bat">Bataille navale</option></select>
+  <button id="new">Nouveau</button>
+ </div>
+ <div class="row" id="inp" style="margin-top:10px">
+  <span style="font-size:24px" id="lab">A (</span><input type="text" id="x" style="width:70px"><span style="font-size:24px">;</span><input type="text" id="y" style="width:70px"><span style="font-size:24px">)</span>
+  <button class="primary" id="ok">Valider</button>
+ </div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card" style="padding:6px"><svg id="svg" viewBox="0 0 1160 600"></svg></div>
+<script>
+const S=$("svg");let rel=false,act="lire",P=[0,0],marks=[],ships=[],shots=0,done=false;
+const cfg=()=>rel?{min:-6,max:6,u:44,o:[580,300]}:{min:0,max:10,u:50,o:[330,560]};
+const X=v=>cfg().o[0]+v*cfg().u,Y=v=>cfg().o[1]-v*cfg().u;
+const fmt=v=>v<0?"−"+(-v):String(v);
+function draw(){
+  const c=cfg();let h="";
+  for(let v=c.min;v<=c.max;v++){h+=`<line x1="${X(v)}" y1="${Y(c.min)}" x2="${X(v)}" y2="${Y(c.max)}" stroke="#e6e1d6"/><line x1="${X(c.min)}" y1="${Y(v)}" x2="${X(c.max)}" y2="${Y(v)}" stroke="#e6e1d6"/>`;}
+  h+=`<line x1="${X(c.min)-10}" y1="${Y(0)}" x2="${X(c.max)+24}" y2="${Y(0)}" stroke="#1c2333" stroke-width="2.5"/><line x1="${X(0)}" y1="${Y(c.min)+10}" x2="${X(0)}" y2="${Y(c.max)-24}" stroke="#1c2333" stroke-width="2.5"/>`;
+  h+=`<polygon points="${X(c.max)+30},${Y(0)} ${X(c.max)+18},${Y(0)-6} ${X(c.max)+18},${Y(0)+6}" fill="#1c2333"/><polygon points="${X(0)},${Y(c.max)-30} ${X(0)-6},${Y(c.max)-18} ${X(0)+6},${Y(c.max)-18}" fill="#1c2333"/>`;
+  for(let v=c.min;v<=c.max;v++){if(v===0)continue;h+=`<text x="${X(v)}" y="${Y(0)+24}" text-anchor="middle" font-size="16" fill="#2563c9">${fmt(v)}</text><text x="${X(0)-10}" y="${Y(v)+5}" text-anchor="end" font-size="16" fill="#d9482b">${fmt(v)}</text>`;}
+  h+=`<text x="${X(0)-10}" y="${Y(0)+22}" text-anchor="end" font-size="16">0</text>`;
+  h+=`<text x="${X(c.max)+20}" y="${Y(0)-14}" text-anchor="end" font-size="17" font-weight="700" fill="#2563c9">abscisses</text><text x="${X(0)+12}" y="${Y(c.max)-14}" font-size="17" font-weight="700" fill="#d9482b">ordonnées</text>`;
+  if(act==="lire"||marks.show){h+=pr(P);}
+  marks.forEach(m=>h+=m);
+  h+=`<rect id="hit" x="${X(c.min)-c.u/2}" y="${Y(c.max)-c.u/2}" width="${(c.max-c.min+1)*c.u}" height="${(c.max-c.min+1)*c.u}" fill="transparent" style="cursor:${act==="placer"?"crosshair":"default"}"/>`;
+  S.innerHTML=h;
+}
+function pr(p,col){col=col||"#1c2333";return `<line x1="${X(p[0])}" y1="${Y(p[1])}" x2="${X(p[0])}" y2="${Y(0)}" stroke="#2563c9" stroke-width="2.5" stroke-dasharray="6 4"/><line x1="${X(p[0])}" y1="${Y(p[1])}" x2="${X(0)}" y2="${Y(p[1])}" stroke="#d9482b" stroke-width="2.5" stroke-dasharray="6 4"/>`+cross(p,col)+`<text x="${X(p[0])+12}" y="${Y(p[1])-12}" font-size="26" font-weight="800" fill="${col}">A</text>`;}
+const cross=(p,col)=>`<path d="M${X(p[0])-9},${Y(p[1])-9}L${X(p[0])+9},${Y(p[1])+9}M${X(p[0])-9},${Y(p[1])+9}L${X(p[0])+9},${Y(p[1])-9}" stroke="${col}" stroke-width="4"/>`;
+function rp(){const c=cfg();let p;do{p=[R(c.min,c.max),R(c.min,c.max)];}while(p[0]===p[1]||(rel&&(p[0]===0||p[1]===0)&&Math.random()<.7)||(!rel&&(p[0]===0||p[1]===0)&&Math.random()<.7));return p;}
+function rd(id){const s=$(id).value.trim().replace("−","-");return /^-?\d+$/.test(s)?parseInt(s,10):null;}
+function newAct(){
+  act=$("act").value;marks=[];done=false;$("x").value="";$("y").value="";
+  $("inp").style.display=act==="placer"?"none":"flex";$("lab").textContent=act==="bat"?"Tir en (":"A (";
+  if(act==="lire"){P=rp();say("Quelles sont les coordonnées du point A ?","mut");}
+  if(act==="placer"){P=rp();say(`Clique pour placer le point <b>A (${fmt(P[0])} ; ${fmt(P[1])})</b>.`);}
+  if(act==="bat"){ships=[];const c=cfg();while(ships.length<4){const p=[R(c.min,c.max),R(c.min,c.max)];if(!ships.some(s=>s[0]===p[0]&&s[1]===p[1]))ships.push(p);}shots=0;say("4 bateaux (d'une case) sont cachés sur les points du quadrillage. Annonce des coordonnées pour tirer !","mut");}
+  draw();
+}
+$("ok").onclick=()=>{
+  const x=rd("x"),y=rd("y");if(x===null||y===null)return say("Écris deux nombres entiers.","ko");
+  if(act==="lire"){
+    if(x===P[0]&&y===P[1])say(`✓ Bravo : A (${fmt(x)} ; ${fmt(y)}). On lit d'abord l'abscisse (en bleu), puis l'ordonnée (en rouge).`,"ok");
+    else if(x===P[1]&&y===P[0])say("✗ Tu as inversé ! On écrit <b>d'abord l'abscisse</b> (on lit sur l'axe horizontal), <b>puis l'ordonnée</b> (axe vertical).","ko");
+    else if(x===-P[0]||y===-P[1])say("✗ Attention au signe : à gauche de l'origine les abscisses sont négatives, en dessous les ordonnées sont négatives.","ko");
+    else say("✗ Ce n'est pas ça : suis les pointillés jusqu'aux axes.","ko");
+  }else if(act==="bat"){
+    if(done)return;const c=cfg();if(x<c.min||x>c.max||y<c.min||y>c.max)return say("Ce point est en dehors du quadrillage !","ko");
+    shots++;const k=ships.findIndex(s=>s[0]===x&&s[1]===y);
+    if(k>=0){ships[k].hit=1;marks.push(`<circle cx="${X(x)}" cy="${Y(y)}" r="16" fill="#d9482b"/><text x="${X(x)}" y="${Y(y)+7}" text-anchor="middle" font-size="20" fill="#fff">💥</text>`);}
+    else marks.push(`<circle cx="${X(x)}" cy="${Y(y)}" r="12" fill="none" stroke="#2563c9" stroke-width="3"/>`);
+    const left=ships.filter(s=>!s.hit).length;
+    if(left===0){done=true;say(`✓ Tous les bateaux sont coulés en ${shots} tirs !`,"ok");}
+    else say(k>=0?`💥 Touché-coulé en (${fmt(x)} ; ${fmt(y)}) ! Encore ${left} bateau${left>1?"x":""}.`:`À l'eau en (${fmt(x)} ; ${fmt(y)}). Encore ${left} bateau${left>1?"x":""}.`,k>=0?"ok":"");
+    $("x").value="";$("y").value="";$("x").focus();draw();
+  }
+};
+S.addEventListener("click",e=>{
+  if(act!=="placer"||done)return;const c=cfg(),p=svgPt(S,e),x=Math.round((p.x-c.o[0])/c.u),y=Math.round((c.o[1]-p.y)/c.u);
+  if(x<c.min||x>c.max||y<c.min||y>c.max)return;
+  marks=[cross([x,y],x===P[0]&&y===P[1]?"#1f9255":"#d9482b")];
+  if(x===P[0]&&y===P[1]){done=true;marks.push(pr(P,"#1f9255"));say(`✓ Bravo ! A (${fmt(P[0])} ; ${fmt(P[1])}) : on avance de ${fmt(P[0])} sur l'axe horizontal, puis on ${P[1]>=0?"monte":"descend"} de ${Math.abs(P[1])}.`,"ok");}
+  else if(x===P[1]&&y===P[0])say("✗ Tu as inversé abscisse et ordonnée : le <b>premier</b> nombre se lit sur l'axe <b>horizontal</b>.","ko");
+  else say(`✗ Tu as placé le point (${fmt(x)} ; ${fmt(y)}). Essaie encore !`,"ko");
+  draw();
+});
+["x","y"].forEach(id=>$(id).addEventListener("keydown",e=>{if(e.key==="Enter")$("ok").click();}));
+$("act").onchange=newAct;$("new").onclick=newAct;
+$("q1").onclick=()=>{rel=false;$("q1").classList.add("on");$("rel").classList.remove("on");newAct();};
+$("rel").onclick=()=>{rel=true;$("rel").classList.add("on");$("q1").classList.remove("on");newAct();};
+newAct();
+</script>
+
+</main>
+</body></html>
