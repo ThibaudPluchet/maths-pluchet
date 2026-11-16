@@ -471,9 +471,8 @@ function start(D){
     var ec0 = enCours(seqs); classSeq = ec0 ? ec0.s.num : (full.length ? full[0].num : 0);
     // point rouge : documents nouveaux depuis la dernière visite (cours), évaluation à venir ou nouvelle (évaluations), DM nouveau
     tlist.forEach(function(t){
-      if (t[0] === 'cours') t[2] = seqs.some(function(s){ return s.notions.some(function(n){ return n.items.some(isNew); }); });
-      if (t[0] === 'evals') t[2] = !!(up.length || evals.some(function(e){ return e.items.some(isNew); }));
-      if (t[0] === 'dm') t[2] = dms.some(function(d){ return isNew(d); });
+      // plus de point rouge « nouveauté depuis la dernière visite » : seulement une évaluation à venir
+      if (t[0] === 'evals') t[2] = !!up.length;
     });
     if (window.SiteTabs){
       SiteTabs.save(tlist.map(function(t){ return [t[0], t[1], t[0] === view ? false : !!t[2]]; }));
@@ -575,7 +574,6 @@ function start(D){
       var tx = el('span','txt');
       tx.appendChild(el('span','sn', nums(d) + (d.key === curKey ? ' · en cours' : '')));
       tx.appendChild(el('span','st', d.key)); b.appendChild(tx);
-      if (d.notions.some(function(x){ return x.n.items.some(isNew); })) b.appendChild(el('span','dot'));
       b.onclick = function(){ seqSel = d.key; render(); var t = document.getElementById('seq-notions'); if (t) t.scrollIntoView({behavior:'smooth', block:'start'}); };
       list.appendChild(b);
     });
