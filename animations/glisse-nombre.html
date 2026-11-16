@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Glisse-nombre</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:9px 16px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button.op{font-size:24px;font-weight:600;min-width:120px}
+button.op.dec{border-color:#9db8e8}
+input[type=text]{padding:8px 10px;border:2px solid #c9c2b2;border-radius:10px;width:170px}
+.msg{min-height:34px;font-size:22px;margin-top:12px}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.gn{position:relative;margin:0 auto}
+.hgroups{display:flex}.hgroups div{text-align:center;font-weight:700;padding:6px;border:1px solid var(--line);background:#f3efe5;font-size:17px}
+.hgroups div.dec{background:#e4ecfa}
+.hrow{display:flex}
+.hc{width:100px;height:80px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:1.15;background:#fbfaf6}
+.hc.dec{background:#eef3fc}
+.pow{display:none;font-size:19px;font-weight:700;color:var(--a4);margin-top:3px}
+body.pw .pow{display:block}
+.drow{position:relative;display:flex;height:124px}
+.cell{width:100px;height:124px;border:1px solid var(--line)}
+.cell.u{border-right:4px solid var(--a2)}
+.digit{position:absolute;top:0;width:100px;height:124px;display:flex;align-items:center;justify-content:center;font-size:70px;font-weight:700;color:var(--a);transition:left .9s cubic-bezier(.55,0,.3,1)}
+.digit.zero{color:#aaa395;opacity:0;transition:opacity .45s}
+.digit.zero.show{opacity:1}
+.comma{position:absolute;left:584px;bottom:-14px;font-size:84px;font-weight:800;color:var(--a2);line-height:1;pointer-events:none}
+#hist div{font-size:24px;padding:4px 0;border-bottom:1px dashed var(--line)}
+#hist div:first-child{font-size:30px;font-weight:600}
+#defiBox{display:none;font-size:30px;font-weight:600;margin-top:12px}
+</style></head>
+<body>
+<header><h1>Glisse-nombre</h1><span class="sub">Multiplier et diviser par 10, 100, 1 000… : ce sont les chiffres qui glissent, la virgule ne bouge pas.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <label>Nombre : <input id="nb" type="text" value="3,45"></label>
+  <button class="primary" id="placer">Placer dans le tableau</button>
+  <button id="defi">Défi aléatoire</button>
+  <label style="margin-left:auto"><input type="checkbox" id="pw"> Écrire avec les puissances de 10</label>
+ </div>
+ <div id="defiBox"><span id="defiTxt"></span> <button class="primary" id="defiGo">Voir la réponse</button></div>
+</div>
+<div class="card" style="overflow-x:auto;padding-bottom:44px"><div id="table"></div></div>
+<div class="card">
+ <div class="row" id="ops"></div>
+ <div class="msg" id="msg"></div>
+ <div id="hist"></div>
+</div>
+</main>
+<script>
+const W=100, EXPS=[5,4,3,2,1,0,-1,-2,-3,-4];
+const NAMES=["centaines<br>de mille","dizaines<br>de mille","unités<br>de mille","centaines","dizaines","unités","dixièmes","centièmes","millièmes","dix-<br>millièmes"];
+const SUPM={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+const sup=n=>String(n).split("").map(c=>SUPM[c]).join("");
+const $=id=>document.getElementById(id);
+const OPS=[{k:1,l:"× 10"},{k:2,l:"× 100"},{k:3,l:"× 1 000"},{k:-1,l:"÷ 10"},{k:-2,l:"÷ 100"},{k:-3,l:"÷ 1 000"},{k:-1,l:"× 0,1",alt:1},{k:-2,l:"× 0,01",alt:1},{k:-3,l:"× 0,001",alt:1}];
+let digits=[],busy=false,pending=null;
+
+$("table").innerHTML=`<div class="gn" style="width:${W*10}px">
+ <div class="hgroups"><div style="width:${W*6}px">Partie entière</div><div class="dec" style="width:${W*4}px">Partie décimale</div></div>
+ <div class="hrow">${EXPS.map((e,i)=>`<div class="hc ${e<0?"dec":""}">${NAMES[i]}<div class="pow">10${sup(e)}</div></div>`).join("")}</div>
+ <div class="drow" id="drow">${EXPS.map(e=>`<div class="cell ${e===0?"u":""}"></div>`).join("")}<div class="comma">,</div></div></div>`;
+const drow=$("drow");
+
+function opLabel(o){
+  if(document.body.classList.contains("pw")) return "× 10"+sup(o.k);
+  return o.l;
+}
+function drawOps(){
+  const pw=document.body.classList.contains("pw");
+  $("ops").innerHTML="";
+  OPS.forEach(o=>{
+    if(pw&&o.alt) return;
+    const b=document.createElement("button");
+    b.className="op"+(o.k<0?" dec":"");
+    b.textContent=opLabel(o);
+    b.onclick=()=>shift(o);
+    $("ops").appendChild(b);
+  });
+}
+function parse(s){
+  s=s.trim().replace(/\s/g,"").replace(".",",");
+  if(!/^\d+(,\d+)?$/.test(s)) return null;
+  const [ip,dp=""]=s.split(",");
+  const m=[];
+  for(let i=0;i<ip.length;i++) m.push({d:+ip[i],e:ip.length-1-i});
+  for(let i=0;i<dp.length;i++) m.push({d:+dp[i],e:-(i+1)});
+  while(m.length&&m[0].d===0) m.shift();
+  while(m.length&&m[m.length-1].d===0) m.pop();
+  return m;
+}
+const pos=e=>(5-e)*W;
+function valueStr(){
+  const es=digits.map(o=>o.e), hi=Math.max(...es,0), lo=Math.min(...es,0);
+  const at=e=>{const o=digits.find(x=>x.e===e);return o?o.d:0};
+  let ip="",dp="";
+  for(let e=hi;e>=0;e--) ip+=at(e);
+  for(let e=-1;e>=lo;e--) dp+=at(e);
+  ip=ip.replace(/\B(?=(\d{3})+(?!\d))/g," ");
+  return dp?ip+","+dp:ip;
+}
+function clearZeros(){drow.querySelectorAll(".digit.zero").forEach(z=>z.remove());}
+function showZeros(){
+  clearZeros();
+  const es=digits.map(o=>o.e), hi=Math.max(...es,0), lo=Math.min(...es,0);
+  for(let e=hi;e>=lo;e--){
+    if(es.includes(e)) continue;
+    const z=document.createElement("div");
+    z.className="digit zero";z.textContent="0";z.style.left=pos(e)+"px";
+    drow.appendChild(z);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>z.classList.add("show")));
+  }
+}
+function place(str){
+  const m=parse(str);
+  if(m===null){say("Écris un nombre décimal, par exemple 3,45","ko");return false;}
+  if(!m.length){say("Choisis un nombre différent de 0.","ko");return false;}
+  if(Math.max(...m.map(o=>o.e))>5||Math.min(...m.map(o=>o.e))<-4){say("Ce nombre ne rentre pas dans le tableau.","ko");return false;}
+  drow.querySelectorAll(".digit").forEach(d=>d.remove());
+  digits=m.map(o=>{const el=document.createElement("div");el.className="digit";el.textContent=o.d;el.style.left=pos(o.e)+"px";drow.appendChild(el);return {...o,el};});
+  showZeros();
+  $("hist").innerHTML="";
+  say("Choisis une opération.","mut");
+  return true;
+}
+function say(t,c){$("msg").className="msg "+(c||"");$("msg").textContent=t;}
+function shift(o,after){
+  if(busy||!digits.length) return;
+  const k=o.k, ne=digits.map(d=>d.e+k);
+  if(Math.max(...ne)>5||Math.min(...ne)<-4){say("Le tableau n'est pas assez grand pour cette opération !","ko");return;}
+  const before=valueStr(), lab=opLabel(o);
+  busy=true;
+  drow.querySelectorAll(".digit.zero").forEach(z=>z.classList.remove("show"));
+  setTimeout(()=>{
+    clearZeros();
+    digits.forEach(d=>{d.e+=k;d.el.style.left=pos(d.e)+"px";});
+    const n=Math.abs(k);
+    say(`Chaque chiffre glisse de ${n} rang${n>1?"s":""} vers la ${k>0?"gauche : il devient "+(10**n).toLocaleString("fr-FR")+" fois plus grand.":"droite : il devient "+(10**n).toLocaleString("fr-FR")+" fois plus petit."}`,"");
+    setTimeout(()=>{
+      showZeros();
+      const line=document.createElement("div");
+      line.innerHTML=`${before} ${lab} = <b class="ok">${valueStr()}</b>`;
+      $("hist").prepend(line);
+      while($("hist").children.length>7) $("hist").lastChild.remove();
+      busy=false;
+      if(after) after();
+    },950);
+  },250);
+}
+function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function defi(){
+  if(busy) return;
+  let m,k,tries=0;
+  do{
+    const n=rnd(1,3), top=rnd(-2,3);
+    m=[];
+    for(let i=0;i<n;i++) m.push({d:(i===0||i===n-1)?rnd(1,9):rnd(0,9),e:top-i});
+    k=[1,2,3,-1,-2,-3][rnd(0,5)];
+    tries++;
+  }while((Math.max(...m.map(o=>o.e+k))>5||Math.min(...m.map(o=>o.e+k))<-4)&&tries<100);
+  digits=m;
+  const s=valueStr();
+  $("nb").value=s.replace(/ /g,"");
+  place($("nb").value);
+  const choices=OPS.filter(o=>o.k===k&&(!o.alt||Math.random()<.4));
+  const o=choices[rnd(0,choices.length-1)];
+  pending=o;
+  $("defiTxt").textContent=`Défi : ${s} ${opLabel(o)} = ?`;
+  $("defiBox").style.display="block";
+  say("Écrivez votre réponse sur l'ardoise, puis faites glisser !","mut");
+}
+$("defiGo").onclick=()=>{if(pending){const o=pending;pending=null;shift(o,()=>{$("defiBox").style.display="none";});}};
+$("placer").onclick=()=>{$("defiBox").style.display="none";pending=null;place($("nb").value);};
+$("nb").addEventListener("keydown",e=>{if(e.key==="Enter")$("placer").click();});
+$("defi").onclick=defi;
+$("pw").onchange=()=>{document.body.classList.toggle("pw",$("pw").checked);drawOps();if(pending)$("defiTxt").textContent=$("defiTxt").textContent.replace(/[×÷].*=/,opLabel(pending)+" =");};
+drawOps();place("3,45");
+</script>
+</body></html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fractions en barres et en disques</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#e07a1f;--a3:#1f9255}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:inherit;font-size:19px;padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.ctrls{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fc{border:2px solid var(--line);border-radius:12px;padding:12px}
+.fc h3{margin:0 0 8px;font-size:20px}
+.line{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:18px}
+.line span.l{width:120px}
+.line b{min-width:40px;text-align:center;font-size:24px}
+.step{width:44px;padding:4px 0;font-size:22px;font-weight:700}
+#cmp{font-size:44px;font-weight:700;text-align:center;min-height:60px;display:flex;justify-content:center;align-items:center;gap:22px}
+.fr{display:inline-flex;flex-direction:column;align-items:center;line-height:1.05}
+.fr span:first-child{border-bottom:4px solid currentColor;padding:0 6px}
+svg{display:block;width:100%;height:auto}
+.mut{color:var(--mut)}
+</style></head>
+<body>
+<header><h1>Fractions en barres et en disques</h1><span class="sub">Découper, colorier, comparer : deux fractions égales recouvrent la même longueur.</span></header>
+<main>
+<div class="card">
+ <div class="ctrls">
+  <div class="fc" style="border-color:#9db8e8"><h3 style="color:var(--a)">Fraction A</h3><div id="cA"></div></div>
+  <div class="fc" style="border-color:#f0bd8a"><h3 style="color:var(--a2)">Fraction B</h3><div id="cB"></div></div>
+ </div>
+ <div class="row" style="margin-top:12px">
+  <span>Représentation :</span>
+  <button id="rBar" class="on">Barres</button><button id="rDisk">Disques</button>
+  <span style="margin-left:auto"></span>
+  <button id="showCmp">Montrer la comparaison</button>
+ </div>
+</div>
+<div class="card"><svg id="svg" viewBox="0 0 1160 420"></svg>
+ <div id="cmp"></div></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const F={A:{n:2,d:3,c:"#2563c9",lc:"#dbe6f8"},B:{n:4,d:6,c:"#e07a1f",lc:"#fbe6d1"}};
+let mode="bar", showCmp=false;
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+function ctrl(key){
+  const f=F[key];
+  $("c"+key).innerHTML=`
+   <div class="line"><span class="l">Numérateur</span><button class="step" data-a="n-">−</button><b>${f.n}</b><button class="step" data-a="n+">+</button>
+     <span class="mut" style="margin-left:8px">parts coloriées</span></div>
+   <div class="line"><span class="l">Dénominateur</span><button class="step" data-a="d-">−</button><b>${f.d}</b><button class="step" data-a="d+">+</button>
+     <span class="mut" style="margin-left:8px">parts dans l'unité</span></div>
+   <div class="line"><button data-a="x2">Découper chaque part en 2</button><button data-a="x3">en 3</button><button data-a="s">Simplifier</button></div>`;
+  $("c"+key).querySelectorAll("button").forEach(b=>b.onclick=()=>act(key,b.dataset.a));
+}
+function act(key,a){
+  const f=F[key];
+  if(a==="n-"&&f.n>0)f.n--;
+  if(a==="n+"&&f.n<3*f.d&&f.n<72)f.n++;
+  if(a==="d-"&&f.d>1){f.d--;if(f.n>3*f.d)f.n=3*f.d;}
+  if(a==="d+"&&f.d<24)f.d++;
+  if((a==="x2"||a==="x3")){const k=a==="x2"?2:3;if(f.d*k<=36){f.n*=k;f.d*=k;}}
+  if(a==="s"&&f.n>0){const g=gcd(f.n,f.d);f.n/=g;f.d/=g;}
+  if(a==="s"&&f.n===0){f.d=1;}
+  ctrl(key);draw();
+}
+function frHTML(f){return `<span class="fr" style="color:${f.c}"><span>${f.n}</span><span>${f.d}</span></span>`;}
+function sector(cx,cy,r,a0,a1){
+  if(a1-a0>=Math.PI*2-1e-9) return `<circle cx="${cx}" cy="${cy}" r="${r}"/>`;
+  const p=a=>[cx+r*Math.sin(a),cy-r*Math.cos(a)];
+  const [x0,y0]=p(a0),[x1,y1]=p(a1);
+  return `<path d="M${cx},${cy} L${x0},${y0} A${r},${r} 0 ${a1-a0>Math.PI?1:0} 1 ${x1},${y1} Z"/>`;
+}
+function draw(){
+  const U=Math.max(1,Math.ceil(F.A.n/F.A.d),Math.ceil(F.B.n/F.B.d));
+  let h="";
+  ["A","B"].forEach((key,row)=>{
+    const f=F[key], y0=row?230:30, units=Math.max(1,Math.ceil(f.n/f.d));
+    h+=`<text x="40" y="${y0+70}" font-size="30" font-weight="700" fill="${f.c}" text-anchor="middle">${f.n}</text><line x1="18" x2="62" y1="${y0+80}" y2="${y0+80}" stroke="${f.c}" stroke-width="4"/><text x="40" y="${y0+112}" font-size="30" font-weight="700" fill="${f.c}" text-anchor="middle">${f.d}</text>`;
+    if(mode==="bar"){
+      const gap=24, uw=Math.min(1000,(1060-(U-1)*gap)/U), ph=uw/f.d;
+      for(let u=0;u<U;u++){
+        const ux=90+u*(uw+gap);
+        for(let p=0;p<f.d;p++){
+          const idx=u*f.d+p, filled=idx<f.n, x=ux+p*ph;
+          h+=`<rect x="${x}" y="${y0+35}" width="${ph}" height="90" fill="${filled?f.c:(u<units?"#fff":"#fafafa")}" fill-opacity="${filled?.85:1}" stroke="${u<units?"#1c2333":"#ddd"}" stroke-width="1.5"/>`;
+        }
+        h+=`<rect x="${ux}" y="${y0+35}" width="${uw}" height="90" fill="none" stroke="${u<units?"#1c2333":"#ddd"}" stroke-width="4"/>`;
+        h+=`<text x="${ux+uw/2}" y="${y0+150}" text-anchor="middle" font-size="16" fill="#677085">unité ${u+1}</text>`;
+      }
+      if(f.d>1&&f.d<=24){const one=uw/f.d;h+=`<text x="${90+one/2}" y="${y0+25}" text-anchor="middle" font-size="17" fill="${f.c}">1/${f.d}</text>`;}
+    }else{
+      const r=82;
+      for(let u=0;u<U;u++){
+        const cx=200+u*230, cy=y0+92;
+        h+=`<g stroke="#1c2333" stroke-width="1.5">`;
+        for(let p=0;p<f.d;p++){
+          const idx=u*f.d+p, filled=idx<f.n;
+          h+=`<g fill="${filled?f.c:"#fff"}" fill-opacity="${filled?.85:1}">${sector(cx,cy,r,p*2*Math.PI/f.d,(p+1)*2*Math.PI/f.d)}</g>`;
+        }
+        h+=`</g><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${u<units?"#1c2333":"#ddd"}" stroke-width="4"/>`;
+      }
+    }
+  });
+  $("svg").innerHTML=h;
+  const a=F.A.n*F.B.d, b=F.B.n*F.A.d, s=a===b?"=":a<b?"&lt;":"&gt;";
+  $("cmp").innerHTML=showCmp?`${frHTML(F.A)} <span>${s}</span> ${frHTML(F.B)}`+(a===b?`<span class="mut" style="font-size:22px;font-weight:400">même quantité coloriée !</span>`:""):`${frHTML(F.A)} <span class="mut">?</span> ${frHTML(F.B)}`;
+}
+$("rBar").onclick=()=>{mode="bar";$("rBar").classList.add("on");$("rDisk").classList.remove("on");draw();};
+$("rDisk").onclick=()=>{mode="disk";$("rDisk").classList.add("on");$("rBar").classList.remove("on");draw();};
+$("showCmp").onclick=()=>{showCmp=!showCmp;$("showCmp").classList.toggle("on",showCmp);$("showCmp").textContent=showCmp?"Masquer la comparaison":"Montrer la comparaison";draw();};
+ctrl("A");ctrl("B");draw();
+</script>
+</body></html>

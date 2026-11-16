@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Priorités opératoires</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+select,input[type=text]{padding:8px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+#calc{font-size:40px;font-family:"Cambria Math","Cambria",Georgia,serif;line-height:1.6;min-height:120px}
+.ln{white-space:nowrap}
+.ln.old{color:#4b5263;font-size:34px}
+.ln .A{color:var(--mut);margin-right:14px}
+.tk{display:inline-block;padding:0 6px;border-radius:8px;transition:background .3s}
+.o{cursor:pointer;border:2px dashed transparent}
+.cur .o:hover{border-color:var(--a);background:#e8eefb}
+.hl{background:#ffe9a8}
+.bad{animation:shake .45s;background:#fbd5cc}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.msg{min-height:36px;font-size:23px;margin-top:6px}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+.rules{font-size:18px;color:#3b4252;margin:0;padding-left:22px;line-height:1.6}
+</style></head>
+<body>
+<header><h1>Priorités opératoires</h1><span class="sub">Clique sur l'opération qu'il faut effectuer en premier.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <select id="preset"></select>
+  <button id="rnd">Calcul aléatoire</button>
+  <span style="margin-left:auto"></span>
+  <input type="text" id="own" placeholder="Votre calcul, ex : 3+4*(5-2)" style="width:300px">
+  <button class="primary" id="ownGo">Calculer</button>
+ </div>
+</div>
+<div class="card">
+ <div id="calc"></div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card">
+ <ol class="rules">
+  <li>On effectue d'abord les calculs <b>entre parenthèses</b> (les plus intérieures d'abord).</li>
+  <li>Puis les <b>multiplications et divisions</b>, de gauche à droite.</li>
+  <li>Enfin les <b>additions et soustractions</b>, de gauche à droite.</li>
+ </ol>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const M="−";
+const PRESETS=["3 + 4 × 5","20 − 12 ÷ 4","(3 + 4) × 5","18 − 6 − 2","30 ÷ 6 × 2","7 × 4 − 3 × 5","5 + 3 × (8 − 2)","40 − (6 + 2) × 4","2 × (15 − 3 × 4) + 7","(18 − 4) ÷ (9 − 2)","12 − 3 × 5","100 ÷ (2 + 3) ÷ 4","3 × (4 + 2 × (7 − 5))","2,5 × 4 + 1,5"];
+let toks=[],busy=false;
+function tokenize(s){
+  const t=[];let i=0;s=s.replace(/\s/g,"");
+  while(i<s.length){
+    const c=s[i];
+    if(/[\d,.]/.test(c)){let j=i;while(j<s.length&&/[\d,.]/.test(s[j]))j++;const v=parseFloat(s.slice(i,j).replace(",","."));if(isNaN(v))return null;t.push({t:"n",v});i=j;continue;}
+    if(c==="+")t.push({t:"o",v:"+"});
+    else if(c==="-"||c==="−")t.push({t:"o",v:"-"});
+    else if("*x×X".includes(c))t.push({t:"o",v:"×"});
+    else if("/:÷".includes(c))t.push({t:"o",v:"÷"});
+    else if(c==="("||c===")")t.push({t:c});
+    else return null;
+    i++;
+  }
+  let exp="a",d=0;
+  for(const k of t){
+    if(exp==="a"){if(k.t==="n")exp="o";else if(k.t==="(")d++;else return null;}
+    else{if(k.t==="o")exp="a";else if(k.t===")"){if(--d<0)return null;}else return null;}
+  }
+  return exp==="o"&&d===0?t:null;
+}
+const fmt=v=>{v=Math.round(v*1e6)/1e6;return (v<0?M:"")+String(Math.abs(v)).replace(".",",");};
+const opS=v=>v==="-"?M:v;
+function strip(){let ch=true;while(ch){ch=false;for(let j=1;j<toks.length-1;j++)if(toks[j].t==="n"&&toks[j-1].t==="("&&toks[j+1].t===")"){toks.splice(j+1,1);toks.splice(j-1,1);ch=true;break;}}}
+function lineHTML(cur){
+  return toks.map((k,i)=>{
+    let s;
+    if(k.t==="n"){s=fmt(k.v);if(k.v<0&&i>0&&toks[i-1].t==="o")s="("+s+")";}
+    else if(k.t==="o")s=opS(k.v);else s=k.t;
+    return `<span class="tk${k.t==="o"?" o":""}" data-i="${i}">${s}</span>`;
+  }).join(" ");
+}
+function addLine(cur){
+  document.querySelectorAll(".ln.cur").forEach(l=>{l.classList.remove("cur");l.classList.add("old");l.querySelectorAll(".o").forEach(o=>o.classList.remove("o"));});
+  const d=document.createElement("div");d.className="ln"+(cur?" cur":"");
+  d.innerHTML=`<span class="A">A =</span>`+lineHTML();
+  $("calc").appendChild(d);
+  if(cur)d.querySelectorAll(".o").forEach(o=>o.onclick=()=>click(+o.dataset.i,o));
+}
+function start(s){
+  const t=tokenize(s);
+  if(!t){say("Je ne comprends pas ce calcul. Utilisez + − × ÷ et des parenthèses (pas de nombre négatif au départ).","ko");return;}
+  toks=t;strip();$("calc").innerHTML="";busy=false;
+  if(toks.length===1){addLine(false);say("Il n'y a rien à calculer !","mut");return;}
+  addLine(true);say("Quelle opération effectue-t-on en premier ?","mut");
+}
+function say(t,c){$("msg").className="msg "+(c||"");$("msg").innerHTML=t;}
+function group(i){
+  let d=0,l=i-1,r=i+1;
+  for(;l>=0;l--){if(toks[l].t===")")d++;else if(toks[l].t==="("){if(d===0)break;d--;}}
+  d=0;for(;r<toks.length;r++){if(toks[r].t==="(")d++;else if(toks[r].t===")"){if(d===0)break;d--;}}
+  const ops=[];d=0;
+  for(let j=l+1;j<r;j++){if(toks[j].t==="(")d++;else if(toks[j].t===")")d--;else if(d===0&&toks[j].t==="o")ops.push(toks[j].v);}
+  return {l,ops};
+}
+function click(i,span){
+  if(busy)return;
+  const o=toks[i].v, L=toks[i-1], R=toks[i+1];
+  const no=t=>{span.classList.remove("bad");void span.offsetWidth;span.classList.add("bad");say("✗ "+t,"ko");};
+  if(L.t!=="n"||R.t!=="n") return no("Il faut d'abord calculer ce qu'il y a entre les parenthèses.");
+  const g=group(i), prev=(i-2>g.l&&toks[i-2].t==="o")?toks[i-2].v:null;
+  if((o==="+"||o==="-")&&g.ops.some(v=>v==="×"||v==="÷")) return no("Pas encore : on effectue d'abord les multiplications et les divisions.");
+  if((o==="+"||o==="-")&&prev==="-") return no("Pas encore : additions et soustractions se calculent de gauche à droite.");
+  if(o==="×"&&prev==="÷") return no("Pas encore : multiplications et divisions se calculent de gauche à droite.");
+  if(o==="÷"&&(prev==="÷"||prev==="×")) return no("Pas encore : multiplications et divisions se calculent de gauche à droite.");
+  if(o==="÷"&&R.v===0) return no("Division par zéro impossible !");
+  busy=true;
+  const cur=document.querySelector(".ln.cur");
+  [i-1,i,i+1].forEach(j=>cur.querySelector(`[data-i="${j}"]`).classList.add("hl"));
+  const v=o==="+"?L.v+R.v:o==="-"?L.v-R.v:o==="×"?L.v*R.v:L.v/R.v;
+  say(`✓ ${fmt(L.v)} ${opS(o)} ${fmt(R.v)} = <b>${fmt(v)}</b>`,"ok");
+  setTimeout(()=>{
+    toks.splice(i-1,3,{t:"n",v});strip();
+    if(toks.length===1){addLine(false);say(`✓ Terminé : A = <b>${fmt(v)}</b>. Bravo !`,"ok");}
+    else addLine(true);
+    busy=false;
+  },900);
+}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const TPL=[
+ ()=>`${R(2,15)} + ${R(2,9)} × ${R(2,9)}`,
+ ()=>`${R(20,60)} − ${R(2,6)} × ${R(2,6)}`,
+ ()=>`${R(2,9)} × (${R(2,12)} + ${R(2,12)})`,
+ ()=>`${R(15,40)} − ${R(2,12)} + ${R(2,12)}`,
+ ()=>{const c=R(2,9);return `${c*R(2,9)} ÷ ${c} + ${R(2,20)}`;},
+ ()=>{const c=R(8,15);return `(${R(2,9)} + ${R(2,9)}) × (${c} − ${R(2,c-1)})`;},
+ ()=>{const c=R(8,15);return `${R(2,20)} + ${R(2,9)} × (${c} − ${R(2,c-1)})`;},
+ ()=>`${R(5,12)} × ${R(2,9)} − ${R(2,6)} × ${R(2,9)}`,
+ ()=>{const d=R(2,6),k=R(2,6),b=R(1,d*k-1);return `${R(10,40)} − (${b} + ${d*k-b}) ÷ ${d}`;},
+ ()=>{const c=R(2,6);return `${R(30,60)} − ${c*R(2,8)} ÷ ${c} × ${R(2,4)}`;}
+];
+$("preset").innerHTML=PRESETS.map((p,i)=>`<option value="${i}">Calcul ${i+1} : ${p}</option>`).join("");
+$("preset").onchange=()=>start(PRESETS[$("preset").value]);
+$("rnd").onclick=()=>start(TPL[R(0,TPL.length-1)]());
+$("ownGo").onclick=()=>start($("own").value);
+$("own").addEventListener("keydown",e=>{if(e.key==="Enter")$("ownGo").click();});
+start(PRESETS[0]);
+</script>
+</body></html>

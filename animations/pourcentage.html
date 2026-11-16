@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Barre de pourcentage</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+input[type=text]{padding:8px 10px;border:2px solid #c9c2b2;border-radius:10px;width:110px;font-weight:700}
+input[type=range]{width:100%;height:34px;accent-color:var(--a)}
+svg{display:block;width:100%;height:auto}
+.res{font-size:30px;line-height:1.6}
+.res b{color:var(--a)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.box{border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-size:22px;line-height:1.6}
+.box h3{margin:0 0 4px;font-size:19px;color:var(--mut)}
+.mut{color:var(--mut)}
+</style></head>
+<body>
+<header><h1>Barre de pourcentage</h1><span class="sub">Le pourcentage et la quantité avancent ensemble : 100 % correspond à la quantité totale.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <label>Quantité totale : <input type="text" id="q" value="80"></label>
+  <label>Unité : <input type="text" id="u" value="€" style="width:80px"></label>
+  <span style="margin-left:14px">Repères :</span>
+  <span id="bench"></span>
+  <label style="margin-left:auto"><input type="checkbox" id="over"> Aller jusqu'à 200 %</label>
+ </div>
+ <div style="margin-top:12px"><input type="range" id="p" min="0" max="100" step="1" value="25"></div>
+</div>
+<div class="card"><svg id="svg" viewBox="0 0 1160 310"></svg>
+ <div class="res" id="res"></div></div>
+<div class="card grid2">
+ <div class="box"><h3>Réduction de <span class="pp"></span></h3><div id="red"></div></div>
+ <div class="box"><h3>Augmentation de <span class="pp"></span></h3><div id="aug"></div></div>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const BENCH=[1,5,10,20,25,50,75,100];
+$("bench").innerHTML=BENCH.map(b=>`<button data-b="${b}">${b} %</button>`).join(" ");
+$("bench").querySelectorAll("button").forEach(b=>b.onclick=()=>{$("p").value=b.dataset.b;draw();});
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const f=v=>{v=Math.round(v*1000)/1000;return v.toLocaleString("fr-FR",{maximumFractionDigits:3});};
+const frac=(n,d)=>`<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;font-size:.8em;margin:0 3px"><span style="border-bottom:2px solid currentColor;padding:0 3px">${n}</span><span>${d}</span></span>`;
+function q(){const v=parseFloat($("q").value.replace(",","."));return isNaN(v)||v<0?0:v;}
+function draw(){
+  const max=$("over").checked?200:100;$("p").max=max;
+  const p=+$("p").value, Q=q(), u=$("u").value.trim(), U=u?" "+u:"";
+  const X0=60,L=1040, sc=L/max, x=X0+p*sc, x100=X0+100*sc;
+  let h="";
+  const bar=(y,col,lc,label)=>{
+    h+=`<text x="${X0}" y="${y<100?y-14:y+90}" font-size="18" fill="#677085">${label}</text>`;
+    h+=`<rect x="${X0}" y="${y}" width="${L}" height="64" rx="8" fill="#f3f1ea" stroke="#c9c2b2"/>`;
+    h+=`<rect x="${X0}" y="${y}" width="${Math.max(0,x-X0)}" height="64" rx="8" fill="${col}" opacity=".85"/>`;
+  };
+  bar(40,"#2563c9","","Pourcentage");bar(180,"#1f9255","","Quantité");
+  for(let t=0;t<=max;t+=10){
+    const xt=X0+t*sc, big=t%50===0;
+    h+=`<line x1="${xt}" y1="104" x2="${xt}" y2="180" stroke="${t===100?"#1c2333":"#b9b2a2"}" stroke-width="${t===100?3:big?2:1}" stroke-dasharray="${t===100?"":"3 4"}"/>`;
+    h+=`<text x="${xt}" y="128" text-anchor="middle" font-size="${big?17:14}" fill="#2563c9">${t} %</text>`;
+    h+=`<text x="${xt}" y="168" text-anchor="middle" font-size="${big?17:14}" fill="#1f9255">${f(Q*t/100)}</text>`;
+  }
+  h+=`<line x1="${x}" y1="30" x2="${x}" y2="256" stroke="#d9482b" stroke-width="4"/>`;
+  h+=`<rect x="${x-52}" y="2" width="104" height="30" rx="8" fill="#2563c9"/><text x="${x}" y="25" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">${p} %</text>`;
+  h+=`<rect x="${x-80}" y="258" width="160" height="34" rx="8" fill="#1f9255"/><text x="${x}" y="283" text-anchor="middle" font-size="21" font-weight="700" fill="#fff">${f(Q*p/100)}${U}</text>`;
+  if(max>100)h+=`<text x="${x100}" y="22" text-anchor="middle" font-size="15" fill="#1c2333">100 % = total</text>`;
+  $("svg").innerHTML=h;
+  const g=gcd(p,100), r=Q*p/100;
+  let fr=`${p} % = ${frac(p,100)}`+(g>1&&p?` = ${frac(p/g,100/g)}`:"")+` = ${f(p/100)}`;
+  $("res").innerHTML=`${fr}<br>${p} % de ${f(Q)}${U} = ${frac(p,100)} × ${f(Q)} = <b>${f(r)}${U}</b>`;
+  document.querySelectorAll(".pp").forEach(e=>e.textContent=p+" %");
+  $("red").innerHTML=p<=100?`${f(Q)} − ${f(r)} = <b style="color:#d9482b">${f(Q-r)}${U}</b><br><span class="mut">ou directement : ${f(Q)} × ${f(1-p/100)} = ${f(Q-r)}</span>`:`<span class="mut">Impossible de réduire de plus de 100 %.</span>`;
+  $("aug").innerHTML=`${f(Q)} + ${f(r)} = <b style="color:#1f9255">${f(Q+r)}${U}</b><br><span class="mut">ou directement : ${f(Q)} × ${f(1+p/100)} = ${f(Q+r)}</span>`;
+}
+["p","q","u"].forEach(id=>$(id).addEventListener("input",draw));
+$("over").onchange=()=>{if(!$("over").checked&&+$("p").value>100)$("p").value=100;draw();};
+draw();
+</script>
+</body></html>

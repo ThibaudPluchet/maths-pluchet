@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tableau de proportionnalité animé</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+select{padding:8px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+svg{display:block;width:100%;height:auto}
+#txt{font-size:23px;min-height:70px;line-height:1.5}
+.mut{color:var(--mut)}
+.fade{animation:fi .7s}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+</style></head>
+<body>
+<header><h1>Tableau de proportionnalité animé</h1><span class="sub">Coefficient, passage à l'unité, linéarité, graphique : quatre façons de voir la même chose.</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <select id="sit"></select>
+  <label><input type="checkbox" id="hide"> Cacher la dernière valeur (valeur manquante)</label>
+ </div>
+ <div class="row" style="margin-top:12px">
+  <button data-m="coef">× coefficient</button>
+  <button data-m="unit">Passage à l'unité</button>
+  <button data-m="lin">Linéarité (colonnes)</button>
+  <button data-m="quot">Tester : quotients</button>
+  <button data-m="graph">Graphique</button>
+ </div>
+</div>
+<div class="card"><svg id="tab" viewBox="0 -40 1160 370"></svg><div id="txt"></div></div>
+<div class="card" id="gcard" style="display:none"><svg id="gr" viewBox="0 0 1160 520"></svg></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const SIT=[
+ {t:"Pommes : prix selon la masse",xl:"Masse (kg)",yl:"Prix (€)",xs:[2,3,5,8],ys:[5,7.5,12.5,20],ux:"kg",uy:"€"},
+ {t:"Essence : prix selon le volume",xl:"Volume (L)",yl:"Prix (€)",xs:[10,20,30,50],ys:[18,36,54,90],ux:"L",uy:"€"},
+ {t:"Voiture à vitesse constante",xl:"Durée (h)",yl:"Distance (km)",xs:[1,2,3,6],ys:[80,160,240,480],ux:"h",uy:"km"},
+ {t:"Crêpes : farine selon le nombre de personnes",xl:"Personnes",yl:"Farine (g)",xs:[4,2,6,10],ys:[250,125,375,625],ux:"personnes",uy:"g"},
+ {t:"Taxi : 5 € de prise en charge + 2 € par km",xl:"Distance (km)",yl:"Prix (€)",xs:[2,5,10,15],ys:[9,15,25,35],ux:"km",uy:"€"},
+ {t:"Taille d'un enfant selon son âge",xl:"Âge (ans)",yl:"Taille (cm)",xs:[2,4,6,12],ys:[86,102,115,150],ux:"ans",uy:"cm"}
+];
+$("sit").innerHTML=SIT.map((s,i)=>`<option value="${i}">${s.t}</option>`).join("");
+const f=v=>(Math.round(v*1000)/1000).toLocaleString("fr-FR",{maximumFractionDigits:3});
+let S,mode=null;
+const CX=230,CW=150,RY=[90,170],RH=70;
+const cx=i=>CX+i*CW+CW/2;
+const isProp=s=>s.ys.every((y,i)=>Math.abs(y/s.xs[i]-s.ys[0]/s.xs[0])<1e-9);
+function table(extra){
+  const s=S, n=s.xs.length, hide=$("hide").checked;
+  let h="";
+  h+=`<rect x="10" y="${RY[0]-RH/2}" width="${CX-10}" height="${RH}" fill="#f3efe5" stroke="#1c2333" stroke-width="2"/><text x="${CX/2+5}" y="${RY[0]+7}" text-anchor="middle" font-size="21" font-weight="700">${s.xl}</text>`;
+  h+=`<rect x="10" y="${RY[1]-RH/2}" width="${CX-10}" height="${RH}" fill="#f3efe5" stroke="#1c2333" stroke-width="2"/><text x="${CX/2+5}" y="${RY[1]+7}" text-anchor="middle" font-size="21" font-weight="700">${s.yl}</text>`;
+  for(let i=0;i<n;i++){
+    const hl=extra&&extra.hl&&extra.hl[i];
+    for(let r=0;r<2;r++){
+      h+=`<rect x="${CX+i*CW}" y="${RY[r]-RH/2}" width="${CW}" height="${RH}" fill="${hl||"#fff"}" stroke="#1c2333" stroke-width="2"/>`;
+      const hidden=r===1&&i===n-1&&hide&&!(extra&&extra.reveal);
+      const rev=r===1&&i===n-1&&hide&&extra&&extra.reveal;
+      h+=`<text x="${cx(i)}" y="${RY[r]+11}" text-anchor="middle" font-size="30" font-weight="${rev?800:600}" fill="${hidden?"#d9482b":rev?"#1f9255":"#1c2333"}" class="${rev?"fade":""}">${hidden?"?":f(r?s.ys[i]:s.xs[i])}</text>`;
+    }
+  }
+  return h;
+}
+function arrowDefs(){return `<defs>${["#2563c9","#d9482b","#1f9255","#8a4fd1"].map((c,i)=>`<marker id="m${i}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${c}"/></marker>`).join("")}</defs>`;}
+function say(t){$("txt").innerHTML=t;}
+function render(){
+  S=SIT[$("sit").value];
+  document.querySelectorAll("[data-m]").forEach(b=>b.classList.toggle("on",b.dataset.m===mode));
+  $("gcard").style.display=mode==="graph"?"block":"none";
+  const n=S.xs.length, prop=isProp(S), k=S.ys[0]/S.xs[0], hide=$("hide").checked;
+  let h=arrowDefs(), sv=$("tab");
+  sv.setAttribute("viewBox","0 -40 1160 370");
+  if(!mode){h+=table();sv.innerHTML=h;say(`<span class="mut">Choisissez une méthode.${hide?" Trouvez la valeur manquante !":""}</span>`);return;}
+  if(mode==="coef"){
+    h+=table({reveal:hide&&prop});
+    const xr=CX+n*CW;
+    if(prop){
+      h+=`<path class="fade" d="M${xr+8},${RY[0]} C${xr+90},${RY[0]} ${xr+90},${RY[1]} ${xr+14},${RY[1]}" fill="none" stroke="#2563c9" stroke-width="4" marker-end="url(#m0)"/>`;
+      h+=`<text class="fade" x="${xr+86}" y="${(RY[0]+RY[1])/2+10}" font-size="30" font-weight="800" fill="#2563c9">× ${f(k)}</text>`;
+      say(`On passe de la 1<sup>re</sup> ligne à la 2<sup>e</sup> en multipliant toujours par le même nombre : <b style="color:#2563c9">${f(k)}</b> (le coefficient de proportionnalité, = ${f(S.ys[0])} ÷ ${f(S.xs[0])}).`+(hide?`<br>Valeur manquante : ${f(S.xs[n-1])} × ${f(k)} = <b style="color:#1f9255">${f(S.ys[n-1])}</b>`:""));
+    }else{
+      say(`Pour la 1<sup>re</sup> colonne on multiplie par ${f(k)}… mais ${f(S.xs[n-1])} × ${f(k)} = ${f(S.xs[n-1]*k)} ≠ ${f(S.ys[n-1])}. <b style="color:#d9482b">Pas de coefficient commun : ce n'est pas une situation de proportionnalité.</b>`);
+    }
+  }
+  if(mode==="quot"){
+    h+=`<rect x="10" y="${RY[1]+RH/2+20}" width="${CX-10}" height="${RH}" fill="#efe8fb" stroke="#8a4fd1" stroke-width="2"/><text x="${CX/2+5}" y="${RY[1]+RH/2+20+43}" text-anchor="middle" font-size="20" font-weight="700" fill="#8a4fd1">2e ligne ÷ 1re</text>`;
+    h+=table({reveal:hide});
+    S.xs.forEach((x,i)=>{
+      const q=S.ys[i]/x, same=Math.abs(q-k)<1e-9;
+      h+=`<g class="fade" style="animation-delay:${i*.35}s;animation-fill-mode:backwards"><rect x="${CX+i*CW}" y="${RY[1]+RH/2+20}" width="${CW}" height="${RH}" fill="${same?"#e3f4ea":"#fbe1db"}" stroke="#8a4fd1" stroke-width="2"/><text x="${cx(i)}" y="${RY[1]+RH/2+64}" text-anchor="middle" font-size="26" font-weight="700" fill="${same?"#1f9255":"#d9482b"}">${f(q)}</text></g>`;
+    });
+    say(prop?`Tous les quotients sont égaux à <b style="color:#1f9255">${f(k)}</b> : c'est un <b>tableau de proportionnalité</b>.`:`Les quotients ne sont pas tous égaux : <b style="color:#d9482b">ce n'est pas un tableau de proportionnalité</b>.`);
+  }
+  if(mode==="unit"){
+    const x1=S.xs[0],y1=S.ys[0],xt=S.xs[n-1],yt=S.ys[n-1];
+    const cols=[x1,1,xt], vals=[y1,k,prop?yt:xt*k];
+    let g="";
+    const CX2=330,CW2=170;
+    [S.xl,S.yl].forEach((lab,r)=>{g+=`<rect x="20" y="${RY[r]-RH/2}" width="${CX2-20}" height="${RH}" fill="#f3efe5" stroke="#1c2333" stroke-width="2"/><text x="${CX2/2+10}" y="${RY[r]+7}" text-anchor="middle" font-size="21" font-weight="700">${lab}</text>`;});
+    cols.forEach((c,i)=>{
+      [c,vals[i]].forEach((v,r)=>{
+        g+=`<rect x="${CX2+i*CW2}" y="${RY[r]-RH/2}" width="${CW2}" height="${RH}" fill="${i===1?"#efe8fb":"#fff"}" stroke="#1c2333" stroke-width="2"/>`;
+        g+=`<text class="fade" style="animation-delay:${i===0?0:i===1?(r?1.2:.6):(r?2.6:2)}s;animation-fill-mode:backwards" x="${CX2+i*CW2+CW2/2}" y="${RY[r]+11}" text-anchor="middle" font-size="30" font-weight="700" fill="${i===2&&r===1?"#1f9255":"#1c2333"}">${f(v)}</text>`;
+      });
+    });
+    const arc=(i,j,r,lab,col,mi,delay)=>{
+      const xa=CX2+i*CW2+CW2/2, xb=CX2+j*CW2+CW2/2, up=r===0, y=up?RY[0]-RH/2-4:RY[1]+RH/2+4, cy=up?y-55:y+55;
+      return `<g class="fade" style="animation-delay:${delay}s;animation-fill-mode:backwards"><path d="M${xa},${y} Q${(xa+xb)/2},${cy} ${xb-8},${y}" fill="none" stroke="${col}" stroke-width="3.5" marker-end="url(#m${mi})"/><text x="${(xa+xb)/2}" y="${up?cy+12:cy-2}" text-anchor="middle" font-size="25" font-weight="800" fill="${col}">${lab}</text></g>`;
+    };
+    g+=arc(0,1,0,"÷ "+f(x1),"#d9482b",1,.3)+arc(0,1,1,"÷ "+f(x1),"#d9482b",1,.9)+arc(1,2,0,"× "+f(xt),"#2563c9",0,1.7)+arc(1,2,1,"× "+f(xt),"#2563c9",0,2.3);
+    sv.setAttribute("viewBox","0 -40 1160 340");
+    h+=g;
+    say(`${f(x1)} ${S.ux} → ${f(y1)} ${S.uy}<br>1 ${S.ux.replace(/s$/,"")} → ${f(y1)} ÷ ${f(x1)} = <b style="color:#8a4fd1">${f(k)} ${S.uy}</b><br>${f(xt)} ${S.ux} → ${f(k)} × ${f(xt)} = <b style="color:#1f9255">${f(xt*k)} ${S.uy}</b>`+(prop?"":` <b style="color:#d9482b">mais la vraie valeur est ${f(yt)} : pas proportionnel !</b>`));
+  }
+  if(mode==="lin"){
+    const t=n-1, xt=S.xs[t];
+    let found=null;
+    for(let i=0;i<t&&!found;i++)for(let j=i+1;j<t&&!found;j++)if(S.xs[i]+S.xs[j]===xt)found={type:"add",i,j};
+    for(let i=0;i<t&&!found;i++){const m=xt/S.xs[i];if(Number.isInteger(m)&&m>1)found={type:"mul",i,m};}
+    for(let i=0;i<t&&!found;i++){const m=S.xs[i]/xt;if(Number.isInteger(m)&&m>1)found={type:"div",i,m};}
+    if(!found){h+=table();sv.innerHTML=h;say("Pas de combinaison simple de colonnes ici : utilisez le coefficient.");return;}
+    const hl={};hl[t]="#e3f4ea";
+    if(found.type==="add"){hl[found.i]="#dbe6f8";hl[found.j]="#fbe1db";}else hl[found.i]="#dbe6f8";
+    h+=table({hl,reveal:prop});
+    const ya=RY[0]-RH/2-4;
+    const arc=(i,j,lab,col,mi,delay,lift)=>`<g class="fade" style="animation-delay:${delay}s;animation-fill-mode:backwards"><path d="M${cx(i)},${ya} Q${(cx(i)+cx(j))/2},${ya-lift} ${cx(j)-6},${ya}" fill="none" stroke="${col}" stroke-width="3.5" marker-end="url(#m${mi})"/><text x="${(cx(i)+cx(j))/2}" y="${ya-lift/2-8}" text-anchor="middle" font-size="24" font-weight="800" fill="${col}">${lab}</text></g>`;
+    if(found.type==="add"){
+      const i=found.i,j=found.j, ok=Math.abs(S.ys[i]+S.ys[j]-S.ys[t])<1e-9;
+      h+=arc(i,t,"","#2563c9",0,.2,80)+arc(j,t,"+","#d9482b",1,.8,45);
+      say(`${f(S.xs[t])} = ${f(S.xs[i])} + ${f(S.xs[j])}, donc on additionne les colonnes :<br>${f(S.ys[i])} + ${f(S.ys[j])} = <b style="color:#1f9255">${f(S.ys[i]+S.ys[j])}</b>`+(prop?"":(ok?"":` <b style="color:#d9482b">≠ ${f(S.ys[t])} : pas proportionnel !</b>`)));
+    }else{
+      const i=found.i,m=found.m, v=found.type==="mul"?S.ys[i]*m:S.ys[i]/m, sym=found.type==="mul"?"×":"÷";
+      h+=arc(i,t,`${sym} ${m}`,"#2563c9",0,.2,70);
+      say(`${f(S.xs[t])} = ${f(S.xs[i])} ${sym} ${m}, donc on fait pareil sur la 2<sup>e</sup> ligne :<br>${f(S.ys[i])} ${sym} ${m} = <b style="color:#1f9255">${f(v)}</b>`+(prop?"":` <b style="color:#d9482b">mais la vraie valeur est ${f(S.ys[t])} : pas proportionnel !</b>`));
+    }
+  }
+  if(mode==="graph"){h+=table({reveal:true});graph(prop);}
+  sv.innerHTML=h;
+}
+function graph(prop){
+  const s=S, G=$("gr"), X0=110,Y0=450,W=980,H=400;
+  const xm=Math.max(...s.xs)*1.15, ym=Math.max(...s.ys)*1.15;
+  const nice=m=>{const p=10**Math.floor(Math.log10(m/6));for(const c of [1,2,2.5,5,10])if(m/(c*p)<=8)return c*p;return 10*p;};
+  const sx=nice(xm), sy=nice(ym);
+  const X=v=>X0+v/xm*W, Y=v=>Y0-v/ym*H;
+  let h=arrowDefs();
+  for(let v=sx;v<=xm;v+=sx)h+=`<line x1="${X(v)}" y1="${Y0}" x2="${X(v)}" y2="${Y0-H}" stroke="#e6e1d6"/><text x="${X(v)}" y="${Y0+26}" text-anchor="middle" font-size="16">${f(v)}</text>`;
+  for(let v=sy;v<=ym;v+=sy)h+=`<line x1="${X0}" y1="${Y(v)}" x2="${X0+W}" y2="${Y(v)}" stroke="#e6e1d6"/><text x="${X0-10}" y="${Y(v)+6}" text-anchor="end" font-size="16">${f(v)}</text>`;
+  h+=`<line x1="${X0}" y1="${Y0}" x2="${X0+W+10}" y2="${Y0}" stroke="#1c2333" stroke-width="2.5" marker-end="url(#m0)"/><line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y0-H-14}" stroke="#1c2333" stroke-width="2.5"/>`;
+  h+=`<text x="${X0+W}" y="${Y0+50}" text-anchor="end" font-size="18" font-weight="700">${s.xl}</text><text x="${X0+8}" y="${Y0-H-20}" font-size="18" font-weight="700">${s.yl}</text><text x="${X0-12}" y="${Y0+24}" text-anchor="end" font-size="16">0</text>`;
+  s.xs.forEach((x,i)=>{h+=`<g class="fade" style="animation-delay:${i*.5}s;animation-fill-mode:backwards"><line x1="${X(x)}" y1="${Y0}" x2="${X(x)}" y2="${Y(s.ys[i])}" stroke="#2563c9" stroke-dasharray="4 4"/><line x1="${X0}" y1="${Y(s.ys[i])}" x2="${X(x)}" y2="${Y(s.ys[i])}" stroke="#2563c9" stroke-dasharray="4 4"/><circle cx="${X(x)}" cy="${Y(s.ys[i])}" r="9" fill="#2563c9"/></g>`;});
+  const k=s.ys[0]/s.xs[0], xe=Math.min(xm,ym/k);
+  h+=`<line class="fade" style="animation-delay:${s.xs.length*.5+.3}s;animation-fill-mode:backwards" x1="${X(0)}" y1="${Y(0)}" x2="${X(xe)}" y2="${Y(k*xe)}" stroke="${prop?"#1f9255":"#d9482b"}" stroke-width="3" stroke-dasharray="${prop?"":"8 6"}"/>`;
+  G.innerHTML=h;
+  say(prop?"Les points sont <b style=\"color:#1f9255\">alignés avec l'origine</b> du repère : situation de proportionnalité.":"La droite qui part de l'origine et passe par le 1<sup>er</sup> point ne passe pas par les autres : <b style=\"color:#d9482b\">les points ne sont pas alignés avec l'origine</b>, pas de proportionnalité.");
+}
+document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{mode=mode===b.dataset.m?null:b.dataset.m;render();});
+$("sit").onchange=()=>{mode=null;render();};
+$("hide").onchange=render;
+render();
+</script>
+</body></html>

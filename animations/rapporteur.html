@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rapporteur virtuel</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+input[type=text]{padding:8px 10px;border:2px solid #c9c2b2;border-radius:10px;width:90px;font-weight:700}
+input[type=range]{width:260px;accent-color:var(--a4)}
+svg{display:block;width:100%;height:auto;touch-action:none}
+#prot{cursor:move}#rh{cursor:grab}
+.msg{font-size:23px;min-height:34px;margin-top:8px}
+.ok{color:var(--a3)}.ko{color:var(--a2)}.mut{color:var(--mut)}
+</style></head>
+<body>
+<header><h1>Rapporteur virtuel</h1><span class="sub">Centre sur le sommet, zéro sur un côté… et lis la bonne graduation !</span></header>
+<main>
+<div class="card">
+ <div class="row">
+  <button id="new">Nouvel angle</button>
+  <button id="center">Centrer sur le sommet O</button>
+  <button id="alx">Aligner le 0 sur [Ox)</button>
+  <button id="aly">Aligner le 0 sur [Oy)</button>
+  <label class="mut">Rotation <input type="range" id="rot" min="0" max="359" value="0"></label>
+ </div>
+ <div class="row" style="margin-top:10px">
+  <span style="font-size:22px">Mesure de l'angle x̂Oy : </span><input type="text" id="ans"><span style="font-size:22px">°</span>
+  <button class="primary" id="chk">Vérifier</button><button id="show">Afficher la réponse</button>
+ </div>
+ <div class="msg" id="msg"></div>
+</div>
+<div class="card"><svg id="svg" viewBox="0 0 1160 760"></svg></div>
+</main>
+<script>
+const $=id=>document.getElementById(id), S=$("svg");
+const RP=290, O=[580,380];
+let a1=20, th=50, pc=[870,640], rot=0, drag=null, off=[0,0], anim=null;
+const rad=d=>d*Math.PI/180, deg=r=>r*180/Math.PI, norm=a=>((a%360)+360)%360, sn=a=>{a=norm(a);return a>180?a-360:a;};
+const pt=(c,r,a)=>[c[0]+r*Math.cos(rad(a)),c[1]-r*Math.sin(rad(a))];
+function protractor(){
+  let h=`<path d="M${-RP},0 A${RP},${RP} 0 0 1 ${RP},0 Z" fill="rgba(205,226,255,.5)" stroke="#2c4a7a" stroke-width="2"/>`;
+  h+=`<path d="M${-RP*.42},0 A${RP*.42},${RP*.42} 0 0 1 ${RP*.42},0" fill="none" stroke="#2c4a7a" stroke-width="1"/>`;
+  for(let d=0;d<=180;d++){
+    const L=d%10===0?24:d%5===0?16:9;
+    const p0=pt([0,0],RP,d),p1=pt([0,0],RP-L,d);
+    h+=`<line x1="${p0[0]}" y1="${p0[1]}" x2="${p1[0]}" y2="${p1[1]}" stroke="#2c4a7a" stroke-width="${d%10?1:1.8}"/>`;
+    if(d%10===0){
+      const q0=pt([0,0],RP*.42,d),q1=pt([0,0],RP*.42+10,d);
+      h+=`<line x1="${q0[0]}" y1="${q0[1]}" x2="${q1[0]}" y2="${q1[1]}" stroke="#2c4a7a" stroke-width="1.5"/>`;
+      const o=pt([0,0],RP-42,d), i=pt([0,0],RP-82,d);
+      h+=`<text class="sR" x="${o[0]}" y="${o[1]+7}" text-anchor="middle" font-size="18" font-weight="700" fill="#d9482b" transform="rotate(${90-d},${o[0]},${o[1]})">${180-d}</text>`;
+      h+=`<text class="sB" x="${i[0]}" y="${i[1]+6}" text-anchor="middle" font-size="16" font-weight="700" fill="#2563c9" transform="rotate(${90-d},${i[0]},${i[1]})">${d}</text>`;
+    }
+  }
+  h+=`<line x1="${-RP}" y1="0" x2="${RP}" y2="0" stroke="#2c4a7a" stroke-width="2.5"/>`;
+  h+=`<line x1="0" y1="-14" x2="0" y2="14" stroke="#1c2333" stroke-width="2"/><line x1="-14" y1="0" x2="14" y2="0" stroke="#1c2333" stroke-width="2"/>`;
+  h+=`<g id="rh"><line x1="0" y1="${-RP}" x2="0" y2="${-RP-26}" stroke="#8a4fd1" stroke-width="3"/><circle cx="0" cy="${-RP-38}" r="14" fill="#8a4fd1"/><text x="0" y="${-RP-32}" text-anchor="middle" font-size="16" fill="#fff" pointer-events="none">⟳</text></g>`;
+  return h;
+}
+const PROT=protractor();
+function draw(){
+  const ex=pt(O,340,a1), ey=pt(O,340,a1+th);
+  let h=`<line x1="${O[0]}" y1="${O[1]}" x2="${ex[0]}" y2="${ex[1]}" stroke="#1c2333" stroke-width="3.5"/><line x1="${O[0]}" y1="${O[1]}" x2="${ey[0]}" y2="${ey[1]}" stroke="#1c2333" stroke-width="3.5"/>`;
+  const ar0=pt(O,45,a1),ar1=pt(O,45,a1+th);
+  h+=`<path d="M${ar0[0]},${ar0[1]} A45,45 0 0 0 ${ar1[0]},${ar1[1]}" fill="none" stroke="#1f9255" stroke-width="3"/>`;
+  const lx=pt(O,358,a1),ly=pt(O,358,a1+th),lo=pt(O,30,a1+th/2+180);
+  h+=`<text x="${lx[0]}" y="${lx[1]+8}" text-anchor="middle" font-size="28" font-weight="700" font-style="italic">x</text><text x="${ly[0]}" y="${ly[1]+8}" text-anchor="middle" font-size="28" font-weight="700" font-style="italic">y</text><text x="${lo[0]}" y="${lo[1]+9}" text-anchor="middle" font-size="28" font-weight="700">O</text>`;
+  h+=`<circle cx="${O[0]}" cy="${O[1]}" r="4" fill="#1c2333"/>`;
+  h+=`<g id="prot" transform="translate(${pc[0]},${pc[1]}) rotate(${-rot})">${PROT}</g>`;
+  S.innerHTML=h;
+  // highlight the scale whose 0 is on a side
+  const cen=Math.hypot(pc[0]-O[0],pc[1]-O[1])<6;
+  let blue=false,red=false;
+  if(cen)[a1,a1+th].forEach(s=>{if(Math.abs(sn(s-rot))<2)blue=true;if(Math.abs(sn(s-rot-180))<2)red=true;});
+  S.querySelectorAll(".sB").forEach(e=>{e.setAttribute("opacity",red&&!blue?.25:1);e.setAttribute("font-size",blue?19:16);});
+  S.querySelectorAll(".sR").forEach(e=>{e.setAttribute("opacity",blue&&!red?.25:1);e.setAttribute("font-size",red?21:18);});
+  $("rot").value=Math.round(norm(rot));
+}
+function tween(tc,tr){
+  cancelAnimationFrame(anim);
+  const c0=pc.slice(),r0=rot,dr=sn(tr-r0),t0=performance.now();
+  (function f(n){let p=Math.min(1,(n-t0)/800);p=p<.5?2*p*p:1-2*(1-p)*(1-p);pc=[c0[0]+(tc[0]-c0[0])*p,c0[1]+(tc[1]-c0[1])*p];rot=r0+dr*p;draw();if(p<1)anim=requestAnimationFrame(f);else{pc=tc.slice();rot=norm(tr);draw();}})(t0);
+}
+function say(t,c){$("msg").className="msg "+(c||"");$("msg").innerHTML=t;}
+$("center").onclick=()=>tween(O,rot);
+$("alx").onclick=()=>{tween(O,a1);say("Le 0 de la graduation <b style='color:#2563c9'>bleue</b> est sur [Ox) : on lit sur la graduation bleue.","");};
+$("aly").onclick=()=>{tween(O,a1+th-180);say("Le 0 de la graduation <b style='color:#d9482b'>rouge</b> est sur [Oy) : on lit sur la graduation rouge.","");};
+$("rot").oninput=()=>{rot=+$("rot").value;draw();};
+$("new").onclick=()=>{
+  do{th=15+Math.floor(Math.random()*151);}while(Math.abs(th-90)<6);
+  a1=Math.floor(Math.random()*360);
+  pc=[960,720];rot=0;$("ans").value="";say("","");draw();
+};
+$("chk").onclick=()=>{
+  const v=parseFloat($("ans").value.replace(",","."));
+  if(isNaN(v))return say("Écris une mesure en degrés.","ko");
+  if(Math.abs(v-th)<=1)say(`✓ Bravo ! L'angle mesure ${th}°.`,"ok");
+  else if(Math.abs(v-(180-th))<=1)say(`✗ Tu as lu sur la mauvaise graduation : ${180-th}° = 180° − ${th}°. Cherche la graduation dont le 0 est sur un côté de l'angle ! L'angle est-il ${th<90?"aigu":"obtus"} ?`,"ko");
+  else say(`✗ Ce n'est pas ça. Vérifie que le centre est bien sur O et que le 0 est sur un côté.`,"ko");
+};
+$("show").onclick=()=>say(`L'angle x̂Oy mesure <b>${th}°</b> (angle ${th<90?"aigu":"obtus"}).`,"");
+function svgPt(e){const p=S.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(S.getScreenCTM().inverse());}
+S.addEventListener("pointerdown",e=>{
+  const p=svgPt(e);
+  if(e.target.closest("#rh")){drag="rot";}
+  else if(e.target.closest("#prot")){drag="move";off=[p.x-pc[0],p.y-pc[1]];}
+  else return;
+  cancelAnimationFrame(anim);S.setPointerCapture(e.pointerId);
+});
+S.addEventListener("pointermove",e=>{
+  if(!drag)return;const p=svgPt(e);
+  if(drag==="move"){pc=[p.x-off[0],p.y-off[1]];if(Math.hypot(pc[0]-O[0],pc[1]-O[1])<10)pc=O.slice();}
+  else{rot=deg(Math.atan2(-(p.y-pc[1]),p.x-pc[0]))-90;[a1,a1+th,a1+180,a1+th-180].forEach(s=>{if(Math.abs(sn(rot-s))<1.5)rot=s;});}
+  draw();
+});
+S.addEventListener("pointerup",()=>drag=null);
+$("new").click();
+</script>
+</body></html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aire et périmètre</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+input[type=range]{width:420px;accent-color:var(--a)}
+svg{display:block;width:100%;height:auto;touch-action:none}
+.stats{display:flex;gap:40px;justify-content:center;font-size:34px;font-weight:700;margin:8px 0}
+.A{color:var(--a)}.P{color:var(--a2)}
+table{border-collapse:collapse;margin:0 auto;font-size:21px}
+td,th{border:1px solid var(--line);padding:5px 16px;text-align:center}
+th{background:#f3efe5}
+tr.cur td{background:#fff3c4;font-weight:700}
+tr.hid td{color:transparent}
+.mut{color:var(--mut)}
+.cell{cursor:pointer}
+</style></head>
+<body>
+<header><h1>Aire et périmètre</h1><span class="sub">Deux grandeurs différentes : l'une peut changer sans que l'autre bouge.</span></header>
+<main>
+<div class="card"><div class="row">
+ <button data-t="A" class="on">Aire constante</button><button data-t="P">Périmètre constant</button><button data-t="F">Figure libre</button>
+ <span style="margin-left:auto" id="opt"></span>
+</div>
+<div class="row" id="sl" style="margin-top:12px"></div></div>
+<div class="card">
+ <div class="stats"><span class="A" id="sA"></span><span class="P" id="sP"></span></div>
+ <svg id="svg" viewBox="0 0 1160 470"></svg>
+ <div class="mut" style="text-align:center;font-size:17px">Unité de longueur : le côté d'un carreau · unité d'aire : un carreau</div>
+</div>
+<div class="card" id="tcard"><div id="tbl"></div></div>
+</main>
+<script>
+const $=id=>document.getElementById(id), S=$("svg");
+let tab="A", target=24, idx=0, seen=new Set(), free=new Set(), paint=null;
+const GW=36,GH=13;
+function tabsUI(){
+  document.querySelectorAll("[data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
+  if(tab==="A")$("opt").innerHTML=`Aire : <select id="tg">${[12,18,24,36].map(v=>`<option ${v===target?"selected":""}>${v}</option>`).join("")}</select> carreaux`;
+  else if(tab==="P")$("opt").innerHTML=`Périmètre : <select id="tg">${[12,16,20,24].map(v=>`<option ${v===target?"selected":""}>${v}</option>`).join("")}</select> unités`;
+  else $("opt").innerHTML=`<button id="clr">Effacer</button> <button id="sq">Carré 4 × 4</button> <button id="sn">Serpent de 16</button>`;
+  if($("tg"))$("tg").onchange=()=>{target=+$("tg").value;idx=0;seen=new Set();list();draw();};
+  if($("clr")){$("clr").onclick=()=>{free=new Set();draw();};$("sq").onclick=()=>{free=new Set();for(let x=0;x<4;x++)for(let y=0;y<4;y++)free.add(`${x+8},${y+4}`);draw();};
+    $("sn").onclick=()=>{free=new Set();for(let i=0;i<16;i++)free.add(`${i+4},${5+(i%2)}`);draw();};}
+  $("tcard").style.display=tab==="F"?"none":"block";
+}
+let rects=[];
+function list(){
+  rects=[];
+  if(tab==="A"){for(let L=target;L>=1;L--)if(target%L===0&&L>=target/L)rects.push([L,target/L]);rects.reverse();rects=rects.map(r=>[r[0],r[1]]);}
+  if(tab==="P"){const h=target/2;for(let L=h-1;L>=Math.ceil(h/2);L--)rects.push([L,h-L]);}
+  if(tab!=="F"){
+    $("sl").innerHTML=`<span>Choisir le rectangle :</span><input type="range" id="r" min="0" max="${rects.length-1}" value="${idx}">`;
+    $("r").oninput=()=>{idx=+$("r").value;draw();};
+  }else $("sl").innerHTML=`<span class="mut">Cliquez (ou glissez) sur les carreaux pour en ajouter ou en retirer.</span>`;
+}
+function rectDraw(L,l){
+  const c=Math.min(30,Math.floor(1080/Math.max(L,1)),Math.floor(400/l)), x0=(1160-L*c)/2, y0=(450-l*c)/2+10;
+  let h="";
+  for(let i=0;i<=Math.floor(1160/c);i++)h+=`<line x1="${(x0%c)+i*c}" y1="0" x2="${(x0%c)+i*c}" y2="470" stroke="#eee8dc"/>`;
+  for(let j=0;j<=Math.floor(470/c);j++)h+=`<line x1="0" y1="${(y0%c)+j*c}" x2="1160" y2="${(y0%c)+j*c}" stroke="#eee8dc"/>`;
+  for(let i=0;i<L;i++)for(let j=0;j<l;j++)h+=`<rect x="${x0+i*c}" y="${y0+j*c}" width="${c}" height="${c}" fill="#2563c9" fill-opacity=".45" stroke="#fff" stroke-width="1.5"/>`;
+  h+=`<rect x="${x0}" y="${y0}" width="${L*c}" height="${l*c}" fill="none" stroke="#d9482b" stroke-width="5"/>`;
+  h+=`<text x="${x0+L*c/2}" y="${y0-12}" text-anchor="middle" font-size="24" font-weight="700">${L}</text>`;
+  h+=`<text x="${x0-12}" y="${y0+l*c/2+8}" text-anchor="end" font-size="24" font-weight="700">${l}</text>`;
+  return h;
+}
+function freeDraw(){
+  const c=30,x0=(1160-GW*c)/2,y0=20;
+  let h="";
+  for(let i=0;i<GW;i++)for(let j=0;j<GH;j++){const on=free.has(`${i},${j}`);h+=`<rect class="cell" data-c="${i},${j}" x="${x0+i*c}" y="${y0+j*c}" width="${c}" height="${c}" fill="${on?"#2563c9":"#fff"}" fill-opacity="${on?.45:1}" stroke="${on?"#fff":"#e6e1d6"}" stroke-width="1.5"/>`;}
+  let P=0;
+  free.forEach(k=>{const [i,j]=k.split(",").map(Number);[[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>{if(!free.has(`${i+dx},${j+dy}`)){P++;
+    const x=x0+i*c,y=y0+j*c;
+    const seg=dx===1?[x+c,y,x+c,y+c]:dx===-1?[x,y,x,y+c]:dy===1?[x,y+c,x+c,y+c]:[x,y,x+c,y];
+    h+=`<line x1="${seg[0]}" y1="${seg[1]}" x2="${seg[2]}" y2="${seg[3]}" stroke="#d9482b" stroke-width="5" stroke-linecap="round" pointer-events="none"/>`;}});});
+  return {h,A:free.size,P};
+}
+function draw(){
+  if(tab==="F"){const r=freeDraw();S.innerHTML=r.h;$("sA").textContent=`Aire : ${r.A} carreau${r.A>1?"x":""}`;$("sP").textContent=`Périmètre : ${r.P} unités`;return;}
+  const [L,l]=rects[idx];seen.add(idx);
+  S.innerHTML=rectDraw(L,l);
+  $("sA").textContent=`Aire : ${L} × ${l} = ${L*l}`;$("sP").textContent=`Périmètre : 2 × (${L} + ${l}) = ${2*(L+l)}`;
+  $("tbl").innerHTML=`<table><tr><th>Longueur</th><th>Largeur</th><th class="A">Aire</th><th class="P">Périmètre</th></tr>`+rects.map((r,i)=>`<tr class="${i===idx?"cur":""} ${seen.has(i)?"":"hid"}"><td>${r[0]}</td><td>${r[1]}</td><td class="A">${r[0]*r[1]}</td><td class="P">${2*(r[0]+r[1])}</td></tr>`).join("")+`</table><p class="mut" style="text-align:center;font-size:18px">${tab==="A"?"Même aire… mais le périmètre change ! Le plus petit périmètre : le rectangle le plus « carré ».":"Même périmètre… mais l'aire change ! La plus grande aire : le rectangle le plus « carré »."}</p>`;
+}
+document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{tab=b.dataset.t;target=tab==="A"?24:tab==="P"?20:0;idx=0;seen=new Set();tabsUI();list();draw();});
+S.addEventListener("pointerdown",e=>{const c=e.target.closest(".cell");if(!c||tab!=="F")return;const k=c.dataset.c;paint=!free.has(k);paint?free.add(k):free.delete(k);S.setPointerCapture(e.pointerId);draw();});
+S.addEventListener("pointermove",e=>{if(paint===null)return;const el=document.elementFromPoint(e.clientX,e.clientY);const c=el&&el.closest&&el.closest(".cell");if(!c)return;const k=c.dataset.c;if(paint&&!free.has(k)){free.add(k);draw();}else if(!paint&&free.has(k)){free.delete(k);draw();}});
+S.addEventListener("pointerup",()=>paint=null);
+tabsUI();list();draw();
+</script>
+</body></html>

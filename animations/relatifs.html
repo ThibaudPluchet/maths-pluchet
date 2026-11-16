@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nombres relatifs : additionner et soustraire</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:inherit;font-size:19px;padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+.step{width:44px;padding:4px 0;font-size:24px;font-weight:700}
+.val{min-width:78px;text-align:center;font-size:32px;font-weight:700}
+#expr{font-size:40px;font-weight:700;text-align:center;margin:6px 0}
+#cap{font-size:23px;min-height:64px;text-align:center}
+svg{display:block;width:100%;height:auto}
+svg g.tok{transition:transform .8s cubic-bezier(.5,0,.3,1),opacity .6s}
+.mut{color:var(--mut)}
+</style></head>
+<body>
+<header><h1>Nombres relatifs</h1><span class="sub">Additionner et soustraire, sur la droite graduée ou avec des jetons.</span></header>
+<main>
+<div class="card">
+ <div class="row" style="justify-content:center;gap:18px">
+  <button class="step" id="am">−</button><span class="val" id="av"></span><button class="step" id="ap">+</button>
+  <button id="op" style="font-size:30px;font-weight:700;width:64px">+</button>
+  <button class="step" id="bm">−</button><span class="val" id="bv"></span><button class="step" id="bp">+</button>
+  <button id="rnd">Au hasard</button>
+ </div>
+ <div class="row" style="justify-content:center;margin-top:12px">
+  <button id="tLine" class="on">Sur la droite graduée</button><button id="tTok">Avec des jetons</button>
+ </div>
+</div>
+<div class="card">
+ <div id="expr"></div>
+ <svg id="svg" viewBox="0 0 1160 300"></svg>
+ <div id="cap"></div>
+ <div class="row" style="justify-content:center;margin-top:8px">
+  <button class="primary" id="next">Étape suivante</button><button id="restart">Recommencer</button>
+ </div>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let a=3,b=-5,op="+",mode="line",steps=[],si=0;
+const M="−";
+const r=n=>n>0?"(+"+n+")":n<0?"("+M+(-n)+")":"0";
+const plain=n=>n<0?M+(-n):String(n);
+const sgnWord=n=>n>0?"positif":"négatif";
+function upd(){$("av").textContent=r(a);$("bv").textContent=r(b);$("op").textContent=op===" -"?M:op==="+"?"+":M;build();}
+$("am").onclick=()=>{if(a>-10){a--;upd();}};$("ap").onclick=()=>{if(a<10){a++;upd();}};
+$("bm").onclick=()=>{if(b>-10){b--;upd();}};$("bp").onclick=()=>{if(b<10){b++;upd();}};
+$("op").onclick=()=>{op=op==="+"?"-":"+";upd();};
+$("rnd").onclick=()=>{const R=()=>Math.floor(Math.random()*21)-10;do{a=R();b=R();}while(a===0||b===0);op=Math.random()<.5?"+":"-";upd();};
+$("tLine").onclick=()=>{mode="line";$("tLine").classList.add("on");$("tTok").classList.remove("on");build();};
+$("tTok").onclick=()=>{mode="tok";$("tTok").classList.add("on");$("tLine").classList.remove("on");build();};
+$("next").onclick=()=>{if(si<steps.length){steps[si++]();}$("next").disabled=si>=steps.length;};
+$("restart").onclick=build;
+const S=$("svg"), NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);(parent||S).appendChild(e);return e;}
+function cap(t){$("cap").innerHTML=t;}
+function exprText(showRes){
+  const res=op==="+"?a+b:a-b;
+  return `${r(a)} ${op==="+"?"+":M} ${r(b)} = `+(showRes?`<span style="color:var(--a3)">${r(res)}</span>`:"?");
+}
+// ---------- droite ----------
+const X0=40,U=27,LY=230; const xv=v=>X0+(v+20)*U;
+function drawLine(){
+  S.setAttribute("viewBox","0 0 1160 300");S.innerHTML="";
+  el("line",{x1:X0-20,y1:LY,x2:xv(20)+20,y2:LY,stroke:"#1c2333","stroke-width":3});
+  el("polygon",{points:`${xv(20)+30},${LY} ${xv(20)+16},${LY-7} ${xv(20)+16},${LY+7}`,fill:"#1c2333"});
+  for(let v=-20;v<=20;v++){
+    const big=v%5===0;
+    el("line",{x1:xv(v),y1:LY-(big?12:7),x2:xv(v),y2:LY+(big?12:7),stroke:v===0?"#1c2333":"#1c2333","stroke-width":v===0?4:big?2.5:1.5});
+    if(big||Math.abs(v)<=2){const t=el("text",{x:xv(v),y:LY+38,"text-anchor":"middle","font-size":big?20:16,"font-weight":v===0?700:400,fill:"#1c2333"});t.textContent=plain(v);}
+  }
+}
+function arrow(from,to,y,color,label,done){
+  const g=el("g",{});
+  const ln=el("line",{x1:xv(from),y1:y,x2:xv(from),y2:y,stroke:color,"stroke-width":6,"stroke-linecap":"round"},g);
+  const hd=el("polygon",{points:"",fill:color},g);
+  const t=el("text",{x:(xv(from)+xv(to))/2,y:y-16,"text-anchor":"middle","font-size":24,"font-weight":700,fill:color,opacity:0},g);t.textContent=label;
+  el("line",{x1:xv(from),y1:y-14,x2:xv(from),y2:LY,stroke:color,"stroke-width":1.5,"stroke-dasharray":"4 4"},g);
+  const t0=performance.now(), D=Math.max(500,Math.abs(to-from)*90);
+  (function f(now){
+    let p=Math.min(1,(now-t0)/D);p=1-(1-p)*(1-p);
+    const x=xv(from)+(xv(to)-xv(from))*p, dir=to>=from?1:-1;
+    ln.setAttribute("x2",x-dir*10);
+    if(to!==from) hd.setAttribute("points",`${x},${y} ${x-dir*16},${y-10} ${x-dir*16},${y+10}`);
+    if(p<1)requestAnimationFrame(f);else{t.setAttribute("opacity",1);el("line",{x1:xv(to),y1:y+14,x2:xv(to),y2:LY,stroke:color,"stroke-width":1.5,"stroke-dasharray":"4 4"},g);if(done)done();}
+  })(t0);
+}
+function dot(v,color,label){
+  el("circle",{cx:xv(v),cy:LY,r:11,fill:color,stroke:"#fff","stroke-width":3});
+  if(label){const t=el("text",{x:xv(v),y:LY+66,"text-anchor":"middle","font-size":26,"font-weight":800,fill:color});t.textContent=label;}
+}
+function buildLine(){
+  drawLine();
+  const bb=op==="+"?b:-b, res=a+bb;
+  steps=[
+    ()=>{dot(0,"#1c2333");arrow(0,a,90,"#2563c9",r(a));cap(`On part de 0 et on se déplace jusqu'à <b style="color:#2563c9">${plain(a)}</b>.`);},
+  ];
+  if(op==="-") steps.push(()=>{cap(`Soustraire ${r(b)}, c'est <b>ajouter son opposé</b> ${r(-b)} :<br>${r(a)} ${M} ${r(b)} = ${r(a)} + ${r(-b)}`);$("expr").innerHTML=`${r(a)} ${M} ${r(b)} = ${r(a)} + <span style="color:#8a4fd1">${r(-b)}</span> = ?`;});
+  steps.push(()=>{
+    const c=op==="+"?"#d9482b":"#8a4fd1";
+    if(bb===0){cap("Ajouter 0 ne change rien : on reste sur place.");return;}
+    arrow(a,res,150,c,r(bb));
+    cap(`Puis on se déplace de ${Math.abs(bb)} vers la <b>${bb>0?"droite":"gauche"}</b> (car ${r(bb)} est ${sgnWord(bb)}).`);
+  });
+  steps.push(()=>{dot(res,"#1f9255",plain(res));$("expr").innerHTML=exprText(true);cap(`On arrive sur <b style="color:#1f9255">${plain(res)}</b>.`);});
+}
+// ---------- jetons ----------
+let toks=[];
+const TX=i=>70+i*51, TY=s=>s>0?95:205;
+function newTok(s,pair){
+  const g=el("g",{class:"tok"});
+  const c=el("circle",{cx:0,cy:0,r:21,fill:s>0?"#2563c9":"#d9482b",stroke:pair?"#8a4fd1":"#fff","stroke-width":pair?5:2},g);
+  const t=el("text",{x:0,y:9,"text-anchor":"middle","font-size":30,"font-weight":800,fill:"#fff"},g);t.textContent=s>0?"+":M;
+  const o={s,g,alive:true};
+  const idx=toks.filter(k=>k.alive&&k.s===s).length;
+  g.style.opacity=0;g.style.transform=`translate(${TX(idx)}px,${TY(s)-60}px)`;
+  toks.push(o);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.opacity=1;g.style.transform=`translate(${TX(idx)}px,${TY(s)}px)`;}));
+  return o;
+}
+function relayout(){
+  [1,-1].forEach(s=>toks.filter(k=>k.alive&&k.s===s).forEach((k,i)=>k.g.style.transform=`translate(${TX(i)}px,${TY(s)}px)`));
+}
+function kill(list,dy){list.forEach(k=>{k.alive=false;const m=/translate\(([-\d.]+)px, ?([-\d.]+)px\)/.exec(k.g.style.transform);k.g.style.opacity=0;if(m)k.g.style.transform=`translate(${m[1]}px,${+m[2]+dy}px)`;});}
+function bg(){
+  S.setAttribute("viewBox","0 0 1160 290");S.innerHTML="";toks=[];
+  el("rect",{x:20,y:55,width:1120,height:80,rx:14,fill:"#eef3fc"});
+  el("rect",{x:20,y:165,width:1120,height:80,rx:14,fill:"#fbecea"});
+  const t1=el("text",{x:30,y:48,"font-size":17,fill:"#2563c9"});t1.textContent="jetons positifs";
+  const t2=el("text",{x:30,y:270,"font-size":17,fill:"#d9482b"});t2.textContent="jetons négatifs";
+}
+function addN(n,pair){const s=Math.sign(n);for(let i=0;i<Math.abs(n);i++)newTok(s,pair);}
+function count(){const p=toks.filter(k=>k.alive&&k.s>0).length,n=toks.filter(k=>k.alive&&k.s<0).length;return p-n;}
+function buildTok(){
+  bg();
+  const res=op==="+"?a+b:a-b;
+  steps=[()=>{addN(a);cap(a===0?"0 : on ne pose aucun jeton.":`On représente ${r(a)} : <b>${Math.abs(a)} jeton${Math.abs(a)>1?"s":""} ${a>0?"positif":"négatif"}${Math.abs(a)>1?"s":""}</b>.`);}];
+  if(op==="+"){
+    steps.push(()=>{addN(b);cap(b===0?"Ajouter 0 : on n'ajoute rien.":`On <b>ajoute</b> ${r(b)} : ${Math.abs(b)} jeton${Math.abs(b)>1?"s":""} ${b>0?"positif":"négatif"}${Math.abs(b)>1?"s":""}.`);});
+  }else{
+    steps.push(()=>{
+      if(b===0){cap("Enlever 0 : on n'enlève rien.");return;}
+      const s=Math.sign(b), have=toks.filter(k=>k.alive&&k.s===s).length, miss=Math.abs(b)-have;
+      if(miss>0){for(let i=0;i<miss;i++){newTok(1,true);newTok(-1,true);}
+        cap(`Il faut enlever ${Math.abs(b)} jeton${Math.abs(b)>1?"s":""} ${s>0?"positif":"négatif"}${Math.abs(b)>1?"s":""}, il en manque ${miss}.<br>On ajoute ${miss} <b style="color:#8a4fd1">paire${miss>1?"s":""} nulle${miss>1?"s":""}</b> (+1 et ${M}1) : la valeur ne change pas.`);}
+      else cap(`Il y a assez de jetons ${s>0?"positifs":"négatifs"} pour en enlever ${Math.abs(b)}.`);
+    });
+    steps.push(()=>{
+      if(b===0)return;
+      const s=Math.sign(b);const list=toks.filter(k=>k.alive&&k.s===s).slice(-Math.abs(b));
+      kill(list,s>0?-90:90);setTimeout(relayout,650);
+      cap(`On <b>enlève</b> ${Math.abs(b)} jeton${Math.abs(b)>1?"s":""} ${s>0?"positif":"négatif"}${Math.abs(b)>1?"s":""}.`);
+    });
+  }
+  steps.push(()=>{
+    const P=toks.filter(k=>k.alive&&k.s>0),N=toks.filter(k=>k.alive&&k.s<0),m=Math.min(P.length,N.length);
+    if(!m){cap("Aucune paire (+1 ; "+M+"1) à éliminer.");return;}
+    for(let i=0;i<m;i++)el("line",{x1:TX(i),y1:TY(1)+22,x2:TX(i),y2:TY(-1)-22,stroke:"#8a4fd1","stroke-width":4,class:"pl"});
+    cap(`Un jeton positif et un jeton négatif s'annulent : on élimine ${m} paire${m>1?"s":""} nulle${m>1?"s":""}.`);
+    setTimeout(()=>{S.querySelectorAll(".pl").forEach(l=>l.remove());P.slice(0,m).forEach(k=>{k.alive=false;k.g.style.opacity=0;});N.slice(0,m).forEach(k=>{k.alive=false;k.g.style.opacity=0;});setTimeout(relayout,600);},1300);
+  });
+  steps.push(()=>{const c=res;$("expr").innerHTML=exprText(true);cap(`Il reste ${c===0?"aucun jeton":Math.abs(c)+" jeton"+(Math.abs(c)>1?"s ":" ")+(c>0?"positif":"négatif")+(Math.abs(c)>1?"s":"")} : le résultat est <b style="color:#1f9255">${plain(res)}</b>.`);});
+}
+function build(){
+  $("expr").innerHTML=exprText(false);cap("Cliquez sur « Étape suivante ».");si=0;
+  if(mode==="line")buildLine();else buildTok();
+  $("next").disabled=false;
+}
+upd();
+</script>
+</body></html>

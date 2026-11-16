@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tableau de conversion glissant</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1c2333;--mut:#677085;--line:#d8d2c4;--card:#fff;--a:#2563c9;--a2:#d9482b;--a3:#1f9255;--a4:#8a4fd1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+header{background:#fff;border-bottom:2px solid var(--line);padding:12px 24px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px}header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,select,input{font:inherit;font-size:19px}
+button{padding:8px 14px;border-radius:10px;border:2px solid #c9c2b2;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+button.primary{background:var(--a);border-color:var(--a);color:#fff}
+select,input[type=text]{padding:8px 10px;border:2px solid #c9c2b2;border-radius:10px;background:#fff}
+input[type=text]{width:130px;font-weight:700}
+.tb{position:relative;margin:0 auto}
+.hr{display:flex}
+.h{border:1px solid #b9b2a2;background:#f3efe5;text-align:center;font-weight:700;display:flex;align-items:center;justify-content:center;height:52px}
+.h.sub2{background:#eef3fc;color:#2563c9;font-weight:600;height:40px;font-size:16px}
+.h.from{background:#dbe6f8}.h.to{background:#dcf1e4}
+.dr{position:relative;display:flex;height:96px}
+.c{height:96px;border:1px solid #d8d2c4}
+.c.end{border-right:2px solid #8b8473}
+.dg{position:absolute;top:0;height:96px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--a)}
+.dg.z{color:#aaa395;opacity:0;transition:opacity .45s}.dg.z.show{opacity:1}
+.cm{position:absolute;bottom:-18px;font-weight:800;color:var(--a2);line-height:1;transition:left 1.1s cubic-bezier(.55,0,.3,1);pointer-events:none}
+#res{font-size:36px;font-weight:700;text-align:center;min-height:52px;margin-top:22px}
+.msg{font-size:21px;min-height:30px;text-align:center}
+.ko{color:var(--a2)}.mut{color:var(--mut)}
+</style></head>
+<body>
+<header><h1>Tableau de conversion glissant</h1><span class="sub">Ici, ce sont les chiffres qui restent en place et la virgule qui se déplace.</span></header>
+<main>
+<div class="card">
+ <div class="row" id="modes"></div>
+ <div class="row" style="margin-top:12px">
+  <input type="text" id="val" value="3,5">
+  <select id="from"></select>
+  <span style="font-size:24px">=</span>
+  <span style="font-size:24px">?</span>
+  <select id="to"></select>
+  <button class="primary" id="place">Placer</button>
+  <button class="primary" id="conv" style="background:var(--a3);border-color:var(--a3)">Convertir</button>
+  <button id="rnd">Exemple au hasard</button>
+ </div>
+</div>
+<div class="card" style="overflow-x:auto;padding-bottom:30px"><div id="tab"></div><div id="res"></div><div class="msg" id="msg"></div></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const MODES={
+ lon:{n:"Longueurs",s:1,u:["km","hm","dam","m","dm","cm","mm"]},
+ mas:{n:"Masses",s:1,u:["kg","hg","dag","g","dg","cg","mg"]},
+ cap:{n:"Contenances",s:1,u:["kL","hL","daL","L","dL","cL","mL"]},
+ air:{n:"Aires",s:2,u:["km²","hm²","dam²","m²","dm²","cm²","mm²"],x:{l:"ha · a · ca",u:[["ha",3],["a",5],["ca",7]]}},
+ vol:{n:"Volumes",s:3,u:["km³","hm³","dam³","m³","dm³","cm³","mm³"],x:{l:"contenances",u:[["kL",11],["hL",12],["daL",13],["L",14],["dL",15],["cL",16],["mL",17]]}}
+};
+let mode="lon", digits=[], comma=0, W=100, NC=7, busy=false, fromU=null;
+$("modes").innerHTML=Object.entries(MODES).map(([k,m])=>`<button data-k="${k}">${m.n}</button>`).join("");
+$("modes").querySelectorAll("button").forEach(b=>b.onclick=()=>{mode=b.dataset.k;setup();});
+function units(){const m=MODES[mode];const L=m.u.map((u,i)=>[u,(i+1)*m.s-1]);if(m.x)L.push(...m.x.u);return L;}
+const posOf=u=>units().find(x=>x[0]===u)[1];
+function setup(){
+  const m=MODES[mode];NC=7*m.s;W=Math.min(120,Math.floor(1120/NC));
+  $("modes").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.k===mode));
+  const opts=units().map(([u])=>`<option>${u}</option>`).join("");
+  $("from").innerHTML=opts;$("to").innerHTML=opts;
+  const d={lon:["m","cm"],mas:["kg","g"],cap:["L","mL"],air:["m²","cm²"],vol:["dm³","L"]}[mode];
+  $("from").value=d[0];$("to").value=d[1];
+  build();place();
+}
+function build(){
+  const m=MODES[mode];
+  let h=`<div class="tb" style="width:${NC*W}px"><div class="hr">`;
+  m.u.forEach((u,i)=>h+=`<div class="h" data-u="${u}" style="width:${m.s*W}px;font-size:${W<60?18:22}px">${u}</div>`);
+  h+=`</div>`;
+  if(m.x){
+    h+=`<div class="hr">`;let c=0;
+    m.x.u.forEach(([u,p])=>{if(p>c)h+=`<div class="h sub2" style="width:${(p-c)*W}px;background:#fbfaf6"></div>`;h+=`<div class="h sub2" data-u="${u}" style="width:${W}px">${u}</div>`;c=p+1;});
+    if(c<NC)h+=`<div class="h sub2" style="width:${(NC-c)*W}px;background:#fbfaf6"></div>`;
+    h+=`</div>`;
+  }
+  h+=`<div class="dr" id="dr">`;
+  for(let i=0;i<NC;i++)h+=`<div class="c ${(i+1)%m.s===0?"end":""}" style="width:${W}px"></div>`;
+  h+=`<div class="cm" id="cm" style="font-size:${W<60?60:80}px">,</div></div></div>`;
+  $("tab").innerHTML=h;
+}
+function hl(){document.querySelectorAll(".h[data-u]").forEach(e=>{e.classList.toggle("from",e.dataset.u===$("from").value);e.classList.toggle("to",e.dataset.u===$("to").value&&busy==="done");});}
+function say(t,c){$("msg").className="msg "+(c||"");$("msg").innerHTML=t;}
+function setComma(c){comma=c;$("cm").style.left=((c+1)*W-(W<60?9:12))+"px";}
+function clearZ(){document.querySelectorAll(".dg.z").forEach(z=>z.remove());}
+function zeros(){
+  clearZ();
+  const ps=digits.map(d=>d.p), first=Math.min(...ps), last=Math.max(...ps);
+  const lo=Math.min(first,comma), hi=Math.max(last,comma);
+  for(let p=lo;p<=hi;p++){
+    if(ps.includes(p))continue;
+    if(p<0||p>=NC)continue;
+    const z=document.createElement("div");z.className="dg z";z.textContent="0";z.style.left=p*W+"px";z.style.width=W+"px";z.style.fontSize=(W<60?40:60)+"px";
+    $("dr").appendChild(z);requestAnimationFrame(()=>requestAnimationFrame(()=>z.classList.add("show")));
+  }
+}
+function str(){
+  const ps=digits.map(d=>d.p), first=Math.min(...ps,comma), last=Math.max(...ps,comma);
+  const at=p=>{const d=digits.find(x=>x.p===p);return d?d.d:0;};
+  let ip="",dp="";for(let p=first;p<=comma;p++)ip+=at(p);for(let p=comma+1;p<=last;p++)dp+=at(p);
+  ip=ip.replace(/^0+(?=\d)/,"").replace(/\B(?=(\d{3})+(?!\d))/g," ");
+  return dp?ip+","+dp:ip;
+}
+function place(){
+  if(busy===true)return;
+  let s=$("val").value.trim().replace(/\s/g,"").replace(".",",");
+  if(!/^\d+(,\d+)?$/.test(s)){say("Écris un nombre décimal, par exemple 3,5","ko");return false;}
+  let [ip,dp=""]=s.split(",");ip=ip.replace(/^0+/,"");dp=dp.replace(/0+$/,"");
+  if(!ip&&!dp){say("Choisis un nombre différent de 0.","ko");return false;}
+  const c=posOf($("from").value);
+  const ds=[];for(let i=0;i<ip.length;i++)ds.push({d:ip[i],p:c-(ip.length-1-i)});for(let i=0;i<dp.length;i++)ds.push({d:dp[i],p:c+1+i});
+  // strip leading zeros of decimal-only numbers
+  while(ds.length&&ds[0].d==="0")ds.shift();
+  if(ds.some(d=>d.p<0||d.p>=NC)){say("Ce nombre ne rentre pas dans le tableau avec cette unité.","ko");return false;}
+  document.querySelectorAll(".dg").forEach(e=>e.remove());
+  digits=ds.map(o=>{const e=document.createElement("div");e.className="dg";e.textContent=o.d;e.style.left=o.p*W+"px";e.style.width=W+"px";e.style.fontSize=(W<60?40:60)+"px";$("dr").appendChild(e);return o;});
+  $("cm").style.transition="none";setComma(c);void $("cm").offsetWidth;$("cm").style.transition="";
+  zeros();busy=false;hl();
+  $("res").innerHTML=`${str()} ${$("from").value} = <span class="mut">? ${$("to").value}</span>`;
+  say(`Le chiffre des unités se place dans la colonne des <b>${$("from").value}</b>${MODES[mode].s>1?" (dernière petite colonne)":""}, la virgule juste après.`);
+  fromU=$("from").value;
+  return true;
+}
+function convert(){
+  if(busy===true)return;
+  if(fromU!==$("from").value||!digits.length){if(!place())return;}
+  const before=str(), f=$("from").value, t=$("to").value, c2=posOf(t);
+  const ps=digits.map(d=>d.p);
+  if(Math.max(...ps)-c2>8||c2-Math.min(...ps)>12){}
+  busy=true;
+  document.querySelectorAll(".dg.z").forEach(z=>z.classList.remove("show"));
+  setTimeout(()=>{
+    clearZ();setComma(c2);
+    const n=Math.abs(c2-posOf(f));
+    say(n?`La virgule se déplace de ${n} colonne${n>1?"s":""} vers la ${c2>posOf(f)?"droite":"gauche"} : elle se place juste après la colonne des <b>${t}</b>.`:"Même position : rien ne change !");
+    setTimeout(()=>{zeros();busy="done";hl();$("res").innerHTML=`${before} ${f} = <span style="color:var(--a3)">${str()} ${t}</span>`;},1150);
+  },300);
+}
+$("place").onclick=place;$("conv").onclick=convert;
+$("val").addEventListener("keydown",e=>{if(e.key==="Enter")place();});
+$("from").onchange=()=>{place();};$("to").onchange=()=>{if(busy==="done")place();else hl();};
+$("rnd").onclick=()=>{
+  const L=units();let a,b,ok=false,tries=0;
+  while(!ok&&tries<200){tries++;
+    a=L[Math.floor(Math.random()*L.length)];b=L[Math.floor(Math.random()*L.length)];
+    if(a[0]===b[0])continue;
+    const n=1+Math.floor(Math.random()*3), k=Math.floor(Math.random()*(n+1));
+    let s="";for(let i=0;i<n;i++)s+=(i===0||i===n-1)?1+Math.floor(Math.random()*9):Math.floor(Math.random()*10);
+    s=k>0&&k<n?s.slice(0,k)+","+s.slice(k):s;
+    $("val").value=s;$("from").value=a[0];$("to").value=b[0];
+    const [ip,dp=""]=s.split(",");
+    const lo=a[1]-ip.length+1, hi=a[1]+dp.length;
+    ok=lo>=0&&hi<NC&&Math.abs(a[1]-b[1])<=6;
+  }
+  place();
+};
+setup();
+</script>
+</body></html>
