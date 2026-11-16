@@ -1,0 +1,13 @@
+name: Miroir vers la forge
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  miroir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git push --force "https://oauth2:${{ secrets.FORGE_TOKEN }}@forge.apps.education.fr/thibaudpluchet/maths-pluchet.git" HEAD:main
