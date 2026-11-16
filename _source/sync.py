@@ -714,6 +714,8 @@ def main():
         if os.path.relpath(f, repo).replace(os.sep, "/") not in keep:
             os.remove(f); removed += 1
     for f in glob.glob(os.path.join(repo, "docs", "**", "*.pdf"), recursive=True):
+        if os.path.relpath(f, repo).replace(os.sep, "/").startswith("docs/lexique/"):
+            continue  # PDF du lexique : publiés à la main (onglet Lexique), hors synchro
         if os.path.relpath(f, repo).replace(os.sep, "/") not in wanted and os.path.relpath(f, repo).replace(os.sep, "/") not in dm_keep:
             os.remove(f); removed += 1
     json.dump(data, open(os.path.join(repo, "data.json"), "w", encoding="utf-8"), ensure_ascii=False)
