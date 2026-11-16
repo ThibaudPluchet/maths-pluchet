@@ -52,7 +52,21 @@ EX.push(
     return {type: 'num', q: F(n1, a) + ' et ' + F(n2, b), v: l, steps: ['Multiples de ' + Math.max(a, b) + ' : on cherche le premier qui est aussi multiple de ' + Math.min(a, b) + ' : ' + l + '.', F(n1, a) + ' = ' + F(n1 * l / a, l) + ' et ' + F(n2, b) + ' = ' + F(n2 * l / b, l) + '.'], traps: [[a * b, a + ' × ' + b + ' convient, mais ce n’est pas le plus petit.']].filter(function(t){ return t[0] !== l; })}; }},
  {id: 'n26c', lv: 2, n: 'N26', nq: 4, t: 'Réduire au même dénominateur', d: 'Trouver le nouveau numérateur.', c: 'On réduit les deux fractions au plus petit dénominateur commun. Quel est le numérateur de la seconde fraction ?', a: 'Trouve le dénominateur commun, puis multiplie le numérateur par le même nombre que le dénominateur.',
   g: function(){ var a = rnd(2, 9), b = rnd(2, 9); if (a === b) return this.g(); var l = a * b / gcd(a, b), n1 = rnd(1, 2 * a), n2 = rnd(1, 2 * b); if (gcd(n1, a) !== 1 || gcd(n2, b) !== 1 || l === b) return this.g();
-    return {type: 'num', q: F(n1, a) + ' et ' + F(n2, b) + ' : ' + F(n2, b) + ' = ?/' + l, v: n2 * l / b, steps: ['Dénominateur commun : ' + l + ' = ' + b + ' × ' + l / b + '.', '? = ' + n2 + ' × ' + l / b + ' = ' + n2 * l / b + '.']}; }}
+    return {type: 'num', q: F(n1, a) + ' et ' + F(n2, b) + ' : ' + F(n2, b) + ' = ?/' + l, v: n2 * l / b, steps: ['Dénominateur commun : ' + l + ' = ' + b + ' × ' + l / b + '.', '? = ' + n2 + ' × ' + l / b + ' = ' + n2 * l / b + '.']}; }},
+ {id: 'n26e', lv: 2, n: 'N26', t: 'Vrai ou faux ?', d: 'Vérifier le calcul d’un élève.', c: 'Ce calcul d’élève est-il juste ?', a: 'Pour passer d’un dénominateur à l’autre, on multiplie : il faut multiplier le numérateur par le même nombre. On n’ajoute jamais.',
+  g: function(){ var b = rnd(2, 12), k = rnd(2, 6), L = b * k, n = rnd(1, 2 * b); if (gcd(n, b) !== 1 || n === b) return this.g();
+    var t = Math.random() < 0.4 ? 0 : rnd(1, 3), m = n * k, why = '';
+    if (t === 1){ m = n + L - b; why = 'on a ajouté ' + (L - b) + ' en haut et en bas au lieu de multiplier par ' + k + '.'; }
+    else if (t === 2){ m = n; why = 'on n’a multiplié que le dénominateur.'; }
+    else if (t === 3){ var k2 = k + pick([-1, 1]); if (k2 < 2) k2 = k + 1; m = n * k2; why = 'le numérateur a été multiplié par ' + k2 + ' et le dénominateur par ' + k + '.'; }
+    if (t !== 0 && m === n * k) return this.g();
+    var ok = m === n * k;
+    return {type: 'ch', q: F(n, b) + ' = ' + F(m, L) + ' ?', ch: ['Vrai', 'Faux'], ans: ok ? 0 : 1, steps: [L + ' = ' + b + ' × ' + k + ', donc ' + F(n, b) + ' = (' + n + ' × ' + k + ')/(' + b + ' × ' + k + ') = ' + F(n * k, L) + '.', ok ? 'Le calcul est juste.' : 'Faux : ' + why]}; }},
+ {id: 'n26d', lv: 3, n: 'N26', nq: 4, t: 'Grands dénominateurs', d: 'Avec les facteurs premiers.', c: 'Quel est le plus petit dénominateur commun aux deux fractions ?', a: 'Décompose les deux dénominateurs en facteurs premiers : le plus petit multiple commun contient tous les facteurs, chacun autant de fois qu’il apparaît au maximum dans une décomposition.',
+  g: function(){ var D = [12, 14, 15, 18, 20, 21, 24, 28, 30, 35, 36, 40, 42, 45, 48, 50, 54, 60], a = pick(D), b = pick(D); if (a >= b || b % a === 0 || gcd(a, b) === 1) return this.g();
+    var l = a * b / gcd(a, b), n1 = rnd(1, a - 1), n2 = rnd(1, b - 1); if (gcd(n1, a) !== 1 || gcd(n2, b) !== 1 || l > 400) return this.g();
+    function dec(x){ var r = [], p = 2; while (x > 1){ while (x % p === 0){ r.push(p); x /= p; } p++; } return r.join(' × '); }
+    return {type: 'num', q: F(n1, a) + ' et ' + F(n2, b), v: l, key: a + '-' + b, steps: [a + ' = ' + dec(a) + ' et ' + b + ' = ' + dec(b) + '.', 'Le plus petit multiple commun : ' + dec(l) + ' = ' + l + ' (' + l + ' = ' + a + ' × ' + l / a + ' = ' + b + ' × ' + l / b + ').', F(n1, a) + ' = ' + F(n1 * l / a, l) + ' et ' + F(n2, b) + ' = ' + F(n2 * l / b, l) + '.'], traps: [[a * b, a + ' × ' + b + ' = ' + a * b + ' convient, mais ce n’est pas le plus petit.']]}; }}
 );
 function cmpS(a, b){ var x = a[0] * b[1], y = b[0] * a[1]; return x < y ? '<' : x > y ? '>' : '='; }
 EX.push(
