@@ -725,8 +725,8 @@ def main():
     print(f"{len(wanted)} PDF en ligne, {len(data['dm'])} DM, {sum(len(v) for v in SECRET.values())} correction(s) chiffrée(s), {removed} fichier(s) retiré(s)")
     if len(sys.argv) > 6 and sys.argv[6] == "--liens":
         for c in [c for l in data["classes"].values() for c in l]:
-            print(f"{c} : https://thibaudpluchet.github.io/maths-pluchet/#{c}/{b64u(classkey(c))}")
-        print(f"Enseignant (tous les documents) : https://thibaudpluchet.github.io/maths-pluchet/#prof/{b64u(profkey())}")
+            print(f"{c} : https://thibaudpluchet.forge.apps.education.fr/maths-pluchet/#{c}/{b64u(classkey(c))}")
+        print(f"Enseignant (tous les documents) : https://thibaudpluchet.forge.apps.education.fr/maths-pluchet/#prof/{b64u(profkey())}")
 
 
 if __name__ == "__main__":
