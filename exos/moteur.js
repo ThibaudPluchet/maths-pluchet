@@ -5,7 +5,8 @@
      type 'num'  : v (attendu), x (valeur exacte), d (arrondi, décimales) ou undefined si exact, lab, unit, traps [[valeur, message]]
      type 'frac' : f [num, den] (irréductible), lab, dec (accepter l'écriture décimale exacte), traps
      type 'expr' : P (polynôme {degré: coef}), mode 'dev' (développé réduit) ou 'fact' (produit), lab, traps [[P, message]]
-     type 'ch'   : ch [choix], ans (indice) ; la correction s'affiche dès la réponse */
+     type 'ch'   : ch [choix], ans (indice) ; la correction s'affiche dès la réponse
+   kneg: true affiche une barre de touches « − , ⌫ » (exposants négatifs sur téléphone) */
 (function(){
 'use strict';
 var M = window.M = {};
@@ -256,9 +257,11 @@ function run(x){
   var res = el('div', 'res'); res.hidden = true; p.appendChild(res);
   main.appendChild(p);
   var hasE = qs.some(function(Q){ return Q.type === 'expr'; }), hasF = qs.some(function(Q){ return Q.type === 'frac'; });
-  kbar.hidden = !(hasE || hasF);
+  var hasN = qs.some(function(Q){ return Q.kneg; });
+  kbar.hidden = !(hasE || hasF || hasN);
   if (hasE) keybar([['x', 'x'], ['x²', 'x²'], ['(', '('], [')', ')'], [MINUS, '-'], ['+', '+'], ['⌫', null]]);
   else if (hasF) keybar([['/', '/'], [MINUS, '-'], ['⌫', null]]);
+  else if (hasN) keybar([[MINUS, '-'], [',', ','], ['⌫', null]]);
   bn.onclick = function(){ run(x); };
   function check(){
     var score = 0;

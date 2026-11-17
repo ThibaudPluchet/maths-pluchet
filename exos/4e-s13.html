@@ -70,25 +70,83 @@ EX.push(
     return {type: 'num', q: fr(a) + ' × 10' + sup(n) + ' = ?', v: v, steps: ['La virgule se déplace de ' + Math.abs(n) + ' rang' + (Math.abs(n) > 1 ? 's' : '') + ' vers la ' + (n > 0 ? 'droite' : 'gauche') + ' : ' + fr(v) + '.']}; }}
 );
 function sci(x){ var e = Math.floor(Math.log10(Math.abs(x)) + 1e-9), m = cl(x / Math.pow(10, e)); if (Math.abs(m) >= 10){ m = cl(m / 10); e++; } return [m, e]; }
+// ---------- N31 : notation scientifique ----------
+// écriture décimale exacte (sans erreur d'arrondi) de m × 10^e, m décimal positif
+function decS(m, e){ var t = String(m).split('.'), k = (t[1] || '').length, D = (t[0] + (t[1] || '')).replace(/^0+/, ''), p = e - k, r;
+  if (p >= 0) r = D + '0'.repeat(p);
+  else { var q = D.length + p; r = q > 0 ? D.slice(0, q) + ',' + D.slice(q) : '0,' + '0'.repeat(-q) + D; }
+  var ip = r.split(','), a0 = ip[0], dp = ip[1]; if (a0.length > 4) a0 = a0.replace(/\B(?=(\d{3})+$)/g, ' ');
+  if (dp && dp.length > 3) dp = dp.replace(/(\d{3})(?=\d)/g, '$1 ');
+  return a0 + (dp ? ',' + dp : ''); }
+function mant(){ var t = rnd(0, 2); return t === 0 ? rnd(1, 9) : t === 1 ? cl(rnd(11, 99) / 10) : cl(rnd(101, 999) / 100); }
+function nsTxt(m, e){ return fr(m) + ' × 10' + sup(e); }
+// contrôle commun des réponses a × 10ⁿ
+function chkSci(m, e){ return function(vs){ var a = vs[0], n = vs[1];
+  if (a !== undefined && n !== undefined && Math.abs(a * Math.pow(10, n) - m * Math.pow(10, e)) < 1e-9 * m * Math.pow(10, e) && (a < 1 || a >= 10))
+    return 'Ton écriture est bien égale au nombre, mais ce n’est pas une notation scientifique : il faut un seul chiffre non nul avant la virgule (1 ≤ a < 10).';
+  if (a !== undefined && (a < 1 || a >= 10)) return 'Le nombre a doit avoir un seul chiffre non nul avant la virgule (1 ≤ a < 10).';
+  if (n === -e && e !== 0) return 'Attention au signe de l’exposant : un nombre plus grand que 10 a un exposant positif, un nombre plus petit que 1 un exposant négatif.';
+  if (Math.abs(a - m) < 1e-9 && n !== e) return 'Le nombre a est juste ; recompte de combien de rangs la virgule s’est déplacée.';
+  return null; }; }
 EX.push(
- {id: 'n31a', lv: 1, n: 'N31', t: 'Reconnaître la notation scientifique', d: 'a × 10ⁿ avec 1 ≤ a < 10.', c: 'Cette écriture est-elle une notation scientifique ?', a: 'Notation scientifique : a × 10ⁿ, où a a un seul chiffre non nul avant la virgule (1 ≤ a < 10) et n est un entier relatif.',
-  g: function(){ var yes = Math.random() < 0.5, a = yes ? cl(rnd(10, 99) / 10) : pick([cl(rnd(11, 99)), cl(rnd(1, 9) / 10), cl(rnd(101, 999) / 10), 0.25]), n = rnz(-8, 9);
-    return {type: 'ch', q: fr(a) + ' × 10' + sup(n), ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: [yes ? fr(a) + ' est compris entre 1 et 10 (strictement inférieur à 10) : oui.' : fr(a) + ' n’est pas compris entre 1 et 10 : ce n’est pas une notation scientifique.'], key: fr(a) + n}; }},
- {id: 'n31b', lv: 2, n: 'N31', t: 'Écrire en notation scientifique', d: 'Trouver l’exposant.', c: 'Complète la notation scientifique : donne l’exposant n.', a: 'Place la virgule après le premier chiffre non nul, puis compte de combien de rangs elle s’est déplacée : vers la gauche → n positif ; vers la droite → n négatif.',
-  g: function(){ var m = cl(rnd(101, 999) / 100), e = rnz(-7, 9); if (e === 0) return this.g(); var x = cl(m * Math.pow(10, e)); var big = e > 0;
-    var xs = big ? fr(x) : '0,' + '0'.repeat(-e - 1) + String(m).replace('.', '');
-    return {type: 'num', q: xs + ' = ' + fr(m) + ' × 10^?', lab: 'n =', v: e, steps: ['La virgule passe après le premier chiffre non nul en se déplaçant de ' + Math.abs(e) + ' rang' + (Math.abs(e) > 1 ? 's' : '') + ' vers la ' + (big ? 'gauche' : 'droite') + ' : ' + fr(m) + ' × 10' + sup(e) + '.'], traps: [[-e, 'Attention au signe de l’exposant : un grand nombre a un exposant positif, un petit nombre un exposant négatif.']], key: xs}; }},
- {id: 'n31c', lv: 2, n: 'N31', t: 'Écriture décimale', d: 'Depuis la notation scientifique.', c: 'Donne l’écriture décimale.', a: 'Multiplier par 10ⁿ : la virgule se déplace de n rangs (à droite si n positif, à gauche si n négatif).',
-  g: function(){ var m = cl(rnd(11, 99) / 10), e = rnz(-5, 6), v = cl(m * Math.pow(10, e));
-    return {type: 'num', q: fr(m) + ' × 10' + sup(e) + ' = ?', v: v, steps: ['La virgule se déplace de ' + Math.abs(e) + ' rang' + (Math.abs(e) > 1 ? 's' : '') + ' vers la ' + (e > 0 ? 'droite' : 'gauche') + ' : ' + fr(v) + '.'], key: m + ':' + e}; }},
- {id: 'n31d', lv: 3, n: 'N31', t: 'Comparer en notation scientifique', d: 'L’exposant d’abord.', c: 'Choisis le bon signe.', a: 'Pour des nombres positifs en notation scientifique, le plus grand est celui qui a le plus grand exposant ; à exposant égal, on compare les mantisses.',
-  g: function(){ var e1 = rnz(-6, 9), e2 = Math.random() < 0.4 ? e1 : rnz(-6, 9), m1 = cl(rnd(11, 99) / 10), m2 = cl(rnd(11, 99) / 10), a = m1 * Math.pow(10, e1), b = m2 * Math.pow(10, e2), s = Math.abs(a - b) < 1e-15 * Math.max(a, b) ? '=' : a < b ? '<' : '>', ch = ['<', '>', '='];
-    return {type: 'ch', q: fr(m1) + ' × 10' + sup(e1) + ' … ' + fr(m2) + ' × 10' + sup(e2), ch: ch, ans: ch.indexOf(s), steps: [e1 !== e2 ? 'Les exposants sont différents : ' + fr(e1) + ' et ' + fr(e2) + ', le plus grand nombre a le plus grand exposant.' : 'Même exposant : on compare ' + fr(m1) + ' et ' + fr(m2) + '.', 'Donc ' + fr(m1) + ' × 10' + sup(e1) + ' ' + s + ' ' + fr(m2) + ' × 10' + sup(e2) + '.']}; }}
+ {id: 'n31a', lv: 1, nq: 5, n: 'N31', t: 'Notation scientifique ou non ?', d: 'Un seul chiffre non nul avant la virgule.', c: 'Cette écriture est-elle une notation scientifique ?', a: 'Notation scientifique : a × 10ⁿ, où a a un seul chiffre non nul avant la virgule (1 ≤ a < 10) et n est un nombre entier.',
+  g: function(){ var yes = Math.random() < 0.45, n = rnz(-9, 12), a, why;
+    if (yes){ a = mant(); why = fr(a) + ' a un seul chiffre non nul avant la virgule : c’est une notation scientifique.'; }
+    else { var t = rnd(0, 3);
+      if (t === 0){ a = rnd(11, 99); why = fr(a) + ' a deux chiffres avant la virgule (' + fr(a) + ' ≥ 10) : ce n’est pas une notation scientifique. On écrit ' + nsTxt(cl(a / 10), n + 1) + '.'; }
+      else if (t === 1){ a = cl(rnd(1, 9) / 10); why = 'Il n’y a pas de chiffre non nul avant la virgule (' + fr(a) + ' < 1) : ce n’est pas une notation scientifique. On écrit ' + nsTxt(cl(a * 10), n - 1) + '.'; }
+      else if (t === 2){ a = cl(rnd(101, 999) / 10); why = fr(a) + ' a deux chiffres avant la virgule : ce n’est pas une notation scientifique. On écrit ' + nsTxt(cl(a / 10), n + 1) + '.'; }
+      else { a = 10; why = '10 n’est pas strictement inférieur à 10 : ce n’est pas une notation scientifique. On écrit 1 × 10' + sup(n + 1) + '.'; } }
+    return {type: 'ch', q: fr(a) + ' × 10' + sup(n), ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: [why], key: fr(a) + '|' + n}; }},
+ {id: 'n31c', lv: 1, nq: 5, n: 'N31', t: 'Revenir à l’écriture décimale', d: 'Décaler la virgule.', c: 'Donne l’écriture décimale.', a: 'Multiplier par 10ⁿ : la virgule se déplace de n rangs vers la droite si n est positif, vers la gauche si n est négatif.',
+  g: function(){ var m = mant(), e = rnz(-6, 6), v = parseFloat(decS(m, e).replace(/ /g, '').replace(',', '.'));
+    return {type: 'num', q: nsTxt(m, e) + ' = ?', v: v, steps: ['La virgule se déplace de ' + Math.abs(e) + ' rang' + (Math.abs(e) > 1 ? 's' : '') + ' vers la ' + (e > 0 ? 'droite' : 'gauche') + ' : ' + nsTxt(m, e) + ' = ' + decS(m, e) + '.'],
+      traps: [[parseFloat(decS(m, -e).replace(/ /g, '').replace(',', '.')), 'Tu as décalé la virgule dans le mauvais sens : exposant ' + (e > 0 ? 'positif → vers la droite.' : 'négatif → vers la gauche.')]], key: m + ':' + e}; }},
+ {id: 'n31b', lv: 2, nq: 5, n: 'N31', t: 'Écrire en notation scientifique', d: 'Grands et petits nombres.', c: 'Écris le nombre en notation scientifique a × 10ⁿ.', a: 'Je place la virgule juste après le premier chiffre non nul (c’est a), puis je compte de combien de rangs elle s’est déplacée (c’est n) : n positif si le nombre est plus grand que 10, négatif s’il est plus petit que 1.',
+  g: function(){ var m = mant(), e = rnz(-7, 10); var xs = decS(m, e);
+    return {type: 'multi', kneg: true, q: xs, form: [null, ' × 10 puissance ', null], vals: [m, e], check: chkSci(m, e),
+      steps: ['La virgule se place après le premier chiffre non nul : a = ' + fr(m) + '.', 'Elle s’est déplacée de ' + Math.abs(e) + ' rang' + (Math.abs(e) > 1 ? 's' : '') + ' ; le nombre est ' + (e > 0 ? 'plus grand que 10 : n = ' : 'plus petit que 1 : n = ') + fr(e) + '.', xs + ' = ' + nsTxt(m, e) + '.'], key: xs}; }},
+ {id: 'n31e', lv: 2, nq: 5, n: 'N31', t: 'Rendre l’écriture scientifique', d: '36 × 10⁹, 0,7 × 10⁵, 520 × 10⁻⁶…', c: 'Cette écriture n’est pas une notation scientifique. Écris le nombre en notation scientifique a × 10ⁿ.', a: 'Je reviens à l’écriture décimale du nombre, puis je l’écris en notation scientifique (un seul chiffre non nul avant la virgule).',
+  g: function(){ var m = mant(), e = rnz(-7, 9), k = pick([1, 2, -1, -2]), a = cl(m * Math.pow(10, k)), p = e - k;
+    if (p === 0) return this.g();
+    var q = fr(a) + ' × 10' + sup(p);
+    return {type: 'multi', kneg: true, q: q, form: [null, ' × 10 puissance ', null], vals: [m, e], check: chkSci(m, e),
+      steps: ['Écriture décimale : ' + q + ' = ' + decS(m, e) + '.', 'Virgule après le premier chiffre non nul : ' + decS(m, e) + ' = ' + nsTxt(m, e) + '.'], key: q}; }},
+ {id: 'n31d', lv: 3, nq: 5, n: 'N31', t: 'Comparer en notation scientifique', d: 'L’exposant d’abord.', c: 'Choisis le bon signe.', a: 'Pour des nombres positifs en notation scientifique, le plus grand est celui qui a le plus grand exposant ; à exposant égal, on compare les nombres a.',
+  g: function(){ var e1 = rnz(-6, 9), t = rnd(0, 2), e2 = t === 0 ? e1 : t === 1 ? e1 + pick([-1, 1]) : rnz(-6, 9), m1 = mant(), m2 = mant();
+    if (t === 1 && Math.random() < 0.7){ if ((e1 > e2) === (m1 > m2)){ var z = m1; m1 = m2; m2 = z; } }   // piège : le plus grand a n'est pas le plus grand nombre
+    if (m1 === m2 && e1 === e2) return this.g();
+    var a = m1 * Math.pow(10, e1), b = m2 * Math.pow(10, e2), s = a < b ? '<' : '>', ch = ['<', '>', '='];
+    return {type: 'ch', q: nsTxt(m1, e1) + ' … ' + nsTxt(m2, e2), ch: ch, ans: ch.indexOf(s), steps: [e1 !== e2 ? 'Les exposants sont différents : ' + fr(e1) + ' ' + (e1 < e2 ? '<' : '>') + ' ' + fr(e2) + ', c’est le plus grand exposant qui donne le plus grand nombre' + ((e1 > e2) !== (m1 > m2) ? ', même si ' + fr(m1) + (m1 < m2 ? ' < ' : ' > ') + fr(m2) : '') + '.' : 'Même exposant : on compare ' + fr(m1) + ' et ' + fr(m2) + '.', 'Donc ' + nsTxt(m1, e1) + ' ' + s + ' ' + nsTxt(m2, e2) + '.'], key: m1 + ':' + e1 + ':' + m2 + ':' + e2}; }},
+ {id: 'n31f', lv: 3, nq: 3, n: 'N31', t: 'Problèmes : très grands et très petits', d: 'Énergie, côte normande, atome, Terre–Lune…', c: 'Lis l’énoncé, puis complète.', a: 'Écris d’abord le nombre en chiffres (attention aux unités), puis place la virgule après le premier chiffre non nul. Pour un ordre de grandeur, arrondis a à l’unité.',
+  g: function(){ var S = [
+    ['paluel', 'En 2025, la centrale nucléaire de Paluel a produit 36 TWh, soit 36 000 000 000 kWh. Écris ce nombre de kWh en notation scientifique.', 3.6, 10, 0],
+    ['eolien', 'Le parc éolien en mer de Fécamp doit produire 1 800 000 000 kWh par an. Écris ce nombre en notation scientifique.', 1.8, 9, 0],
+    ['personnes', 'Ce parc couvre la consommation d’environ 770 000 personnes. Écris ce nombre en notation scientifique.', 7.7, 5, 0],
+    ['cout', 'Le parc éolien de Fécamp a coûté environ 2 milliards d’euros. Écris ce montant en euros, en notation scientifique.', 2, 9, 0],
+    ['fondation', 'Chaque éolienne du parc de Fécamp repose sur une fondation d’environ 5 000 tonnes. Écris cette masse en kilogrammes, en notation scientifique (1 t = 1 000 kg).', 5, 6, 0],
+    ['cote', 'Le littoral de Seine-Maritime mesure 140 km. Écris cette longueur en mètres, en notation scientifique.', 1.4, 5, 0],
+    ['erosion', 'Environ 420 ha de terres pourraient disparaître en 100 ans sur la côte de Seine-Maritime. Écris cette aire en m², en notation scientifique (1 ha = 10 000 m²).', 4.2, 6, 0],
+    ['atome', 'Un atome mesure environ 0,000 000 000 1 m de diamètre. Écris cette longueur en notation scientifique.', 1, -10, 0],
+    ['alveole', 'Une alvéole des poumons mesure environ 0,2 mm de diamètre. Écris cette longueur en mètres, en notation scientifique.', 2, -4, 0],
+    ['cheveu', 'Un cheveu mesure environ 0,06 mm d’épaisseur. Écris cette épaisseur en mètres, en notation scientifique.', 6, -5, 0],
+    ['globule', 'Un globule rouge mesure environ 0,007 mm de diamètre. Écris cette longueur en mètres, en notation scientifique.', 7, -6, 0],
+    ['virus', 'Un virus mesure environ 100 nm, soit 0,000 000 1 m. Écris cette longueur en notation scientifique.', 1, -7, 0],
+    ['lune', 'La distance Terre–Lune est d’environ 384 400 km. Donne un ordre de grandeur de cette distance en km, sous la forme a × 10ⁿ avec a entier.', 4, 5, 3.844],
+    ['vitraux', 'Les vitraux de l’église Saint-Joseph du Havre comptent 12 768 morceaux de verre. Donne un ordre de grandeur de ce nombre, sous la forme a × 10ⁿ avec a entier.', 1, 4, 1.2768],
+    ['cany', 'Cany-Barville compte 2 909 habitants. Donne un ordre de grandeur de ce nombre, sous la forme a × 10ⁿ avec a entier.', 3, 3, 2.909],
+    ['pont', 'Le pont de Normandie mesure environ 2 143 m. Donne un ordre de grandeur de cette longueur en m, sous la forme a × 10ⁿ avec a entier.', 2, 3, 2.143]
+   ], s = pick(S), m = s[2], e = s[3], og = s[4];
+    var st = og ? ['En notation scientifique : ' + fr(og) + ' × 10' + sup(e) + '.', 'J’arrondis ' + fr(og) + ' à l’unité : ordre de grandeur ' + nsTxt(m, e) + '.'] :
+      ['En chiffres : ' + decS(m, e) + '.', 'Virgule après le premier chiffre non nul, ' + Math.abs(e) + ' rang' + (Math.abs(e) > 1 ? 's' : '') + ' : ' + nsTxt(m, e) + '.'];
+    var ck = chkSci(m, e);
+    return {type: 'multi', kneg: true, q: s[1], form: [null, ' × 10 puissance ', null], vals: [m, e], steps: st, key: s[0],
+      check: og ? function(vs){ if (Math.abs(vs[0] - og) < 1e-9 && vs[1] === e) return 'C’est la notation scientifique exacte : pour un ordre de grandeur, arrondis a à l’unité.'; return ck(vs); } : ck}; }}
 );
 var NOTIONS = [
  {n: 'N29', t: 'Écrire un produit de facteurs égaux avec une puissance', r: 'aⁿ = a × a × … × a (n facteurs) ; a¹ = a et a⁰ = 1 ; (−a)ⁿ est positif si n est pair, négatif si n est impair.'},
  {n: 'N30', t: 'Utiliser les puissances de 10 et les préfixes', r: '10ⁿ = 1 suivi de n zéros ; 10⁻ⁿ = 0,0…01 ; 10ᵃ × 10ᵇ = 10ᵃ⁺ᵇ. Préfixes : kilo 10³, méga 10⁶, giga 10⁹, milli 10⁻³, micro 10⁻⁶, nano 10⁻⁹.'},
- {n: 'N31', t: 'Écrire et comparer des nombres en notation scientifique', r: 'notation scientifique : a × 10ⁿ avec 1 ≤ a < 10 et n entier relatif.'}
+ {n: 'N31', t: 'Écrire et comparer des nombres en notation scientifique', r: 'Notation scientifique : a × 10ⁿ avec 1 ≤ a < 10 (un seul chiffre non nul avant la virgule) et n entier. Pour comparer : l’exposant d’abord, puis a. Ordre de grandeur : on arrondit a à l’unité.'}
 ];
 
 M.start({key: '4e-s13', EX: EX, NOTIONS: NOTIONS});
