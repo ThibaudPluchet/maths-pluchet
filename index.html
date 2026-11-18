@@ -186,6 +186,8 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
 @media (min-width:640px){ .seqview .notion .groups{grid-template-columns:1fr 1fr} }
 .tabs .tdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--new);margin-left:6px;vertical-align:2px}
 .evcard .evkind{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 4px}
+.evcard .evdate{font-size:14px;font-weight:600;color:var(--muted);margin:2px 0 8px}
+.evcard .evdate::before{content:"📅 "}
 .evcard.common{border-left:5px solid var(--accent)}
 .evcard .evns{display:flex;flex-wrap:wrap;gap:6px;margin:-6px 0 14px}
 .evcard .evns span{font-size:13px;background:var(--soft);color:var(--ink);border-radius:999px;padding:3px 10px}
@@ -696,9 +698,13 @@ function start(D){
     evals.forEach(function(e){
       var common = typeof e.num === 'string';
       var box = el('article','notion evcard' + (common ? ' common' : ''));
-      box.appendChild(el('p','evkind', common ? 'Évaluation · ' + (e.ns ? e.ns.length : '') + ' notions' : 'Évaluation · Séquence ' + e.seq.num + ' · ' + e.seq.titre));
+      box.appendChild(el('p','evkind', common ? 'Évaluation · ' + (e.ns ? e.ns.length : '') + (e.ns && e.ns.length === 1 ? ' notion' : ' notions') : 'Évaluation · Séquence ' + e.seq.num + ' · ' + e.seq.titre));
       var h3 = el('h3'); h3.appendChild(el('span','code', codeTxt(e.num)));
       h3.appendChild(document.createTextNode(common ? 'Évaluation' : e.titre)); box.appendChild(h3);
+      // date de passation (onglet Évaluations de la page enseignant, case « Faite »)
+      var pd = ((D.passees || {})[levelOf(current)] || {})[common ? e.num : 'N' + e.num] || {};
+      if (allMode()){ var pk = Object.keys(pd).sort(); if (pk.length) box.appendChild(el('p','evdate', 'Passée · ' + pk.map(function(c){ return c + ' : ' + dayTxt(pd[c]); }).join(' · '))); }
+      else if (pd[current]) box.appendChild(el('p','evdate', 'Passée le ' + dayTxt(pd[current])));
       if (common && e.ns){
         var ns = el('div','evns');
         e.ns.forEach(function(x){ var sp = el('span'); sp.appendChild(el('b', null, 'N' + x.num)); sp.appendChild(document.createTextNode(x.titre)); ns.appendChild(sp); });

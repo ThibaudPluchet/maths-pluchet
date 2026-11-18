@@ -259,6 +259,7 @@ def load(page, dbdir, everything=False):
     data["classes"] = classes
     data["encours"] = encours
     data["planned"] = planned_evals(dbdir, levels, classes, inter)
+    data["passees"] = passed_evals(dbdir, levels, classes)
     data["dm"] = dm_items(html, dbdir, levels, classes)
     data["dnb"] = dnb_items(dbdir, levels, classes, everything)
     return data, wanted
@@ -422,6 +423,22 @@ def planned_evals(dbdir, levels, classes, inter):
         out.append({"id": os.path.basename(f)[:-5], "lv": lv, "nom": p.get("nom") or "", "doc": doc, "ns": ns, "dates": dates,
                     "commune": doc.startswith("E") or len(ns) > 1, "blanc": blanc_of(blancs.get(lv, {}).get(doc)),
                     "parNotion": (blancs.get(lv, {}).get(doc) or {}).get("notions", []) if isinstance(blancs.get(lv, {}).get(doc), dict) else []})
+    return out
+
+
+def passed_evals(dbdir, levels, classes):
+    """Date de passation des évaluations déclarées, pour les classes où elles sont cochées « Faite » :
+    {niveau: {document relié (N12, E01): {classe: AAAA-MM-JJ}}} ; affichée sur la carte de l'évaluation (onglet Évaluations)."""
+    out = {}
+    for f in sorted(glob.glob(f"{dbdir}/evaluations/*.json")):
+        p = json.load(open(f))
+        lv, doc = p.get("lv"), p.get("doc") or ""
+        if lv not in levels or not classes.get(lv) or not re.fullmatch(r"[NE]\d+", doc):
+            continue
+        noms, done = classes[lv], p.get("f") or {}
+        for k, d in (p.get("dates") or {}).items():
+            if d and str(k).isdigit() and 0 < int(k) <= len(noms) and (done.get(k) or done.get(int(k))):
+                out.setdefault(lv, {}).setdefault(doc, {})[noms[int(k) - 1]] = d
     return out
 
 
