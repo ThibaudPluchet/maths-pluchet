@@ -41,7 +41,21 @@ function table(f, xs, ys){
 function curve(){ var xs = [-5, -3, -1, 1, 3, 5].map(function(v, i){ return i === 0 || i === 5 ? v : v + rnd(-1, 0); }), ys = [], y;
   for (var i = 0; i < xs.length; i++){ do { y = rnd(-4, 5); } while (i && (y === ys[i - 1] || Math.abs(y - ys[i - 1]) > 6)); ys.push(y); }
   return {xs: xs, ys: ys}; }
-function cy(C, x){ for (var i = 0; i < C.xs.length - 1; i++) if (x >= C.xs[i] && x <= C.xs[i + 1]) return C.ys[i] + (C.ys[i + 1] - C.ys[i]) * (x - C.xs[i]) / (C.xs[i + 1] - C.xs[i]); return null; }
+// courbe lisse (x², x³…) : C.F donne y ; C.xs / C.ys = les points lisibles sur les nœuds du quadrillage
+function scurve(){ var T = [
+    function(h, k){ return function(x){ var t = x - h; return t * t + k; }; },
+    function(h, k){ return function(x){ var t = x - h; return -t * t + k; }; },
+    function(h, k){ return function(x){ var t = x - h; return t * t / 2 + k; }; },
+    function(h, k){ return function(x){ var t = x - h; return -t * t / 2 + k; }; },
+    function(h, k){ return function(x){ var t = x - h; return t * (t * t - 4) / 3 + k; }; },
+    function(h, k){ return function(x){ var t = x - h; return -t * (t * t - 4) / 3 + k; }; },
+    function(h, k){ return function(x){ var t = x - h; return t * (t * t - 1) / 2 + k; }; },
+    function(h, k){ return function(x){ var t = x - h; return -t * (t * t - 1) / 2 + k; }; }], i, F, xs, ys, h, k;
+  do { i = rnd(0, T.length - 1); h = rnd(-2, 2); k = i === 0 || i === 2 ? rnd(-4, 1) : i === 1 || i === 3 ? rnd(1, 5) : rnd(-1, 2); F = T[i](h, k); xs = []; ys = [];
+    for (var x = -5; x <= 5; x++){ var y = F(x); if (Math.abs(y - Math.round(y)) < 1e-9 && y >= -4 && y <= 5){ xs.push(x); ys.push(Math.round(y)); } }
+  } while (xs.length < 4 || new Set(ys).size < 3);
+  return {xs: xs, ys: ys, F: F}; }
+function cy(C, x){ if (C.F) return C.F(x); for (var i = 0; i < C.xs.length - 1; i++) if (x >= C.xs[i] && x <= C.xs[i + 1]) return C.ys[i] + (C.ys[i + 1] - C.ys[i]) * (x - C.xs[i]) / (C.xs[i + 1] - C.xs[i]); return null; }
 function roots(C, k){ var R = []; for (var i = 0; i < C.xs.length - 1; i++){ var a = C.ys[i] - k, b = C.ys[i + 1] - k;
     if (a === 0){ if (!R.some(function(r){ return Math.abs(r - C.xs[i]) < 1e-9; })) R.push(C.xs[i]); }
     if (a * b < 0) R.push(C.xs[i] + (C.xs[i + 1] - C.xs[i]) * a / (a - b)); }
@@ -53,8 +67,12 @@ function graph(C, f, hl){
   s += '<line class="ax" style="stroke-width:1.6" x1="' + (ox - 5 * u) + '" y1="' + oy + '" x2="' + (ox + 5 * u + 8) + '" y2="' + oy + '"/><line class="ax" style="stroke-width:1.6" x1="' + ox + '" y1="' + (oy + 4 * u) + '" x2="' + ox + '" y2="' + (oy - 5 * u - 8) + '"/>';
   s += '<text class="sm" x="' + (ox + u) + '" y="' + (oy + 14) + '" text-anchor="middle">1</text><text class="sm" x="' + (ox - 8) + '" y="' + (oy - u) + '" text-anchor="end" dominant-baseline="central">1</text><text class="sm" x="' + (ox - 8) + '" y="' + (oy + 12) + '" text-anchor="end">0</text>';
   s += '<text class="sm" x="' + (ox + 5 * u + 6) + '" y="' + (oy - 8) + '">x</text><text class="sm" x="' + (ox + 6) + '" y="' + (oy - 5 * u - 2) + '">y</text>';
-  s += '<polyline class="cv" points="' + C.xs.map(function(x, i){ return (ox + x * u) + ',' + (oy - C.ys[i] * u); }).join(' ') + '"/>';
-  var L = C.xs.length - 1; s += '<text x="' + (ox + C.xs[L] * u - 6) + '" y="' + (oy - C.ys[L] * u - 10) + '" style="fill:var(--accent)">𝒞' + '<tspan style="font-size:11px">' + f + '</tspan></text>';
+  if (C.F){ var d = '', on = false, xx, yy, lx = 0, ly = 0;
+    for (xx = -5; xx <= 5.0001; xx += 0.05){ yy = C.F(xx); if (yy < -4.02 || yy > 5.02){ on = false; continue; } d += (on ? ' L' : ' M') + (ox + xx * u).toFixed(1) + ' ' + (oy - yy * u).toFixed(1); on = true; lx = xx; ly = yy; }
+    s += '<path class="cv" d="' + d.trim() + '"/>';
+    C.lab = [lx, ly]; }
+  else s += '<polyline class="cv" points="' + C.xs.map(function(x, i){ return (ox + x * u) + ',' + (oy - C.ys[i] * u); }).join(' ') + '"/>';
+  var L = C.xs.length - 1; s += '<text x="' + (ox + (C.lab ? Math.min(C.lab[0], 4.3) : C.xs[L]) * u - 6) + '" y="' + (oy - (C.lab ? Math.max(Math.min(C.lab[1], 4.6), -3.4) : C.ys[L]) * u - 10) + '" style="fill:var(--accent)">𝒞' + '<tspan style="font-size:11px">' + f + '</tspan></text>';
   return s + '</svg>';
 }
 function sorted(a){ return a.slice().sort(function(x, y){ return x - y; }); }
@@ -82,7 +100,7 @@ var EX = [
     return {type: 'ch', q: p[0], svg: table(f, xs, ys), wide: true, ch: ['Vrai', 'Faux'], ans: p[1] ? 0 : 1, steps: [(p[1] ? 'Vrai. ' : 'Faux. ') + p[2]], key: p[0] + ys.join()}; }},
  {id: 'n13a', lv: 2, n: 'N13', t: 'Lire une image sur un graphique', d: 'Du nombre sur l’axe des abscisses à la courbe.',
   c: 'Lis l’image demandée sur la courbe (les lectures tombent sur les nœuds du quadrillage).', a: 'Pour lire l’image de a : on part de a sur l’axe des abscisses (horizontal), on monte (ou descend) jusqu’à la courbe, puis on lit l’ordonnée sur l’axe vertical.',
-  g: function(){ var f = fl(), C = curve(), x = pick(C.xs), y = cy(C, x);
+  g: function(){ var f = fl(), C = Math.random() < 0.6 ? scurve() : curve(), x = pick(C.xs), y = cy(C, x);
     return {type: 'num', q: 'Voici la courbe de la fonction ' + f + '. Quelle est l’image de ' + fr(x) + ' ?', svg: graph(C, f), lab: f + '(' + fr(x) + ') =', v: y, x: y, steps: ['On part de ' + fr(x) + ' sur l’axe des abscisses, on rejoint la courbe, on lit l’ordonnée : ' + f + '(' + fr(x) + ') = ' + fr(y) + '.'],
       traps: C.ys.indexOf(x) >= 0 && C.xs[C.ys.indexOf(x)] !== y ? [[C.xs[C.ys.indexOf(x)], 'Tu as lu un antécédent de ' + fr(x) + ' : pour l’image, on part de l’axe des abscisses.']] : [], key: C.ys.join() + x}; }},
  {id: 'n13b', lv: 2, n: 'N13', t: 'Antécédents sur un graphique', d: 'Combien ? Lesquels ?',
