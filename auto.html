@@ -654,7 +654,7 @@ function examResult(qs, raws, timeUp){
 }
 
 /* ---------- Mode classe (projection) ---------- */
-var CL = {n: +(store('auto:cl:n') || 6), t: +(store('auto:cl:t') || 45), c: store('auto:cl:c') || 'end', sel: null};
+var CL = {n: +(store('auto:cl:n') || 6), t: +(store('auto:cl:t2') || 0), c: store('auto:cl:c') || 'end', sel: null};
 function classeSetup(){
   var c = el('section','card');
   c.appendChild(el('p','kicker','Mode classe'));
@@ -692,7 +692,7 @@ function classeSetup(){
     var s2 = el('select'); [['end','À la fin de la série'],['each','Après chaque question']].forEach(function(v){ var op = el('option', null, v[1]); op.value = v[0]; if (v[0] === CL.c) op.selected = true; s2.appendChild(op); });
     s2.onchange = function(){ CL.c = s2.value; store('auto:cl:c', CL.c); }; l.appendChild(s2); o.appendChild(l);
   })();
-  o.appendChild(sel('Temps par question', [[30,'30 secondes'],[45,'45 secondes'],[60,'1 minute'],[90,'1 min 30'],[0,'Sans limite (je fais défiler)']], CL.t, function(v){ CL.t = v; store('auto:cl:t', v); }));
+  o.appendChild(sel('Temps par question', [[30,'30 secondes'],[45,'45 secondes'],[60,'1 minute'],[90,'1 min 30'],[0,'Sans limite (je fais défiler)']], CL.t, function(v){ CL.t = v; store('auto:cl:t2', v); }));
   c.appendChild(o);
   var r = el('div','row'); r.style.margin = '16px 0 4px'; r.appendChild(seenToggle(render)); c.appendChild(r);
   var av = availGens();
