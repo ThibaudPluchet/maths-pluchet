@@ -236,7 +236,7 @@ function run(x){
         var g = el('input', 'w'); g.type = 'text'; g.autocomplete = 'off'; g.inputMode = 'decimal'; g.placeholder = '…'; g.style.width = '5.5em'; g.style.flex = 'none';
         g.setAttribute('aria-label', 'Réponse ' + (i + 1) + ', case ' + (Q.inps.length + 1));
         g.onfocus = function(){ lastInput = this; };
-        g.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); var all = main.querySelectorAll('input.w'), j = [].indexOf.call(all, this); if (all[j + 1]) all[j + 1].focus(); else check(); } };
+        g.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); var all = [].slice.call(Q.inps), j = all.indexOf(this); if (all[j + 1]) all[j + 1].focus(); else validate(Q); } };
         lm.appendChild(g); Q.inps.push(g); });
       it.appendChild(lm);
     } else {
@@ -245,13 +245,15 @@ function run(x){
       f.inputMode = Q.type === 'num' ? 'decimal' : 'text'; f.placeholder = Q.type === 'num' ? 'nombre' : Q.type === 'frac' ? 'ex. 7/12' : 'ta réponse';
       f.setAttribute('aria-label', 'Réponse ' + (i + 1));
       f.onfocus = function(){ lastInput = this; };
-      f.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); var all = main.querySelectorAll('input.w'), j = [].indexOf.call(all, this); if (all[j + 1]) all[j + 1].focus(); else check(); } };
+      f.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); validate(Q); } };
       ln.appendChild(f); if (Q.unit) ln.appendChild(el('span', 'un', Q.unit)); it.appendChild(ln); Q.inp = f;
     }
+    // chaque question se valide seule : verdict et correction tout de suite
+    var vb = el('button', 'btn vq', 'Valider'); vb.type = 'button'; vb.onclick = function(){ validate(Q); }; it.appendChild(vb); Q.vb = vb;
     Q.it = it; items.appendChild(it); return Q;
   }
   p.appendChild(items);
-  var row = el('div', 'row'), bc = el('button', 'btn main', 'Vérifier'), bn = el('button', 'btn', 'Nouvelle série');
+  var row = el('div', 'row'), bc = el('button', 'btn main', 'Tout vérifier'), bn = el('button', 'btn', 'Nouvelle série');
   bc.type = bn.type = 'button'; row.appendChild(bc); row.appendChild(bn); p.appendChild(row);
   var res = el('div', 'res'); res.hidden = true; p.appendChild(res);
   main.appendChild(p);
@@ -260,10 +262,8 @@ function run(x){
   if (hasE) keybar([['x', 'x'], ['x²', 'x²'], ['(', '('], [')', ')'], [MINUS, '-'], ['+', '+'], ['⌫', null]]);
   else if (hasF) keybar([['/', '/'], [MINUS, '-'], ['⌫', null]]);
   bn.onclick = function(){ run(x); };
-  function check(){
-    var score = 0;
-    qs.forEach(function(Q){
-      if (Q.done) { score += Q.ok ? 1 : 0; return; }
+  function checkOne(Q){
+    if (Q.done) return;
       var ok = false, why = '', blank = false;
       if (Q.type === 'ch'){
         if (Q.choice === undefined) blank = true; else ok = Q.choice === Q.ans;
@@ -280,17 +280,29 @@ function run(x){
         if (Q.type === 'ch') cs.appendChild(el('div', null, (Q.ch.length > 2 || Q.ch[0] !== 'Vrai' ? 'Réponse : ' + Q.ch[Q.ans] + '. ' : '') + Q.steps.join(' ')));
         else cs.appendChild(el('div', 'sl', Q.steps.join('\n')));
         c.appendChild(cs); }
-      if (Q.type === 'ch' ? !blank : (!ok && Q.tries >= 2)) showSol();
+      if (Q.type === 'ch' ? !blank : (ok || Q.tries >= 2)) showSol();
       else if (!ok && !blank){ var sb = el('button', 'btn', 'Voir la correction'); sb.type = 'button'; sb.style.alignSelf = 'flex-start'; sb.style.minHeight = '36px'; sb.style.padding = '6px 12px';
-        sb.onclick = function(){ sb.remove(); showSol(); Q.tries = 2; }; c.appendChild(sb); c.appendChild(el('span', null, 'Essaie de corriger ta réponse, puis clique à nouveau sur « Vérifier ».')); }
+        sb.onclick = function(){ sb.remove(); showSol(); Q.tries = 2; }; c.appendChild(sb); c.appendChild(el('span', null, 'Essaie de corriger ta réponse, puis clique à nouveau sur « Valider ».')); }
       Q.it.appendChild(c);
-      if (ok || (Q.type === 'ch' && !blank)) { Q.done = true; Q.ok = ok; (Q.inps || (Q.inp ? [Q.inp] : [])).forEach(function(z){ z.disabled = ok; }); }
-      score += ok ? 1 : 0;
-    });
-    res.hidden = false; res.className = 'res ' + (score === NQ ? 'ok' : score >= NQ / 2 ? 'mid' : 'ko');
-    res.textContent = score + ' / ' + NQ + (score === NQ ? ' : parfait !' : '');
-    res.appendChild(el('small', null, score === NQ ? 'Tu peux passer à l’exercice suivant ou faire une nouvelle série.' : 'Corrige les réponses en rouge puis clique à nouveau sur « Vérifier », ou lis la correction.'));
-    if (score > best(x.id)) store(P.key + ':' + x.id, String(score));
+      if (ok || (Q.type === 'ch' && !blank)) { Q.done = true; Q.ok = ok; (Q.inps || (Q.inp ? [Q.inp] : [])).forEach(function(z){ z.disabled = ok; }); if (Q.vb) Q.vb.hidden = true; }
+      if (Q.vb) Q.it.appendChild(Q.vb);
+  }
+  function score(final){
+    var sc = qs.filter(function(Q){ return Q.done && Q.ok; }).length, left = qs.filter(function(Q){ return !Q.done; }).length, all = !left || final;
+    res.hidden = false; res.className = 'res ' + (!all ? 'mid' : sc === NQ ? 'ok' : sc >= NQ / 2 ? 'mid' : 'ko');
+    res.textContent = sc + ' / ' + NQ + (sc === NQ ? ' : parfait !' : '');
+    res.appendChild(el('small', null, sc === NQ ? 'Tu peux passer à l’exercice suivant ou faire une nouvelle série.' : left ? left + ' question' + (left > 1 ? 's' : '') + ' encore à faire. Une réponse en rouge peut être corrigée puis validée à nouveau.' : 'Fais une nouvelle série pour t’entraîner encore.'));
+    if (sc > best(x.id)) store(P.key + ':' + x.id, String(sc));
+    return sc;
+  }
+  // une question : verdict + correction, puis on passe à la suivante pas encore réussie
+  function validate(Q){
+    checkOne(Q); score();
+    if (Q.done){ var nx = qs.slice(qs.indexOf(Q) + 1).concat(qs.slice(0, qs.indexOf(Q))).filter(function(z){ return !z.done; })[0];
+      if (nx){ var t = nx.inps ? nx.inps[0] : nx.inp; if (t) t.focus({preventScroll: true}); nx.it.scrollIntoView({block: 'nearest', behavior: 'smooth'}); } else res.scrollIntoView({block: 'nearest'}); }
+  }
+  function check(){
+    qs.forEach(checkOne); score(true);
     res.scrollIntoView({block: 'nearest'});
   }
   bc.onclick = check;

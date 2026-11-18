@@ -83,6 +83,8 @@ input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.koF{border-col
 .res small{display:block;font-weight:400;color:var(--ink)}
 .kbar{position:sticky;bottom:0;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:8px;background:var(--bg);border-top:1px solid var(--line)}
 .kbar button{font:700 20px "Bricolage Grotesque",sans-serif;min-width:48px;min-height:42px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.item .btn.vq{align-self:flex-start;min-height:40px;padding:6px 16px;font-size:16px;border:2px solid var(--accent);color:var(--accent)}
+.item .btn.vq[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -356,22 +358,22 @@ function run(x){
       f.inputMode = Q.v !== undefined ? 'decimal' : 'text'; f.placeholder = Q.v !== undefined ? 'résultat' : 'ta réponse';
       f.setAttribute('aria-label', 'Réponse ' + String.fromCharCode(65 + i));
       f.onfocus = function(){ lastInput = this; };
-      f.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); var all = main.querySelectorAll('input.w'), j = [].indexOf.call(all, this); if (all[j + 1]) all[j + 1].focus(); else check(); } };
+      f.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); validate(Q); } };
       ln.appendChild(f); it.appendChild(ln); Q.f = f;
     }
+    // chaque question se valide seule : verdict et correction tout de suite
+    var vb = el('button', 'btn vq', 'Valider'); vb.type = 'button'; vb.onclick = function(){ validate(Q); }; it.appendChild(vb); Q.vb = vb;
     Q.it = it; items.appendChild(it); return Q;
   }
   p.appendChild(items);
-  var row = el('div', 'row'), bc = el('button', 'btn main', 'Vérifier'), bn = el('button', 'btn', 'Nouvelle série');
+  var row = el('div', 'row'), bc = el('button', 'btn main', 'Tout vérifier'), bn = el('button', 'btn', 'Nouvelle série');
   bc.type = bn.type = 'button'; row.appendChild(bc); row.appendChild(bn); p.appendChild(row);
   var res = el('div', 'res'); res.hidden = true; p.appendChild(res);
   main.appendChild(p);
   kbar.hidden = !qs.some(function(Q){ return Q.P; }); keybar();
   bn.onclick = function(){ run(x); };
-  function check(){
-    var score = 0;
-    qs.forEach(function(Q){
-      if (Q.done) { score += Q.ok ? 1 : 0; return; }
+  function checkOne(Q){
+    if (Q.done) return;
       var ok = false, why = '';
       if (Q.vf !== undefined){
         if (Q.choice === undefined) { why = 'Tu n’as pas répondu.'; }
@@ -401,17 +403,28 @@ function run(x){
         else cs.appendChild(el('div', 'sl', Q.steps.map(function(s, j){ return (j === 0 ? String.fromCharCode(65 + qs.indexOf(Q)) : ' ') + ' = ' + s; }).join('\n')));
         c.appendChild(cs);
       }
-      if (Q.vf !== undefined ? !blank : (!ok && Q.tries >= 2)) showSol();
+      if (Q.vf !== undefined ? !blank : (ok || Q.tries >= 2)) showSol();
       else if (!ok && !blank){ var sb = el('button', 'btn', 'Voir la correction'); sb.type = 'button'; sb.style.alignSelf = 'flex-start'; sb.style.minHeight = '36px'; sb.style.padding = '6px 12px';
-        sb.onclick = function(){ sb.remove(); showSol(); Q.tries = 2; }; c.appendChild(sb); c.appendChild(el('span', null, 'Essaie de corriger ta réponse, puis clique à nouveau sur « Vérifier ».')); }
+        sb.onclick = function(){ sb.remove(); showSol(); Q.tries = 2; }; c.appendChild(sb); c.appendChild(el('span', null, 'Essaie de corriger ta réponse, puis clique à nouveau sur « Valider ».')); }
       Q.it.appendChild(c);
-      if (ok || (Q.vf !== undefined && !blank)) { Q.done = true; Q.ok = ok; if (Q.f) Q.f.disabled = ok; }
-      score += ok ? 1 : 0;
-    });
-    res.hidden = false; res.className = 'res ' + (score === N ? 'ok' : score >= 3 ? 'mid' : 'ko');
-    res.textContent = score + ' / ' + N + (score === N ? ' : parfait !' : '');
-    res.appendChild(el('small', null, score === N ? 'Tu peux passer à l’exercice suivant ou faire une nouvelle série.' : 'Corrige les réponses en rouge puis clique à nouveau sur « Vérifier », ou lis la correction.'));
-    if (score > best(x.id)) store('s01:' + x.id, String(score));
+      if (ok || (Q.vf !== undefined && !blank)) { Q.done = true; Q.ok = ok; if (Q.f) Q.f.disabled = ok;  if (Q.vb) Q.vb.hidden = true; }
+      if (Q.vb) Q.it.appendChild(Q.vb);
+  }
+  function score(final){
+    var sc = qs.filter(function(Q){ return Q.done && Q.ok; }).length, left = qs.filter(function(Q){ return !Q.done; }).length, all = !left || final, T = qs.length;
+    res.hidden = false; res.className = 'res ' + (!all ? 'mid' : sc === T ? 'ok' : sc >= T / 2 ? 'mid' : 'ko');
+    res.textContent = sc + ' / ' + T + (sc === T ? ' : parfait !' : '');
+    res.appendChild(el('small', null, sc === T ? 'Tu peux passer à l’exercice suivant ou faire une nouvelle série.' : left ? left + ' question' + (left > 1 ? 's' : '') + ' encore à faire. Une réponse en rouge peut être corrigée puis validée à nouveau.' : 'Fais une nouvelle série pour t’entraîner encore.'));
+    if (sc > best(x.id)) store('s01:' + x.id, String(sc));
+  }
+  // une question : verdict + correction, puis on passe à la suivante pas encore réussie
+  function validate(Q){
+    checkOne(Q); score();
+    if (Q.done){ var nx = qs.slice(qs.indexOf(Q) + 1).concat(qs.slice(0, qs.indexOf(Q))).filter(function(z){ return !z.done; })[0];
+      if (nx){ if (nx.f) nx.f.focus({preventScroll: true}); nx.it.scrollIntoView({block: 'nearest', behavior: 'smooth'}); } else res.scrollIntoView({block: 'nearest'}); }
+  }
+  function check(){
+    qs.forEach(checkOne); score(true);
     res.scrollIntoView({block: 'nearest'});
   }
   bc.onclick = check;
