@@ -270,7 +270,7 @@ function find(c){ c = (c || '').toLowerCase(); for (var l in D.classes) for (var
 
 var hashCls = decodeURIComponent(location.hash.slice(1)).split('/')[0];
 // lien enseignant direct vers le mode classe : auto.html#3eB/classe/prof=<code> (planning des questions flash de la page enseignant)
-var wantClasse = /(^|\/)classe(\/|$)/.test(decodeURIComponent(location.hash.slice(1)));
+var wantClasse = /(^|\/)classe(\/|$)/.test(decodeURIComponent(location.hash.slice(1))) || /[?&]vue=classe\b/.test(location.search);
 // Mode classe réservé à l'enseignant : lien personnel auto.html#prof=<code>, mémorisé ensuite dans ce navigateur
 var PROF_HASH = '5a7300999345ce2278c87b182fb492e326f26abe7aae5be0d23e14ddfda3aab7', prof = false;
 function checkProf(){
