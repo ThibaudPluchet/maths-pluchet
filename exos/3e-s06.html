@@ -77,14 +77,20 @@ var EX = [
     ch = ch.filter(function(c, i){ return ch.indexOf(c) === i; }); while (ch.length < 3) ch.push(co([-p[0], -p[1]])); ch = shuffle(ch.filter(function(c, i, a){ return a.indexOf(c) === i; }));
     return {type: 'ch', q: 'Quelles sont les coordonnées du point ' + n + ' ?', svg: plan([[p[0], p[1], n]]), wide: true, ch: ch, ans: ch.indexOf(good),
       steps: [n + ' est ' + (p[0] ? 'sur le parallèle ' + la(p[0]) : 'sur l’équateur') + ' et ' + (p[1] ? 'sur le méridien ' + lo(p[1]) : 'sur le méridien de Greenwich') + ' : ' + good + '.'], key: good}; }},
- {id: 'n09d', lv: 2, n: 'N09', t: 'Placer un point', d: 'Retrouver le point qui a ces coordonnées.',
-  c: 'Choisis le point qui a les coordonnées demandées.', a: 'Repère d’abord le parallèle (la latitude), puis le méridien (la longitude) : le point est à leur croisement.',
-  g: function(){ var p = rpt(), pts = [p]; [[-p[0], p[1]], [p[0], -p[1]], [-p[0], -p[1]]].forEach(function(o){ if (!pts.some(function(z){ return z[0] === o[0] && z[1] === o[1]; })) pts.push(o); });
-    while (pts.length < 4){ var o = rpt(); if (!pts.some(function(z){ return z[0] === o[0] && z[1] === o[1]; })) pts.push(o); }
-    var names = shuffle(['A', 'B', 'C', 'D']); pts = pts.map(function(z, i){ return [z[0], z[1], names[i]]; });
-    var ch = ['A', 'B', 'C', 'D'];
-    return {type: 'ch', q: 'Quel point a pour coordonnées ' + co(p) + ' ?', svg: plan(pts), wide: true, ch: ch, ans: ch.indexOf(pts[0][2]),
-      steps: ['Le point ' + pts[0][2] + ' est au croisement ' + (p[0] ? 'du parallèle ' + la(p[0]) : 'de l’équateur') + ' et du ' + (p[1] ? 'méridien ' + lo(p[1]) : 'méridien de Greenwich') + '.'], key: co(p)}; }},
+ {id: 'n09d', lv: 2, n: 'N09', t: 'Placer un point', d: 'Cliquer sur le planisphère.',
+  c: 'Place sur le planisphère le point qui a les coordonnées demandées.', a: 'Repère d’abord le parallèle (la latitude, N au-dessus de l’équateur, S en dessous), puis le méridien (la longitude, E à droite de Greenwich, O à gauche) : le point est à leur croisement.',
+  g: function(){ var p = rpt(), W = 520, H = 280, x0 = 46, y0 = 14, w = W - 60, h = H - 44;
+    var X = function(l){ return x0 + (l + 180) / 360 * w; }, Y = function(l){ return y0 + (90 - l) / 180 * h; };
+    return {type: 'pt', q: 'Place le point de coordonnées ' + co(p) + '.', svg: plan([]), wide: true, vals: p, fmt: co,
+      snap: function(x, y){ var lon = Math.round(((x - x0) / w * 360 - 180) / 30) * 30, lat = Math.round((90 - (y - y0) / h * 180) / 15) * 15;
+        if (lon < -180 || lon > 180 || lat < -90 || lat > 90) return null; return {v: [lat, lon], x: X(lon), y: Y(lat)}; },
+      check: function(v){ if (v[0] === p[1] && v[1] === p[0]) return 'Tu as échangé latitude et longitude.';
+        if (v[0] === -p[0] && v[1] === p[1] && p[0]) return 'Bonne longitude, mais tu es dans le mauvais hémisphère : ' + (p[0] > 0 ? 'N, c’est au-dessus de l’équateur.' : 'S, c’est en dessous de l’équateur.');
+        if (v[1] === -p[1] && v[0] === p[0] && p[1]) return 'Bonne latitude, mais tu es du mauvais côté de Greenwich : ' + (p[1] > 0 ? 'E, c’est à droite.' : 'O, c’est à gauche.');
+        if (v[0] === p[0]) return 'Bonne latitude (bon parallèle), mais pas la bonne longitude.';
+        if (v[1] === p[1]) return 'Bonne longitude (bon méridien), mais pas la bonne latitude.';
+        return 'Ce n’est pas le bon point : ton point a pour coordonnées ' + co(v) + '.'; },
+      steps: ['Le point est au croisement ' + (p[0] ? 'du parallèle ' + la(p[0]) : 'de l’équateur') + ' et du ' + (p[1] ? 'méridien ' + lo(p[1]) : 'méridien de Greenwich') + '.'], key: co(p)}; }},
  {id: 'n09e', lv: 2, n: 'N09', t: 'Comparer des lieux', d: 'Plus au nord, plus à l’ouest, écarts.',
   c: 'Réponds à partir des coordonnées données (arrondies au degré).', a: 'Plus un lieu est au nord, plus sa latitude Nord est grande (ou sa latitude Sud petite). Écart de latitude : on soustrait si les deux lieux sont du même côté de l’équateur, on additionne sinon.',
   g: function(){ var V = shuffle(VILLES.slice()).slice(0, 3), k = rnd(0, 3), q, ch, good, st;

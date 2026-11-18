@@ -230,6 +230,17 @@ function run(x){
       var vf = el('div', 'vf'); Q.btns = Q.ch.map(function(lab, j){ var b = el('button', null, lab); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
         b.onclick = function(){ if (Q.done) return; Q.btns.forEach(function(o){ o.setAttribute('aria-pressed', String(o === b)); }); Q.choice = j; }; vf.appendChild(b); return b; });
       it.appendChild(vf);
+    } else if (Q.type === 'pt'){
+      // placer un point sur la figure : Q.snap(x, y) (coordonnées du SVG) -> {v: valeur, x, y} ou null ; Q.fmt(v) -> texte ; Q.vals = valeur attendue
+      var sv = it.querySelector('.figw svg'), pl = el('div', 'ln'), info = el('span', 'eq', 'Clique sur la carte pour placer ton point.'), NS = 'http://www.w3.org/2000/svg', mk = null;
+      pl.appendChild(info); it.appendChild(pl); sv.style.cursor = 'crosshair'; sv.style.touchAction = 'manipulation';
+      sv.addEventListener('click', function(e){ if (Q.done) return;
+        var pt = sv.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; var m = sv.getScreenCTM(); if (!m) return; pt = pt.matrixTransform(m.inverse());
+        var r = Q.snap(pt.x, pt.y); if (!r) return;
+        if (!mk){ mk = document.createElementNS(NS, 'g'); mk.setAttribute('class', 'mk'); mk.innerHTML = '<circle r="9" style="fill:none;stroke:currentColor;stroke-width:2.2"/><circle r="3.6" style="fill:currentColor"/>'; sv.appendChild(mk); }
+        mk.setAttribute('transform', 'translate(' + r.x + ' ' + r.y + ')'); mk.style.color = 'var(--accent)';
+        Q.sel = r.v; info.textContent = 'Ton point : ' + Q.fmt(r.v); it.classList.remove('okI', 'koI'); });
+      Q.mark = function(ok){ if (mk) mk.style.color = ok ? 'var(--ok)' : 'var(--ko)'; };
     } else if (Q.type === 'multi'){
       var lm = el('div', 'ln'); Q.inps = [];
       Q.form.forEach(function(part){ if (part !== null){ lm.appendChild(el('span', 'eq', part)); return; }
@@ -268,6 +279,7 @@ function run(x){
       if (Q.type === 'ch'){
         if (Q.choice === undefined) blank = true; else ok = Q.choice === Q.ans;
         Q.btns.forEach(function(b){ b.classList.remove('okF', 'koF'); if (b.getAttribute('aria-pressed') === 'true') b.classList.add(ok ? 'okF' : 'koF'); });
+      } else if (Q.type === 'pt'){ if (!Q.sel) blank = true; else { ok = Q.sel.join() === Q.vals.join(); if (!ok) why = (Q.check && Q.check(Q.sel)) || 'Ce n’est pas le bon point.'; } if (Q.mark && !blank) Q.mark(ok);
       } else { var r = checkQ(Q, Q.inps ? Q.inps.map(function(z){ return z.value; }) : Q.inp.value); ok = !!r.ok; blank = !!r.blank; why = r.why || ''; }
       if (blank) why = 'Tu n’as pas répondu.';
       (Q.inps || (Q.inp ? [Q.inp] : [])).forEach(function(z, n){ var g = Q.multiOk ? Q.multiOk[n] : ok; z.classList.remove('okF', 'koF'); z.classList.add(g ? 'okF' : 'koF'); });
