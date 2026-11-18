@@ -269,6 +269,8 @@ function levelOf(c){ for (var l in D.classes) if (D.classes[l].indexOf(c) > -1) 
 function find(c){ c = (c || '').toLowerCase(); for (var l in D.classes) for (var i = 0; i < D.classes[l].length; i++) if (D.classes[l][i].toLowerCase() === c) return D.classes[l][i]; return ''; }
 
 var hashCls = decodeURIComponent(location.hash.slice(1)).split('/')[0];
+// lien enseignant direct vers le mode classe : auto.html#3eB/classe/prof=<code> (planning des questions flash de la page enseignant)
+var wantClasse = /(^|\/)classe(\/|$)/.test(decodeURIComponent(location.hash.slice(1)));
 // Mode classe réservé à l'enseignant : lien personnel auto.html#prof=<code>, mémorisé ensuite dans ce navigateur
 var PROF_HASH = '5a7300999345ce2278c87b182fb492e326f26abe7aae5be0d23e14ddfda3aab7', prof = false;
 function checkProf(){
@@ -282,7 +284,7 @@ function checkProf(){
   }).catch(function(){});
 }
 var locked = '', cls = '', view = 'train', seenOnly = store('auto:vu') !== '0', tags = {};
-document.getElementById('back').href = 'index.html' + location.hash;
+document.getElementById('back').href = 'index.html' + (wantClasse ? '' : location.hash);
 window.addEventListener('hashchange', function(){ location.reload(); });
 
 /* ---------- automatismes disponibles pour la classe ---------- */
@@ -827,6 +829,7 @@ function start(){
   locked = find(hashCls);
   cls = locked || find(store('classe'));
   if (locked) document.title = 'Automatismes ' + locked + ' – M. Pluchet';
+  if (wantClasse && prof && cls) view = 'classe';
   buildPicker(); if (cls) computeTags(); render();
 }
 fetch('data.json?t=' + Date.now(), {cache:'no-store'})
