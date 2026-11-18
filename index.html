@@ -216,6 +216,7 @@ footer.wrap::before{content:"π ≈ 3,14159…   √2 ≈ 1,414…   a² + b² =
   .seqview > .seqhead, .seqview > .intro, .seqview > .notion.current{grid-column:1/-1}
   .seqview > .upcard, .seqview > h2.cat{grid-column:1/-1}
   .seqview .notion.upcard .groups{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .seqview .notion.upcard .groups:has(> .grp:nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}
   .seqview .notion.upcard .groups .pn{grid-column:1/-1}
   .seqview .notion.upcard .groups .pn .links{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
   .seqview .notion.current .groups{grid-template-columns:repeat(4,1fr)}
@@ -328,7 +329,7 @@ details.notion[open] .fcount{display:none}
 <nav class="picker" aria-label="Ma classe"><div class="wrap picker-row" id="picker"></div></nav>
 <main class="wrap" id="main"></main>
 <footer class="wrap">Les documents apparaissent ici au fur et à mesure qu'ils sont distribués en classe. Vidéos : Yvan Monka. · Mesure d’audience anonyme, sans cookie (GoatCounter).</footer>
-<script src="lib/sitetabs.js?v=4"></script>
+<script src="lib/sitetabs.js?v=5"></script>
 <script>
 function start(D){
   // Accès enseignant : FULL = tous les documents (« Toutes les 3e / 4e ») ; PUB = données publiques du site,
@@ -632,7 +633,7 @@ function start(D){
     b.onclick = open; b.onkeydown = function(ev){ if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); open(); } };
     b.appendChild(t); b.appendChild(go); return b;
   }
-  var REV = [['Revoir le cours', 'g1', ['revision', 'carte', 'cours']], ['S’entraîner', 'g2', ['exo', 'correction-exo']], ['Revoir en vidéo', 'g3', ['video']], ['Visualiser', 'g5', ['anim']]];
+  var REV = [['Revoir le cours', 'g1', ['revision', 'carte', 'cours']], ['S’entraîner', 'g2', ['correction-exo', 'exo']], ['Revoir en vidéo', 'g3', ['video']]];
   function upCard(e, full){
     var box = el('article', 'notion evcard upcard');
     var k = el('p', 'evkind', 'Évaluation à venir · ' + dayTxt(dOf(e))); k.appendChild(el('span', 'when', whenTxt(dOf(e)))); box.appendChild(k);
@@ -649,7 +650,7 @@ function start(D){
     }
     var nums = e.ns.map(function(x){ return x.num; }), items = [];
     full.forEach(function(s){ s.notions.forEach(function(n){ if (nums.indexOf(n.num) < 0) return;
-      n.items.forEach(function(it){ if (isEval(it) || (e.blanc && (it.href === e.blanc || /(^|\/)exos\/[^\/]*-eval\.html/.test(it.href)))) return; var c = {}; for (var kk in it) c[kk] = it[kk]; if (nums.length > 1) c.label = 'N' + n.num + ' · ' + it.label; c._n = n.num; c._base = it.label; items.push(c); }); }); });
+      n.items.forEach(function(it){ if (isEval(it) || (e.blanc && (it.href === e.blanc || /(^|\/)exos\/[^\/]*-eval\.html/.test(it.href)))) return; var c = {}; for (var kk in it) c[kk] = it[kk]; if (nums.length > 1) c.label = 'N' + n.num + ' · ' + it.label; c._n = n.num; c._base = it.type === 'correction-exo' ? 'Fiche d’exercices corrigée' : it.label; if (it.type === 'correction-exo') c.label = (nums.length > 1 ? 'N' + n.num + ' · ' : '') + c._base; items.push(c); }); }); });
     items.sort(function(x, y){ return x._n - y._n; });
     var gr = el('div', 'groups');
     REV.forEach(function(g){
