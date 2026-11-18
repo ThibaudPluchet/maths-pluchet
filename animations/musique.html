@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}</style>
+<title>La musique, c’est des maths</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Mise en page : en-tête + 4 onglets (durées, mesure, octaves, clavier) ; une carte par idée, gros boutons pour le vidéoprojecteur. */
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --ink:#1c2333; --mut:#5e6679; --line:#d8d2c4; --soft:#efeadf;
+  --a:#2563c9; --a-soft:#dce7f8; --b:#d0641a; --b-soft:#fbe5d2; --ok:#1f8a52; --ok-soft:#d9f0e3; --bad:#c23b3b; --bad-soft:#f7dcdc;
+  --staff:#7b8296; --key:#ffffff; --keyb:#1c2333;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14171e; --card:#1c2029; --ink:#e9ecf2; --mut:#a2aabb; --line:#323947; --soft:#242a35;
+  --a:#7aa4f2; --a-soft:#22304a; --b:#f0995a; --b-soft:#3b2a1d; --ok:#5fcf93; --ok-soft:#1b3428; --bad:#f08080; --bad-soft:#3d2224;
+  --staff:#8a92a6; --key:#e9ecf2; --keyb:#0d0f14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14171e; --card:#1c2029; --ink:#e9ecf2; --mut:#a2aabb; --line:#323947; --soft:#242a35;
+  --a:#7aa4f2; --a-soft:#22304a; --b:#f0995a; --b-soft:#3b2a1d; --ok:#5fcf93; --ok-soft:#1b3428; --bad:#f08080; --bad-soft:#3d2224;
+  --staff:#8a92a6; --key:#e9ecf2; --keyb:#0d0f14; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;font-size:18px;line-height:1.45}
+header{background:var(--card);border-bottom:2px solid var(--line);padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hin{max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+header h1{margin:0;font-size:28px;text-wrap:balance}
+header .sub{color:var(--mut);font-size:17px}
+main{max-width:1240px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px}
+.tabs button{font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card h2{margin:0;font-size:22px;text-wrap:balance}
+.card p{margin:0;max-width:75ch}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mut{color:var(--mut)}
+button{font:inherit;font-size:18px;padding:8px 14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;min-height:44px}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+button.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+button.play{background:var(--a);border-color:var(--a);color:#fff;font-weight:700}
+button.play:hover{filter:brightness(1.08)}
+svg{display:block;width:100%;height:auto}
+.svgwrap{overflow-x:auto}
+.svgwrap svg{min-width:620px}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-variant-numeric:tabular-nums}
+.fr > span:first-child{border-bottom:2px solid currentColor;padding:0 4px}
+.big{font-size:30px;font-weight:700}
+.calc{font-size:24px;line-height:2.1;min-height:64px}
+.calc .badge{margin-left:8px;line-height:1.4}
+.badge{display:inline-block;font-weight:700;border-radius:999px;padding:3px 12px;font-size:17px}
+.badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.wait{background:var(--soft);color:var(--mut)}
+.tip{background:var(--soft);border-radius:10px;padding:10px 14px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums}
+td,th{padding:6px 12px;border-bottom:1px solid var(--line);text-align:left}
+input[type=range]{width:100%;accent-color:var(--a)}
+.pal button{display:inline-flex;align-items:center;gap:6px;padding:4px 10px}
+.pal svg{width:28px;height:44px}
+@media (max-width:620px){html,body{font-size:16px} header h1{font-size:23px} .calc{font-size:19px} .big{font-size:24px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="hin"><h1>La musique, c’est des maths</h1><span class="sub">Les durées des notes sont des fractions, les octaves des multiplications.</span></div></header>
+<main>
+  <div class="tabs" role="group" aria-label="Parties">
+    <button id="t-dur" class="on" data-p="dur">1. Les durées</button>
+    <button id="t-mes" data-p="mes">2. Remplir une mesure</button>
+    <button id="t-oct" data-p="oct">3. Octaves et intervalles</button>
+    <button id="t-cla" data-p="cla">4. Le clavier</button>
+  </div>
+
+  <!-- 1. Durées -->
+  <section id="p-dur" class="pg" style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <h2>Chaque note dure la moitié de la précédente</h2>
+      <p>La <b>ronde</b> sert d’unité. Une blanche dure <b>la moitié</b> d’une ronde, une noire <b>la moitié</b> d’une blanche, et ainsi de suite. Clique sur une ligne pour l’écouter : chaque ligne dure exactement le même temps.</p>
+      <div class="svgwrap"><svg id="tree" viewBox="0 0 1160 470" role="img" aria-label="Ronde, 2 blanches, 4 noires, 8 croches et 16 doubles croches occupent la même durée"></svg></div>
+      <p class="mut">La <b>double croche</b> dure la moitié d’une croche : on l’appelle parfois « demi-croche », mais son vrai nom est double croche (elle a deux crochets).</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h2>En fractions de ronde</h2>
+        <table id="tab-dur"></table>
+        <p class="mut">En partant de la ronde, on divise par 2 à chaque fois : les dénominateurs sont 2, 4, 8, 16… des <b>puissances de 2</b>.</p>
+      </div>
+      <div class="card">
+        <h2>Le point : « plus la moitié »</h2>
+        <p>Un point après une note ajoute la moitié de sa durée.</p>
+        <div id="dots" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Mesure -->
+  <section id="p-mes" class="pg" hidden style="flex-direction:column;gap:16px">
+    <div class="card">
+      <h2>Le chiffrage de la mesure est une fraction</h2>
+      <p>Une partition est découpée en <b>mesures</b>. Le chiffrage écrit au début, par exemple <span class="fr"><span>3</span><span>4</span></span>, veut dire : chaque mesure dure <b>3 quarts de ronde</b>, c’est-à-dire 3 noires. Les durées des notes d’une mesure doivent avoir pour somme cette fraction.</p>
+      <div class="row"><span>Chiffrage :</span>
+        <button data-ts="4/4" class="on">4/4</button><button data-ts="3/4">3/4</button><button data-ts="2/4">2/4</button><button data-ts="6/8">6/8</button>
+      </div>
+      <div class="row pal" id="pal" aria-label="Ajouter une note"></div>
+      <div class="svgwrap"><svg id="staff" viewBox="0 0 1160 200" role="img" aria-label="La mesure en cours de remplissage"></svg></div>
+      <div class="calc" id="sum" aria-live="polite"></div>
+      <div class="row">
+        <button id="undo">Enlever la dernière note</button><button id="clear">Vider la mesure</button>
+        <button id="play" class="play">▶ Écouter</button>
+        <label class="row" style="gap:8px">Tempo <input type="range" id="bpm" min="40" max="160" step="4" value="80" style="width:160px"> <b id="bpmv">80</b> noires par minute</label>
+      </div>
+      <p class="mut" id="tempoTxt"></p>
+    </div>
+    <div class="card">
+      <h2>Défi : quelle note complète la mesure ?</h2>
+      <div class="svgwrap"><svg id="quiz" viewBox="0 0 1160 200" role="img" aria-label="Une mesure à compléter"></svg></div>
+      <div class="row pal" id="qpal"></div>
+      <div class="calc" id="qres" aria-live="polite"></div>
+      <div class="row"><button id="qnew">Nouveau défi</button><button id="qplay" class="play">▶ Écouter</button></div>
+    </div>
+    <div class="card">
+      <h2>Une chanson connue : Au clair de la lune</h2>
+      <p>En <span class="fr"><span>4</span><span>4</span></span> : dans chaque mesure, la somme des durées vaut 1 ronde.</p>
+      <div class="svgwrap"><svg id="song" viewBox="0 0 1160 230" role="img" aria-label="Les quatre premières mesures d’Au clair de la lune"></svg></div>
+      <div class="row"><button id="songplay" class="play">▶ Écouter</button></div>
+    </div>
+  </section>
+
+  <!-- 3. Octaves -->
+  <section id="p-oct" class="pg" hidden style="flex-direction:column;gap:16px">
+    <div class="card">
+      <h2>La corde de Pythagore</h2>
+      <p>Une corde tendue vibre et produit un son. Si on ne fait vibrer qu’une <b>fraction</b> de sa longueur, le son est plus aigu : la fréquence (le nombre de vibrations par seconde, en hertz) est <b>divisée par cette fraction</b>. Pythagore a remarqué que les fractions simples donnent les sons qui « vont bien ensemble ».</p>
+      <div class="svgwrap"><svg id="chord" viewBox="0 0 1160 190" role="img" aria-label="Une corde et la partie qui vibre"></svg></div>
+      <div class="row" id="fracs"></div>
+      <div class="calc" id="octcalc"></div>
+      <div class="row"><button id="o-full" class="play">▶ Corde entière</button><button id="o-part" class="play">▶ Partie qui vibre</button><button id="o-both" class="play">▶ Les deux ensemble</button></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h2>Une octave : × 2</h2>
+        <p>Deux notes à une octave d’écart portent le même nom : la fréquence de la plus aiguë est le <b>double</b> de l’autre. Clique pour écouter les « la ».</p>
+        <div class="row" id="las"></div>
+        <p class="mut">Le la 440 Hz est la note de référence des musiciens (celle du diapason) : les orchestres s’accordent dessus.</p>
+      </div>
+      <div class="card">
+        <h2>Les intervalles sont des rapports</h2>
+        <table id="ints"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Clavier -->
+  <section id="p-cla" class="pg" hidden style="flex-direction:column;gap:16px">
+    <div class="card">
+      <h2>12 demi-tons pour doubler la fréquence</h2>
+      <p>Sur un piano, d’une touche à la suivante (blanche ou noire), on monte d’un <b>demi-ton</b> : la fréquence est multipliée à chaque fois par le <b>même nombre</b>, environ 1,0595. Après 12 demi-tons, on arrive à l’octave : la fréquence a doublé. Clique sur les touches.</p>
+      <div class="svgwrap"><svg id="kb" viewBox="0 0 1160 300" role="img" aria-label="Clavier de piano d’un do au do suivant"></svg></div>
+      <div class="calc" id="kbcalc" aria-live="polite"></div>
+      <div class="row"><button id="scale" class="play">▶ Monter les 13 touches</button></div>
+    </div>
+    <div class="card">
+      <h2>Pourquoi 1,0595 ?</h2>
+      <p>On cherche un nombre <i>q</i> tel que <i>q</i> × <i>q</i> × … × <i>q</i> (12 fois) = 2, c’est-à-dire <i>q</i><sup>12</sup> = 2. Essaie :</p>
+      <div class="row"><label for="qv">q =</label><input type="range" id="qv" min="1.040" max="1.080" step="0.0005" value="1.050" style="flex:1 1 260px"><b id="qvv" class="big" style="min-width:5ch">1,0500</b></div>
+      <div class="calc" id="qpow"></div>
+      <p class="mut">La quinte de Pythagore (rapport 3/2 = 1,5) correspond à 7 demi-tons : 1,0595<sup>7</sup> ≈ 1,498. Presque pareil ! Le piano fait un petit compromis pour que toutes les tonalités sonnent juste.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+const frac = (n, d) => { const g = gcd(n, d); n /= g; d /= g; return d === 1 ? `<b>${n}</b>` : `<span class="fr"><span>${n}</span><span>${d}</span></span>`; };
+const fr = x => String(x).replace(".", ",");
+
+// ---------- son (démarre au premier clic) ----------
+let AC = null;
+function ac(){ if (!AC){ const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; AC = new C(); } if (AC.state === "suspended") AC.resume(); return AC; }
+function tone(f, t0, d, vol = 0.22, type = "triangle"){
+  const a = ac(); if (!a) return; const o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.value = f; o.connect(g); g.connect(a.destination);
+  const s = a.currentTime + t0, e = s + Math.max(0.05, d * 0.92);
+  g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(vol, s + 0.015); g.gain.exponentialRampToValueAtTime(vol * 0.55, s + Math.min(0.25, d * 0.5)); g.gain.exponentialRampToValueAtTime(0.0001, e);
+  o.start(s); o.stop(e + 0.02);
+}
+function click(t0, strong){ tone(strong ? 1600 : 1100, t0, 0.04, strong ? 0.12 : 0.07, "square"); }
+let timers = [];
+function stopAll(){ timers.forEach(clearTimeout); timers = []; if (AC){ AC.close(); AC = null; } }
+function later(ms, fn){ timers.push(setTimeout(fn, ms)); }
+
+// ---------- dessin des notes ----------
+// durées en doubles croches (16 = une ronde)
+const NOTES = [
+  {k: "r", nom: "ronde", v: 16}, {k: "bp", nom: "blanche pointée", v: 12}, {k: "b", nom: "blanche", v: 8},
+  {k: "np", nom: "noire pointée", v: 6}, {k: "n", nom: "noire", v: 4}, {k: "cp", nom: "croche pointée", v: 3}, {k: "c", nom: "croche", v: 2}, {k: "d", nom: "double croche", v: 1}];
+const N = k => NOTES.find(x => x.k === k);
+function noteSvg(k, x, y, col, sc = 1){
+  const open = k === "r" || k[0] === "b", stem = k !== "r", flags = k[0] === "c" ? 1 : k === "d" ? 2 : 0, dot = k.length === 2 && k[1] === "p";
+  let s = `<g transform="translate(${x},${y}) scale(${sc})" style="color:${col}">`;
+  s += `<ellipse cx="0" cy="0" rx="${k === "r" ? 10 : 8.5}" ry="6.2" transform="rotate(-20)" fill="${open ? "none" : "currentColor"}" stroke="currentColor" stroke-width="${open ? 2.6 : 1}"/>`;
+  if (stem) s += `<line x1="7.6" y1="-2" x2="7.6" y2="-46" stroke="currentColor" stroke-width="2.2"/>`;
+  for (let i = 0; i < flags; i++) s += `<path d="M7.6 ${-46 + i * 11} c 3 8 14 10 10 24 c 2 -9 -5 -13 -10 -14 z" fill="currentColor"/>`;
+  if (dot) s += `<circle cx="19" cy="-2" r="3" fill="currentColor"/>`;
+  return s + `</g>`;
+}
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+// ---------- 1. arbre des durées ----------
+const LEV = [["r", 1, "ronde"], ["b", 2, "blanches"], ["n", 4, "noires"], ["c", 8, "croches"], ["d", 16, "doubles croches"]];
+let playingRow = -1;
+function drawTree(){
+  const W = 1160, L = 260, R = 1150, w = R - L; let s = "";
+  LEV.forEach(([k, n, nom], i) => {
+    const y = 20 + i * 90, h = 70, on = playingRow === i, col = on ? css("--b") : css("--a");
+    s += `<g class="lev" data-i="${i}" style="cursor:pointer"><rect x="0" y="${y}" width="${W}" height="${h}" fill="transparent"/>`;
+    s += `<text x="0" y="${y + 30}" font-size="22" font-weight="700" fill="${css("--ink")}">${n} ${nom}</text>`;
+    s += `<text x="0" y="${y + 56}" font-size="18" fill="${css("--mut")}">${n === 1 ? "l’unité" : "1/" + n + " de ronde chacune"}</text>`;
+    for (let j = 0; j < n; j++){
+      const x = L + j * w / n;
+      s += `<rect x="${x + 2}" y="${y}" width="${w / n - 4}" height="${h}" rx="8" fill="${on ? css("--b-soft") : css("--a-soft")}" stroke="${col}" stroke-width="1.5"/>`;
+      s += noteSvg(k, x + w / n / 2 - (n === 16 ? 6 : 4), y + 54, css("--ink"), n === 16 ? 0.8 : 1);
+    }
+    s += `</g>`;
+  });
+  $("tree").innerHTML = s;
+  $("tree").querySelectorAll(".lev").forEach(g => g.onclick = () => playRow(+g.dataset.i));
+}
+function playRow(i){
+  stopAll(); const n = LEV[i][1], tot = 4; // 4 secondes = une ronde à 60 noires/min
+  for (let j = 0; j < n; j++) tone(392, j * tot / n, tot / n);
+  for (let b = 0; b < 4; b++) click(b, b === 0);
+  playingRow = i; drawTree(); later(tot * 1000, () => { playingRow = -1; drawTree(); });
+}
+function tableDur(){
+  $("tab-dur").innerHTML = `<tr><th>Note</th><th>Durée (en ronde)</th><th>En temps (noire = 1 temps)</th></tr>` +
+    [["r", 1], ["b", 2], ["n", 4], ["c", 8], ["d", 16]].map(([k, d]) => `<tr><td><svg viewBox="-14 -54 60 64" style="width:34px;display:inline-block;vertical-align:middle">${noteSvg(k, 0, 0, css("--ink"))}</svg> ${N(k).nom}</td><td>${frac(1, d)}</td><td>${fr(4 / d)}</td></tr>`).join("");
+  $("dots").innerHTML = [["bp", "blanche", 1, 2], ["np", "noire", 1, 4], ["cp", "croche", 1, 8]].map(([k, nom, a, b]) =>
+    `<div class="row" style="font-size:22px"><svg viewBox="-14 -54 60 64" style="width:40px">${noteSvg(k, 0, 0, css("--ink"))}</svg> ${nom} pointée = ${frac(a, b)} + ${frac(a, 2 * b)} = ${frac(2 * a, 2 * b)} + ${frac(a, 2 * b)} = ${frac(3 * a, 2 * b)} de ronde</div>`).join("");
+}
+
+// ---------- 2. mesure ----------
+let TS = "4/4", bar = [];
+const cap = () => ({"4/4": 16, "3/4": 12, "2/4": 8, "6/8": 12})[TS];
+const bpm = () => +$("bpm").value;
+function staffSvg(notes, capa, opts = {}){
+  const L = 120, R = 1130, w = R - L, y0 = 70, gap = 14; let s = "";
+  for (let i = 0; i < 5; i++) s += `<line x1="20" x2="${R}" y1="${y0 + i * gap}" y2="${y0 + i * gap}" stroke="${css("--staff")}" stroke-width="1.4"/>`;
+  s += `<line x1="${R}" x2="${R}" y1="${y0}" y2="${y0 + 4 * gap}" stroke="${css("--ink")}" stroke-width="3"/>`;
+  const [a, b] = opts.ts.split("/");
+  s += `<text x="58" y="${y0 + 24}" font-size="34" font-weight="800" text-anchor="middle" fill="${css("--ink")}">${a}</text><text x="58" y="${y0 + 54}" font-size="34" font-weight="800" text-anchor="middle" fill="${css("--ink")}">${b}</text>`;
+  let t = 0;
+  notes.forEach((k, i) => { const v = N(k).v, x = L + t / capa * w, ww = v / capa * w;
+    const over = t + v > capa, col = over ? css("--bad") : (opts.hi === i ? css("--b") : css("--a"));
+    s += `<rect x="${x + 2}" y="${y0 - 30}" width="${Math.max(4, Math.min(ww, R - x) - 4)}" height="${4 * gap + 60}" rx="8" fill="${over ? css("--bad-soft") : (opts.hi === i ? css("--b-soft") : css("--a-soft"))}" stroke="${col}" stroke-width="1.2" opacity=".85"/>`;
+    s += noteSvg(k, x + 22, y0 + 3 * gap, css("--ink"));
+    s += `<text x="${x + Math.min(ww, R - x) / 2}" y="${y0 + 4 * gap + 48}" font-size="18" text-anchor="middle" fill="${css("--mut")}">${v === 16 ? "1" : (v / gcd(v, 16)) + "/" + (16 / gcd(v, 16))}</text>`;
+    t += v; });
+  if (opts.gap){ const x = L + t / capa * w, ww = (capa - t) / capa * w;
+    s += `<rect x="${x + 2}" y="${y0 - 30}" width="${ww - 4}" height="${4 * gap + 60}" rx="8" fill="none" stroke="${css("--b")}" stroke-width="2.5" stroke-dasharray="8 6"/><text x="${x + ww / 2}" y="${y0 + 2 * gap + 12}" font-size="40" font-weight="800" text-anchor="middle" fill="${css("--b")}">?</text>`; }
+  return s;
+}
+function sumHtml(notes, capa){
+  const t = notes.reduce((a, k) => a + N(k).v, 0), target = frac(capa, 16);
+  if (!notes.length) return `<span class="mut">Ajoute des notes : la mesure doit durer ${target} de ronde.</span>`;
+  let h = notes.map(k => frac(N(k).v, 16)).join(" + ") + " = " + notes.map(k => `<span class="fr"><span>${N(k).v}</span><span>16</span></span>`).join(" + ") + " = " + `<span class="fr"><span>${t}</span><span>16</span></span>` + (gcd(t, 16) > 1 ? " = " + frac(t, 16) : "");
+  if (t === capa) h += ` <span class="badge ok">✓ La mesure est complète : ${target}</span>`;
+  else if (t > capa) h += ` <span class="badge bad">Trop long : la mesure ne dure que ${target}. Enlève une note.</span>`;
+  else h += ` <span class="badge wait">Il manque ${frac(capa - t, 16)} de ronde</span>`;
+  return h;
+}
+function drawBar(hi){ $("staff").innerHTML = staffSvg(bar, cap(), {ts: TS, hi}); $("sum").innerHTML = sumHtml(bar, cap());
+  const q = 60 / bpm(); $("tempoTxt").textContent = `À ${bpm()} noires par minute, une noire dure 60 ÷ ${bpm()} ≈ ${fr(q.toFixed(2))} s, donc cette mesure de ${cap() / 4} noires dure ${fr((q * cap() / 4).toFixed(2))} s.`; }
+function palette(box, onPick){
+  box.innerHTML = NOTES.map(n => `<button data-k="${n.k}" title="${n.nom} : ${n.v === 16 ? 1 : (n.v / gcd(n.v, 16)) + "/" + (16 / gcd(n.v, 16))} de ronde"><svg viewBox="-14 -54 44 64">${noteSvg(n.k, 0, 0, css("--ink"))}</svg>${n.nom}</button>`).join("");
+  box.querySelectorAll("button").forEach(b => b.onclick = () => onPick(b.dataset.k));
+}
+function playNotes(notes, pitches, onStep){
+  stopAll(); const s16 = 60 / bpm() / 4; let t = 0;
+  notes.forEach((k, i) => { const v = N(k).v; tone(pitches ? pitches[i] : 392, t * s16, v * s16); later(t * s16 * 1000, () => onStep && onStep(i)); t += v; });
+  const beat = TS === "6/8" ? 6 : 4; for (let b = 0; b * beat < Math.max(t, 1); b++) click(b * beat * s16, b === 0);
+  later(t * s16 * 1000 + 50, () => onStep && onStep(-1));
+}
+document.querySelectorAll("[data-ts]").forEach(b => b.onclick = () => { TS = b.dataset.ts; document.querySelectorAll("[data-ts]").forEach(x => x.classList.toggle("on", x === b)); bar = []; drawBar(); newQuiz(); });
+$("undo").onclick = () => { bar.pop(); drawBar(); };
+$("clear").onclick = () => { bar = []; drawBar(); };
+$("play").onclick = () => playNotes(bar, null, i => drawBar(i < 0 ? undefined : i));
+$("bpm").oninput = () => { $("bpmv").textContent = bpm(); drawBar(); };
+
+// défi
+let quiz = null;
+function newQuiz(){
+  const c = cap(); let notes, rest, tries = 0;
+  do { notes = []; let t = 0; while (t < c){ const opts = NOTES.filter(n => n.v <= c - t && n.v < c); const n = opts[Math.floor(Math.random() * opts.length)]; if (!n) break; notes.push(n.k); t += n.v; }
+       const i = Math.floor(Math.random() * notes.length); rest = notes.splice(i, 1)[0];
+       const back = notes.splice(i); notes = notes.concat(back); // la note manquante est à la fin
+  } while ((notes.length < 2 || notes.length > 7) && ++tries < 50);
+  quiz = {notes, rest, done: false};
+  $("quiz").innerHTML = staffSvg(notes, c, {ts: TS, gap: true});
+  $("qres").innerHTML = `<span class="mut">La mesure doit durer ${frac(c, 16)} de ronde. Choisis la note qui manque.</span>`;
+}
+palette($("qpal"), k => { if (!quiz) return; const c = cap(), t = quiz.notes.reduce((a, x) => a + N(x).v, 0), miss = c - t;
+  const calc = quiz.notes.map(x => frac(N(x).v, 16)).join(" + ") + " + " + frac(N(k).v, 16) + " = " + frac(t + N(k).v, 16);
+  if (N(k).v === miss){ $("qres").innerHTML = calc + ` <span class="badge ok">✓ Bravo : il manquait ${frac(miss, 16)}, ${N(k).nom === "ronde" ? "une ronde" : (/^[aeiou]/.test(N(k).nom) ? "l’" : "une ") + N(k).nom}.</span>`; $("quiz").innerHTML = staffSvg(quiz.notes.concat([k]), c, {ts: TS}); quiz.done = true; }
+  else $("qres").innerHTML = calc + ` <span class="badge bad">${N(k).v > miss ? "Trop long" : "Trop court"} : il manque ${frac(miss, 16)} de ronde.</span>`; });
+$("qnew").onclick = newQuiz;
+$("qplay").onclick = () => { if (!quiz) return; playNotes(quiz.done ? quiz.notes.concat([quiz.rest]) : quiz.notes); };
+
+// chanson
+const DO = 261.63, RE = 293.66, MI = 329.63;
+const SONG = [[["n", DO], ["n", DO], ["n", DO], ["n", RE]], [["b", MI], ["b", RE]], [["n", DO], ["n", MI], ["n", RE], ["n", RE]], [["r", DO]]];
+const PY = {[DO]: 3, [RE]: 2.5, [MI]: 2}; // position sur la portée (lignes depuis le haut)
+function drawSong(hi){
+  const L = 70, R = 1140, y0 = 60, gap = 14, mw = (R - L) / 4; let s = "", idx = 0;
+  for (let i = 0; i < 5; i++) s += `<line x1="10" x2="${R}" y1="${y0 + i * gap}" y2="${y0 + i * gap}" stroke="${css("--staff")}" stroke-width="1.4"/>`;
+  s += `<text x="38" y="${y0 + 24}" font-size="30" font-weight="800" text-anchor="middle" fill="${css("--ink")}">4</text><text x="38" y="${y0 + 52}" font-size="30" font-weight="800" text-anchor="middle" fill="${css("--ink")}">4</text>`;
+  SONG.forEach((m, j) => { const x0 = L + j * mw; let t = 0;
+    s += `<line x1="${x0 + mw}" x2="${x0 + mw}" y1="${y0}" y2="${y0 + 4 * gap}" stroke="${css("--ink")}" stroke-width="${j === 3 ? 3.5 : 1.6}"/>`;
+    m.forEach(([k, f]) => { const x = x0 + 16 + t / 16 * (mw - 24), y = y0 + PY[f] * gap + (f === DO ? 2 * gap : 0) - (f === DO ? 0 : 0);
+      const yy = f === DO ? y0 + 5 * gap : f === RE ? y0 + 4.5 * gap : y0 + 4 * gap;
+      if (f === DO) s += `<line x1="${x - 14}" x2="${x + 14}" y1="${yy}" y2="${yy}" stroke="${css("--staff")}" stroke-width="1.4"/>`;
+      s += noteSvg(k, x, yy, idx === hi ? css("--b") : css("--ink")); t += N(k).v; idx++; });
+    s += `<text x="${x0 + mw / 2}" y="${y0 + 4 * gap + 70}" font-size="20" text-anchor="middle" fill="${css("--mut")}">${m.map(([k]) => (N(k).v === 16 ? "1" : "1/" + 16 / N(k).v)).join(" + ")} = 1</text>`; });
+  $("song").innerHTML = s;
+}
+$("songplay").onclick = () => { const ns = SONG.flat(); const keep = TS; TS = "4/4"; playNotes(ns.map(x => x[0]), ns.map(x => x[1]), i => drawSong(i)); TS = keep; };
+
+// ---------- 3. octaves ----------
+const FR = [[1, 1, "unisson"], [4, 5, "tierce"], [3, 4, "quarte"], [2, 3, "quinte"], [1, 2, "octave"], [1, 4, "deux octaves"]];
+let fsel = 4; const F0 = 220;
+function drawChord(){
+  const [a, b, nom] = FR[fsel], L = 60, R = 1100, w = R - L, xv = L + w * a / b; let s = "";
+  s += `<rect x="${L - 20}" y="60" width="20" height="70" rx="4" fill="${css("--mut")}"/><rect x="${R}" y="60" width="20" height="70" rx="4" fill="${css("--mut")}"/>`;
+  s += `<line x1="${xv}" x2="${xv}" y1="55" y2="135" stroke="${css("--b")}" stroke-width="6" stroke-linecap="round"/>`;
+  s += `<path id="vib" d="M${L} 95 Q ${(L + xv) / 2} 60 ${xv} 95 Q ${(L + xv) / 2} 130 ${L} 95" fill="${css("--a-soft")}" stroke="${css("--a")}" stroke-width="3"/>`;
+  if (xv < R) s += `<line x1="${xv}" x2="${R}" y1="95" y2="95" stroke="${css("--mut")}" stroke-width="3" stroke-dasharray="6 6"/>`;
+  s += `<text x="${(L + xv) / 2}" y="170" font-size="22" font-weight="700" text-anchor="middle" fill="${css("--a")}">${a === b ? "toute la corde" : a + "/" + b + " de la corde"}</text>`;
+  $("chord").innerHTML = s;
+  const f = F0 * b / a;
+  $("octcalc").innerHTML = `Fréquence : ${F0} ÷ ${frac(a, b)} = ${F0} × ${frac(b, a)} = <b>${fr(+f.toFixed(1))} Hz</b> <span class="badge ok">${nom}</span>`;
+  document.querySelectorAll("#fracs button").forEach((x, i) => x.classList.toggle("on", i === fsel));
+}
+$("fracs").innerHTML = FR.map(([a, b, n]) => `<button>${a === b ? "1" : a + "/" + b} · ${n}</button>`).join("");
+document.querySelectorAll("#fracs button").forEach((x, i) => x.onclick = () => { fsel = i; drawChord(); $("o-part").click(); });
+$("o-full").onclick = () => { stopAll(); tone(F0, 0, 1.4); };
+$("o-part").onclick = () => { stopAll(); const [a, b] = FR[fsel]; tone(F0 * b / a, 0, 1.4); };
+$("o-both").onclick = () => { stopAll(); const [a, b] = FR[fsel]; tone(F0, 0, 2, 0.16); tone(F0 * b / a, 0, 2, 0.16); };
+$("las").innerHTML = [110, 220, 440, 880, 1760].map((f, i, A) => `<button class="${f === 440 ? "play" : ""}" data-f="${f}">la ${f} Hz</button>${i < A.length - 1 ? '<span class="mut">× 2 →</span>' : ""}`).join("");
+document.querySelectorAll("#las button").forEach(b => b.onclick = () => { stopAll(); tone(+b.dataset.f, 0, 1.2); });
+$("ints").innerHTML = `<tr><th>Intervalle</th><th>Fréquence ×</th><th>Exemple (depuis do 264 Hz)</th></tr>` +
+  [["Octave", 2, 1, "do aigu 528 Hz"], ["Quinte", 3, 2, "sol 396 Hz"], ["Quarte", 4, 3, "fa 352 Hz"], ["Tierce majeure", 5, 4, "mi 330 Hz"]].map(([n, a, b, e]) => `<tr><td>${n}</td><td>${frac(a, b)}</td><td>${e}</td></tr>`).join("");
+
+// ---------- 4. clavier ----------
+const NAMES = ["do", "do♯", "ré", "ré♯", "mi", "fa", "fa♯", "sol", "sol♯", "la", "la♯", "si", "do"];
+const BLACK = [1, 3, 6, 8, 10], C4 = 261.63, Q = Math.pow(2, 1 / 12);
+let kbHi = -1;
+function drawKb(){
+  const whites = [0, 2, 4, 5, 7, 9, 11, 12], W = 1160 / 8; let s = "";
+  whites.forEach((k, i) => { const on = k === kbHi; s += `<g class="key" data-k="${k}" style="cursor:pointer"><rect x="${i * W + 2}" y="10" width="${W - 4}" height="270" rx="6" fill="${on ? css("--b-soft") : css("--key")}" stroke="${css("--ink")}" stroke-width="2"/><text x="${i * W + W / 2}" y="245" font-size="22" font-weight="700" text-anchor="middle" fill="${on ? css("--b") : "#1c2333"}">${NAMES[k]}</text><text x="${i * W + W / 2}" y="270" font-size="15" text-anchor="middle" fill="#5e6679">${fr((C4 * Math.pow(Q, k)).toFixed(0))} Hz</text></g>`; });
+  BLACK.forEach(k => { const i = [0, 2, 4, 5, 7, 9, 11].indexOf(k - 1), on = k === kbHi; s += `<g class="key" data-k="${k}" style="cursor:pointer"><rect x="${(i + 1) * W - W * 0.3}" y="10" width="${W * 0.6}" height="165" rx="5" fill="${on ? css("--b") : css("--keyb")}"/></g>`; });
+  $("kb").innerHTML = s;
+  $("kb").querySelectorAll(".key").forEach(g => g.onclick = () => key(+g.dataset.k));
+}
+function key(k){
+  stopAll(); tone(C4 * Math.pow(Q, k), 0, 0.9); kbHi = k; drawKb();
+  $("kbcalc").innerHTML = k === 0 ? `do : ${fr(C4)} Hz, le point de départ.` : `${k === 12 ? "do aigu" : NAMES[k]} = do × 1,0595<sup>${k}</sup> ≈ ${fr(C4)} × ${fr(Math.pow(Q, k).toFixed(4))} ≈ <b>${fr((C4 * Math.pow(Q, k)).toFixed(1))} Hz</b>` + (k === 12 ? ` <span class="badge ok">1,0595<sup>12</sup> ≈ 2 : l’octave !</span>` : ` <span class="mut">(${k} demi-ton${k > 1 ? "s" : ""})</span>`);
+}
+$("scale").onclick = () => { stopAll(); for (let k = 0; k <= 12; k++){ tone(C4 * Math.pow(Q, k), k * 0.35, 0.33); later(k * 350, () => { kbHi = k; drawKb(); $("kbcalc").innerHTML = `${NAMES[k]} ≈ ${fr((C4 * Math.pow(Q, k)).toFixed(1))} Hz` + (k ? ` = précédente × 1,0595` : ""); }); } later(13 * 350, () => { kbHi = -1; drawKb(); }); };
+function drawPow(){ const q = +$("qv").value, p = Math.pow(q, 12); $("qvv").textContent = fr(q.toFixed(4));
+  $("qpow").innerHTML = `${fr(q.toFixed(4))}<sup>12</sup> ≈ <b>${fr(p.toFixed(3))}</b> ` + (Math.abs(p - 2) < 0.01 ? `<span class="badge ok">≈ 2 : c’est le bon nombre !</span>` : `<span class="badge ${p > 2 ? "bad" : "wait"}">${p > 2 ? "plus grand que 2 : diminue q" : "plus petit que 2 : augmente q"}</span>`); }
+$("qv").oninput = drawPow;
+
+// ---------- onglets ----------
+const PAGES = ["dur", "mes", "oct", "cla"];
+function show(p){ stopAll(); PAGES.forEach(x => { const el = $("p-" + x); el.hidden = x !== p; el.style.display = x === p ? "flex" : ""; $("t-" + x).classList.toggle("on", x === p); }); }
+PAGES.forEach(p => $("t-" + p).onclick = () => { show(p); try { history.replaceState(null, "", "#" + p); } catch(e){} });
+
+function drawAll(){ drawTree(); tableDur(); palette($("pal"), k => { const t = bar.reduce((a, x) => a + N(x).v, 0);
+    if (t + N(k).v > cap()){ drawBar(); $("sum").innerHTML += ` <span class="badge bad">${t === cap() ? "La mesure est déjà pleine" : "Une " + N(k).nom + " (" + (N(k).v === 16 ? "1" : N(k).v / gcd(N(k).v, 16) + "/" + 16 / gcd(N(k).v, 16)) + ") ne rentre pas : il ne reste que"} ${t === cap() ? "" : frac(cap() - t, 16)}</span>`; return; }
+    bar.push(k); drawBar(); }); drawBar(); if (!quiz) newQuiz(); else $("quiz").innerHTML = staffSvg(quiz.notes, cap(), {ts: TS, gap: !quiz.done}); drawSong(); drawChord(); drawKb(); drawPow(); }
+bar = ["n", "c", "c", "b"];
+drawAll();
+show(PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "dur");
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+new MutationObserver(drawAll).observe(document.documentElement, {attributes: true, attributeFilter: ["data-theme"]});
+</script>
+
+</body></html>
