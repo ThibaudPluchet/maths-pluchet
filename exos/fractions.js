@@ -32,7 +32,7 @@ function piece(txt){ var s = document.createElement('span'); s.textContent = txt
 
 function setText(node){
   var t = node.nodeValue;
-  if (t.indexOf('/') < 0 || /:\/\//.test(t) || /(?:^|[^A-Za-zÀ-ÿ])(?:écris|écrire|tape|taper)\b[^.]*\d\/[−-]?\d/i.test(t) || skipNode(node)) return;
+  if (!node.parentNode || t.indexOf('/') < 0 || /:\/\//.test(t) || /(?:^|[^A-Za-zÀ-ÿ])(?:écris|écrire|tape|taper)\b[^.]*\d\/[−-]?\d/i.test(t) || skipNode(node)) return;
   var out = [], last = 0, m, any = false; RE.lastIndex = 0;
   while ((m = RE.exec(t))){
     var a = m[1], b = m[3], i = m.index;
