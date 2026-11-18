@@ -55,6 +55,13 @@ function scurve(){ var T = [
     for (var x = -5; x <= 5; x++){ var y = F(x); if (Math.abs(y - Math.round(y)) < 1e-9 && y >= -4 && y <= 5){ xs.push(x); ys.push(Math.round(y)); } }
   } while (xs.length < 4 || new Set(ys).size < 3);
   return {xs: xs, ys: ys, F: F}; }
+// antécédents de k sur une courbe lisse, entre −5 et 5 (calcul numérique, valeurs exactes gardées)
+function sroots(C, k){ var R = [], n, x0, x1, a, b;
+  var add = function(r){ if (!R.some(function(z){ return Math.abs(z - r) < 0.05; })) R.push(Math.abs(r - Math.round(r)) < 1e-6 ? Math.round(r) : r); };
+  for (n = -500; n < 500; n++){ x0 = n / 100; x1 = (n + 1) / 100; a = C.F(x0) - k; b = C.F(x1) - k;
+    if (Math.abs(a) < 1e-9) add(x0); else if (a * b < 0 && Math.abs(b) > 1e-9){ var lo = x0, hi = x1; for (var i = 0; i < 40; i++){ var m = (lo + hi) / 2; if ((C.F(lo) - k) * (C.F(m) - k) <= 0) hi = m; else lo = m; } add((lo + hi) / 2); } }
+  if (Math.abs(C.F(5) - k) < 1e-9) add(5);
+  return R.sort(function(x, y){ return x - y; }); }
 function cy(C, x){ if (C.F) return C.F(x); for (var i = 0; i < C.xs.length - 1; i++) if (x >= C.xs[i] && x <= C.xs[i + 1]) return C.ys[i] + (C.ys[i + 1] - C.ys[i]) * (x - C.xs[i]) / (C.xs[i + 1] - C.xs[i]); return null; }
 function roots(C, k){ var R = []; for (var i = 0; i < C.xs.length - 1; i++){ var a = C.ys[i] - k, b = C.ys[i + 1] - k;
     if (a === 0){ if (!R.some(function(r){ return Math.abs(r - C.xs[i]) < 1e-9; })) R.push(C.xs[i]); }
@@ -105,10 +112,16 @@ var EX = [
       traps: C.ys.indexOf(x) >= 0 && C.xs[C.ys.indexOf(x)] !== y ? [[C.xs[C.ys.indexOf(x)], 'Tu as lu un antécédent de ' + fr(x) + ' : pour l’image, on part de l’axe des abscisses.']] : [], key: C.ys.join() + x}; }},
  {id: 'n13b', lv: 2, n: 'N13', t: 'Antécédents sur un graphique', d: 'Combien ? Lesquels ?',
   c: 'Réponds en lisant la courbe.', a: 'Pour les antécédents de b : on trace la droite horizontale y = b ; les antécédents sont les abscisses des points où elle coupe la courbe. Il peut y en avoir 0, 1 ou plusieurs.',
-  g: function(){ var f = fl(), C = curve(), k = rnd(-4, 5), R = roots(C, k), kind = rnd(0, 1);
+  g: function(){ var f = fl(), sm = Math.random() < 0.6, C = sm ? scurve() : curve(), k = rnd(-4, 5), kind = rnd(0, 1), R;
+    if (sm && kind === 1){ var ks = C.ys.filter(function(y){ var z = sroots(C, y); return z.length === 1 && M.isInt(z[0]); }); if (ks.length) k = pick(ks); }
+    // courbe lisse : pas de droite presque tangente ni de points d’intersection trop proches (lecture ambiguë)
+    var ext = []; if (sm) for (var n = -499; n < 500; n++){ var y0 = C.F((n - 1) / 100), y1 = C.F(n / 100), y2 = C.F((n + 1) / 100); if ((y1 - y0) * (y2 - y1) <= 0) ext.push(y1); }
+    var amb = function(kk){ var z = sroots(C, kk); return ext.some(function(e){ var d = Math.abs(e - kk); return d > 1e-6 && d < 0.35; }) || z.some(function(r, j){ return j && r - z[j - 1] < 0.6; }); };
+    if (sm && kind === 0){ var tries = 0; while (amb(k) && tries++ < 30) k = rnd(-4, 5); }
+    R = sm ? sroots(C, k) : roots(C, k);
     if (kind === 1){ var ints = R.filter(function(r){ return M.isInt(r); }); if (R.length !== 1 || !ints.length) kind = 0; }
     if (kind === 0) return {type: 'num', q: 'Voici la courbe de la fonction ' + f + '. Combien le nombre ' + fr(k) + ' a-t-il d’antécédents par ' + f + ' ?', svg: graph(C, f), lab: 'nombre :', v: R.length, x: R.length, key: C.ys.join() + 'n' + k,
-      steps: ['La droite horizontale d’ordonnée ' + fr(k) + (R.length ? ' coupe la courbe en ' + R.length + ' point' + (R.length > 1 ? 's' : '') : ' ne coupe pas la courbe : aucun antécédent') + (R.length ? ' (abscisses environ ' + sorted(R).map(function(r){ return fr(M.rd(r, 1)); }).join(' ; ') + ')' : '') + '.']};
+      steps: ['La droite horizontale d’ordonnée ' + fr(k) + (R.length ? ' coupe la courbe en ' + R.length + ' point' + (R.length > 1 ? 's' : '') : ' ne coupe pas la courbe : aucun antécédent') + (R.length ? ' (abscisse' + (R.length > 1 ? 's' : '') + ' environ ' + sorted(R).map(function(r){ return fr(M.rd(r, 1)); }).join(' ; ') + ')' : '') + '.']};
     return {type: 'num', q: 'Voici la courbe de la fonction ' + f + '. Le nombre ' + fr(k) + ' a un seul antécédent. Lequel ?', svg: graph(C, f), lab: 'antécédent :', v: R[0], x: R[0], key: C.ys.join() + 'a' + k,
       traps: [[cy(C, k) === null ? 1e9 : cy(C, k), 'Tu as lu l’image de ' + fr(k) + ' : pour un antécédent, on part de l’axe des ordonnées.']], steps: ['La droite horizontale d’ordonnée ' + fr(k) + ' coupe la courbe au point d’abscisse ' + fr(R[0]) + ' : ' + f + '(' + fr(R[0]) + ') = ' + fr(k) + '.']}; }},
  {id: 'n14a', lv: 2, n: 'N14', t: 'Calculer un antécédent', d: 'Résoudre f(x) = b.',
