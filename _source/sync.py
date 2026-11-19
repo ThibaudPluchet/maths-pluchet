@@ -601,6 +601,15 @@ def main():
             open(os.path.join(repo, e), "wb").write(encrypt(tk, raw)); n += 1
         print(f"{n} PDF chiffrés pour l'adresse enseignant")
         return
+    if sys.argv[1] == "liens":
+        # adresses secrètes : SITE_KEY=… python3 _source/sync.py liens 4e3 4e4 3eB … (sans la page ni la base)
+        if not re.fullmatch(r"[0-9a-f]{64}", MASTER):
+            sys.exit("SITE_KEY absente ou invalide")
+        base = "https://thibaudpluchet.forge.apps.education.fr/maths-pluchet/"
+        for c in sys.argv[2:]:
+            print(f"{c} : {base}#{c}/{b64u(classkey(c))}")
+        print(f"Enseignant (tous les documents) : {base}#prof/{b64u(profkey())}")
+        return
     if sys.argv[1] == "collections":
         levels = js_const(open(sys.argv[2], encoding="utf-8").read(), "LEVELS")
         print(json.dumps([c for lv in level_list(levels) for c in (suivi_of(lv), evals_of(lv))] + ["config", "evaluations", "dm"]))
