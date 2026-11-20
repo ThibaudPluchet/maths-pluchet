@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculs pas à pas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Même charte que les autres animations : grand tableau à projeter à gauche, commandes à droite */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --hl:#e08a1e; --hl-soft:#fdf0dc; --ok:#1b7f45; --ok-soft:#e1f3e8; --sub:#2f6fd6; --sub-soft:#e3eafb;
+  --g1:#2f6fd6; --g2:#e08a1e; --g3:#1f9e74; --g4:#b9459c; --off:#b8c0cc;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --hl:#f0ad35; --hl-soft:#3a2a10; --ok:#5fd18f; --ok-soft:#163323; --sub:#78a2ff; --sub-soft:#1f2b47;
+  --g1:#78a2ff; --g2:#f0ad35; --g3:#4cc79a; --g4:#e07ccb; --off:#3b4656; color-scheme:dark;}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);padding:16px 16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d)}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:auto;min-height:420px;padding:24px 28px;cursor:pointer}
+.stage.svgst{padding:0}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d)}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 11px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 15px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.ctl{display:flex;flex-direction:column;gap:6px}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline}
+.ctl label{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.msg{border-radius:12px;padding:12px 14px;font-size:16px;background:var(--hl-soft);box-shadow:inset 4px 0 0 var(--hl);display:flex;flex-direction:column;gap:4px;min-height:52px}
+.msg.done{background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok)}
+.msg b{font-family:var(--font-d)}
+.vocab{border-radius:12px;padding:12px 14px;font-size:15px;background:var(--accent-soft);display:flex;flex-direction:column;gap:4px}
+.tip{color:var(--muted);font-size:14px;margin-top:14px}
+
+/* Lignes de calcul (grandes, lisibles du fond de la classe) */
+.calc{display:flex;flex-direction:column;gap:10px;font:600 clamp(22px,2.6vw,34px)/1.3 var(--font-d);font-variant-numeric:tabular-nums}
+.ln{display:flex;align-items:center;gap:.35em;flex-wrap:wrap;opacity:.55;transition:opacity .3s}
+.ln.cur{opacity:1}
+.ln .eqs{width:1.1em;color:var(--muted);flex:none}
+.ln .name{color:var(--muted)}
+.ex{display:inline-flex;align-items:center;flex-wrap:wrap;gap:.18em}
+.op{margin:0 .12em}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.88em;line-height:1.12;margin:0 .06em}
+.fr>span:first-child{border-bottom:.08em solid currentColor;padding:0 .18em}
+.fr>span:last-child{padding:0 .18em}
+.sg{display:inline-flex;align-items:center}
+.hl{background:var(--hl-soft);outline:3px solid var(--hl);border-radius:.25em;padding:0 .12em;display:inline-flex;align-items:center;gap:.18em}
+.ok{background:var(--ok-soft);outline:3px solid var(--ok);border-radius:.25em;padding:0 .12em;display:inline-flex;align-items:center;gap:.18em;color:var(--ok)}
+.sb{background:var(--sub-soft);outline:3px solid var(--sub);border-radius:.25em;padding:0 .12em;color:var(--sub)}
+sup{font-size:.6em}
+.big{font:700 clamp(20px,2.2vw,28px)/1.25 var(--font-d)}
+.tbl{border-collapse:collapse;font:600 16px/1.3 var(--font-d);font-variant-numeric:tabular-nums}
+.tbl td,.tbl th{border:1px solid var(--line);padding:6px 10px;text-align:center}
+.tbl th{color:var(--muted);font-weight:600}
+.grp{display:flex;align-items:center;gap:8px;font:600 16px/1.3 var(--font-d)}
+.grp i{width:22px;height:6px;border-radius:3px;flex:none}
+.grp.off{opacity:.35}
+.lab{font:700 18px var(--font-d)}
+.sm{font:600 14px var(--font-d)}
+.tipsvg{font:600 14px var(--font-b);fill:var(--muted)}
+input[type=number]{font:600 16px var(--font-d);width:90px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+</style></head><body>
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e et 3e · Calcul numérique et littéral</p>
+      <h1>Calculs pas à pas</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-priorites" data-view="priorites" aria-selected="true">1. Priorités (relatifs)</button>
+      <button class="tab" role="tab" id="tab-fractions" data-view="fractions" aria-selected="false">2. Calculs avec fractions</button>
+      <button class="tab" role="tab" id="tab-valeur" data-view="valeur" aria-selected="false">3. Valeur d'une expression</button>
+      <button class="tab" role="tab" id="tab-traduire" data-view="traduire" aria-selected="false">4. Traduire en expression</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. PRIORITÉS AVEC DES RELATIFS (4e N04) -->
+  <section class="view" id="v-priorites" role="tabpanel" aria-labelledby="tab-priorites">
+    <div class="stage" id="st1"><div class="calc" id="calc1"></div><p class="tip" id="tip1"></p></div>
+    <div class="panel">
+      <div><h2>Enchaîner les opérations</h2>
+        <p class="hint">À chaque étape, on repère en orange le calcul prioritaire, puis on l'effectue (en vert).</p></div>
+      <div class="chips" id="pre1"></div>
+      <div class="row"><button class="btn primary" type="button" id="next1">Étape suivante ▶</button><button class="btn" type="button" id="back1">◀ Retour</button><button class="btn" type="button" id="reset1">Recommencer</button><button class="btn" type="button" id="rnd1">🎲 Calcul au hasard</button></div>
+      <div class="msg" id="msg1"></div>
+      <div class="vocab"><b>Ordre des priorités</b><div>1. Les calculs entre parenthèses (les plus intérieures d'abord).</div><div>2. Les puissances.</div><div>3. Les multiplications et les divisions, de gauche à droite.</div><div>4. Les additions et les soustractions, de gauche à droite.</div></div>
+    </div>
+  </section>
+
+  <!-- 2. FRACTIONS (3e N08) -->
+  <section class="view" id="v-fractions" role="tabpanel" aria-labelledby="tab-fractions" hidden>
+    <div class="stage" id="st2"><div class="calc" id="calc2"></div><p class="tip" id="tip2"></p></div>
+    <div class="panel">
+      <div><h2>Calculs enchaînés avec des fractions</h2>
+        <p class="hint">Mêmes priorités qu'avec les nombres entiers. Pour additionner, on met au même dénominateur ; pour diviser, on multiplie par l'inverse ; on simplifie dès que c'est utile.</p></div>
+      <div class="chips" id="pre2"></div>
+      <div class="row"><button class="btn primary" type="button" id="next2">Étape suivante ▶</button><button class="btn" type="button" id="back2">◀ Retour</button><button class="btn" type="button" id="reset2">Recommencer</button><button class="btn" type="button" id="rnd2">🎲 Calcul au hasard</button></div>
+      <div class="msg" id="msg2"></div>
+      <div class="vocab"><b>Rappels</b><div class="ex" style="gap:.3em"><span class="fr"><span>a</span><span>b</span></span> × <span class="fr"><span>c</span><span>d</span></span> = <span class="fr"><span>a × c</span><span>b × d</span></span></div><div class="ex" style="gap:.3em">Diviser par <span class="fr"><span>c</span><span>d</span></span>, c'est multiplier par son inverse <span class="fr"><span>d</span><span>c</span></span>.</div><div class="ex" style="gap:.3em"><span class="fr"><span>a</span><span>d</span></span> + <span class="fr"><span>c</span><span>d</span></span> = <span class="fr"><span>a + c</span><span>d</span></span> : on garde le dénominateur.</div></div>
+    </div>
+  </section>
+
+  <!-- 3. VALEUR D'UNE EXPRESSION (4e N18) -->
+  <section class="view" id="v-valeur" role="tabpanel" aria-labelledby="tab-valeur" hidden>
+    <div class="stage" id="st3"><div class="calc" id="calc3"></div><p class="tip" id="tip3"></p></div>
+    <div class="panel">
+      <div><h2>Calculer la valeur d'une expression</h2>
+        <p class="hint">On rétablit les signes ×, on remplace la lettre par sa valeur (entre parenthèses si elle est négative), puis on applique les priorités.</p></div>
+      <div class="chips" id="pre3"></div>
+      <div class="ctl"><div class="ctl-head"><label for="x3">Valeur de x</label><span class="val" id="x3v"></span></div><input type="range" id="x3" min="-6" max="10" step="1" value="-2"></div>
+      <div class="row"><button class="btn primary" type="button" id="next3">Étape suivante ▶</button><button class="btn" type="button" id="back3">◀ Retour</button><button class="btn" type="button" id="reset3">Recommencer</button></div>
+      <div class="msg" id="msg3"></div>
+      <div class="vocab" id="tab3"></div>
+    </div>
+  </section>
+
+  <!-- 4. TRADUIRE UNE SITUATION (4e N20) -->
+  <section class="view" id="v-traduire" role="tabpanel" aria-labelledby="tab-traduire" hidden>
+    <div class="stage svgst" id="st4"><svg id="svg4" viewBox="0 0 640 560" role="img" aria-label="Motif qui grandit et expression littérale qui le décrit"></svg></div>
+    <div class="panel">
+      <div><h2>Traduire une situation par une expression</h2>
+        <p class="hint">On compte les éléments par groupes de couleur : chaque groupe s'écrit en fonction de n, et l'expression est la somme des groupes.</p></div>
+      <div class="chips" id="pre4"></div>
+      <div class="ctl"><div class="ctl-head"><label for="n4">Nombre de motifs n</label><span class="val" id="n4v"></span></div><input type="range" id="n4" min="1" max="8" step="1" value="4"></div>
+      <div class="row"><button class="btn primary" type="button" id="next4">Groupe suivant ▶</button><button class="btn" type="button" id="reset4">Recommencer</button></div>
+      <div id="grp4" style="display:flex;flex-direction:column;gap:6px"></div>
+      <div class="msg" id="msg4"></div>
+      <div class="row"><label for="q4" class="hint">Et pour n =</label><input type="number" id="q4" min="1" max="10000" value="50"><span class="hint">?</span><button class="btn" type="button" id="go4">Calculer</button></div>
+      <div class="big" id="ans4"></div>
+      <table class="tbl" id="tbl4"></table>
+    </div>
+  </section>
+</div>
+<script>
+/* ===== Moteur de calcul pas à pas (priorités, relatifs, fractions, valeur d'une expression) ===== */
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+const lcm=(a,b)=>a/gcd(a,b)*b;
+const N=(n,d=1,hold=false)=>{if(d<0){n=-n;d=-d;}return {t:'num',n,d,hold};};
+const isNum=x=>x&&x.t==='num';
+const clone=x=>JSON.parse(JSON.stringify(x));
+
+/* ---- Analyse d'une écriture : 3 × (−2) + 5 ; 1/2 + 3/4 ; 2 × x^2 ---- */
+function parse(s){
+  s=s.replace(/−/g,'-').replace(/\*/g,'×').replace(/:/g,'÷');
+  const T=[];let i=0;
+  while(i<s.length){const c=s[i];
+    if(c===' '){i++;continue;}
+    const m=s.slice(i).match(/^(\d+)(?:\/(\d+))?/);
+    if(m){T.push({k:'num',n:+m[1],d:m[2]?+m[2]:1});i+=m[0].length;continue;}
+    if('+-×÷^()x'.includes(c)){T.push({k:c});i++;continue;}
+    throw new Error('Caractère inattendu : '+c);}
+  let p=0;const peek=()=>T[p],eat=k=>{if(!T[p]||T[p].k!==k)throw new Error('Attendu '+k);return T[p++];};
+  function atom(){const t=peek();if(!t)throw new Error('Fin inattendue');
+    if(t.k==='num'){p++;return N(t.n,t.d);}
+    if(t.k==='x'){p++;return {t:'var'};}
+    if(t.k==='-'&&T[p+1]&&T[p+1].k==='num'){p++;const u=T[p++];return N(-u.n,u.d);}
+    if(t.k==='('){p++;
+      if(peek()&&peek().k==='-'&&T[p+1]&&T[p+1].k==='num'&&T[p+2]&&T[p+2].k===')'){p++;const u=T[p++];p++;return N(-u.n,u.d);}
+      const e=expr();eat(')');return {t:'par',e};}
+    throw new Error('Inattendu : '+t.k);}
+  function power(){let a=atom();if(peek()&&peek().k==='^'){p++;const b=atom();a={t:'bin',o:'^',a,b};}return a;}
+  function term(){let a=power();while(peek()&&(peek().k==='×'||peek().k==='÷')){const o=T[p++].k==='×'?'*':'/';a={t:'bin',o,a,b:power()};}return a;}
+  function expr(){let a=term();while(peek()&&(peek().k==='+'||peek().k==='-')){const o=T[p++].k;a={t:'bin',o,a,b:term()};}return a;}
+  const r=expr();if(p<T.length)throw new Error('Écriture incomplète');return r;}
+
+/* ---- Recherche de la prochaine opération à effectuer ---- */
+const PRIO={'^':3,'*':2,'/':2,'+':1,'-':1};
+function candidates(node){const L=[];let ord=0;
+  (function walk(x,depth,parent,key){
+    if(x.t==='num'){ord++;
+      if(!x.hold&&x.d!==1&&gcd(x.n,x.d)>1){
+        const sib=parent&&parent.t==='bin'&&(parent.o==='+'||parent.o==='-')?parent[key==='a'?'b':'a']:null;
+        const inutile=sib&&isNum(sib)&&sib.d!==1&&sib.d%x.d===0;// simplifier serait aussitôt défait
+        if(!inutile)L.push({node:x,parent,key,kind:'simp',prio:1000,ord});}
+      return;}
+    if(x.t==='var'){ord++;return;}
+    if(x.t==='par'){walk(x.e,depth+1,x,'e');return;}
+    walk(x.a,depth,x,'a');
+    const me=ord++;
+    walk(x.b,depth,x,'b');
+    if(isNum(x.a)&&isNum(x.b))L.push({node:x,parent,key,kind:'op',prio:depth*10+PRIO[x.o],ord:me});
+  })(node,0,null,null);
+  L.sort((u,v)=>v.prio-u.prio||u.ord-v.ord);return L[0]||null;}
+
+/* Enlève les parenthèses devenues inutiles autour d'un nombre seul */
+function tidy(x){if(x.t==='par'){x.e=tidy(x.e);return isNum(x.e)?x.e:x;}
+  if(x.t==='bin'){x.a=tidy(x.a);x.b=tidy(x.b);}return x;}
+
+const fr=x=>x.d===1?String(x.n):x.n+'/'+x.d;
+const OPN={'+':'addition','-':'soustraction','*':'multiplication','/':'division','^':'carré'};
+
+/* Effectue une étape ; renvoie {tree, res (nœud résultat), msg, why} ou null si fini.
+   mode.frac : présentation des fractions (même dénominateur, inverse, simplification). */
+function step(tree,mode){
+  tree=tidy(clone(tree));
+  const c=candidates(tree);if(!c)return null;
+  // retrouver le nœud dans le clone : candidates travaille sur tree directement
+  const {node,parent,key,kind}=c;
+  let res,msg,why='';
+  const put=r=>{if(!parent)tree=r;else parent[key]=r;};
+  if(kind==='simp'){const g=gcd(node.n,node.d);res=N(node.n/g,node.d/g);
+    msg=`On simplifie par ${g} : ${fr(node)} = ${fr(res)}`;why='simp';put(res);return {tree:tidy(tree),res,msg,why};}
+  const a=node.a,b=node.b,o=node.o;
+  const inPar=c.prio>=10;
+  why=inPar?'Priorité aux calculs entre parenthèses.':(o==='^'?'Les puissances passent avant les multiplications.':(o==='*'||o==='/')?'Priorité aux multiplications et aux divisions.':'Il ne reste que des additions et des soustractions : de gauche à droite.');
+  const frac=mode&&mode.frac&&(a.d!==1||b.d!==1||o==='/');
+  if(frac&&o==='/'){if(b.n===0)throw new Error('Division par 0');
+    const inv=N(b.d,b.n);node.o='*';node.b=inv;res=node;
+    msg=`Diviser par ${fr(b)}, c'est multiplier par son inverse ${fr(inv)}.`;return {tree:tidy(tree),res,msg,why,keep:true};}
+  if(frac&&(o==='+'||o==='-')&&a.d!==b.d){const D=lcm(a.d,b.d);
+    node.a=N(a.n*D/a.d,D,true);node.b=N(b.n*D/b.d,D,true);res=node;
+    msg=`On met au même dénominateur ${D}.`;return {tree:tidy(tree),res,msg,why,keep:true};}
+  let r;
+  if(o==='+')r=N(a.n*b.d+b.n*a.d,a.d*b.d);
+  if(o==='-')r=N(a.n*b.d-b.n*a.d,a.d*b.d);
+  if((o==='+'||o==='-')&&a.d===b.d)r=N(o==='+'?a.n+b.n:a.n-b.n,a.d);
+  if(o==='*')r=N(a.n*b.n,a.d*b.d);
+  if(o==='/'){if(b.n===0)throw new Error('Division par 0');r=N(a.n*b.d,a.d*b.n);}
+  if(o==='^'){const k=b.n;r=N(Math.pow(a.n,k),Math.pow(a.d,k));}
+  if(!frac&&r.d!==1){const g=gcd(r.n,r.d);r=N(r.n/g,r.d/g);}
+  res=r;put(r);
+  return {tree:tidy(tree),res,msg:null,why,o,a,b};}
+
+/* Valeur exacte (pour vérifier les tirages au hasard) */
+function evalAll(tree,mode,limit=60){let t=tree,k=0,steps=[];
+  while(k++<limit){const s=step(t,mode);if(!s)break;steps.push(s);t=s.tree;}
+  return {t,steps};}
+
+function subst(tree,v){return (function w(x){if(x.t==='var')return N(v);if(x.t==='num')return x;if(x.t==='par')return {t:'par',e:w(x.e)};return {t:'bin',o:x.o,a:w(x.a),b:w(x.b)};})(tree);}
+
+if(typeof module!=='undefined')module.exports={parse,step,evalAll,subst,N,fr,candidates,tidy};
+/* ===== Interface ===== */
+(function(){
+const $=id=>document.getElementById(id);
+const OPS={'+':'+','-':'−','*':'×','/':'÷'};
+const abs=Math.abs;
+
+/* --- Écriture HTML d'un arbre ; marks : Map nœud -> classe ('hl', 'ok', 'sb') --- */
+function numH(x,first){const neg=x.n<0;
+  const core=x.d===1?String(abs(x.n)):`<span class="fr"><span>${abs(x.n)}</span><span>${x.d}</span></span>`;
+  const s=neg?`<span class="sg">−${core}</span>`:core;
+  return neg&&!first?`(${s})`:s;}
+function H(x,first,marks){let s;
+  if(x.t==='num')s=numH(x,first);
+  else if(x.t==='var')s='<i>x</i>';
+  else if(x.t==='par')s=`(${H(x.e,true,marks)})`;
+  else if(x.o==='^'){const a=x.a;const forced=a.t==='num'&&(a.n<0||a.d!==1);
+    s=(forced?`(${numH(a,true)})`:H(a,first,marks))+`<sup>${x.b.n}</sup>`;}
+  else s=`${H(x.a,first,marks)}<span class="op">${OPS[x.o]}</span>${H(x.b,false,marks)}`;
+  const c=marks&&marks.get(x);
+  return c?`<span class="${c}">${s}</span>`:s;}
+const plain=x=>H(x,true,null);
+
+/* --- Description d'une étape --- */
+function signNote(o,a,b){if(o!=='*'&&o!=='/')return '';
+  const na=a.n<0,nb=b.n<0;if(!na&&!nb)return '';
+  return na&&nb?' <span class="hint">(deux signes −  → résultat positif)</span>':' <span class="hint">(un seul signe − → résultat négatif)</span>';}
+function describe(s,mode){
+  if(s.why==='simp'||s.keep)return s.msg.replace(/(-?\d+)\/(\d+)/g,(m,n,d)=>`<span class="fr" style="font-size:.95em"><span>${n}</span><span>${d}</span></span>`);
+  const a=s.a,b=s.b,o=s.o;
+  if(o==='^')return `${a.n<0||a.d!==1?'('+plain(a)+')':plain(a)}<sup>${b.n}</sup> = ${plain(a)} × ${plain(a)} = ${plain(s.res)}`;
+  return `${plain(a)} ${OPS[o]} ${H(b,false,null)} = ${plain(s.res)}${mode.frac?'':signNote(o,a,b)}`;}
+
+/* --- Suite d'images (frames) pour un calcul --- */
+function buildFrames(tree,mode,prefix){
+  const F=[];let lines=[{t:tree,marks:prefix&&prefix.marks}];
+  const push=(msg,done)=>F.push({lines:lines.map(l=>({...l})),msg,done});
+  if(prefix&&prefix.frames)prefix.frames.forEach(f=>F.push(f));
+  if(prefix&&prefix.lines)lines=prefix.lines.slice();
+  else push(mode.start||'Par quel calcul commence-t-on ? Clique sur « Étape suivante ».',false);
+  let t=lines[lines.length-1].t,k=0;
+  while(k++<40){const tc=tidy(clone(t));const c=candidates(tc);if(!c)break;
+    const s=step(tc,mode);
+    lines[lines.length-1]={t:tc,marks:new Map([[c.node,'hl']])};
+    push(`<b>${s.why==='simp'?'On simplifie le résultat.':s.why}</b>`,false);
+    lines[lines.length-1]={t:tc,marks:null};
+    lines.push({t:s.tree,marks:new Map([[s.res,'ok']])});
+    push(`<div class="ex" style="gap:.3em">${describe(s,mode)}</div>`,false);
+    t=s.tree;}
+  const last=lines[lines.length-1].t;
+  F[F.length-1].done=true;F[F.length-1].msg+=`<div><b>Résultat : ${plain(last)}</b></div>`;
+  return F;}
+
+function drawFrames(S,calc,msg,tip,next,back,name){
+  const f=S.F[S.i];
+  calc.innerHTML=f.lines.map((l,i)=>`<div class="ln${i===f.lines.length-1?' cur':''}"><span class="eqs" style="${name?'width:2.4em':''}">${i===0?(name?name+' =':''):'='}</span><span class="ex">${l.html||H(l.t,true,l.marks)}</span></div>`).join('');
+  msg.innerHTML=f.msg;msg.classList.toggle('done',!!f.done);
+  tip.textContent=f.done?'Calcul terminé.':'Clique sur le tableau ou sur « Étape suivante ».';
+  next.disabled=S.i>=S.F.length-1;back.disabled=S.i===0;}
+
+/* --- Tirages au hasard --- */
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const nz=()=>{let v=0;while(!v)v=ri(-9,9);return v;};
+function okRun(src,mode,lim){try{const T=parse(src);const r=evalAll(T,mode);
+  if(!r.steps.length||r.t.t!=='num')return false;
+  for(const s of r.steps){const x=s.res;if(x.t==='num'&&(abs(x.n)>lim.n||x.d>lim.d))return false;
+    if(!mode.frac&&x.t==='num'&&x.d!==1)return false;}
+  return true;}catch(e){return false;}}
+function rndRel(){const T=['A + B × C','A − B × C','A × B − C × D','(A − B) × C','A − (B − C) × D','A ÷ B + C × D','(A + B) ÷ C − D','A × (B + C × D)','A − B × (C + D) ÷ E'];
+  for(let k=0;k<400;k++){const tp=T[ri(0,T.length-1)];let first=true;
+    const s=tp.replace(/[A-E]/g,(m,off)=>{const v=nz();const w=v<0?(off===0?'−'+(-v):'(−'+(-v)+')'):String(v);return w;});
+    if(okRun(s,{frac:false},{n:120,d:1}))return s;}
+  return '−3 + 4 × (2 − (−5))';}
+function rndFrac(){const T=['F + F × F','F − F ÷ F','(F + F) × F','F × F − F','I − F × F','F ÷ (F − F)','F + F ÷ F','(F − F) ÷ F'];
+  const f=()=>{let p,q;do{q=ri(2,9);p=ri(1,9);}while(p%q===0||gcd(p,q)!==1);return Math.random()<.15?`(−${p}/${q})`:`${p}/${q}`;};
+  for(let k=0;k<400;k++){const s=T[ri(0,T.length-1)].replace(/F/g,f).replace(/I/g,()=>String(ri(1,5)));
+    const T0=parse(s);if(T0.t==='bin'&&isNum(T0.a)&&T0.a.n<0)continue;
+    if(okRun(s,{frac:true},{n:150,d:72}))return s;}
+  return '1/2 + 3/4 × 2/3';}
+
+/* --- Onglets 1 et 2 : priorités --- */
+function setupCalc(id,presets,mode,rnd){
+  const S={F:[],i:0,src:presets[0]};
+  const calc=$('calc'+id),msg=$('msg'+id),tip=$('tip'+id),next=$('next'+id),back=$('back'+id);
+  const draw=()=>{drawFrames(S,calc,msg,tip,next,back);
+    document.querySelectorAll(`#pre${id} .chip`).forEach(c=>c.setAttribute('aria-pressed',c.dataset.src===S.src));};
+  const load=src=>{S.src=src;S.F=buildFrames(parse(src),mode);S.i=0;draw();};
+  presets.forEach(p=>{const c=document.createElement('button');c.type='button';c.className='chip';c.dataset.src=p;c.innerHTML=plain(parse(p));c.onclick=()=>load(p);$('pre'+id).appendChild(c);});
+  const go=()=>{if(S.i<S.F.length-1){S.i++;draw();}};
+  next.onclick=go;$('st'+id).addEventListener('click',go);
+  back.onclick=()=>{if(S.i>0){S.i--;draw();}};
+  $('reset'+id).onclick=()=>{S.i=0;draw();};
+  $('rnd'+id).onclick=()=>load(rnd());
+  load(presets[0]);}
+
+setupCalc(1,['−3 + 4 × (2 − (−5))','(−12) ÷ (−3) − 2 × (−4) + 1','5 − 3 × (−2) + (−8) ÷ 4','(−2) × (3 − 7) − (−6)','−20 ÷ (4 − 9) × (−3)'],{frac:false},rndRel);
+setupCalc(2,['1/2 + 3/4 × 2/3','5/6 − 1/3 ÷ 2/3','(2/3 + 1/4) × 6/5','2 − 3/4 × 8/9','(5/4 − 1/2) ÷ 3/8','(−3/5) × 10/9 + 1/3'],{frac:true},rndFrac);
+
+/* --- Onglet 3 : valeur d'une expression --- */
+const P3=[{c:'3x + 5',e:'3 × x + 5'},{c:'7 − 2x',e:'7 − 2 × x'},{c:'5(x − 2)',e:'5 × (x − 2)'},{c:'x² + 4x',e:'x^2 + 4 × x'},{c:'2x² − 3x + 1',e:'2 × x^2 − 3 × x + 1'},{c:'(x + 3)(x − 1)',e:'(x + 3) × (x − 1)'}];
+const compact=c=>c.replace(/x/g,'<i>x</i>').replace(/²/g,'<sup>2</sup>');
+const S3={F:[],i:0,p:0,x:-2};
+function valeur(p,x){const T=parse(p.e);return evalAll(subst(T,x),{frac:false}).t;}
+function load3(){const p=P3[S3.p],x=S3.x,T=parse(p.e);
+  const sub=new Map();const Ts=(function w(n){if(n.t==='var'){const k=N(x);sub.set(k,'sb');return k;}if(n.t==='num')return n;if(n.t==='par')return {t:'par',e:w(n.e)};return {t:'bin',o:n.o,a:w(n.a),b:w(n.b)};})(T);
+  const xs=x<0?`(−${-x})`:String(x);
+  const l0={html:compact(p.c)},l1={t:T},l2={t:Ts,marks:sub};
+  const frames=[
+    {lines:[l0],msg:`On veut calculer A pour <i>x</i> = ${x<0?'−'+(-x):x}.`},
+    {lines:[l0,l1],msg:`<b>On rétablit les signes × sous-entendus.</b>${/x\^2/.test(p.e)?'<div><i>x</i><sup>2</sup> = <i>x</i> × <i>x</i> : le carré s\'applique seulement à <i>x</i>.</div>':''}`},
+    {lines:[l0,l1,l2],msg:`<b>On remplace <i>x</i> par ${xs}.</b>${x<0?'<div>Un nombre négatif se met entre parenthèses.</div>':''}`}];
+  S3.F=buildFrames(Ts,{frac:false},{frames,lines:[l0,l1,{t:Ts,marks:null}]});
+  S3.i=0;draw3();
+  $('tab3').innerHTML=`<b>Tableau de valeurs de A = ${compact(p.c)}</b><table class="tbl"><tr><th><i>x</i></th>${[-2,-1,0,1,2,3].map(v=>`<td>${v<0?'−'+(-v):v}</td>`).join('')}</tr><tr><th>A</th>${[-2,-1,0,1,2,3].map(v=>`<td>${plain(valeur(p,v))}</td>`).join('')}</tr></table>`;}
+function draw3(){drawFrames(S3,$('calc3'),$('msg3'),$('tip3'),$('next3'),$('back3'),'A');
+  $('x3').value=S3.x;$('x3v').textContent=S3.x<0?'−'+(-S3.x):S3.x;
+  document.querySelectorAll('#pre3 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S3.p));}
+P3.forEach((p,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.innerHTML='A = '+compact(p.c);c.onclick=()=>{S3.p=i;load3();};$('pre3').appendChild(c);});
+const go3=()=>{if(S3.i<S3.F.length-1){S3.i++;draw3();}};
+$('next3').onclick=go3;$('st3').addEventListener('click',go3);
+$('back3').onclick=()=>{if(S3.i>0){S3.i--;draw3();}};
+$('reset3').onclick=()=>{S3.i=0;draw3();};
+$('x3').oninput=e=>{S3.x=+e.target.value;load3();};
+load3();
+
+/* --- Onglet 4 : traduire une situation (motifs qui grandissent) --- */
+const C=['var(--g1)','var(--g2)','var(--g3)','var(--g4)'];
+const P4=[
+ {nom:'Cabines de plage',motif:'cabine',titre:'Cabines de plage en allumettes',unite:'allumettes',a:5,b:1,
+  groupes:[{l:'Murs : un de plus que de cabines',e:'n + 1',f:n=>n+1},{l:'Planchers : un par cabine',e:'n',f:n=>n},{l:'Plafonds : un par cabine',e:'n',f:n=>n},{l:'Toits : deux par cabine',e:'2n',f:n=>2*n}],
+  somme:'(n + 1) + n + n + 2n',
+  dessin(n){const w=Math.min(64,520/n),h=w*.95,r=w*.6,x0=320-n*w/2,y=340,S=[];
+   for(let k=0;k<=n;k++)S.push({g:0,x1:x0+k*w,y1:y,x2:x0+k*w,y2:y-h});
+   for(let i=0;i<n;i++){const x=x0+i*w;S.push({g:1,x1:x,y1:y,x2:x+w,y2:y});S.push({g:2,x1:x,y1:y-h,x2:x+w,y2:y-h});
+     S.push({g:3,x1:x,y1:y-h,x2:x+w/2,y2:y-h-r});S.push({g:3,x1:x+w/2,y1:y-h-r,x2:x+w,y2:y-h});}
+   return {S,C:[]};}},
+ {nom:'Rangée de carrés',motif:'carré',titre:'Rangée de carrés en allumettes',unite:'allumettes',a:3,b:1,
+  groupes:[{l:'La toute première allumette',e:'1',f:n=>1},{l:'Trois allumettes par carré ajouté',e:'3n',f:n=>3*n}],
+  somme:'1 + 3n',
+  dessin(n){const w=Math.min(64,520/n),x0=320-n*w/2,y=320,S=[{g:0,x1:x0,y1:y,x2:x0,y2:y-w}];
+   for(let i=0;i<n;i++){const x=x0+i*w;S.push({g:1,x1:x,y1:y-w,x2:x+w,y2:y-w});S.push({g:1,x1:x+w,y1:y-w,x2:x+w,y2:y});S.push({g:1,x1:x+w,y1:y,x2:x,y2:y});}
+   return {S,C:[]};}},
+ {nom:'Tables bout à bout',motif:'table',titre:'Tables carrées mises bout à bout',unite:'chaises',a:2,b:2,
+  groupes:[{l:'Chaises le long des tables : 2 par table',e:'2n',f:n=>2*n},{l:'Chaises aux deux bouts',e:'2',f:n=>2}],
+  somme:'2n + 2',
+  dessin(n){const w=Math.min(60,460/n),x0=320-n*w/2,y=270,rr=w*.17,Cs=[],T=[];
+   for(let i=0;i<n;i++){T.push({x:x0+i*w,y:y-w/2,w,h:w});Cs.push({g:0,x:x0+i*w+w/2,y:y-w/2-rr*1.6});Cs.push({g:0,x:x0+i*w+w/2,y:y+w/2+rr*1.6});}
+   Cs.push({g:1,x:x0-rr*1.6,y});Cs.push({g:1,x:x0+n*w+rr*1.6,y});
+   return {S:[],C:Cs,T,r:rr};}}];
+const S4={p:0,n:4,shown:0};
+const tot=(p,n)=>p.a*n+p.b;
+function draw4(){const p=P4[S4.p],n=S4.n,d=p.dessin(n),G=p.groupes,all=S4.shown>=G.length;
+  const col=g=>g<S4.shown?C[g]:'var(--off)';
+  let o=`<text x="320" y="48" text-anchor="middle" style="font:700 26px var(--font-d);fill:var(--ink)">${p.titre}</text>`;
+  o+=`<text x="320" y="82" text-anchor="middle" class="lab" style="fill:var(--muted)">n = ${n} ${p.motif}${n>1?'s':''}</text>`;
+  (d.T||[]).forEach(t=>o+=`<rect x="${t.x+2}" y="${t.y+2}" width="${t.w-4}" height="${t.h-4}" rx="4" style="fill:var(--accent-soft);stroke:var(--muted);stroke-width:2"/>`);
+  d.S.forEach(s=>o+=`<line x1="${s.x1.toFixed(1)}" y1="${s.y1.toFixed(1)}" x2="${s.x2.toFixed(1)}" y2="${s.y2.toFixed(1)}" style="stroke:${col(s.g)};stroke-width:7;stroke-linecap:round"/>`);
+  d.C.forEach(c=>o+=`<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${d.r.toFixed(1)}" style="fill:${col(c.g)}"/>`);
+  // expression construite
+  const parts=G.slice(0,S4.shown).map((g,i)=>`<tspan style="fill:${C[i]}">${g.e.includes('+')&&S4.shown>1?'('+g.e+')':g.e}</tspan>`);
+  if(S4.shown)o+=`<text x="320" y="478" text-anchor="middle" style="font:700 28px var(--font-d);fill:var(--ink)">${parts.join(' + ')}${all&&p.somme!==`${p.a}n + ${p.b}`?' = '+p.a+'n + '+p.b:''}</text>`;
+  if(all)o+=`<text x="320" y="520" text-anchor="middle" class="lab" style="fill:var(--ok)">Pour n = ${n} : ${p.a} × ${n} + ${p.b} = ${tot(p,n)} ${p.unite}</text>`;
+  else o+=`<text x="20" y="540" class="tipsvg">Clique pour colorier le groupe suivant.</text>`;
+  $('svg4').innerHTML=o;
+  $('n4').value=n;$('n4v').textContent=n;
+  $('grp4').innerHTML=G.map((g,i)=>`<div class="grp${i<S4.shown?'':' off'}"><i style="background:${C[i]}"></i><span>${g.l} : <b>${g.e}</b>${i<S4.shown&&g.e.includes('n')?` = ${g.f(n)}`:''}</span></div>`).join('');
+  $('msg4').innerHTML=all?`<b>Nombre de ${p.unite} pour n ${p.motif}s : ${p.somme}${p.somme!==`${p.a}n + ${p.b}`?' = '+p.a+'n + '+p.b:''}</b><div>On vérifie sur le dessin : ${G.map(g=>g.f(n)).join(' + ')} = ${tot(p,n)} ${p.unite}.</div>`:
+    S4.shown?`On a compté ${S4.shown} groupe${S4.shown>1?'s':''} sur ${G.length}.`:`Combien de ${p.unite} pour n motifs ? Compte-les par groupes.`;
+  $('msg4').classList.toggle('done',all);
+  $('next4').disabled=all;
+  $('tbl4').innerHTML=`<tr><th>n</th>${[1,2,3,4,5,6].map(k=>`<td>${k}</td>`).join('')}</tr><tr><th>${p.unite}</th>${[1,2,3,4,5,6].map(k=>`<td>${all?tot(p,k):'?'}</td>`).join('')}</tr>`;
+  document.querySelectorAll('#pre4 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S4.p));}
+P4.forEach((p,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=p.nom;c.onclick=()=>{S4.p=i;S4.shown=0;$('ans4').textContent='';draw4();};$('pre4').appendChild(c);});
+const go4=()=>{if(S4.shown<P4[S4.p].groupes.length){S4.shown++;draw4();}};
+$('next4').onclick=go4;$('st4').addEventListener('click',go4);
+$('reset4').onclick=()=>{S4.shown=0;$('ans4').textContent='';draw4();};
+$('n4').oninput=e=>{S4.n=+e.target.value;draw4();};
+$('go4').onclick=()=>{const p=P4[S4.p],k=Math.max(1,Math.min(10000,Math.round(+$('q4').value||1)));
+  $('ans4').textContent=`${p.a} × ${k} + ${p.b} = ${(p.a*k+p.b).toLocaleString('fr-FR')} ${p.unite}`;};
+draw4();
+
+/* --- Onglets, adresse #, plein écran --- */
+const views=['priorites','fractions','valeur','traduire'];
+function show(v){if(!views.includes(v))v='priorites';
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+show(location.hash.slice(1));
+})();
+</script></body></html>
