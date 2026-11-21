@@ -41,14 +41,99 @@ function solveSteps(E){ var st = [], A = E.a - E.c, B = E.d - E.b;
   if (E.b) st.push((E.b > 0 ? 'J’enlève ' + fr(E.b) : 'J’ajoute ' + fr(-E.b)) + ' aux deux membres : ' + L(A, 0) + ' = ' + fr(B) + '.');
   if (A !== 1) st.push('Je divise par ' + pf(A) + ' : x = ' + fr(B) + ' ÷ ' + pf(A) + ' = ' + fr(E.x) + '.');
   st.push('La solution est ' + fr(E.x) + '.'); return st; }
-var EX = [
- {id: 'n37a', lv: 1, n: 'N37', t: 'Est-ce une solution ?', d: 'Tester une valeur.', c: 'Le nombre proposé est-il solution de l’équation ?', a: 'On remplace x par le nombre dans chaque membre et on calcule séparément : si on trouve le même résultat, c’est une solution.',
-  g: function(){ var E = eqn(3), t = Math.random() < 0.5 ? E.x : E.x + pick([1, -1, 2]), l = E.a * t + E.b, r = E.c * t + E.d, yes = l === r;
-    return {type: 'ch', q: fr(t) + ' est-il solution de ' + eqTxt(E) + ' ?', ch: ['Oui', 'Non'], ans: yes ? 0 : 1, steps: ['Membre de gauche : ' + fr(E.a) + ' × ' + pf(t) + (E.b ? sgn(E.b) : '') + ' = ' + fr(l) + '.', 'Membre de droite : ' + fr(E.c) + ' × ' + pf(t) + (E.d ? sgn(E.d) : '') + ' = ' + fr(r) + '.', yes ? 'Les deux membres sont égaux : oui.' : 'Les deux membres sont différents : non.'].map(function(z){ return z.replace(/ \+ 0\./, '.'); })}; }},
- {id: 'n37b', lv: 2, n: 'N37', t: 'Trouver la solution parmi plusieurs', d: 'Tester chaque nombre.', c: 'Lequel de ces nombres est solution de l’équation ?', a: 'Teste chaque nombre en remplaçant x : un seul rend l’égalité vraie.',
-  g: function(){ var E = eqn(3), opts = [E.x], i = 0; while (opts.length < 4 && i++ < 50){ var o = E.x + rnz(-4, 4); if (opts.indexOf(o) < 0) opts.push(o); } var ch = shuffle(opts.map(fr));
-    return {type: 'ch', q: eqTxt(E), ch: ch, ans: ch.indexOf(fr(E.x)), steps: ['Pour x = ' + fr(E.x) + ' : ' + fr(E.a * E.x + E.b) + ' des deux côtés.']}; }}
+var EX = [];
+// ---------- Notion 37 : tester si un nombre est solution ----------
+function tv(dec){ if (dec && Math.random() < 0.25) return pick([-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]); var v = rnd(-9, 9); return v; }
+// une expression d'un membre : {t: texte, f: valeur en x, s: calcul détaillé pour x}
+function exA(a, b){ return {t: L(a, b), f: function(x){ return a * x + b; }, s: function(x){ var p = (a === 1 ? pf(x) : a === -1 ? MINUS + pf(x) : fr(a) + ' × ' + pf(x)); return p + (b ? sgn(b) : ''); }}; }
+function exB(b, a){ return {t: fr(b) + (a > 0 ? ' + ' : ' ' + MINUS + ' ') + M.mono(Math.abs(a), 1), f: function(x){ return b + a * x; }, s: function(x){ return fr(b) + (a > 0 ? ' + ' : ' ' + MINUS + ' ') + (Math.abs(a) === 1 ? pf(x) : fr(Math.abs(a)) + ' × ' + pf(x)); }}; }
+function exK(k, b){ return {t: (k === -1 ? MINUS : fr(k)) + '(x' + sgn(b) + ')', f: function(x){ return k * (x + b); }, s: function(x){ return fr(k) + ' × (' + fr(x) + sgn(b) + ') = ' + fr(k) + ' × ' + pf(cl(x + b)); }}; }
+function exC(c){ return {t: fr(c), f: function(){ return c; }, s: null}; }
+function exQ(b){ return {t: 'x²' + (b ? sgn(b) : ''), f: function(x){ return x * x + b; }, s: function(x){ return pf(x) + '²' + (b ? sgn(b) + ' = ' + fr(cl(x * x)) + sgn(b) : ''); }}; }
+function memb(E, x){ var v = cl(E.f(x)); return E.s ? E.s(x) + ' = ' + fr(v) : fr(v) + ' (rien à calculer)'; }
+// fabrique un membre de droite qui vaut target en x (ou proche)
+function rightFor(x, target, kind){
+  if (kind === 'c') return exC(cl(target));
+  if (kind === 'q'){ var b = cl(target - x * x); return exQ(b); }
+  if (kind === 'b'){ var a = nz(6), b2 = cl(target - a * x); if (!M.isInt(b2) || b2 === 0) return null; return exB(b2, a); }
+  if (kind === 'k'){ var k = pick([2, 3, 4, 5, -2, -3]), q = target / k - x; if (!M.isInt(q) || q === 0) return null; return exK(k, q); }
+  var a2 = nz(7), b3 = cl(target - a2 * x); return exA(a2, b3);
+}
+function leftAny(level){ var r = Math.random();
+  if (level >= 2 && r < 0.25) return exK(pick([2, 3, 4, 5, -2, -3]), rnz(-8, 8));
+  if (level >= 2 && r < 0.45) return exQ(rnz(-12, 12));
+  if (r < 0.65) return exA(pick([1, -1].concat([2, 3, 4, 5, 6, 7, -2, -3, -4, -5])), rnz(-15, 15));
+  return exB(rnz(-12, 15), nz(6)); }
+// équation où x est solution (sol vrai) ou pas
+function eqTest(level, sol, dec){ for (var k = 0; k < 200; k++){
+  var x = tv(dec), G = leftAny(level), l = cl(G.f(x)); if (!M.isInt(l * 2)) continue;
+  var target = sol ? l : l + pick([1, -1, 2, -2, 3, 5, -4]);
+  var kind = pick(level >= 2 ? ['a', 'a', 'b', 'c', 'k', 'q'] : ['a', 'c', 'b']); var D = rightFor(x, target, kind); if (!D) continue;
+  if (D.t === G.t || (D.t.indexOf('²') >= 0 && G.t.indexOf('²') >= 0) || Math.abs(D.f(x + 1.7) - G.f(x + 1.7)) < 1e-9) continue;
+  var sw = Math.random() < 0.3, A = sw ? D : G, B = sw ? G : D;
+  return {x: x, A: A, B: B, txt: A.t + ' = ' + B.t, ok: cl(A.f(x)) === cl(B.f(x))}; } }
+function conclu(E){ return E.ok ? 'Les deux membres sont égaux : ' + fr(E.x) + ' est solution.' : 'Les deux membres sont différents : ' + fr(E.x) + ' n’est pas solution.'; }
+EX.push(
+ {id: 'n37a', lv: 1, n: 'N37', t: 'Calculer les deux membres', d: 'Remplacer x et calculer chaque membre.', c: 'Remplace x par le nombre donné et calcule chaque membre de l’équation.', a: 'Remets le signe × (3x, c’est 3 × x) et mets un nombre négatif entre parenthèses. Calcule le membre de gauche, puis celui de droite, séparément.',
+  g: function(){ var E = eqTest(Math.random() < 0.5 ? 1 : 2, Math.random() < 0.5, true);
+    return {type: 'multi', q: 'Pour x = ' + fr(E.x) + ', calcule les deux membres de ' + E.txt + '.', form: ['Gauche : ', null, '   Droite : ', null], vals: [cl(E.A.f(E.x)), cl(E.B.f(E.x))], key: E.txt + '|' + E.x,
+      steps: ['Membre de gauche : ' + memb(E.A, E.x) + '.', 'Membre de droite : ' + memb(E.B, E.x) + '.']}; }},
+ {id: 'n37b', lv: 1, n: 'N37', t: 'Est-ce une solution ?', d: 'Tester un nombre, entier ou décimal, positif ou négatif.', c: 'Le nombre proposé est-il solution de l’équation ?', a: 'On remplace x par le nombre dans chaque membre et on calcule séparément : si on trouve le même résultat, c’est une solution.',
+  g: function(){ var E = eqTest(rnd(1, 2), Math.random() < 0.5, true);
+    return {type: 'ch', q: fr(E.x) + ' est-il solution de ' + E.txt + ' ?', ch: ['Oui', 'Non'], ans: E.ok ? 0 : 1, key: E.txt + '|' + E.x,
+      steps: ['Membre de gauche : ' + memb(E.A, E.x) + '.', 'Membre de droite : ' + memb(E.B, E.x) + '.', conclu(E)]}; }},
+ {id: 'n37c', lv: 2, n: 'N37', t: 'Trouver la solution parmi plusieurs', d: 'Tester chaque nombre proposé.', c: 'Lequel de ces nombres est solution de l’équation ?', a: 'Teste chaque nombre en remplaçant x dans les deux membres : un seul rend l’égalité vraie.',
+  g: function(){ for (var k = 0; k < 100; k++){ var E = eqTest(2, true, false); if (E.A.t.indexOf('²') >= 0 || E.B.t.indexOf('²') >= 0) continue; var opts = [E.x], i = 0;
+      while (opts.length < 4 && i++ < 60){ var o = E.x + rnz(-4, 4); if (opts.indexOf(o) < 0 && cl(E.A.f(o)) !== cl(E.B.f(o))) opts.push(o); } if (opts.length < 4) continue;
+      var ch = shuffle(opts.slice()).map(fr), bad = opts.filter(function(o){ return o !== E.x; })[0];
+      return {type: 'ch', q: E.txt, ch: ch, ans: ch.indexOf(fr(E.x)), key: E.txt,
+        steps: ['Pour x = ' + fr(E.x) + ' : gauche ' + memb(E.A, E.x) + ' ; droite ' + memb(E.B, E.x) + '. Égaux : c’est la solution.', 'Par exemple, pour x = ' + fr(bad) + ' : ' + fr(cl(E.A.f(bad))) + ' et ' + fr(cl(E.B.f(bad))) + ', différents.']}; } }},
+ {id: 'n37d', lv: 2, n: 'N37', t: 'Vrai ou faux : la copie d’un élève', d: 'Repérer les erreurs de calcul en remplaçant.', c: 'Ce calcul d’élève est-il juste ?', a: '3x, c’est 3 × x ; (−3)² = 9 ; les parenthèses passent en premier ; on compare les deux membres entre eux.',
+  g: function(){ var k = rnd(0, 5), t, a, b, s, ok, st;
+    if (k === 0){ a = rnd(2, 9); t = rnd(2, 9); ok = Math.random() < 0.4; s = 'Pour x = ' + t + ', ' + a + 'x = ' + (ok ? a * t : String(a) + t) + '.'; st = [a + 'x = ' + a + ' × ' + t + ' = ' + (a * t) + (ok ? ' : juste.' : ' et non ' + String(a) + t + ' : le signe × est sous-entendu.')]; }
+    else if (k === 1){ t = -rnd(2, 9); ok = Math.random() < 0.4; s = 'Pour x = ' + fr(t) + ', x² = ' + (ok ? fr(t * t) : fr(-t * t)) + '.'; st = ['x² = (' + fr(t) + ')² = ' + fr(t) + ' × (' + fr(t) + ') = ' + (t * t) + (ok ? ' : juste.' : ' : un carré n’est jamais négatif.')]; }
+    else if (k === 2){ a = rnd(2, 6); b = rnd(1, 6); t = rnd(b + 1, 10); ok = Math.random() < 0.4; s = 'Pour x = ' + t + ', ' + a + '(x ' + MINUS + ' ' + b + ') = ' + (ok ? a * (t - b) : a * t - b) + '.'; st = [a + ' × (' + t + ' ' + MINUS + ' ' + b + ') = ' + a + ' × ' + (t - b) + ' = ' + a * (t - b) + (ok ? ' : juste.' : ' : on calcule d’abord la parenthèse.')]; }
+    else if (k === 3){ a = rnd(2, 6); t = -rnd(2, 8); b = rnd(1, 12); ok = Math.random() < 0.4; s = 'Pour x = ' + fr(t) + ', ' + a + 'x + ' + b + ' = ' + fr(ok ? a * t + b : a + t + b) + '.'; st = [a + ' × (' + fr(t) + ') + ' + b + ' = ' + fr(a * t) + ' + ' + b + ' = ' + fr(a * t + b) + (ok ? ' : juste.' : ' : ' + a + 'x veut dire ' + a + ' × x, pas ' + a + ' + x.')]; }
+    else if (k === 4){ t = rnd(2, 6); a = rnd(2, 5); var r = a * t, c2 = r - t + (Math.random() < 0.3 ? pick([1, 2]) : 0), sol = r === t + c2;
+      if (Math.random() < 0.5){ ok = true; s = 'Pour ' + a + 'x = x + ' + c2 + ' et x = ' + t + ' : « gauche ' + r + ', droite ' + (t + c2) + ', donc ' + t + (sol ? ' est solution' : ' n’est pas solution') + ' ».'; }
+      else { if (!sol) return this.g(); ok = false; s = 'Pour ' + a + 'x = x + ' + c2 + ' et x = ' + t + ' : « gauche ' + r + ' ; comme ' + r + ' ≠ ' + t + ', ' + t + ' n’est pas solution ».'; }
+      st = ['Gauche : ' + a + ' × ' + t + ' = ' + r + ' ; droite : ' + t + ' + ' + c2 + ' = ' + (t + c2) + '.', ok ? 'L’élève a bien comparé les deux membres : juste.' : 'Faux : on compare le membre de gauche au membre de droite, pas au nombre testé. Ici les deux membres valent ' + r + ' : ' + t + ' est solution.']; }
+    else { a = rnd(2, 4); ok = false; var v = a; s = '« x + x = x × x est vraie pour x = 2, donc pour tous les nombres. »'; if (Math.random() < 0.5){ s = '« 0 est solution de ' + a + 'x + ' + (a + 3) + ' = ' + (a + 3) + ' ' + MINUS + ' x, car les deux membres valent ' + (a + 3) + '. »'; ok = true; st = ['Gauche : ' + a + ' × 0 + ' + (a + 3) + ' = ' + (a + 3) + ' ; droite : ' + (a + 3) + ' ' + MINUS + ' 0 = ' + (a + 3) + '. Juste : 0 peut être une solution.']; }
+      else { var y = pick([3, 4, 5]); st = ['Faux : pour x = ' + y + ', x + x = ' + 2 * y + ' mais x × x = ' + y * y + '. Une valeur qui marche ne prouve pas que c’est vrai pour tous les nombres.']; } }
+    return {type: 'ch', q: s, ch: ['Vrai', 'Faux'], ans: ok ? 0 : 1, key: 'k' + k + '|' + s, steps: st}; }},
+ {id: 'n37e', lv: 3, n: 'N37', t: 'Une, plusieurs ou aucune solution', d: 'Tester plusieurs nombres : il peut y avoir plusieurs solutions.', c: 'Parmi les nombres proposés, lesquels sont solutions de l’équation ?', a: 'Teste chaque nombre séparément. Une équation peut avoir une solution, plusieurs, ou aucune.',
+  g: function(){ var k = rnd(0, 3), p, q, txt, f, c1, c2, sols;
+    if (k === 0){ p = rnd(2, 9); txt = 'x² = ' + p * p; f = function(x){ return x * x === p * p; }; c1 = p; c2 = -p; }
+    else if (k === 1){ p = rnd(2, 7); q = p * (p - 1); txt = 'x(x ' + MINUS + ' 1) = ' + q; f = function(x){ return x * (x - 1) === q; }; c1 = p; c2 = 1 - p; }
+    else if (k === 2){ p = rnd(1, 6); q = rnd(1, 6); if (p === q) return this.g(); txt = 'x² + ' + (p * q) + ' = ' + L(p + q, 0); f = function(x){ return x * x + p * q === (p + q) * x; }; c1 = p; c2 = q; }
+    else { p = rnd(2, 9); var b = rnd(1, 9); txt = 'x + ' + b + ' = x + ' + (b + rnd(1, 5)); f = function(){ return false; }; c1 = p; c2 = -p; }
+    var cs = Math.random() < 0.3 && k < 3 ? [c1, c1 + 1] : [c1, c2]; if (cs[0] === cs[1]) return this.g();
+    sols = cs.filter(f); var lab = function(a){ return a.length === 2 ? fr(cs[0]) + ' et ' + fr(cs[1]) : a.length ? fr(a[0]) + ' seulement' : 'Aucun des deux'; };
+    var ch = [fr(cs[0]) + ' et ' + fr(cs[1]), fr(cs[0]) + ' seulement', fr(cs[1]) + ' seulement', 'Aucun des deux'];
+    var steps = cs.map(function(x){ return 'Pour x = ' + fr(x) + ' : ' + (f(x) ? 'égalité vraie, ' + fr(x) + ' est solution.' : 'égalité fausse.'); });
+    if (k === 3) steps.push('x + ' + b + ' et la partie de droite ne sont jamais égales : cette équation n’a aucune solution.');
+    return {type: 'ch', q: 'Parmi ' + fr(cs[0]) + ' et ' + fr(cs[1]) + ', lesquels sont solutions de ' + txt + ' ?', ch: ch, ans: ch.indexOf(lab(sols)), key: txt + '|' + cs.join(','), steps: steps}; }}
+);
+// problèmes : tester une valeur dans une situation (12 situations)
+var PT = [
+ function(){ var n = rnd(18, 30), f = pick([90, 120, 150]), p = rnd(5, 9), x = n + pick([0, 0, 1, -1]); return {q: 'Une sortie coûte ' + f + ' € de car plus ' + p + ' € par élève. Le budget de ' + (f + p * n) + ' € est dépensé exactement quand le nombre x d’élèves vérifie ' + f + ' + ' + p + 'x = ' + (f + p * n) + '. Avec ' + x + ' élèves, le budget est-il dépensé exactement ?', ok: x === n, st: f + ' + ' + p + ' × ' + x + ' = ' + (f + p * x)}; },
+ function(){ var x0 = rnd(3, 8), a = rnd(12, 16), b = rnd(4, 10), c = a - b, f = c * x0, t = x0 + pick([0, 0, 1, -1]); return {q: 'Location de kayaks : tarif 1 à ' + a + ' € l’heure ; tarif 2 : ' + f + ' € d’inscription puis ' + b + ' € l’heure. Les prix sont égaux pour x heures si ' + a + 'x = ' + f + ' + ' + b + 'x. Est-ce le cas pour ' + t + ' h ?', ok: t === x0, st: 'Tarif 1 : ' + a * t + ' € ; tarif 2 : ' + (f + b * t) + ' €'}; },
+ function(){ var x0 = rnd(4, 12), t = x0 + pick([0, 0, 2, -1]); return {q: 'Je pense à un nombre x. Je le triple et j’ajoute 7 : je trouve ' + (3 * x0 + 7) + '. Autrement dit, 3x + 7 = ' + (3 * x0 + 7) + '. Le nombre pensé est-il ' + t + ' ?', ok: t === x0, st: '3 × ' + t + ' + 7 = ' + (3 * t + 7)}; },
+ function(){ var l = rnd(4, 15), t = l + pick([0, 0, 1, -2]); return {q: 'Un rectangle a une longueur de (x + 3) cm et une largeur de x cm. Son périmètre vaut ' + (4 * l + 6) + ' cm quand 2(x + 3) + 2x = ' + (4 * l + 6) + '. Est-ce le cas pour x = ' + t + ' ?', ok: t === l, st: '2 × (' + t + ' + 3) + 2 × ' + t + ' = ' + (4 * t + 6)}; },
+ function(){ var Lo = rnd(8, 13), Mo = rnd(32, 42), x0 = Mo - 2 * Lo, t = x0 + pick([0, 0, 1, -1]); if (x0 < 2) return null; return {q: 'Léo a ' + Lo + ' ans et sa mère ' + Mo + ' ans. Dans x années, la mère aura le double de l’âge de Léo si ' + Mo + ' + x = 2(' + Lo + ' + x). Est-ce le cas dans ' + t + ' ans ?', ok: t === x0, st: Mo + ' + ' + t + ' = ' + (Mo + t) + ' et 2 × (' + Lo + ' + ' + t + ') = ' + 2 * (Lo + t)}; },
+ function(){ var v = pick([12, 15, 16, 18, 20]), tt = pick([0.5, 0.75, 1.5, 2]), d = v * tt, t = pick([tt, tt, tt + 0.25]); return {q: 'Un cycliste roule à ' + v + ' km/h. Il parcourt ' + fr(d) + ' km en t heures si ' + v + 't = ' + fr(d) + '. Est-ce que t = ' + fr(t) + ' convient ?', ok: t === tt, st: v + ' × ' + fr(t) + ' = ' + fr(v * t)}; },
+ function(){ var x0 = rnd(2, 9), t = x0 + pick([0, 0, 1]); return {q: 'Un carré de côté x cm a une aire de ' + x0 * x0 + ' cm² : x² = ' + x0 * x0 + '. Le côté mesure-t-il ' + t + ' cm ?', ok: t === x0, st: t + '² = ' + t * t}; },
+ function(){ var x0 = rnd(5, 20), p = pick([2, 3, 4]), t = x0 + pick([0, 0, 1, -1]); return {q: 'Inès a ' + p + ' fois plus de billes que Sam. Ensemble, ils en ont ' + (p + 1) * x0 + ' : x + ' + p + 'x = ' + (p + 1) * x0 + ', où x est le nombre de billes de Sam. Sam a-t-il ' + t + ' billes ?', ok: t === x0, st: t + ' + ' + p + ' × ' + t + ' = ' + (p + 1) * t}; },
+ function(){ var x0 = rnd(20, 60), t = x0 + pick([0, 0, 1, -1]); return {q: 'Les angles d’un triangle mesurent x°, x° et ' + (180 - 2 * x0) + '° : x + x + ' + (180 - 2 * x0) + ' = 180. Est-ce que x = ' + t + ' convient ?', ok: t === x0, st: t + ' + ' + t + ' + ' + (180 - 2 * x0) + ' = ' + (2 * t + 180 - 2 * x0)}; },
+ function(){ var x0 = rnd(4, 10), t = x0 + pick([0, 0, 2]); return {q: 'Une cuve contient ' + (40 + 6 * x0) + ' L et se vide de 6 L par minute. Il reste 40 L au bout de x minutes si ' + (40 + 6 * x0) + ' ' + MINUS + ' 6x = 40. Est-ce le cas pour ' + t + ' min ?', ok: t === x0, st: (40 + 6 * x0) + ' ' + MINUS + ' 6 × ' + t + ' = ' + (40 + 6 * x0 - 6 * t)}; },
+ function(){ var x0 = rnd(8, 20), t = x0 + pick([0, 0, 1]); return {q: 'La somme de trois entiers consécutifs x, x + 1 et x + 2 vaut ' + (3 * x0 + 3) + ' : x + (x + 1) + (x + 2) = ' + (3 * x0 + 3) + '. Le plus petit est-il ' + t + ' ?', ok: t === x0, st: t + ' + ' + (t + 1) + ' + ' + (t + 2) + ' = ' + (3 * t + 3)}; },
+ function(){ var x0 = rnd(3, 9), c = pick([2, 3]), s = c === 2 ? 1.5 : 2.5, t = x0 + pick([0, 0, 1]); return {q: 'Tom achète x cahiers à ' + c + ' € et autant de stylos à ' + fr(s) + ' €. Il paie ' + fr((c + s) * x0) + ' € : ' + c + 'x + ' + fr(s) + 'x = ' + fr((c + s) * x0) + '. A-t-il acheté ' + t + ' cahiers ?', ok: t === x0, st: c + ' × ' + t + ' + ' + fr(s) + ' × ' + t + ' = ' + fr((c + s) * t)}; }
 ];
+EX.push(
+ {id: 'n37f', lv: 3, n: 'N37', nq: 3, t: 'Tester dans un problème', d: 'Lire la situation, remplacer, conclure.', c: 'Lis la situation et teste la valeur proposée dans l’équation.', a: 'Repère l’équation donnée, remplace l’inconnue par la valeur proposée, calcule les deux membres et compare.',
+  g: function(k){ if (k === undefined) k = rnd(0, PT.length - 1); var C = PT[k](); if (!C) return this.g(k);
+    return {type: 'ch', q: C.q, ch: ['Oui', 'Non'], ans: C.ok ? 0 : 1, key: 'p' + k, steps: [C.st + (C.ok ? ' : les deux membres sont égaux, oui.' : ' : ce n’est pas égal à l’autre membre, non.')]}; }}
+);
 EX.push(
  {id: 'n38a', lv: 1, n: 'N38', t: 'Équations simples', d: 'x + a = b ; ax = b.', c: 'Résous l’équation.', a: 'Pour isoler x : on enlève (ou on ajoute) le même nombre des deux côtés ; on divise les deux membres par le même nombre non nul.',
   g: function(){ var E = eqn(1); return {type: 'num', q: eqTxt(E), lab: 'x =', v: E.x, steps: solveSteps(E)}; }},
@@ -92,7 +177,7 @@ EX.push(
     return {type: 'num', q: C.q, v: C.v, steps: ['Équation : ' + C.eq + '.', 'Solution : x = ' + fr(C.v) + '.'], key: 'k' + k}; }}
 );
 var NOTIONS = [
- {n: 'N37', t: 'Tester si un nombre est solution d’une équation', r: 'on remplace x par le nombre dans chaque membre : si les deux membres sont égaux, le nombre est solution.'},
+ {n: 'N37', t: 'Tester si un nombre est solution d’une équation', r: 'on remplace x par le nombre dans chaque membre, on calcule chaque membre séparément, puis on compare : s’ils sont égaux, le nombre est solution. Une équation peut avoir une, plusieurs ou aucune solution.'},
  {n: 'N38', t: 'Résoudre une équation du premier degré', r: 'on peut ajouter ou soustraire un même nombre (ou un même terme en x) aux deux membres, et les multiplier ou les diviser par un même nombre non nul.'},
  {n: 'N39', t: 'Mettre un problème en équation', r: 'choisir l’inconnue, traduire l’énoncé par une équation, la résoudre, puis répondre par une phrase en vérifiant la cohérence.'}
 ];
