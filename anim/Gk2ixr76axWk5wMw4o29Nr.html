@@ -1,0 +1,405 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Nombres premiers animés</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : graphique en grand à gauche (à projeter), commandes et calculs à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --c1:#2f6fd6; --c2:#e08a1e; --c3:#1f9e74; --c4:#b9459c; --mean:#c46a00; --med:#0a8587; --tok:#2f6fd6; --far:#c9334d; --plank:#b98a54;
+  --ok:#1b7f45; --ok-soft:#e1f3e8;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh;touch-action:none;user-select:none;-webkit-user-select:none;}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 11px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.eq{border-radius:12px;background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font:600 17px/1.4 var(--font-d);font-variant-numeric:tabular-nums}
+.eq small{font:600 13px/1.2 var(--font-d);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vocab{border-radius:12px;padding:12px 14px;font-size:15px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok);display:flex;flex-direction:column;gap:4px}
+.vocab b{font-family:var(--font-d)}
+.counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cnt{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.cnt span{font:600 13px/1.2 var(--font-d);color:var(--muted)}
+.cnt b{font:700 24px/1 var(--font-d);font-variant-numeric:tabular-nums}
+
+/* Arithmétique */
+.crit{width:100%;border-collapse:collapse;font-size:14px}
+.crit td{padding:5px 4px;border-top:1px solid var(--line);vertical-align:top}
+.crit td:first-child{font:700 14px/1.3 var(--font-d);white-space:nowrap}
+.yes{color:var(--ok);font-weight:700}.no{color:var(--far);font-weight:700}
+.pill{display:inline-block;font:700 14px/1 var(--font-d);padding:6px 9px;border-radius:999px;background:var(--bg);border:1px solid var(--line);margin:0 4px 4px 0;font-variant-numeric:tabular-nums}
+.pill.pr{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.pill.big{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.numin{font:700 18px/1 var(--font-d);width:110px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}
+.stp{display:inline-flex;align-items:center;gap:6px}
+.stp button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:700 18px/1 var(--font-d);cursor:pointer;padding:0}
+
+/* SVG */
+.lab{font:700 16px var(--font-d)}
+.sm{font:600 13px var(--font-d)}
+.f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)} .f-ok{fill:var(--ok)} .f-far{fill:var(--far)} .f-acc{fill:var(--accent)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.tip{font:600 14px var(--font-b);fill:var(--muted)}
+.clk{cursor:pointer}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e et 3e · Arithmétique</p>
+      <h1>Diviseurs et nombres premiers</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-diviseurs" data-view="diviseurs" aria-selected="true">1. Diviseurs</button>
+      <button class="tab" role="tab" id="tab-crible" data-view="crible" aria-selected="false">2. Crible</button>
+      <button class="tab" role="tab" id="tab-decomposer" data-view="decomposer" aria-selected="false">3. Décomposer</button>
+      <button class="tab" role="tab" id="tab-fraction" data-view="fraction" aria-selected="false">4. Simplifier</button>
+      <button class="tab" role="tab" id="tab-partage" data-view="partage" aria-selected="false">5. Partager</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. DIVISEURS -->
+  <section class="view" id="v-diviseurs" role="tabpanel" aria-labelledby="tab-diviseurs">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 560" role="img" aria-label="Rectangles que l'on peut former avec n carreaux"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Diviseurs et rectangles</h2>
+        <p class="hint">Avec n carreaux, chaque rectangle possible donne deux diviseurs de n. Un nombre premier ne donne qu'un seul rectangle.</p>
+      </div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="n1">Nombre de carreaux n</label><span class="stp"><button type="button" id="m1" aria-label="n moins 1">−</button><span class="lab">n =</span><input class="numin" type="number" id="n1v" min="1" max="100" step="1" value="12" aria-label="Nombre de carreaux n" style="width:84px;text-align:center"><button type="button" id="p1" aria-label="n plus 1">+</button></span></div>
+        <input type="range" id="n1" min="1" max="100" step="1" value="12">
+      </div>
+      <div class="row"><button class="btn primary" type="button" id="try1">▶ Chercher les diviseurs pas à pas</button><button class="btn" type="button" id="all1">Tous les rectangles</button></div>
+      <div class="eq" id="eq1"></div>
+      <div><span class="lbl">Critères de divisibilité</span><table class="crit" id="crit1"></table></div>
+    </div>
+  </section>
+
+  <!-- 2. CRIBLE -->
+  <section class="view" id="v-crible" role="tabpanel" aria-labelledby="tab-crible" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 560" role="img" aria-label="Crible d'Ératosthène de 1 à 100"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Le crible d'Ératosthène</h2>
+        <p class="hint">On barre les multiples de chaque nombre premier : ce qui reste, ce sont les nombres premiers. Clique sur la grille ou sur le bouton pour avancer.</p>
+      </div>
+      <div class="row"><button class="btn primary" type="button" id="next2">Étape suivante ▶</button><button class="btn" type="button" id="reset2">Recommencer</button></div>
+      <div class="eq" id="eq2"></div>
+      <div class="vocab" id="def2"></div>
+    </div>
+  </section>
+
+  <!-- 3. DÉCOMPOSER -->
+  <section class="view" id="v-decomposer" role="tabpanel" aria-labelledby="tab-decomposer" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 560" role="img" aria-label="Arbre de décomposition en facteurs premiers"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Décomposer en facteurs premiers</h2>
+        <p class="hint">À chaque étape, on divise par le plus petit nombre premier possible. On s'arrête quand il ne reste que des nombres premiers.</p>
+      </div>
+      <div class="ctl"><span class="lbl">Nombre à décomposer</span>
+        <div class="row"><input class="numin" type="number" id="n3" min="2" max="99999" value="360" aria-label="Nombre à décomposer"><div class="chips" id="pre3"></div></div></div>
+      <div class="row"><button class="btn primary" type="button" id="next3">Étape suivante ▶</button><button class="btn" type="button" id="all3">Tout décomposer</button><button class="btn" type="button" id="reset3">Recommencer</button></div>
+      <div class="eq" id="eq3"></div>
+      <div class="vocab" id="def3"></div>
+    </div>
+  </section>
+
+  <!-- 4. FRACTION -->
+  <section class="view" id="v-fraction" role="tabpanel" aria-labelledby="tab-fraction" hidden>
+    <div class="stage"><svg id="svg4" viewBox="0 0 640 560" role="img" aria-label="Fraction simplifiée grâce aux facteurs premiers communs"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Rendre une fraction irréductible</h2>
+        <p class="hint">On décompose le numérateur et le dénominateur, puis on simplifie les facteurs premiers communs, un par un.</p>
+      </div>
+      <div class="ctl"><span class="lbl">Fraction</span>
+        <div class="row"><input class="numin" type="number" id="a4" min="1" max="99999" value="84" aria-label="Numérateur"><span class="lab">/</span><input class="numin" type="number" id="b4" min="1" max="99999" value="60" aria-label="Dénominateur"></div>
+        <div class="chips" id="pre4"></div></div>
+      <div class="row"><button class="btn primary" type="button" id="next4">Simplifier ▶</button><button class="btn" type="button" id="reset4">Recommencer</button></div>
+      <div class="eq" id="eq4"></div>
+      <div class="vocab" id="def4"></div>
+    </div>
+  </section>
+
+  <!-- 5. PARTAGE -->
+  <section class="view" id="v-partage" role="tabpanel" aria-labelledby="tab-partage" hidden>
+    <div class="stage"><svg id="svg5" viewBox="0 0 640 560" role="img" aria-label="Répartition en sachets identiques"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Faire des sachets identiques</h2>
+        <p class="hint" id="pb5"></p>
+      </div>
+      <div class="chips" id="pre5"></div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="k5">Nombre de sachets</label><span class="stp"><button type="button" id="m5" aria-label="Un sachet de moins">−</button><span class="val" id="k5v"></span><button type="button" id="p5" aria-label="Un sachet de plus">+</button></span></div>
+        <input type="range" id="k5" min="1" max="30" step="1" value="1">
+      </div>
+      <div class="eq" id="eq5"></div>
+      <div class="vocab" id="def5"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=x=>Math.round(x*100)/100;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const divisors=n=>{const d=[];for(let i=1;i<=n;i++)if(n%i===0)d.push(i);return d;};
+const isPrime=n=>{if(n<2)return false;for(let i=2;i*i<=n;i++)if(n%i===0)return false;return true;};
+const factors=n=>{const f=[];let m=n;for(let p=2;p*p<=m;p++)while(m%p===0){f.push(p);m/=p;}if(m>1)f.push(m);return f;};
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const SUP={0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹'};
+const sup=k=>String(k).split('').map(c=>SUP[c]).join('');
+const powForm=f=>{const m=new Map();f.forEach(p=>m.set(p,(m.get(p)||0)+1));return [...m].map(([p,k])=>k>1?p+sup(k):String(p)).join(' × ');};
+const fmt=n=>n.toLocaleString('fr-FR');
+function reason(m,p){const s=String(m),last=+s[s.length-1],sum=s.split('').reduce((a,c)=>a+ +c,0);
+  if(p===2)return `${fmt(m)} se termine par ${last} (chiffre pair)`;if(p===3)return `la somme des chiffres de ${fmt(m)} vaut ${sum}, un multiple de 3`;if(p===5)return `${fmt(m)} se termine par ${last}`;return `${fmt(m)} ÷ ${p} tombe juste`;}
+function onTap(svg,fn){svg.addEventListener('click',fn);}
+
+/* ---------- 1. Diviseurs et rectangles ---------- */
+const S1={n:12,a:null,found:[]};// a : largeur essayée (null = tous les rectangles ; 'fin' = recherche terminée)
+function render1(){const n=S1.n;let o='';const D=divisors(n),pr=isPrime(n);
+  if(S1.a===null){
+    const pairs=D.filter(a=>a*a<=n).map(a=>[a,n/a]);
+    const sumA=pairs.reduce((s,p)=>s+p[0],0),gap=34;
+    const s=Math.max(4,Math.min(30,560/pairs[0][1],(450-gap*pairs.length)/sumA));
+    o+=`<text class="lab ${pr?'f-ok':'f-ink'}" x="320" y="36" text-anchor="middle">${n===1?'Avec 1 carreau : un seul rectangle, le carré 1 × 1.':pr?`Avec ${n} carreaux, un seul rectangle : ${n} est premier !`:`Avec ${n} carreaux, on peut former ${pairs.length} rectangle${pairs.length>1?'s':''}.`}</text>`;
+    let y=70;pairs.forEach(([a,b])=>{const w=b*s,x=320-w/2;
+      o+=`<text class="lab f-ink" x="${r2(x)}" y="${r2(y-8)}">${a} × ${b}</text>`;
+      for(let i=0;i<a;i++)for(let j=0;j<b;j++)o+=`<rect x="${r2(x+j*s)}" y="${r2(y+i*s)}" width="${r2(s)}" height="${r2(s)}" style="fill:${pr?'var(--c3)':'var(--c1)'};stroke:var(--paper);stroke-width:${s>8?1.5:0.6}"/>`;
+      y+=a*s+gap;});
+    o+=`<text class="tip" x="20" y="545">Chaque rectangle a × b donne deux diviseurs de ${n} : a et b.</text>`;
+  }else{
+    const done=S1.a==='fin',a=done?null:S1.a;
+    if(!done){const q=Math.floor(n/a),r=n%a,cols=q+(r?1:0);const s=Math.max(5,Math.min(34,560/Math.max(cols,1),300/a));const w=cols*s,x0=320-w/2,y0=90;
+      o+=`<text class="lab f-ink" x="320" y="40" text-anchor="middle">Essai : des colonnes de ${a} carreau${a>1?'x':''}</text>`;
+      for(let c=0;c<q;c++)for(let i=0;i<a;i++)o+=`<rect x="${r2(x0+c*s)}" y="${r2(y0+i*s)}" width="${r2(s)}" height="${r2(s)}" style="fill:var(--c1);stroke:var(--paper);stroke-width:1.2"/>`;
+      for(let i=0;i<r;i++)o+=`<rect x="${r2(x0+q*s)}" y="${r2(y0+i*s)}" width="${r2(s)}" height="${r2(s)}" style="fill:var(--far);stroke:var(--paper);stroke-width:1.2"/>`;
+      const yt=y0+a*s+44;
+      o+=`<text class="lab ${r?'f-far':'f-ok'}" x="320" y="${r2(yt)}" text-anchor="middle">${r?`${n} = ${a} × ${q} + ${r} : il reste ${r} carreau${r>1?'x':''}.`:`${n} = ${a} × ${q} : ça tombe juste !`}</text>`;
+      o+=`<text class="lab ${r?'f-far':'f-ok'}" x="320" y="${r2(yt+26)}" text-anchor="middle">${r?`${a} n'est pas un diviseur de ${n}.`:a===q?`${a} est un diviseur de ${n}.`:`${a} et ${q} sont des diviseurs de ${n}.`}</text>`;}
+    else{o+=`<text class="lab f-ink" x="320" y="60" text-anchor="middle">${S1.lastA} × ${S1.lastA+1} > ${n} … inutile d'aller plus loin :</text><text class="lab f-ink" x="320" y="86" text-anchor="middle">tous les diviseurs ont été trouvés.</text>`;
+      const L=S1.found.slice().sort((x,y)=>x-y);o+=`<text x="320" y="200" text-anchor="middle" style="font:700 30px var(--font-d);fill:var(--accent)">${L.join(' ; ')}</text>`;
+      o+=`<text class="lab ${isPrime(n)?'f-ok':'f-ink'}" x="320" y="250" text-anchor="middle">${n===1?'1 a un seul diviseur : il n\'est pas premier.':isPrime(n)?`${n} a exactement deux diviseurs, 1 et lui-même : il est premier.`:`${n} a ${L.length} diviseurs : il n'est pas premier.`}</text>`;}
+    // diviseurs trouvés
+    const L=S1.found.slice().sort((x,y)=>x-y);
+    o+=`<text class="sm f-muted" x="40" y="470">Diviseurs trouvés :</text><text x="40" y="500" style="font:700 22px var(--font-d);fill:var(--ink)">${L.join(' ; ')||'—'}</text>`;
+    o+=`<text class="tip" x="20" y="545">${done?'Clique sur « Tous les rectangles » pour revoir les rectangles.':'Clique pour essayer la largeur suivante.'}</text>`;
+  }
+  $('svg1').innerHTML=o;
+  if(document.activeElement!==$('n1v'))$('n1v').value=n;$('n1').value=n;
+  $('eq1').innerHTML=`<small>Diviseurs de ${n}</small><div>${D.map(d=>`<span class="pill ${pr?'pr':''}">${d}</span>`).join('')}</div><div>${n===1?'1 n\'est pas premier.':pr?`${n} est premier : ses seuls diviseurs sont 1 et ${n}.`:`${n} n'est pas premier : il a ${D.length} diviseurs.`}</div>`;
+  const s=String(n),last=+s[s.length-1],sum=s.split('').reduce((a,c)=>a+ +c,0),two=n%100;
+  const C=[[2,`dernier chiffre ${last}`,n%2===0],[3,`somme des chiffres ${sum}`,n%3===0],[4,`${two} (2 derniers chiffres) ${two%4?'n\'est pas':'est'} multiple de 4`,n%4===0],[5,`dernier chiffre ${last}`,n%5===0],[9,`somme des chiffres ${sum}`,n%9===0],[10,`dernier chiffre ${last}`,n%10===0]];
+  $('crit1').innerHTML=C.map(([d,why,ok])=>`<tr><td>par ${d}</td><td class="${ok?'yes':'no'}">${ok?'oui':'non'}</td><td>${why}</td></tr>`).join('');
+  $('try1').textContent=S1.a===null||S1.a==='fin'?'▶ Chercher les diviseurs pas à pas':`Largeur suivante ▶ (${S1.a+1})`;
+}
+function step1(){const n=S1.n;
+  if(S1.a===null||S1.a==='fin'){S1.a=1;S1.found=[];}
+  else{const a=S1.a+1;if(a*a>n){S1.lastA=S1.a;S1.a='fin';render1();return;}S1.a=a;}
+  const a=S1.a;if(n%a===0){if(!S1.found.includes(a))S1.found.push(a);if(!S1.found.includes(n/a))S1.found.push(n/a);}
+  if(a*a===n||(a+1)*(a+1)>n){}// la prochaine étape conclura
+  render1();}
+$('try1').onclick=step1;$('all1').onclick=()=>{S1.a=null;render1();};
+onTap($('svg1'),()=>{if(S1.a!==null&&S1.a!=='fin')step1();});
+const set1=n=>{S1.n=clamp(n,1,100);S1.a=null;render1();};
+$('n1').oninput=e=>set1(+e.target.value);
+const in1=()=>{const v=Math.round(+$('n1v').value);if(v>=1&&v<=100)set1(v);};$('n1v').addEventListener('input',in1);$('n1v').addEventListener('change',()=>{in1();$('n1v').value=S1.n;});$('n1v').addEventListener('keydown',e=>{if(e.key==='Enter'){in1();$('n1v').value=S1.n;$('n1v').blur();}});$('m1').onclick=()=>set1(S1.n-1);$('p1').onclick=()=>set1(S1.n+1);
+
+/* ---------- 2. Crible d'Ératosthène ---------- */
+const PR2=[2,3,5,7],COL2=['--c1','--c2','--c4','--far'];
+const S2={step:0,t0:0,by:{}};// by[m] = {p, t} : m barré par p à l'instant t
+function prepare2(step){// recalcule qui est barré par qui jusqu'à l'étape step
+  const by={};const now=performance.now();
+  for(let s=1;s<=Math.min(step,5);s++){
+    if(s===1){by[1]={p:1,t:s===step?now:0};continue;}
+    const p=PR2[s-2];let j=0;for(let m=p*p;m<=100;m+=p){if(!by[m]){by[m]={p,t:s===step?now+(reduce?0:j*70):0};j++;}}}
+  S2.by=by;}
+function render2(){const now=performance.now();let o='',anim=false;const cs=46,x0=320-5*cs,y0=62;
+  const msg=['Les nombres de 1 à 100.','1 n\'est pas premier : on le barre.','2 est premier : on l\'entoure et on barre tous ses multiples.','3 est premier : on barre ses multiples (certains le sont déjà).','5 est premier : on barre ses multiples.','7 est premier : on barre ses multiples.','Tous les nombres restants sont premiers !'][S2.step];
+  o+=`<text class="lab f-ink" x="320" y="38" text-anchor="middle">${msg}</text>`;
+  for(let m=1;m<=100;m++){const r=Math.floor((m-1)/10),c=(m-1)%10,x=x0+c*cs,y=y0+r*cs;const b=S2.by[m];
+    let k=b?clamp((now-b.t)/250,0,1):0;if(b&&k<1)anim=true;
+    const pIdx=b?PR2.indexOf(b.p):-1,col=b?(b.p===1?'--muted':COL2[pIdx]):null;
+    const circled=(PR2.includes(m)&&S2.step>=PR2.indexOf(m)+2)||(S2.step>=6&&!b);
+    o+=`<rect x="${x+2}" y="${y+2}" width="${cs-4}" height="${cs-4}" rx="7" style="fill:${b&&k>0?`color-mix(in srgb,var(${col}) ${Math.round(28*k)}%,var(--paper))`:circled?'var(--ok-soft)':'var(--paper)'};stroke:${circled?'var(--ok)':'var(--line)'};stroke-width:${circled?2.5:1}"/>`;
+    o+=`<text x="${x+cs/2}" y="${y+cs/2+6}" text-anchor="middle" style="font:700 17px var(--font-d);fill:${b&&k>=1?'var(--muted)':circled?'var(--ok)':'var(--ink)'}">${m}</text>`;
+    if(b&&k>0)o+=`<line x1="${x+7}" y1="${y+cs-7}" x2="${r2(x+7+(cs-14)*k)}" y2="${r2(y+cs-7-(cs-14)*k)}" style="stroke:var(${col});stroke-width:3;stroke-linecap:round"/>`;}
+  // légende
+  if(S2.step>=2){let lx=40;PR2.forEach((p,i)=>{if(S2.step<i+2)return;o+=`<line x1="${lx}" y1="537" x2="${lx+16}" y2="523" style="stroke:var(${COL2[i]});stroke-width:3"/><text class="sm f-ink" x="${lx+22}" y="535">multiples de ${p}</text>`;lx+=140;});}
+  else o+=`<text class="tip" x="20" y="545">Clique pour passer à l'étape suivante.</text>`;
+  $('svg2').innerHTML=o;
+  const left=[];for(let m=2;m<=100;m++)if(!S2.by[m])left.push(m);
+  const primes=S2.step>=6?left:left.filter(m=>m<=PR2[Math.max(0,S2.step-2)]&&S2.step>=2);
+  $('eq2').innerHTML=`<small>Nombres premiers trouvés</small><div>${primes.length?primes.map(p=>`<span class="pill pr">${p}</span>`).join(''):'—'}</div>${S2.step>=6?`<div>${primes.length} nombres premiers inférieurs à 100.</div>`:''}`;
+  $('def2').innerHTML=S2.step>=5?`<div><b>Pourquoi s'arrêter à 7 ?</b> Le nombre premier suivant est 11, et 11 × 11 = 121 dépasse 100 : tout multiple de 11 inférieur à 100 (22, 33, …) a déjà été barré.</div>`:`<div><b>Un nombre premier</b> a exactement deux diviseurs : 1 et lui-même. On commence à barrer à p × p, car les multiples plus petits sont déjà barrés.</div>`;
+  $('next2').disabled=S2.step>=6;
+  return anim;}
+function next2(){if(S2.step>=6)return;S2.step++;prepare2(S2.step);anim2();}
+function anim2(){const go=()=>{if(render2())requestAnimationFrame(go);};go();}
+$('next2').onclick=next2;$('reset2').onclick=()=>{S2.step=0;S2.by={};render2();};onTap($('svg2'),next2);
+
+/* ---------- 3. Décomposition ---------- */
+const S3={n:360,k:0};
+function render3(){const n=S3.n,f=factors(n),steps=Math.max(0,f.length-1),k=Math.min(S3.k,steps);let o='';
+  const dy=Math.min(64,340/Math.max(steps,1)),dx=Math.min(70,430/Math.max(steps,1));const X0=320-steps*dx/2+30,Y0=70;
+  const fs=Math.max(14,Math.min(24,dy*0.42));
+  const node=(x,y,v,prime,hot)=>{const w=Math.max(fs*1.4,String(fmt(v)).length*fs*0.62+16);return `<rect x="${r2(x-w/2)}" y="${r2(y-fs*0.95)}" width="${r2(w)}" height="${r2(fs*1.9)}" rx="${r2(fs*0.95)}" style="fill:${prime?'var(--ok-soft)':hot?'var(--accent-soft)':'var(--paper)'};stroke:${prime?'var(--ok)':hot?'var(--accent)':'var(--line)'};stroke-width:${prime||hot?2.5:1.5}"/><text x="${r2(x)}" y="${r2(y+fs*0.36)}" text-anchor="middle" style="font:700 ${r2(fs)}px var(--font-d);fill:${prime?'var(--ok)':'var(--ink)'}">${fmt(v)}</text>`;};
+  let q=n;const pts=[];for(let i=0;i<=k;i++){pts.push({x:X0+i*dx,y:Y0+i*dy,v:q});if(i<k)q=q/f[i];}
+  for(let i=0;i<k;i++){const a=pts[i],b=pts[i+1],px=a.x-dx*0.95,py=a.y+dy;
+    o+=`<line x1="${r2(a.x)}" y1="${r2(a.y)}" x2="${r2(px)}" y2="${r2(py)}" style="stroke:var(--muted);stroke-width:2"/><line x1="${r2(a.x)}" y1="${r2(a.y)}" x2="${r2(b.x)}" y2="${r2(b.y)}" style="stroke:var(--muted);stroke-width:2"/>`;
+    o+=node(px,py,f[i],true);}
+  pts.forEach((p,i)=>{const last=i===pts.length-1;o+=node(p.x,p.y,p.v,last&&isPrime(p.v),last&&!isPrime(p.v));});
+  // écriture en ligne
+  const done=k>=steps,lineF=f.slice(0,k).map(String);if(!done)lineF.push(fmt(pts[k].v));else if(steps>0)lineF.push(String(f[steps]));
+  const yT=Math.min(500,Y0+steps*dy+70);
+  o+=`<text x="320" y="${yT}" text-anchor="middle" style="font:700 24px var(--font-d);fill:var(--ink)">${fmt(n)} = ${steps===0?fmt(n):lineF.join(' × ')}</text>`;
+  if(done&&steps>0&&powForm(f)!==f.join(' × '))o+=`<text x="320" y="${yT+34}" text-anchor="middle" style="font:700 24px var(--font-d);fill:var(--ok)">${fmt(n)} = ${powForm(f)}</text>`;
+  o+=`<text class="tip" x="20" y="545">${done?(steps===0?`${fmt(n)} est un nombre premier : il n'y a rien à décomposer.`:'Décomposition terminée : il ne reste que des nombres premiers (en vert).'):'Clique pour diviser par le plus petit nombre premier possible.'}</text>`;
+  $('svg3').innerHTML=o;
+  let ex='';if(k<steps){const cur=pts[k].v,p=f[k];ex=`<small>Prochaine étape</small><div>${fmt(cur)} n'est pas premier.</div><div>Plus petit diviseur premier : ${p}, car ${reason(cur,p)}.</div><div>${fmt(cur)} = ${p} × ${fmt(cur/p)}</div>`;}
+  else ex=`<small>Résultat</small><div>${fmt(n)} = ${steps===0?fmt(n):powForm(f)}</div>`;
+  $('eq3').innerHTML=ex;
+  $('def3').innerHTML=`<div><b>Pour trouver le plus petit diviseur premier</b>, on essaie 2, puis 3, puis 5, puis 7, 11, 13… dans l'ordre.</div><div>La décomposition est unique : on obtient toujours les mêmes facteurs, quel que soit l'ordre des divisions.</div>`;
+  $('next3').disabled=k>=steps;$('n3').value=n;
+  document.querySelectorAll('#pre3 .chip').forEach(c=>c.setAttribute('aria-pressed',+c.dataset.n===n));}
+const next3=()=>{const st=Math.max(0,factors(S3.n).length-1);if(S3.k<st){S3.k++;render3();}};
+$('next3').onclick=next3;onTap($('svg3'),next3);
+$('all3').onclick=()=>{S3.k=99;render3();};$('reset3').onclick=()=>{S3.k=0;render3();};
+[60,84,360,1001,97,2026].forEach(v=>{const b=document.createElement('button');b.type='button';b.className='chip';b.dataset.n=v;b.textContent=fmt(v);b.onclick=()=>{S3.n=v;S3.k=0;render3();};$('pre3').appendChild(b);});
+$('n3').onchange=e=>{const v=Math.round(+e.target.value);if(v>=2&&v<=99999){S3.n=v;S3.k=0;}render3();};
+
+/* ---------- 4. Fraction irréductible ---------- */
+const S4={a:84,b:60,k:0};
+function split4(){const fa=factors(S4.a),fb=factors(S4.b),ra=fa.slice(),rb=fb.slice(),com=[];
+  for(const p of fa){const j=rb.indexOf(p);if(j>=0){com.push(p);rb.splice(j,1);ra.splice(ra.indexOf(p),1);}}return {com,ra,rb};}
+function render4(){const {a,b}=S4,{com,ra,rb}=split4(),k=Math.min(S4.k,com.length);let o='';
+  const tw=48,g=10,ncol=Math.max(com.length+ra.length,com.length+rb.length,1);const W=ncol*(tw+g)-g;const x0=Math.max(150,330-W/2);
+  const yA=150,yL=205,yB=230;
+  o+=`<text x="${x0-24}" y="${yA+33}" text-anchor="end" style="font:700 30px var(--font-d);fill:var(--ink)">${fmt(a)}</text><text x="${x0-24}" y="${yB+33}" text-anchor="end" style="font:700 30px var(--font-d);fill:var(--ink)">${fmt(b)}</text>`;
+  o+=`<line x1="${x0-110}" y1="${yL}" x2="${x0-14}" y2="${yL}" style="stroke:var(--ink);stroke-width:3"/><text x="${x0-6}" y="${yL+10}" style="font:700 28px var(--font-d);fill:var(--ink)">=</text>`;
+  const X=i=>x0+20+i*(tw+g);
+  o+=`<line x1="${x0+14}" y1="${yL}" x2="${r2(X(ncol-1)+tw+6)}" y2="${yL}" style="stroke:var(--ink);stroke-width:3"/>`;
+  const tile=(x,y,p,state)=>{const struck=state==='x';return `<rect x="${r2(x)}" y="${y}" width="${tw}" height="46" rx="10" style="fill:${struck?'var(--bg)':state==='c'?'var(--accent-soft)':'var(--ok-soft)'};stroke:${struck?'var(--line)':state==='c'?'var(--accent)':'var(--ok)'};stroke-width:2"/><text x="${r2(x+tw/2)}" y="${y+31}" text-anchor="middle" style="font:700 22px var(--font-d);fill:${struck?'var(--muted)':state==='c'?'var(--accent)':'var(--ok)'}">${p}</text>${struck?`<line x1="${r2(x+6)}" y1="${y+40}" x2="${r2(x+tw-6)}" y2="${y+6}" style="stroke:var(--far);stroke-width:3.5;stroke-linecap:round"/>`:''}`;};
+  com.forEach((p,i)=>{const st=i<k?'x':'c';o+=tile(X(i),yA,p,st)+tile(X(i),yB,p,st);if(i<ra.length+com.length-1||true){}});
+  ra.forEach((p,i)=>{o+=tile(X(com.length+i),yA,p,'r');});rb.forEach((p,i)=>{o+=tile(X(com.length+i),yB,p,'r');});
+  if(!ra.length)o+=tile(X(com.length),yA,1,'r');if(!rb.length)o+=tile(X(com.length),yB,1,'r');
+  for(let i=0;i<ncol-1;i++){[yA,yB].forEach(y=>{o+=`<text x="${r2(X(i)+tw+g/2)}" y="${y+30}" text-anchor="middle" class="sm f-muted">×</text>`;});}
+  const g0=com.slice(0,k).reduce((s,p)=>s*p,1),A=a/g0,B=b/g0;
+  const done=k>=com.length,G=gcd(a,b);
+  o+=`<text x="320" y="360" text-anchor="middle" style="font:700 22px var(--font-d);fill:var(--ink)">${k===0?(com.length?'Les facteurs communs sont en bleu.':'Aucun facteur premier commun.'):`On a simplifié par ${com.slice(0,k).join(' × ')} = ${fmt(g0)}`}</text>`;
+  // fraction obtenue
+  o+=`<text x="300" y="440" text-anchor="end" style="font:700 30px var(--font-d);fill:var(--ink)">${fmt(a)}/${fmt(b)} =</text>`;
+  o+=`<text x="360" y="425" text-anchor="middle" style="font:700 30px var(--font-d);fill:${done?'var(--ok)':'var(--ink)'}">${fmt(A)}</text><line x1="320" y1="434" x2="400" y2="434" style="stroke:${done?'var(--ok)':'var(--ink)'};stroke-width:3"/><text x="360" y="466" text-anchor="middle" style="font:700 30px var(--font-d);fill:${done?'var(--ok)':'var(--ink)'}">${fmt(B)}</text>`;
+  if(done&&B===1)o+=`<text x="412" y="446" style="font:700 30px var(--font-d);fill:var(--ok)">= ${fmt(A)}</text>`;
+  o+=`<text class="tip" x="20" y="545">${done?'Plus aucun facteur commun : la fraction est irréductible.':'Clique pour simplifier par le facteur commun suivant.'}</text>`;
+  $('svg4').innerHTML=o;
+  $('eq4').innerHTML=`<small>Décompositions</small><div>${fmt(a)} = ${factors(a).length?powForm(factors(a)):'1'}</div><div>${fmt(b)} = ${factors(b).length?powForm(factors(b)):'1'}</div><div>Facteurs communs : ${com.length?com.join(' × ')+' = '+fmt(G):'aucun'}</div>`;
+  $('def4').innerHTML=done?`<div><b>Fraction irréductible :</b> ${fmt(a)}/${fmt(b)} = ${fmt(a/G)}/${fmt(b/G)}. Le numérateur et le dénominateur n'ont plus de diviseur commun autre que 1.</div>${G>1?`<div>On a divisé en haut et en bas par ${fmt(G)}, le plus grand diviseur commun.</div>`:''}`:`<div>Simplifier par un facteur commun, c'est diviser le numérateur et le dénominateur par ce même nombre : la fraction garde la même valeur.</div>`;
+  $('next4').disabled=done;$('a4').value=a;$('b4').value=b;}
+const next4=()=>{if(S4.k<split4().com.length){S4.k++;render4();}};
+$('next4').onclick=next4;onTap($('svg4'),next4);$('reset4').onclick=()=>{S4.k=0;render4();};
+[[84,60],[126,210],[360,840],[45,75],[504,756],[35,48]].forEach(([a,b])=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=a+'/'+b;c.onclick=()=>{S4.a=a;S4.b=b;S4.k=0;render4();};$('pre4').appendChild(c);});
+const in4=()=>{const a=Math.round(+$('a4').value),b=Math.round(+$('b4').value);if(a>=1&&b>=1&&a<=99999&&b<=99999){S4.a=a;S4.b=b;S4.k=0;}render4();};
+$('a4').onchange=in4;$('b4').onchange=in4;
+
+/* ---------- 5. Partage en sachets ---------- */
+const PB5=[{A:84,B:60,a:'croissants',b:'pains au chocolat',ca:'--c2',cb:'--plank'},{A:48,B:36,a:'billes rouges',b:'billes bleues',ca:'--far',cb:'--c1'},{A:45,B:75,a:'roses',b:'tulipes',ca:'--c4',cb:'--c3'}];
+const S5={pb:0,k:1,tried:new Set([1])};
+function render5(){const P=PB5[S5.pb],{A,B}=P,k=S5.k;const qa=Math.floor(A/k),qb=Math.floor(B/k),ra=A%k,rb=B%k,ok=!ra&&!rb;let o='';
+  o+=`<text class="lab ${ok?'f-ok':'f-far'}" x="320" y="34" text-anchor="middle">${ok?`${k} sachet${k>1?'s':''} de ${qa} ${P.a} et ${qb} ${P.b} : tout est utilisé !`:`${k} sachets : il reste des ${ra?P.a:P.b} — ce n'est pas possible.`}</text>`;
+  const cols=Math.ceil(Math.sqrt(k*1.7)),rows=Math.ceil(k/cols),W=600,H=360,bw=W/cols,bh=H/rows;
+  for(let i=0;i<k;i++){const c=i%cols,r=Math.floor(i/cols),x=20+c*bw,y=56+r*bh;
+    o+=`<rect x="${r2(x+4)}" y="${r2(y+4)}" width="${r2(bw-8)}" height="${r2(bh-8)}" rx="10" style="fill:var(--bg);stroke:${ok?'var(--ok)':'var(--line)'};stroke-width:2"/>`;
+    const tot=qa+qb,iw=bw-20,ih=bh-20;let cell=Math.sqrt(iw*ih/Math.max(tot,1));let nc=Math.max(1,Math.floor(iw/cell));while(Math.ceil(tot/nc)*(iw/nc)>ih&&nc<tot)nc++;cell=Math.min(iw/nc,26);
+    const rad=Math.max(1.5,cell*0.38);
+    for(let j=0;j<tot;j++){const cx=x+10+cell/2+(j%nc)*cell,cy=y+10+cell/2+Math.floor(j/nc)*cell;o+=`<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r2(rad)}" style="fill:var(${j<qa?P.ca:P.cb})"/>`;}
+    if(bw>70&&bh>50)o+=`<text class="sm f-muted" x="${r2(x+bw-12)}" y="${r2(y+bh-12)}" text-anchor="end">${qa} + ${qb}</text>`;}
+  // restes
+  const yR=440;o+=`<text class="lab ${ra||rb?'f-far':'f-muted'}" x="20" y="${yR}">Reste : ${ra} ${P.a}, ${rb} ${P.b}</text>`;
+  for(let j=0;j<ra+rb;j++){o+=`<circle cx="${30+(j%40)*14}" cy="${yR+20+Math.floor(j/40)*14}" r="5.5" style="fill:var(${j<ra?P.ca:P.cb});stroke:var(--far);stroke-width:1.5"/>`;}
+  // légende
+  o+=`<circle cx="30" cy="530" r="7" style="fill:var(${P.ca})"/><text class="sm f-ink" x="42" y="535">${P.a}</text><circle cx="200" cy="530" r="7" style="fill:var(${P.cb})"/><text class="sm f-ink" x="212" y="535">${P.b}</text>`;
+  $('svg5').innerHTML=o;
+  $('pb5').textContent=`On a ${A} ${P.a} et ${B} ${P.b}. On veut faire le plus grand nombre possible de sachets identiques, en utilisant tout. Fais varier le nombre de sachets.`;
+  $('k5v').textContent=k;$('k5').value=k;$('k5').max=Math.min(A,B,40);
+  const okList=[...S5.tried].filter(t=>A%t===0&&B%t===0).sort((x,y)=>x-y),G=gcd(A,B),found=S5.tried.has(G);
+  $('eq5').innerHTML=`<small>Divisions</small><div>${A} ÷ ${k} = ${qa}${ra?` reste ${ra}`:''} ${ra?'<span class="no">✗</span>':'<span class="yes">✓</span>'}</div><div>${B} ÷ ${k} = ${qb}${rb?` reste ${rb}`:''} ${rb?'<span class="no">✗</span>':'<span class="yes">✓</span>'}</div><div style="font-size:15px">Nombres de sachets possibles trouvés : ${okList.map(t=>`<span class="pill ${t===G?'big':'pr'}">${t}</span>`).join('')}</div>`;
+  $('def5').innerHTML=found?`<div><b>Le plus grand nombre de sachets est ${G}.</b> C'est le plus grand diviseur commun à ${A} et ${B}.</div><div>Avec les décompositions : ${A} = ${powForm(factors(A))} et ${B} = ${powForm(factors(B))}, d'où ${G} = ${powForm(factors(G))}.</div>`:`<div>Le nombre de sachets doit diviser <b>à la fois</b> ${A} et ${B} : c'est un <b>diviseur commun</b>. On cherche le plus grand.</div>`;
+  document.querySelectorAll('#pre5 .chip').forEach((c,i)=>c.setAttribute('aria-pressed',i===S5.pb));}
+const set5=k=>{const P=PB5[S5.pb];S5.k=clamp(k,1,Math.min(P.A,P.B,40));S5.tried.add(S5.k);render5();};
+$('k5').oninput=e=>set5(+e.target.value);$('m5').onclick=()=>set5(S5.k-1);$('p5').onclick=()=>set5(S5.k+1);
+PB5.forEach((P,i)=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=`${P.A} ${P.a.split(' ')[0]} et ${P.B} ${P.b.split(' ')[0]}`;c.onclick=()=>{S5.pb=i;S5.k=1;S5.tried=new Set([1]);render5();};$('pre5').appendChild(c);});
+
+/* ---------- Onglets ---------- */
+let current='diviseurs';
+const views=['diviseurs','crible','decomposer','fraction','partage'];
+function show(v){if(!views.includes(v))v='diviseurs';current=v;
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+
+render1();render2();render3();render4();render5();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>
