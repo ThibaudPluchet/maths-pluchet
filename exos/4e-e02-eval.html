@@ -315,13 +315,25 @@ function exCroix(nb){
   check: function(){
     var got = 0;
     rows.forEach(function(x){
-      var T = x.T, P = [prod(x.f1.value), prod(x.f2.value)], want = [[T.x1, T.y2], [T.y1, T.x2]], ok = [false, false];
-      P.forEach(function(p){ if (!p || p.res === null || !eq(p.res, p.v)) return; want.forEach(function(w, k){ if (!ok[k] && ((eq(p.nums[0], w[0]) && eq(p.nums[1], w[1])) || (eq(p.nums[0], w[1]) && eq(p.nums[1], w[0])))) ok[k] = true; }); });
+      var T = x.T, P = [prod(x.f1.value), prod(x.f2.value)], want = [[T.x1, T.y2], [T.y1, T.x2]], ok = [false, false], fOk = [false, false], why = [];
+      var same = function(p, w){ return (eq(p.nums[0], w[0]) && eq(p.nums[1], w[1])) || (eq(p.nums[0], w[1]) && eq(p.nums[1], w[0])); };
+      // chaque ligne est corrigée séparément : un produit juste reste vert même si l'autre est faux
+      P.forEach(function(p, j){
+        if (!p) return;
+        var k = [0, 1].filter(function(k){ return !ok[k] && same(p, want[k]); })[0];
+        if (k === undefined){
+          if (same(p, [T.x1, T.y1]) || same(p, [T.x2, T.y2])) why.push('Produit ' + (j + 1) + ' : ' + num(p.nums[0]) + ' × ' + num(p.nums[1]) + ' multiplie deux nombres de la même colonne ; un produit en croix se fait en diagonale.');
+          return;
+        }
+        if (p.res === null){ why.push('Produit ' + (j + 1) + ' : écris aussi le résultat (« = … »).'); return; }
+        if (!eq(p.res, p.v)){ why.push('Produit ' + (j + 1) + ' : ' + num(p.nums[0]) + ' × ' + num(p.nums[1]) + ' = ' + num(p.v) + ', pas ' + num(p.res) + '.'); return; }
+        ok[k] = true; fOk[j] = true;
+      });
       var okP = ok[0] && ok[1], okC = x.s.value === (T.prop ? 'oui, proportionnel' : 'non, pas proportionnel');
-      lock([x.f1, x.f2, x.s]); mark(x.f1, okP); mark(x.f2, okP); mark(x.s, okC);
+      lock([x.f1, x.f2, x.s]); mark(x.f1, fOk[0]); mark(x.f2, fOk[1]); mark(x.s, okC);
       var g = (okP ? .5 : 0) + (okC ? .5 : 0); got += g; itemState(x.it, g, 1);
       var a = T.x1 * T.y2, b = T.y1 * T.x2;
-      corr(x.it, g, 1, {why: [].concat(okP ? [] : ['Les produits en croix se font en diagonale : ' + num(T.x1) + ' × ' + num(T.y2) + ' et ' + num(T.y1) + ' × ' + num(T.x2) + ' (écris le calcul et le résultat).']).concat(okC ? [] : ['La conclusion ne correspond pas aux produits.']),
+      corr(x.it, g, 1, {why: [].concat(okP ? [] : why.concat(['Les deux produits en croix (calcul et résultat) sont nécessaires pour avoir le point : ' + num(T.x1) + ' × ' + num(T.y2) + ' et ' + num(T.y1) + ' × ' + num(T.x2) + '.'])).concat(okC ? [] : ['La conclusion ne correspond pas aux produits.']),
         sol: [num(T.x1) + ' × ' + num(T.y2) + ' = ' + num(a) + ' et ' + num(T.y1) + ' × ' + num(T.x2) + ' = ' + num(b), T.prop ? 'Les produits en croix sont égaux : c’est un tableau de proportionnalité.' : 'Les produits en croix sont différents : ce n’est pas un tableau de proportionnalité.'], tip: 'égaux → proportionnel ; différents → pas proportionnel.'});
     });
     return got;
