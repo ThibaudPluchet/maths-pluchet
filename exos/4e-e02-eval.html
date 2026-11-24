@@ -63,7 +63,7 @@ h2.cat{font-size:15px;color:var(--muted);text-transform:uppercase;letter-spacing
 input.w{font:700 19px "Bricolage Grotesque",system-ui,sans-serif;flex:1 1 0;width:100%;min-width:0;max-width:340px;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
 input.w.num{max-width:150px;flex:0 1 150px}
 input.w:focus{outline:none;border-color:var(--accent)}
-input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.koF{border-color:var(--ko);background:var(--kos)}
+input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.midF{border-color:var(--mid);background:var(--mids)} input.w.koF{border-color:var(--ko);background:var(--kos)}
 .corr{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.4}
 .corr.ok{background:var(--oks)} .corr.mid{background:var(--mids)} .corr.ko{background:var(--kos)}
 .cv{font-weight:700;font-size:16px}
@@ -425,9 +425,9 @@ function exLire(){
   return {box: box, max: 3, fill: function(){ fa.value = num(A); fb.value = num(Bv); fc.value = num(G.k); sc.value = 'le coefficient de proportionnalité'; fd.value = num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D); }, check: function(){
     var va = val(fa.value), vb = val(fb.value), vc = val(fc.value), oa = va !== null && eq(va, A), ob = vb !== null && eq(vb, Bv), oc = vc !== null && eq(vc, G.k), os = sc.value === 'le coefficient de proportionnalité';
     var c = calc(fd.value), r = String(fd.value).split('='), vr = r.length > 1 ? val(r[r.length - 1]) : (c ? c.v : null), od1 = !!c && eq(c.v, D) && c.nums.length >= 2, od2 = vr !== null && eq(vr, D);
-    lock([fa, fb, fc, sc, fd]); mark(fa, oa); mark(fb, ob); mark(fc, oc); mark(sc, os); mark(fd, od1 && od2);
+    lock([fa, fb, fc, sc, fd]); mark(fa, oa); mark(fb, ob); mark(fc, oc); mark(sc, os); mark(fd, od1 && od2); if (od1 !== od2){ fd.classList.remove('koF'); fd.classList.add('midF'); }
     var g = (oa ? .5 : 0) + (ob ? .5 : 0) + (oc ? .5 : 0) + (os ? .5 : 0) + (od1 ? .5 : 0) + (od2 ? .5 : 0); itemState(it, g, 3);
-    corr(it, g, 3, {why: [].concat(oa ? [] : ['a) On part de ' + num(G.xa) + ' sur l’axe horizontal, on monte jusqu’à la droite, on lit ' + num(A) + ' ' + C.uy + '.']).concat(ob ? [] : ['b) On part de ' + num(G.yb) + ' sur l’axe vertical, on va jusqu’à la droite, on lit ' + num(Bv) + ' ' + C.ux + '.']).concat(oc ? [] : ['c) Pour 1, on lit ' + num(G.k) + ' ' + C.uy + '.']).concat(os ? [] : ['La valeur pour 1 est le coefficient de proportionnalité.']).concat(od1 && od2 ? [] : ['d) On multiplie par le coefficient : ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + '.']),
+    corr(it, g, 3, {why: [].concat(oa ? [] : ['a) On part de ' + num(G.xa) + ' sur l’axe horizontal, on monte jusqu’à la droite, on lit ' + num(A) + ' ' + C.uy + '.']).concat(ob ? [] : ['b) On part de ' + num(G.yb) + ' sur l’axe vertical, on va jusqu’à la droite, on lit ' + num(Bv) + ' ' + C.ux + '.']).concat(oc ? [] : ['c) Pour 1, on lit ' + num(G.k) + ' ' + C.uy + '.']).concat(os ? [] : ['La valeur pour 1 est le coefficient de proportionnalité.']).concat(od1 && od2 ? [] : [!od1 && od2 ? 'd) Le résultat est juste (0,5 point), mais le calcul manque (0,5 point) : écris ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + '.' : od1 && !od2 ? 'd) Le calcul est juste (0,5 point), mais il manque le bon résultat : ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + '.' : 'd) On multiplie par le coefficient : ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + '.']),
       sol: ['a) ' + num(A) + ' ' + C.uy, 'b) ' + num(Bv) + ' ' + C.ux, 'c) ' + num(G.k) + ' ' + C.uy + ' : c’est le coefficient de proportionnalité', 'd) ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + ' ' + C.uy], noHl: true, tip: 'je lis la graduation (pas le nombre de carreaux) ; hors du graphique, je calcule avec le coefficient.'});
     return g;
   }};
