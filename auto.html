@@ -198,6 +198,7 @@ svg.fig.wide{max-width:560px} svg.fig.small{max-width:300px}
   background-image:linear-gradient(var(--gridc) 1px,transparent 1px),linear-gradient(90deg,var(--gridc) 1px,transparent 1px);background-size:30px 30px}
 .proj[hidden]{display:none}
 .ptop{display:flex;align-items:center;gap:12px;padding:14px 22px;flex-wrap:wrap}
+.ptop .icon:disabled{opacity:.35;cursor:default}
 .ptop .pn{font:700 clamp(18px,2.2vw,28px) "Bricolage Grotesque",system-ui,sans-serif;flex:1}
 .ptop .pt{font:700 clamp(24px,3.2vw,44px) "Bricolage Grotesque",system-ui,sans-serif;font-variant-numeric:tabular-nums}
 .pbar{height:8px;background:var(--line)} .pbar i{display:block;height:100%;background:var(--accent);width:0}
@@ -747,7 +748,8 @@ function projStart(qs){
     if (CL.t > 0) tb.el.appendChild(pause);
     var cbtn = btn('Correction', function(){ toggle(); }, 'Afficher la correction de cette question (touche C)');
     tb.el.appendChild(cbtn);
-    tb.el.appendChild(btn('Suivante →', next, 'Question suivante'));
+    var pv = btn('← Précédente', prev, 'Question précédente (flèche gauche)'); pv.disabled = i === 0; tb.el.appendChild(pv);
+    tb.el.appendChild(btn(i < qs.length - 1 ? 'Suivante →' : 'Récap →', next, i < qs.length - 1 ? 'Question suivante' : 'Récapitulatif avec le corrigé'));
     tb.el.appendChild(btn('✕', quit, 'Quitter'));
     proj.appendChild(tb.el);
     var bar = el('div','pbar'), bi = el('i'); bar.appendChild(bi); proj.appendChild(bar);
@@ -780,35 +782,29 @@ function projStart(qs){
   // avec « correction après chaque question », la touche Suivante affiche d'abord la correction
   function advance(){ if (CL.c === 'each' && !revealed) revealQ(true); else next(); }
   function next(){ if (i < qs.length - 1){ i++; showQ(); } else showEnd(); }
+  function prev(){ if (i > 0){ i--; showQ(); } }
+  // fin de la série : diapo récapitulative avec le corrigé de chaque question
   function showEnd(){
     stopAll(); phase = 'end'; proj.innerHTML = '';
-    var tb = topbar('Terminé', false); tb.el.appendChild(btn('✕', quit, 'Quitter')); proj.appendChild(tb.el);
-    var body = el('div','pbody pend'); body.appendChild(el('h2', null, 'Stylos levés !'));
-    var r = el('div','row'); r.style.justifyContent = 'center';
-    var c1 = el('button','btn primary','Correction une par une'); c1.onclick = function(){ i = 0; showC(); };
-    var c2 = el('button','btn','Toutes les réponses'); c2.onclick = showAll;
-    r.appendChild(c1); r.appendChild(c2); body.appendChild(r); proj.appendChild(body); c1.focus();
+    var tb = topbar('Stylos levés ! · Corrigé', false);
+    tb.el.appendChild(btn('← Précédente', function(){ i = qs.length - 1; showQ(); }, 'Revenir à la dernière question'));
+    tb.el.appendChild(btn('Une par une', function(){ i = 0; showC(); }, 'Corriger question par question, avec la méthode'));
+    tb.el.appendChild(btn('✕', quit, 'Quitter')); proj.appendChild(tb.el);
+    var body = el('div','pbody'); body.style.justifyContent = 'flex-start';
+    var g = el('div','pall');
+    qs.forEach(function(q, k){ var c = el('div','eq'); c.appendChild(el('p','qnum','Question ' + (k + 1))); c.appendChild(html('div','q', q.html)); c.appendChild(html('div','corr', '→ ' + q.corr)); g.appendChild(c); });
+    body.appendChild(g); proj.appendChild(body);
   }
   function showC(){
     phase = 'c'; proj.innerHTML = '';
     var tb = topbar('Correction · question ' + (i + 1) + ' / ' + qs.length, false);
     tb.el.appendChild(btn('←', function(){ if (i > 0){ i--; showC(); } }, 'Précédente'));
-    tb.el.appendChild(btn('→', function(){ if (i < qs.length - 1){ i++; showC(); } else showAll(); }, 'Suivante'));
-    tb.el.appendChild(btn('Tout voir', showAll)); tb.el.appendChild(btn('✕', quit, 'Quitter'));
+    tb.el.appendChild(btn('→', function(){ if (i < qs.length - 1){ i++; showC(); } else showEnd(); }, 'Suivante'));
+    tb.el.appendChild(btn('Récap', showEnd, 'Diapo récapitulative')); tb.el.appendChild(btn('✕', quit, 'Quitter'));
     proj.appendChild(tb.el);
     var body = el('div','pbody'); body.appendChild(html('div','pq', qs[i].html));
     body.appendChild(html('div','pans', '→ ' + qs[i].corr)); body.appendChild(html('div','pmeth', qs[i].meth));
     proj.appendChild(body);
-  }
-  function showAll(){
-    phase = 'all'; proj.innerHTML = '';
-    var tb = topbar('Toutes les réponses', false);
-    tb.el.appendChild(btn('Une par une', function(){ i = 0; showC(); })); tb.el.appendChild(btn('✕', quit, 'Quitter'));
-    proj.appendChild(tb.el);
-    var body = el('div','pbody'); body.style.justifyContent = 'flex-start';
-    var g = el('div','pall');
-    qs.forEach(function(q, k){ var c = el('div','eq'); c.appendChild(el('p','qnum','Question ' + (k + 1))); c.appendChild(html('div','q', q.html)); c.appendChild(html('div','corr', '→ ' + q.corr)); g.appendChild(c); });
-    body.appendChild(g); proj.appendChild(body);
   }
   function key(ev){
     if (ev.key === 'Escape'){ quit(); return; }
@@ -817,7 +813,9 @@ function projStart(qs){
     if (ev.key === '0'){ setPs(1); return; }
     if (phase === 'q' && (ev.key === 'c' || ev.key === 'C')){ ev.preventDefault(); revealQ(); return; }
     if (phase === 'q' && (ev.key === 'ArrowRight' || ev.key === ' ' || ev.key === 'PageDown')){ ev.preventDefault(); advance(); }
-    else if (phase === 'c' && (ev.key === 'ArrowRight' || ev.key === ' ' || ev.key === 'PageDown')){ ev.preventDefault(); if (i < qs.length - 1){ i++; showC(); } else showAll(); }
+    else if (phase === 'q' && (ev.key === 'ArrowLeft' || ev.key === 'PageUp')){ ev.preventDefault(); prev(); }
+    else if (phase === 'end' && (ev.key === 'ArrowLeft' || ev.key === 'PageUp')){ ev.preventDefault(); i = qs.length - 1; showQ(); }
+    else if (phase === 'c' && (ev.key === 'ArrowRight' || ev.key === ' ' || ev.key === 'PageDown')){ ev.preventDefault(); if (i < qs.length - 1){ i++; showC(); } else showEnd(); }
     else if (phase === 'c' && (ev.key === 'ArrowLeft' || ev.key === 'PageUp')){ ev.preventDefault(); if (i > 0){ i--; showC(); } }
   }
   document.addEventListener('keydown', key);
