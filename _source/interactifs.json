@@ -596,6 +596,13 @@
       "E01": {
         "u": "exos/4e-e01-eval.html",
         "notions": []
+      },
+      "E02": {
+        "u": "exos/4e-e02-eval.html",
+        "notions": [
+          11,
+          12
+        ]
       }
     }
   }

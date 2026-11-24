@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Préparer l'évaluation E02 : proportionnalité (4e) – M. Pluchet</title>
+<meta name="description" content="Exerciseur pour préparer l'évaluation E02 de 4e (35 min) : quatrième proportionnelle et proportionnalité sur un graphique.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="theme-color" content="#2f5bd3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --ink:#1b2333; --muted:#596277; --line:#e2ded3;
+  --accent:#2f5bd3; --accent-ink:#ffffff; --soft:#e8eefc; --gridc:#e9e5da;
+  --ok:#1e7a46; --oks:#e3f4ea; --ko:#b3261e; --kos:#fbe6e4; --mid:#b85c00; --mids:#fbeedd; --hi:#d6336c;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#13161d; --card:#1b1f28; --ink:#eaedf3; --muted:#a3abbc; --line:#2b313e;
+    --accent:#86a4ff; --accent-ink:#0f1320; --soft:#222a3e; --gridc:#1a1e27;
+    --ok:#6fd49a; --oks:#173326; --ko:#ff8a80; --kos:#3a1f1d; --mid:#f0a050; --mids:#33261a; --hi:#ff7aa5; }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;
+  background-image:linear-gradient(var(--gridc) 1px,transparent 1px),linear-gradient(90deg,var(--gridc) 1px,transparent 1px);background-size:22px 22px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header{padding:22px 0 8px}
+.top{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.top a,.top button{color:var(--accent);font-weight:700;font-size:15px;font-family:inherit;text-decoration:none;background:none;border:0;padding:0;cursor:pointer}
+.top a:hover,.top button:hover{text-decoration:underline}
+.kick{color:var(--muted);font-weight:700;font-size:14px;margin:0}
+h1{font:700 clamp(26px,6vw,38px)/1.1 "Bricolage Grotesque",system-ui,sans-serif;margin:2px 0 6px}
+.sub{color:var(--muted);margin:0}
+main{padding:14px 0 60px}
+h2.cat{font-size:15px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tile{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;color:var(--ink);font:inherit;display:flex;gap:12px;align-items:flex-start}
+.tile:hover{border-color:var(--accent);box-shadow:0 6px 20px -14px var(--accent)}
+.tile .ic{font-size:26px;line-height:1}
+.tile b{display:block;font:700 18px/1.2 "Bricolage Grotesque",system-ui,sans-serif;margin-bottom:4px}
+.tile .d{color:var(--muted);font-size:15px;display:block}
+.tile .rec{display:block;margin-top:6px;font-size:13px;font-weight:700;color:var(--ok)}
+.tile.big{border:2px solid var(--accent);background:linear-gradient(135deg,var(--soft),var(--card))}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ph h2{font:700 22px/1.15 "Bricolage Grotesque",system-ui,sans-serif;margin:0}
+.pts{font-weight:700;color:var(--muted);font-size:15px;white-space:nowrap}
+.pts.ok{color:var(--ok)} .pts.mid{color:var(--mid)} .pts.ko{color:var(--ko)}
+.consigne{margin:0;color:var(--muted);font-size:15px}
+.items{display:grid;gap:14px}
+.items > *{min-width:0}
+@media (min-width:700px){ .items.two{grid-template-columns:1fr 1fr} }
+.item{border-left:3px solid var(--line);padding:4px 0 4px 12px;display:flex;flex-direction:column;gap:6px}
+.item.okI{border-color:var(--ok)} .item.koI{border-color:var(--ko)} .item.midI{border-color:var(--mid)}
+.q{font:700 20px/1.35 "Bricolage Grotesque",system-ui,sans-serif}
+.q .nm{color:var(--accent);margin-right:6px}
+.ln{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.ln .eq{font:700 20px "Bricolage Grotesque",sans-serif;width:1.1em;text-align:center}
+.ln .tag{font-size:12px;color:var(--muted);font-weight:700;flex-basis:100%}
+input.w{font:700 19px "Bricolage Grotesque",system-ui,sans-serif;flex:1 1 0;width:100%;min-width:0;max-width:340px;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+input.w.num{max-width:150px;flex:0 1 150px}
+input.w:focus{outline:none;border-color:var(--accent)}
+input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.koF{border-color:var(--ko);background:var(--kos)}
+.corr{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.4}
+.corr.ok{background:var(--oks)} .corr.mid{background:var(--mids)} .corr.ko{background:var(--kos)}
+.cv{font-weight:700;font-size:16px}
+.corr.ok .cv{color:var(--ok)} .corr.mid .cv{color:var(--mid)} .corr.ko .cv{color:var(--ko)}
+.cw{margin:0;padding-left:20px;color:var(--ink)}
+.cs{background:var(--card);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.cs .cl{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px}
+.cs .sl{font:700 19px/1.55 "Bricolage Grotesque",system-ui,sans-serif;white-space:pre-wrap}
+.cs .sl.hl{color:var(--ok)}
+.ct{color:var(--ink)}
+.ct b{color:var(--accent)}
+.fill{line-height:2.4;font-size:18px}
+select.s{font:700 16px inherit;font-family:inherit;padding:6px 8px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);max-width:100%}
+select.s.okF{border-color:var(--ok);background:var(--oks)} select.s.koF{border-color:var(--ko);background:var(--kos)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center}
+.btn{font:700 16px inherit;font-family:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 16px;cursor:pointer;min-height:46px}
+.btn:hover{border-color:var(--accent)}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.res{border-radius:14px;padding:12px 16px;font-weight:700;text-align:center}
+.res.ok{background:var(--oks);color:var(--ok)} .res.mid{background:var(--mids);color:var(--mid)} .res.ko{background:var(--kos);color:var(--ko)}
+.res small{display:block;font-weight:400;color:var(--ink)}
+.row.left{justify-content:flex-start}
+.btn.sel{background:var(--soft);border-color:var(--accent)}
+/* barre de symboles */
+.kbar{display:flex;gap:6px;flex-wrap:wrap;padding-left:calc(1.1em + 8px)}
+.kbar button{font:700 20px "Bricolage Grotesque",sans-serif;min-width:44px;min-height:40px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+/* évaluation blanche */
+.timerbar{position:sticky;top:0;z-index:10;background:var(--bg);padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.timer{font:700 24px "Bricolage Grotesque",sans-serif}
+.timer.low{color:var(--ko)}
+.note{font:700 64px/1 "Bricolage Grotesque",sans-serif;text-align:center}
+.bilan{display:grid;gap:8px}
+.bl{display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--bg);border-radius:12px;padding:8px 12px;flex-wrap:wrap}
+.bl b{font-size:16px}
+.bl .btn{min-height:38px;padding:6px 12px;font-size:14px}
+/* tableaux et graphiques */
+.items.three{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+table.tp{border-collapse:collapse;font:700 18px "Bricolage Grotesque",sans-serif;margin:4px 0}
+table.tp td,table.tp th{border:2px solid var(--ink);padding:6px 12px;text-align:center;min-width:52px}
+table.tp th{background:var(--soft);font:700 14px "Atkinson Hyperlegible",sans-serif}
+.figrow{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.figrow > .txt{flex:1 1 240px;min-width:0}
+svg.gr{width:330px;max-width:100%;height:auto;flex:none;color:var(--ink)}
+svg.gr .g{stroke:var(--line);stroke-width:1}
+svg.gr .ax,svg.mini .ax{stroke:currentColor;stroke-width:2}
+svg.gr .tk{font:700 13px "Atkinson Hyperlegible",sans-serif;fill:var(--muted)}
+svg.gr .nm{font:700 13px "Atkinson Hyperlegible",sans-serif;fill:var(--accent)}
+svg.gr .dr,svg.mini .dr{stroke:currentColor;stroke-width:3;fill:none}
+svg.gr .ds{stroke-dasharray:8 6}
+svg.gr .lb{font:700 14px "Bricolage Grotesque",sans-serif;fill:currentColor;paint-order:stroke;stroke:var(--card);stroke-width:4}
+svg.mini{width:170px;max-width:100%;height:auto;color:var(--ink)}
+svg.mini .pt{fill:currentColor} svg.mini .tk{font:700 13px sans-serif;fill:var(--muted)}
+.ln .lab{font-weight:700;white-space:normal;max-width:100%}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="top"><a href="../" id="home">← Mes cours</a><button type="button" id="tomenu" hidden>← Menu de l’exerciseur</button></div>
+  <p class="kick">4e · Évaluation E02 · N11, N12</p>
+  <h1>Préparer l’évaluation</h1>
+  <p class="sub">Quatrième proportionnelle et proportionnalité sur un graphique (évaluation de 35 min) : les mêmes exercices et le même barème que l’évaluation. Calculatrice autorisée.</p>
+</header>
+<main class="wrap" id="main"></main>
+<div class="kbar" id="kbar" hidden></div>
+<script>
+(function(){
+'use strict';
+var main = document.getElementById('main'), tomenu = document.getElementById('tomenu'), kbar = document.getElementById('kbar');
+var MINUS = '−', EPS = 1e-6, KEY = 'eval:4ee02:', PATH = '/exos/4e-e02-eval/';
+function el(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function rnd(a, b){ return a + Math.floor(Math.random() * (b - a + 1)); }
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+function shuffle(a){ for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function eq(a, b){ return Math.abs(a - b) < EPS; }
+function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e){ return null; } }
+function num(n){ return String(Math.round(n * 1000) / 1000).replace('.', ','); }
+function pts(x){ return String(Math.round(x * 100) / 100).replace('.', ','); }
+
+/* ---------- questions des vrais sujets : jamais reproduites ---------- */
+// Empreintes (FNV-1a) des calculs des sujets de toutes les classes (A, B et PAP), produites par _source/exclu_4e_e02.py.
+// Seules les empreintes figurent ici : les nombres des sujets ne sont pas lisibles dans la page.
+var EXCLU = ["08dfd66c", "0a27ec4a", "106a0369", "120230ff", "159493bc", "15bbaaf9", "196a1194", "1a27878b", "1b4544f4", "23b9f787", "2575085d", "27500dd5", "297a0365", "29a63a3b", "30a90a34", "31897fc8", "32a90d5a", "35b22803", "3a23cfb6", "3b23d149", "3d574189", "3f0ac90b", "3fc357ba", "41ba35b8", "43cbf3d5", "448de059", "44cbf568", "459a662c", "45cbf6fb", "46c38138", "478de512", "493451ea", "57353ef2", "59a3e026", "5b5094e3", "62a98e4e", "63d545fc", "66d7894c", "67f28dd4", "68d78c72", "6999e390", "6d9aac47", "6e9aadda", "77e86b84", "79f86579", "7ac488cb", "7e0c142e", "7e1afabe", "7f0c15c1", "7f8031c6", "800c1754", "810c18e7", "82deecd2", "84512e78", "8551300b", "8585af3b", "88afc35b", "8eafcccd", "90e74896", "90f0e8c0", "92f0ebe6", "963e2499", "969a9fd1", "96f0f232", "9df0fd37", "9f10f17f", "a1e63e26", "a3082a37", "a58bf5f1", "a98b6cf1", "aa9faee6", "ab1342fa", "af6844e1", "b0b47c36", "b441231e", "b8609198", "bfbb4f98", "c125435e", "c163586d", "c3e32598", "c4254817", "c53f7f93", "c9d327b3", "d0143b76", "d2cd84bc", "da3f7661", "dcd12423", "e21d2ec6", "e6da9163", "e920d11c", "ea8fd64b", "eeff7d14", "f0e73f62", "f3d4f54e", "fc32b09f"];
+function fnv(s){ var h = 0x811c9dc5, b = unescape(encodeURIComponent(s)); for (var i = 0; i < b.length; i++){ h ^= b.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return ('0000000' + h.toString(16)).slice(-8); }
+function excluded(key){ return EXCLU.indexOf(fnv(key)) > -1; }
+
+/* ---------- champs de saisie et barre de symboles ---------- */
+var lastInput = null;
+function field(cls, ph){
+  var i = el('input', 'w' + (cls ? ' ' + cls : '')); i.type = 'text'; i.autocomplete = 'off'; i.spellcheck = false; i.autocapitalize = 'off';
+  if (ph) i.placeholder = ph;
+  i.addEventListener('focus', function(){ lastInput = i; var ln = i.parentNode; ln.parentNode.insertBefore(kbar, ln.nextSibling); kbar.hidden = false; });
+  return i;
+}
+['×', '÷', '=', ',', '-', '(', ')', '€'].forEach(function(k){
+  var b = el('button', null, k); b.type = 'button'; if (k === '-') b.setAttribute('aria-label', 'moins');
+  b.addEventListener('mousedown', function(e){ e.preventDefault(); });
+  b.onclick = function(){
+    if (!lastInput || lastInput.disabled) return;
+    var a = lastInput.selectionStart == null ? lastInput.value.length : lastInput.selectionStart, z = lastInput.selectionEnd == null ? a : lastInput.selectionEnd;
+    lastInput.value = lastInput.value.slice(0, a) + k + lastInput.value.slice(z);
+    lastInput.focus(); lastInput.setSelectionRange(a + k.length, a + k.length);
+  };
+  kbar.appendChild(b);
+});
+function mark(input, ok){ input.classList.remove('okF', 'koF'); input.classList.add(ok ? 'okF' : 'koF'); }
+function lock(list){ list.forEach(function(x){ x.disabled = true; }); }
+function sel(opts, ph){ var s = el('select', 's'), o0 = el('option', null, ph || '…'); o0.value = ''; s.appendChild(o0); opts.forEach(function(o){ var op = el('option', null, o); op.value = o; s.appendChild(op); }); return s; }
+// Correction d'une question : verdict + ce qui ne va pas + bonne rédaction ligne par ligne + rappel du cours
+function corr(parent, got, max, o){
+  o = o || {}; var full = eq(got, max), k = full ? 'ok' : got > 0 ? 'mid' : 'ko';
+  var c = el('div', 'corr ' + k);
+  c.appendChild(el('div', 'cv', (full ? '✓ Bravo ! ' : got > 0 ? 'Presque ! ' : '✗ ') + pts(got) + ' / ' + pts(max) + ' point' + (max > 1 ? 's' : '')));
+  if (!full && o.why && o.why.length){ var ul = el('ul', 'cw'); o.why.forEach(function(w){ ul.appendChild(el('li', null, w)); }); c.appendChild(ul); }
+  if (o.sol && (!full || o.always)){
+    var s = el('div', 'cs'); s.appendChild(el('span', 'cl', o.solTitle || 'La bonne rédaction'));
+    o.sol.forEach(function(l, i){ s.appendChild(el('div', 'sl' + (i === o.sol.length - 1 && !o.noHl ? ' hl' : ''), l)); });
+    c.appendChild(s);
+  }
+  if (o.tip && !full){ var t = el('div', 'ct'); t.appendChild(el('b', null, '💡 À retenir : ')); t.appendChild(document.createTextNode(o.tip)); c.appendChild(t); }
+  parent.appendChild(c); return c;
+}
+function itemState(item, got, max){ item.classList.add(eq(got, max) ? 'okI' : got > 0 ? 'midI' : 'koI'); }
+function line(it, lab, ph, cls){ var ln = el('div', 'ln'); if (lab) ln.appendChild(el('span', 'lab', lab)); var f = field(cls || '', ph); ln.appendChild(f); it.appendChild(ln); return f; }
+
+/* ---------- lecture des réponses ---------- */
+
+/* ---------- lecture des réponses ---------- */
+// nombre : « 15 », « 15,5 », « 37,50 € », « 4 h »
+function val(s){
+  s = String(s || '').replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/\./g, ',').replace(/^=/, '');
+  var m = /^([+-]?\d+(?:,\d+)?)[a-zA-Zéè€²%]*$/.exec(s);
+  return m ? parseFloat(m[1].replace(',', '.')) : null;
+}
+// calcul écrit avec × ÷ (ou x * : /) et éventuellement « = résultat » : {v: valeur, nums: [nombres écrits]}
+function calc(s){
+  s = String(s || '').replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/[€a-wyzA-WYZéèh]+/g, '');
+  s = s.split('=')[0];
+  if (!s || !/^[\d,.()+\-×÷xX*:\/]+$/.test(s)) return null;
+  var nums = (s.match(/\d+(?:[,.]\d+)?/g) || []).map(function(t){ return parseFloat(t.replace(',', '.')); });
+  var js = s.replace(/,/g, '.').replace(/[×xX]/g, '*').replace(/[÷:]/g, '/');
+  if (!/^[\d.()+\-*\/]+$/.test(js)) return null;
+  try { var v = Function('"use strict";return (' + js + ')')(); return isFinite(v) ? {v: v, nums: nums} : null; } catch(e){ return null; }
+}
+function usesAll(c, list){ var rest = c.nums.slice(); return list.every(function(x){ var k = rest.findIndex(function(y){ return eq(y, x); }); if (k < 0) return false; rest.splice(k, 1); return true; }); }
+// produit « 3 × 7 = 21 »
+function prod(s){ var c = calc(s); if (!c || c.nums.length < 2) return null; var r = String(s).split('='); return {v: c.v, nums: c.nums.slice(0, 2), res: r.length > 1 ? val(r[1]) : null}; }
+function key2(a, b){ return [num(a), num(b)].sort().join('|'); }
+function kq4(a, b, d){ return 'q4:' + key2(a, b) + '|' + num(d); }
+function kmul(a, b){ return 'mul:' + key2(a, b); }
+function freshK(gen, keysOf){ var x, n = 0; do { x = gen(); } while (keysOf(x).some(excluded) && ++n < 80); return x; }
+function eur(x){ return eq(x, Math.round(x)) ? num(x) : (Math.round(x * 100) / 100).toFixed(2).replace('.', ','); }
+
+/* ---------- tableaux et graphiques ---------- */
+function tab(rows){ // rows : [[en-tête, v1, v2], [en-tête, v1, v2]]
+  var t = el('table', 'tp');
+  rows.forEach(function(r){ var tr = el('tr'); r.forEach(function(c, k){ tr.appendChild(el(k === 0 && r.length > 2 && rows[0][0] !== '' ? 'th' : 'td', null, c)); }); t.appendChild(tr); });
+  return t;
+}
+var NS = 'http://www.w3.org/2000/svg';
+function S(svg, t, at, txt){ var e = document.createElementNS(NS, t); for (var a in at) e.setAttribute(a, at[a]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; }
+// repère quadrillé : o = {nx, ny, px, py, ex, ey, nomx, nomy, lines: [{a, b, x1, dash, lab}]} ; une droite y = a·x + b
+function graph(o){
+  var c = 30, L = 46, B = 34, T = 22, W = L + o.nx * c + 34, H = T + o.ny * c + B;
+  var svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('class', 'gr');
+  function X(x){ return L + x / o.px * c; } function Y(y){ return T + (o.ny - y / o.py) * c; }
+  for (var i = 0; i <= o.nx; i++) S(svg, 'line', {x1: L + i * c, y1: T, x2: L + i * c, y2: T + o.ny * c, 'class': 'g'});
+  for (i = 0; i <= o.ny; i++) S(svg, 'line', {x1: L, y1: T + i * c, x2: L + o.nx * c, y2: T + i * c, 'class': 'g'});
+  S(svg, 'line', {x1: L, y1: T + o.ny * c, x2: L + o.nx * c + 14, y2: T + o.ny * c, 'class': 'ax'});
+  S(svg, 'line', {x1: L, y1: T + o.ny * c, x2: L, y2: T - 12, 'class': 'ax'});
+  for (i = 1; i <= o.nx; i++) if (i % o.ex === 0) S(svg, 'text', {x: L + i * c, y: T + o.ny * c + 18, 'text-anchor': 'middle', 'class': 'tk'}, num(i * o.px));
+  for (i = 1; i <= o.ny; i++) if (i % o.ey === 0) S(svg, 'text', {x: L - 6, y: T + (o.ny - i) * c + 5, 'text-anchor': 'end', 'class': 'tk'}, num(i * o.py));
+  S(svg, 'text', {x: L - 6, y: T + o.ny * c + 18, 'text-anchor': 'end', 'class': 'tk'}, '0');
+  S(svg, 'text', {x: L + o.nx * c + 14, y: T + o.ny * c - 6, 'text-anchor': 'end', 'class': 'nm'}, o.nomx);
+  S(svg, 'text', {x: L + 6, y: T - 4, 'class': 'nm'}, o.nomy);
+  (o.lines || []).forEach(function(d){
+    var xm = Math.min(o.nx * o.px, (o.ny * o.py - d.b) / d.a);
+    S(svg, 'line', {x1: X(0), y1: Y(d.b), x2: X(xm), y2: Y(d.a * xm + d.b), 'class': 'dr' + (d.dash ? ' ds' : '')});
+    if (d.lab) S(svg, 'text', {x: X(xm * d.t) + (d.dx || 6), y: Y(d.a * xm * d.t + d.b) + (d.dy || -8), 'class': 'lb', 'text-anchor': d.anchor || 'start'}, d.lab);
+  });
+  return svg;
+}
+// petit graphique sans graduation (exercice 4)
+function mini(type){
+  var svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 170 130'); svg.setAttribute('class', 'mini');
+  S(svg, 'line', {x1: 18, y1: 112, x2: 160, y2: 112, 'class': 'ax'}); S(svg, 'line', {x1: 18, y1: 112, x2: 18, y2: 8, 'class': 'ax'});
+  S(svg, 'text', {x: 8, y: 126, 'class': 'tk'}, 'O');
+  var s = type.s;
+  if (type.k === 'O') S(svg, 'line', {x1: 18, y1: 112, x2: 150, y2: 112 - 132 * s, 'class': 'dr'});
+  if (type.k === 'B') S(svg, 'line', {x1: 18, y1: 112 - type.b, x2: 150, y2: 112 - type.b - 132 * s, 'class': 'dr'});
+  if (type.k === 'C') S(svg, 'path', {d: 'M18 112 Q 110 ' + (112 - 4) + ' 150 ' + (112 - 98), 'class': 'dr', fill: 'none'});
+  if (type.k === 'P') [1, 2, 3, 4].forEach(function(i){ S(svg, 'circle', {cx: 18 + 30 * i, cy: 112 - 30 * i * s, r: 4.5, 'class': 'pt'}); });
+  if (type.k === 'Q') [[30, 20], [60, 48], [90, 62], [120, 70]].forEach(function(p){ S(svg, 'circle', {cx: 18 + p[0], cy: 112 - p[1], r: 4.5, 'class': 'pt'}); });
+  return svg;
+}
+
+/* ============ Exercice 1 : question de cours (1,5 point) ============ */
+var COURS = [
+  {n: 11, q: 'Dans un tableau de proportionnalité, que peut-on dire des produits en croix ? Explique comment on calcule une quatrième proportionnelle avec un produit en croix.',
+   good: 'Dans un tableau de proportionnalité, les produits en croix sont égaux ; pour calculer la quatrième proportionnelle, on multiplie les deux nombres placés en diagonale, puis on divise par le troisième nombre.',
+   bad: ['Dans un tableau de proportionnalité, les produits en croix sont égaux ; pour calculer la quatrième proportionnelle, on multiplie les deux nombres placés sur la même ligne, puis on divise par le troisième nombre.',
+         'Dans un tableau de proportionnalité, les produits en croix sont différents ; pour calculer la quatrième proportionnelle, on multiplie les deux nombres placés en diagonale, puis on divise par le troisième nombre.',
+         'Dans un tableau de proportionnalité, les produits en croix sont égaux ; pour calculer la quatrième proportionnelle, on multiplie les deux nombres placés en diagonale, puis on soustrait le troisième nombre.'],
+   parts: ['les produits en croix sont égaux', 'on multiplie les deux nombres en diagonale', 'on divise par le troisième nombre']},
+  {n: 12, q: 'Comment reconnaît-on, sur un graphique, une situation de proportionnalité ? Qu’appelle-t-on l’origine d’un repère ?',
+   good: 'Une situation de proportionnalité est représentée par des points alignés avec l’origine du repère ; l’origine est le point où les deux axes se coupent, qui correspond à 0 sur chaque axe.',
+   bad: ['Une situation de proportionnalité est représentée par des points alignés ; l’origine est le point où les deux axes se coupent, qui correspond à 0 sur chaque axe.',
+         'Une situation de proportionnalité est représentée par une courbe qui passe par l’origine du repère ; l’origine est le point où les deux axes se coupent, qui correspond à 0 sur chaque axe.',
+         'Une situation de proportionnalité est représentée par des points alignés avec l’origine du repère ; l’origine est le premier point placé sur le graphique, qui correspond à 1 sur chaque axe.'],
+   parts: ['des points alignés', 'avec l’origine du repère', 'l’origine : le point où les axes se coupent (0 sur chaque axe)']}
+];
+function exCours(only){
+  var Q = only ? COURS.filter(function(c){ return c.n === only; })[0] : pick(COURS), box = el('div', 'items'), it = el('div', 'item');
+  it.appendChild(el('div', 'q', Q.q)); it.appendChild(el('p', 'consigne', 'Sur ta copie, tu l’écris toi-même. Ici, choisis la seule phrase entièrement juste (lis-les bien : une erreur d’un mot suffit).'));
+  var opts = shuffle([Q.good].concat(Q.bad)), rs = [], nm = 'c' + Math.random().toString(36).slice(2);
+  opts.forEach(function(o){ var lb = el('label', 'ln'), r = el('input'); r.type = 'radio'; r.name = nm; r.value = o; lb.appendChild(r); lb.appendChild(el('span', null, o)); lb.style.alignItems = 'flex-start'; it.appendChild(lb); rs.push(r); });
+  box.appendChild(it);
+  return {box: box, max: 1.5, fill: function(){ rs.forEach(function(r){ r.checked = r.value === Q.good; }); }, check: function(){
+    var ch = rs.filter(function(r){ return r.checked; })[0], ok = !!ch && ch.value === Q.good; lock(rs);
+    var g = ok ? 1.5 : 0; itemState(it, g, 1.5);
+    corr(it, g, 1.5, {why: [ch ? 'Cette phrase contient une erreur. Il faut les trois éléments : ' + Q.parts.join(' ; ') + '.' : 'Aucune phrase choisie.'], sol: [Q.good], solTitle: 'La bonne réponse (0,5 point par élément sur ta copie)', noHl: true, tip: 'apprends la phrase du cours : ' + Q.parts.join(', ') + '.'});
+    return g;
+  }};
+}
+
+/* ============ Exercice 2 : produits en croix (2 points) ============ */
+var GR = [['Masse (kg)', 'Prix (€)'], ['Durée (h)', 'Distance (km)'], ['Volume (L)', 'Prix (€)'], ['Objets', 'Prix (€)'], ['Longueur (m)', 'Prix (€)'], ['Durée (min)', 'Eau (L)']];
+var COEF = [1.5, 2.5, 1.2, 0.8, 3.5, 1.4, 0.6, 2.4, 1.6, 4.5];
+function genTable(prop){
+  return freshK(function(){
+    var k = pick(COEF), x1 = rnd(2, 9), x2; do { x2 = rnd(2, 12); } while (x2 === x1);
+    var y1 = Math.round(k * x1 * 100) / 100, y2 = Math.round(k * x2 * 100) / 100;
+    if (!prop){ y2 = Math.round((y2 + pick([-1, 1]) * pick([0.5, 1, 2])) * 100) / 100; if (y2 <= 0) y2 += 3; }
+    return {g: pick(GR), x1: x1, x2: x2, y1: y1, y2: y2, prop: eq(x1 * y2, y1 * x2)};
+  }, function(T){ return [kmul(T.x1, T.y2), kmul(T.y1, T.x2)]; });
+}
+function exCroix(nb){
+  nb = nb || 2; var box = el('div', 'items two'), rows = [];
+  var props = shuffle([true, false].concat(nb > 2 ? [Math.random() < .5] : []));
+  for (var i = 0; i < nb; i++){
+    var T = genTable(props[i]), it = el('div', 'item');
+    it.appendChild(el('div', 'q', String.fromCharCode(97 + i) + ') Est-ce un tableau de proportionnalité ?'));
+    it.appendChild(tab([[T.g[0], num(T.x1), num(T.x2)], [T.g[1], num(T.y1), num(T.y2)]]));
+    var f1 = line(it, 'Produit 1 :', 'ex. 3 × 7 = 21'), f2 = line(it, 'Produit 2 :', 'ex. 4 × 5 = 20');
+    var ln = el('div', 'ln'), s = sel(['oui, proportionnel', 'non, pas proportionnel'], 'conclusion'); ln.appendChild(el('span', 'lab', 'Conclusion :')); ln.appendChild(s); it.appendChild(ln);
+    rows.push({T: T, f1: f1, f2: f2, s: s, it: it}); box.appendChild(it);
+  }
+  return {box: box, max: nb, fill: function(){ rows.forEach(function(x){ var T = x.T; x.f1.value = num(T.x1) + ' × ' + num(T.y2) + ' = ' + num(T.x1 * T.y2); x.f2.value = num(T.y1) + ' × ' + num(T.x2) + ' = ' + num(T.y1 * T.x2); x.s.value = T.prop ? 'oui, proportionnel' : 'non, pas proportionnel'; }); },
+  check: function(){
+    var got = 0;
+    rows.forEach(function(x){
+      var T = x.T, P = [prod(x.f1.value), prod(x.f2.value)], want = [[T.x1, T.y2], [T.y1, T.x2]], ok = [false, false];
+      P.forEach(function(p){ if (!p || p.res === null || !eq(p.res, p.v)) return; want.forEach(function(w, k){ if (!ok[k] && ((eq(p.nums[0], w[0]) && eq(p.nums[1], w[1])) || (eq(p.nums[0], w[1]) && eq(p.nums[1], w[0])))) ok[k] = true; }); });
+      var okP = ok[0] && ok[1], okC = x.s.value === (T.prop ? 'oui, proportionnel' : 'non, pas proportionnel');
+      lock([x.f1, x.f2, x.s]); mark(x.f1, okP); mark(x.f2, okP); mark(x.s, okC);
+      var g = (okP ? .5 : 0) + (okC ? .5 : 0); got += g; itemState(x.it, g, 1);
+      var a = T.x1 * T.y2, b = T.y1 * T.x2;
+      corr(x.it, g, 1, {why: [].concat(okP ? [] : ['Les produits en croix se font en diagonale : ' + num(T.x1) + ' × ' + num(T.y2) + ' et ' + num(T.y1) + ' × ' + num(T.x2) + ' (écris le calcul et le résultat).']).concat(okC ? [] : ['La conclusion ne correspond pas aux produits.']),
+        sol: [num(T.x1) + ' × ' + num(T.y2) + ' = ' + num(a) + ' et ' + num(T.y1) + ' × ' + num(T.x2) + ' = ' + num(b), T.prop ? 'Les produits en croix sont égaux : c’est un tableau de proportionnalité.' : 'Les produits en croix sont différents : ce n’est pas un tableau de proportionnalité.'], tip: 'égaux → proportionnel ; différents → pas proportionnel.'});
+    });
+    return got;
+  }};
+}
+
+/* ============ Exercice 3 : quatrième proportionnelle (3 points) ============ */
+function genQ4(pos){
+  return freshK(function(){
+    var a = rnd(2, 12), k = pick([1.5, 2, 2.5, 3, 0.5, 1.2, 4, 0.8, 1.25, 3.5]), b = rnd(2, 15), c = Math.round(a * k * 100) / 100, d = Math.round(b * k * 100) / 100;
+    if (b === a) b++; d = Math.round(b * k * 100) / 100;
+    var cells = [a, b, c, d], ans = cells[pos]; var t = cells.slice(); t[pos] = null;
+    var r = [[1, 2, 3], [0, 3, 2], [0, 3, 1], [1, 2, 0]][pos];   // ? = t[r0] × t[r1] ÷ t[r2]
+    return {t: t, ans: ans, f: [t[r[0]], t[r[1]], t[r[2]]]};
+  }, function(Q){ return [kq4(Q.f[0], Q.f[1], Q.f[2])]; });
+}
+function exQ4(nb){
+  nb = nb || 3; var box = el('div', 'items three'), rows = [], pos = shuffle([3, 1, 0, 2]).slice(0, nb);
+  pos.forEach(function(p, i){
+    var Q = genQ4(p), it = el('div', 'item'); it.appendChild(el('div', 'q', String.fromCharCode(97 + i) + ')'));
+    it.appendChild(tab([['', Q.t[0] === null ? '?' : num(Q.t[0]), Q.t[1] === null ? '?' : num(Q.t[1])], ['', Q.t[2] === null ? '?' : num(Q.t[2]), Q.t[3] === null ? '?' : num(Q.t[3])]].map(function(r){ return r.slice(1); })));
+    var fc = line(it, '? =', 'calcul', ''), fr = line(it, '? =', 'nombre', 'num'); rows.push({Q: Q, fc: fc, fr: fr, it: it}); box.appendChild(it);
+  });
+  return {box: box, max: nb, fill: function(){ rows.forEach(function(x){ x.fc.value = num(x.Q.f[0]) + ' × ' + num(x.Q.f[1]) + ' ÷ ' + num(x.Q.f[2]); x.fr.value = num(x.Q.ans); }); }, check: function(){
+    var got = 0;
+    rows.forEach(function(x){
+      var Q = x.Q, c = calc(x.fc.value), okC = !!c && eq(c.v, Q.ans) && usesAll(c, Q.f), v = val(x.fr.value), okR = v !== null && eq(v, Q.ans);
+      lock([x.fc, x.fr]); mark(x.fc, okC); mark(x.fr, okR); var g = (okC ? .5 : 0) + (okR ? .5 : 0); got += g; itemState(x.it, g, 1);
+      corr(x.it, g, 1, {why: [].concat(okC ? [] : ['On multiplie les deux nombres en diagonale (' + num(Q.f[0]) + ' et ' + num(Q.f[1]) + '), puis on divise par le troisième (' + num(Q.f[2]) + ').']).concat(okR ? [] : ['Le nombre manquant est ' + num(Q.ans) + '.']),
+        sol: ['? = ' + num(Q.f[0]) + ' × ' + num(Q.f[1]) + ' ÷ ' + num(Q.f[2]), '? = ' + num(Q.ans)], tip: 'je multiplie en diagonale, puis je divise par le troisième nombre.'});
+    });
+    return got;
+  }};
+}
+
+/* ============ Exercice 4 : proportionnel ou pas ? (2 points) ============ */
+var TYP = {O: {ok: true, why: 'c’est une droite qui passe par l’origine'}, P: {ok: true, why: 'les points sont alignés avec l’origine'},
+  B: {ok: false, why: 'la droite ne passe pas par l’origine'}, C: {ok: false, why: 'les points ne sont pas alignés (c’est une courbe)'}, Q: {ok: false, why: 'les points ne sont pas alignés et ne vont pas vers l’origine'}};
+var WHYS = ['c’est une droite qui passe par l’origine', 'les points sont alignés avec l’origine', 'la droite ne passe pas par l’origine', 'les points ne sont pas alignés (c’est une courbe)', 'les points ne sont pas alignés et ne vont pas vers l’origine'];
+function exGraphes(nb){
+  nb = nb || 2; var box = el('div', 'items two'), rows = [];
+  var yes = shuffle(['O', 'P']), no = shuffle(['B', 'C', 'Q']), list = shuffle([yes[0], no[0]].concat(nb > 2 ? [yes[1], no[1]] : [])).slice(0, nb);
+  list.forEach(function(k, i){
+    var it = el('div', 'item'); it.appendChild(el('div', 'q', String.fromCharCode(97 + i) + ') Proportionnel ou pas ?'));
+    it.appendChild(mini({k: k, s: (.55 + Math.random() * .2), b: rnd(25, 45)}));
+    var l1 = el('div', 'ln'), s1 = sel(['oui', 'non'], 'réponse'); l1.appendChild(el('span', 'lab', 'Proportionnel ?')); l1.appendChild(s1); it.appendChild(l1);
+    var l2 = el('div', 'ln'), s2 = sel(WHYS, 'parce que…'); l2.appendChild(el('span', 'lab', 'Car')); l2.appendChild(s2); it.appendChild(l2);
+    rows.push({k: k, s1: s1, s2: s2, it: it}); box.appendChild(it);
+  });
+  return {box: box, max: nb, fill: function(){ rows.forEach(function(x){ x.s1.value = TYP[x.k].ok ? 'oui' : 'non'; x.s2.value = TYP[x.k].why; }); }, check: function(){
+    var got = 0;
+    rows.forEach(function(x){
+      var T = TYP[x.k], o1 = x.s1.value === (T.ok ? 'oui' : 'non'), o2 = x.s2.value === T.why;
+      lock([x.s1, x.s2]); mark(x.s1, o1); mark(x.s2, o2); var g = (o1 ? .5 : 0) + (o2 ? .5 : 0); got += g; itemState(x.it, g, 1);
+      corr(x.it, g, 1, {why: [].concat(o1 ? [] : ['La réponse était « ' + (T.ok ? 'oui' : 'non') + ' ».']).concat(o2 ? [] : ['La bonne justification : ' + T.why + '.']), sol: [(T.ok ? 'Oui' : 'Non') + ', car ' + T.why + '.'], tip: 'proportionnel ⇔ points alignés ET avec l’origine.'});
+    });
+    return got;
+  }};
+}
+
+/* ============ Exercice 5 : lire un graphique de proportionnalité (3 points) ============ */
+var CTX5 = [
+  {ctx: 'Une ferme de Grainville-la-Teinturière vend du jus de pommes au litre (prix inventé).', nomx: 'Volume (L)', nomy: 'Prix (€)', ux: 'L', uy: '€', qa: 'le prix de', qb: 'le volume acheté pour', q1: 'le prix d’un litre', qd: 'le prix de'},
+  {ctx: 'Un cycliste roule sur la véloroute de la vallée de la Durdent, toujours à la même vitesse (situation inventée).', nomx: 'Durée (h)', nomy: 'Distance (km)', ux: 'h', uy: 'km', qa: 'la distance parcourue en', qb: 'la durée pour', q1: 'la distance parcourue en 1 h', qd: 'la distance parcourue en'},
+  {ctx: 'Au marché de Fécamp, un poissonnier vend ses crevettes au kilo (prix inventé).', nomx: 'Masse (kg)', nomy: 'Prix (€)', ux: 'kg', uy: '€', qa: 'le prix de', qb: 'la masse achetée pour', q1: 'le prix d’un kilo', qd: 'le prix de'},
+  {ctx: 'Une imprimerie de Cany-Barville imprime des affiches toutes au même prix (prix inventé).', nomx: 'Affiches', nomy: 'Prix (€)', ux: 'affiches', uy: '€', qa: 'le prix de', qb: 'le nombre d’affiches pour', q1: 'le prix d’une affiche', qd: 'le prix de'},
+  {ctx: 'Une cuve se remplit avec un robinet au débit régulier (situation inventée).', nomx: 'Durée (min)', nomy: 'Eau (L)', ux: 'min', uy: 'L', qa: 'le volume d’eau en', qb: 'la durée pour', q1: 'le volume d’eau en 1 min', qd: 'le volume d’eau en'},
+  {ctx: 'À Saint-Valery-en-Caux, un glacier vend ses boules de glace toutes au même prix (prix inventé).', nomx: 'Boules', nomy: 'Prix (€)', ux: 'boules', uy: '€', qa: 'le prix de', qb: 'le nombre de boules pour', q1: 'le prix d’une boule', qd: 'le prix de'}
+];
+function exLire(){
+  var C = pick(CTX5);
+  var G = freshK(function(){
+    var px = pick([1, 1, 0.5]), k = px === 1 ? pick([1.5, 2, 2.5, 3, 4, 5, 6]) : pick([2, 3, 4, 5, 6, 8]), py = k * px;
+    if (/affiches|boules/.test(C.ux)) { px = 1; py = k; }
+    var ia = rnd(2, 7), ib; do { ib = rnd(2, 7); } while (ib === ia);
+    var xd = C.ux === 'h' ? pick([5, 6, 9, 10]) : pick([10, 12, 15, 20, 25, 30, 40]);
+    return {px: px, py: py, k: k, xa: ia * px, yb: ib * py, xd: xd};
+  }, function(G){ return [kmul(G.xd, G.k)]; });
+  var box = el('div', 'items'), it = el('div', 'item'), fr = el('div', 'figrow'), t = el('div', 'txt');
+  t.appendChild(el('p', null, C.ctx + ' Le graphique représente la situation.'));
+  fr.appendChild(t); fr.appendChild(graph({nx: 8, ny: 8, px: G.px, py: G.py, ex: G.px < 1 ? 2 : 1, ey: 2, nomx: C.nomx, nomy: C.nomy, lines: [{a: G.k, b: 0}]})); it.appendChild(fr);
+  var fa = line(it, 'a) Lis ' + C.qa + (C.qa.slice(-2) === 'en' ? ' ' : ' ') + num(G.xa) + ' ' + C.ux + ' :', C.uy, 'num');
+  var fb = line(it, 'b) Lis ' + C.qb + ' ' + num(G.yb) + ' ' + C.uy + ' :', C.ux, 'num');
+  var fc = line(it, 'c) Lis ' + C.q1 + ' :', C.uy, 'num');
+  var l2 = el('div', 'ln'), sc = sel(['le coefficient de proportionnalité', 'l’origine du repère', 'une quatrième proportionnelle'], 'ce nombre est…'); l2.appendChild(el('span', 'lab', 'Ce nombre est')); l2.appendChild(sc); it.appendChild(l2);
+  var fd = line(it, 'd) Calcule ' + C.qd + ' ' + num(G.xd) + ' ' + C.ux + ' :', 'calcul = résultat');
+  box.appendChild(it);
+  var A = G.k * G.xa, Bv = G.yb / G.k, D = G.k * G.xd;
+  return {box: box, max: 3, fill: function(){ fa.value = num(A); fb.value = num(Bv); fc.value = num(G.k); sc.value = 'le coefficient de proportionnalité'; fd.value = num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D); }, check: function(){
+    var va = val(fa.value), vb = val(fb.value), vc = val(fc.value), oa = va !== null && eq(va, A), ob = vb !== null && eq(vb, Bv), oc = vc !== null && eq(vc, G.k), os = sc.value === 'le coefficient de proportionnalité';
+    var c = calc(fd.value), r = String(fd.value).split('='), vr = r.length > 1 ? val(r[r.length - 1]) : (c ? c.v : null), od1 = !!c && eq(c.v, D) && c.nums.length >= 2, od2 = vr !== null && eq(vr, D);
+    lock([fa, fb, fc, sc, fd]); mark(fa, oa); mark(fb, ob); mark(fc, oc); mark(sc, os); mark(fd, od1 && od2);
+    var g = (oa ? .5 : 0) + (ob ? .5 : 0) + (oc ? .5 : 0) + (os ? .5 : 0) + (od1 ? .5 : 0) + (od2 ? .5 : 0); itemState(it, g, 3);
+    corr(it, g, 3, {why: [].concat(oa ? [] : ['a) On part de ' + num(G.xa) + ' sur l’axe horizontal, on monte jusqu’à la droite, on lit ' + num(A) + ' ' + C.uy + '.']).concat(ob ? [] : ['b) On part de ' + num(G.yb) + ' sur l’axe vertical, on va jusqu’à la droite, on lit ' + num(Bv) + ' ' + C.ux + '.']).concat(oc ? [] : ['c) Pour 1, on lit ' + num(G.k) + ' ' + C.uy + '.']).concat(os ? [] : ['La valeur pour 1 est le coefficient de proportionnalité.']).concat(od1 && od2 ? [] : ['d) On multiplie par le coefficient : ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + '.']),
+      sol: ['a) ' + num(A) + ' ' + C.uy, 'b) ' + num(Bv) + ' ' + C.ux, 'c) ' + num(G.k) + ' ' + C.uy + ' : c’est le coefficient de proportionnalité', 'd) ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + ' ' + C.uy], noHl: true, tip: 'je lis la graduation (pas le nombre de carreaux) ; hors du graphique, je calcule avec le coefficient.'});
+    return g;
+  }};
+}
+
+/* ============ Exercice 6 : problème « deux tarifs » (7,5 points) ============ */
+var CTX6 = [
+  {t: 'Louer un kayak à Veulettes-sur-Mer', ctx: 'À Veulettes-sur-Mer, un club loue des kayaks de mer', u1: 'heure', u2: 'heures', gx: 'Durée (h)', qui: 'Emma', half: true},
+  {t: 'Louer un vélo à Fécamp', ctx: 'À Fécamp, un loueur propose des vélos', u1: 'heure', u2: 'heures', gx: 'Durée (h)', qui: 'Lucas', half: true},
+  {t: 'Des cours de tennis à Cany-Barville', ctx: 'Le club de tennis de Cany-Barville propose des cours', u1: 'cours', u2: 'cours', gx: 'Cours', qui: 'Chloé', half: false},
+  {t: 'La piscine de Saint-Valery-en-Caux', ctx: 'Une piscine de Saint-Valery-en-Caux propose des entrées', u1: 'entrée', u2: 'entrées', gx: 'Entrées', qui: 'Nathan', half: false},
+  {t: 'Un paddle à Étretat', ctx: 'À Étretat, un club loue des paddles', u1: 'heure', u2: 'heures', gx: 'Durée (h)', qui: 'Zoé', half: true},
+  {t: 'Des séances d’escalade au Havre', ctx: 'Une salle d’escalade du Havre propose des séances', u1: 'séance', u2: 'séances', gx: 'Séances', qui: 'Enzo', half: false}
+];
+function genPb(C){
+  return freshK(function(){
+    var r = pick(C.half ? [6, 7.5, 8, 9, 10, 12] : [8, 10, 12, 15, 16, 20, 25]), n0 = rnd(2, 5), p0 = r * n0;
+    var pu = Math.max(1, Math.round(r * pick([0.4, 0.5, 0.6]))), forf = pick([10, 12, 15, 20, 24, 30]);
+    var n1 = rnd(2, 3), n2 = rnd(n1 + 2, 8), c1 = forf + pu * n1, c2 = forf + pu * n2, t = C.half ? rnd(4, 15) / 2 : rnd(3, 9);
+    if (n2 === n0) n2++; c2 = forf + pu * n2;
+    return {r: r, n0: n0, p0: p0, pu: pu, forf: forf, n1: n1, n2: n2, c1: c1, c2: c2, q2: r * n2, t: t, budget: r * t};
+  }, function(V){ return [kq4(V.n2, V.p0, V.n0), kq4(V.budget, V.n0, V.p0), kmul(V.n1, V.c2), kmul(V.c1, V.n2)]; });
+}
+function exPb(parts){
+  var C = pick(CTX6), V; do { V = genPb(C); } while (eq(V.c2, V.q2) || eq(V.n1 * V.c2, V.c1 * V.n2));
+  parts = parts || [1, 2, 3, 4, 5];
+  var box = el('div', 'items'), head = el('div', 'item'), fr = el('div', 'figrow'), tx = el('div', 'txt');
+  tx.appendChild(el('p', null, C.ctx + ' (prix inventés). Deux tarifs : avec le tarif Liberté, le prix est proportionnel au nombre de ' + C.u2 + ' : ' + V.n0 + ' ' + (V.n0 > 1 ? C.u2 : C.u1) + ' coûtent ' + eur(V.p0) + ' € ; avec le tarif Abonné, on achète une carte, puis chaque ' + C.u1 + ' coûte moins cher. Le graphique représente les deux tarifs (Abonné en pointillés).'));
+  fr.appendChild(tx);
+  var xmax = V.n2 + 1, ymax = Math.max(V.r * xmax, V.forf + V.pu * xmax), st = [5, 10, 20, 25, 50].filter(function(s){ return ymax / s <= 8; })[0] || 50, ny = Math.ceil(ymax / st);
+  fr.appendChild(graph({nx: xmax, ny: ny, px: 1, py: st, ex: 1, ey: 2, nomx: C.gx, nomy: 'Prix (€)', lines: [{a: V.r, b: 0, lab: 'Liberté', t: .55, dx: -8, dy: -10, anchor: 'end'}, {a: V.pu, b: V.forf, dash: true, lab: 'Abonné', t: .9, dx: 0, dy: 18, anchor: 'end'}]}));
+  head.appendChild(fr); box.appendChild(head);
+  var Q = {}, its = [];
+  function it(txt){ var x = el('div', 'item'); x.appendChild(el('div', 'q', txt)); box.appendChild(x); its.push(x); return x; }
+  var k = 0;
+  if (parts.indexOf(1) > -1){ var i1 = it((++k) + '. Lequel des deux tarifs est proportionnel au nombre de ' + C.u2 + ' ? Justifie avec le graphique.');
+    var l = el('div', 'ln'), s1 = sel(['le tarif Liberté', 'le tarif Abonné'], 'tarif'); l.appendChild(s1); i1.appendChild(l);
+    var l2 = el('div', 'ln'), s2 = sel(['sa droite passe par l’origine', 'sa droite monte moins vite', 'il coûte moins cher'], 'car…'); l2.appendChild(el('span', 'lab', 'car')); l2.appendChild(s2); i1.appendChild(l2); Q[1] = {it: i1, s1: s1, s2: s2}; }
+  if (parts.indexOf(2) > -1){ var i2 = it((++k) + '. Avec le tarif Liberté, combien coûtent ' + V.n2 + ' ' + C.u2 + ' ? (Range les nombres dans un tableau, puis calcule.)');
+    Q[2] = {it: i2, c: line(i2, 'Calcul :', 'ex. 5 × 20 ÷ 2'), r: line(i2, 'Prix :', '€', 'num')}; }
+  if (parts.indexOf(3) > -1){ var i3 = it((++k) + '. Avec le tarif Liberté, combien de ' + C.u2 + ' peut-on avoir avec ' + eur(V.budget) + ' € ?');
+    Q[3] = {it: i3, c: line(i3, 'Calcul :', 'ex. 30 × 3 ÷ 20'), r: line(i3, 'Réponse :', C.u2, 'num')}; }
+  if (parts.indexOf(4) > -1){ var i4 = it((++k) + '. Tarif Abonné : ' + V.n1 + ' ' + C.u2 + ' coûtent ' + eur(V.c1) + ' € et ' + V.n2 + ' ' + C.u2 + ' coûtent ' + eur(V.c2) + ' €. Prouve avec les produits en croix que ce tarif n’est pas proportionnel.');
+    var a4 = line(i4, 'Produit 1 :', 'ex. 2 × 30 = 60'), b4 = line(i4, 'Produit 2 :', 'ex. 18 × 5 = 90'), l4 = el('div', 'ln'), s4 = sel(['les produits sont égaux : proportionnel', 'les produits sont différents : pas proportionnel'], 'conclusion'); l4.appendChild(s4); i4.appendChild(l4); Q[4] = {it: i4, a: a4, b: b4, s: s4}; }
+  if (parts.indexOf(5) > -1){ var i5 = it((++k) + '. ' + C.qui + ' veut ' + V.n2 + ' ' + C.u2 + (parts.indexOf(4) < 0 ? ' (avec le tarif Abonné, ' + V.n2 + ' ' + C.u2 + ' coûtent ' + eur(V.c2) + ' €)' : '') + '. Quel tarif faut-il choisir ? Combien économise-t-on ?');
+    var l5 = el('div', 'ln'), s5 = sel(['le tarif Liberté', 'le tarif Abonné'], 'tarif'); l5.appendChild(el('span', 'lab', 'Le moins cher :')); l5.appendChild(s5); i5.appendChild(l5);
+    Q[5] = {it: i5, s: s5, e: line(i5, 'Économie :', '€', 'num')}; }
+  var moins = V.c2 < V.q2 ? 'le tarif Abonné' : 'le tarif Liberté', ecart = Math.abs(V.q2 - V.c2), max = 0;
+  var W = {1: 1, 2: 2, 3: 1.5, 4: 1.5, 5: 1.5}; parts.forEach(function(p){ max += W[p]; });
+  return {box: box, max: max, note: 'Sur ta copie, chaque réponse se termine par une phrase (elle est comptée ici quand le résultat est juste).', fill: function(){
+    if (Q[1]){ Q[1].s1.value = 'le tarif Liberté'; Q[1].s2.value = 'sa droite passe par l’origine'; }
+    if (Q[2]){ Q[2].c.value = V.n2 + ' × ' + eur(V.p0) + ' ÷ ' + V.n0; Q[2].r.value = eur(V.q2); }
+    if (Q[3]){ Q[3].c.value = eur(V.budget) + ' × ' + V.n0 + ' ÷ ' + eur(V.p0); Q[3].r.value = num(V.t); }
+    if (Q[4]){ Q[4].a.value = V.n1 + ' × ' + eur(V.c2) + ' = ' + num(V.n1 * V.c2); Q[4].b.value = eur(V.c1) + ' × ' + V.n2 + ' = ' + num(V.c1 * V.n2); Q[4].s.value = 'les produits sont différents : pas proportionnel'; }
+    if (Q[5]){ Q[5].s.value = moins; Q[5].e.value = eur(ecart); }
+  }, check: function(){
+    var got = 0;
+    if (Q[1]){ var o1 = Q[1].s1.value === 'le tarif Liberté', o2 = Q[1].s2.value === 'sa droite passe par l’origine'; lock([Q[1].s1, Q[1].s2]); mark(Q[1].s1, o1); mark(Q[1].s2, o2);
+      var g1 = (o1 ? .5 : 0) + (o2 ? .5 : 0); got += g1; itemState(Q[1].it, g1, 1);
+      corr(Q[1].it, g1, 1, {why: ['Le tarif proportionnel est représenté par une droite qui passe par l’origine : c’est le tarif Liberté (celle du tarif Abonné part du prix de la carte).'], sol: ['Le tarif Liberté, car il est représenté par une droite qui passe par l’origine.'], tip: 'proportionnel ⇔ droite qui passe par l’origine.'}); }
+    if (Q[2]){ var c2 = calc(Q[2].c.value), ok2 = !!c2 && eq(c2.v, V.q2) && usesAll(c2, [V.n2, V.p0, V.n0]), v2 = val(Q[2].r.value), r2 = v2 !== null && eq(v2, V.q2);
+      lock([Q[2].c, Q[2].r]); mark(Q[2].c, ok2); mark(Q[2].r, r2); var g2 = (ok2 ? 1 : 0) + (r2 ? 1 : 0); got += g2; itemState(Q[2].it, g2, 2);
+      corr(Q[2].it, g2, 2, {why: [].concat(ok2 ? [] : ['Tableau : ' + V.n0 + ' → ' + eur(V.p0) + ' € ; ' + V.n2 + ' → ? ; produit en croix : ' + V.n2 + ' × ' + eur(V.p0) + ' ÷ ' + V.n0 + '.']).concat(r2 ? [] : ['Le prix est ' + eur(V.q2) + ' €.']),
+        sol: [C.gx + ' : ' + V.n0 + ' | ' + V.n2 + '   Prix (€) : ' + eur(V.p0) + ' | ?', V.n2 + ' × ' + eur(V.p0) + ' ÷ ' + V.n0 + ' = ' + eur(V.q2), 'Avec le tarif Liberté, ' + V.n2 + ' ' + C.u2 + ' coûtent ' + eur(V.q2) + ' €.'], tip: 'tableau, produit en croix, phrase réponse avec l’unité.'}); }
+    if (Q[3]){ var c3 = calc(Q[3].c.value), ok3 = !!c3 && eq(c3.v, V.t) && usesAll(c3, [V.budget, V.n0, V.p0]), v3 = val(Q[3].r.value), r3 = v3 !== null && eq(v3, V.t);
+      lock([Q[3].c, Q[3].r]); mark(Q[3].c, ok3); mark(Q[3].r, r3); var g3 = (ok3 ? .5 : 0) + (r3 ? 1 : 0); got += g3; itemState(Q[3].it, g3, 1.5);
+      corr(Q[3].it, g3, 1.5, {why: [].concat(ok3 ? [] : ['Produit en croix : ' + eur(V.budget) + ' × ' + V.n0 + ' ÷ ' + eur(V.p0) + '.']).concat(r3 ? [] : ['La réponse est ' + num(V.t) + ' ' + (V.t > 1 ? C.u2 : C.u1) + ' (ce sont des ' + C.u2 + ', pas des euros).']),
+        sol: [eur(V.budget) + ' × ' + V.n0 + ' ÷ ' + eur(V.p0) + ' = ' + num(V.t), 'Avec ' + eur(V.budget) + ' €, on peut avoir ' + num(V.t) + ' ' + (V.t > 1 ? C.u2 : C.u1) + ' au tarif Liberté.'], tip: 'le nombre cherché est cette fois dans la ligne des ' + C.u2 + '.'}); }
+    if (Q[4]){ var pa = prod(Q[4].a.value), pb = prod(Q[4].b.value), want = [[V.n1, V.c2], [V.c1, V.n2]], ok = [false, false];
+      [pa, pb].forEach(function(p){ if (!p || p.res === null || !eq(p.res, p.v)) return; want.forEach(function(w, j){ if (!ok[j] && ((eq(p.nums[0], w[0]) && eq(p.nums[1], w[1])) || (eq(p.nums[0], w[1]) && eq(p.nums[1], w[0])))) ok[j] = true; }); });
+      var o4 = Q[4].s.value === 'les produits sont différents : pas proportionnel'; lock([Q[4].a, Q[4].b, Q[4].s]); mark(Q[4].a, ok[0] || ok[1]); mark(Q[4].b, ok[0] && ok[1]); mark(Q[4].s, o4);
+      var g4 = (ok[0] ? .5 : 0) + (ok[1] ? .5 : 0) + (o4 ? .5 : 0); got += g4; itemState(Q[4].it, g4, 1.5);
+      corr(Q[4].it, g4, 1.5, {why: [].concat(ok[0] && ok[1] ? [] : ['Les produits en croix : ' + V.n1 + ' × ' + eur(V.c2) + ' et ' + eur(V.c1) + ' × ' + V.n2 + '.']).concat(o4 ? [] : ['Les produits sont différents : le tarif n’est pas proportionnel.']),
+        sol: [V.n1 + ' × ' + eur(V.c2) + ' = ' + num(V.n1 * V.c2) + ' et ' + eur(V.c1) + ' × ' + V.n2 + ' = ' + num(V.c1 * V.n2), 'Les produits en croix sont différents : le tarif Abonné n’est pas proportionnel.'], tip: 'des produits en croix différents prouvent que ce n’est pas proportionnel.'}); }
+    if (Q[5]){ var o5 = Q[5].s.value === moins, v5 = val(Q[5].e.value), e5 = v5 !== null && eq(v5, ecart); lock([Q[5].s, Q[5].e]); mark(Q[5].s, o5); mark(Q[5].e, e5);
+      var g5 = (o5 ? .5 : 0) + (e5 ? .5 : 0) + (o5 && e5 ? .5 : 0); got += g5; itemState(Q[5].it, g5, 1.5);
+      corr(Q[5].it, g5, 1.5, {why: ['Tarif Liberté : ' + eur(V.q2) + ' € ; tarif Abonné : ' + eur(V.c2) + ' €.'], sol: ['Tarif Liberté : ' + eur(V.q2) + ' € ; tarif Abonné : ' + eur(V.c2) + ' €', eur(Math.max(V.q2, V.c2)) + ' − ' + eur(Math.min(V.q2, V.c2)) + ' = ' + eur(ecart) + ' €', 'Il faut choisir ' + moins + ' : on économise ' + eur(ecart) + ' €.'], tip: 'on compare les prix pour le même nombre de ' + C.u2 + ', puis on soustrait.'}); }
+    return got;
+  }};
+}
+
+/* ============ Bonus (+1) ============ */
+var BON = [
+  function(){ var a = pick([2, 3, 4]), b = pick([5, 7.5, 10]), c = a * rnd(3, 9) * b / a; c = Math.round(c * 2) / 2; var r = c * a / b; return {q: 'Sur une carte, ' + num(a) + ' cm représentent ' + num(b) + ' km. Une distance réelle de ' + num(c) + ' km mesure sur la carte :', r: r, u: 'cm', s: num(c) + ' × ' + num(a) + ' ÷ ' + num(b) + ' = ' + num(r) + ' cm'}; },
+  function(){ var p = rnd(2, 6), k = pick([1.5, 2, 2.5, 3, 3.5]), q = p * k, x = rnd(7, 15); return {q: 'Une droite passe par l’origine et par le point de coordonnées (' + num(p) + ' ; ' + num(q) + '). Le point de cette droite d’abscisse ' + x + ' a pour ordonnée :', r: x * k, u: '', s: x + ' × ' + num(q) + ' ÷ ' + num(p) + ' = ' + num(x * k)}; },
+  function(){ var m = pick([1.5, 2, 2.5]), P = m * pick([4, 6, 8]), g = pick([250, 500, 750]); var r = g / 1000 * P / m; return {q: num(m) + ' kg de pommes coûtent ' + eur(P) + ' €. Le prix de ' + g + ' g de ces pommes est (en €) :', r: r, u: '€', s: g + ' g = ' + num(g / 1000) + ' kg ; ' + num(g / 1000) + ' × ' + eur(P) + ' ÷ ' + num(m) + ' = ' + eur(r) + ' €'}; },
+  function(){ var H1 = pick([20, 30, 40]), h1 = H1 / 10 * pick([1, 2]), H2 = pick([45, 60, 75, 90]); var r = H2 * h1 / H1; return {q: 'Sur une maquette, un phare de ' + H1 + ' m mesure ' + num(h1) + ' cm. Une falaise de ' + H2 + ' m y mesure :', r: r, u: 'cm', s: H2 + ' × ' + num(h1) + ' ÷ ' + H1 + ' = ' + num(r) + ' cm'}; }
+];
+function exBonus(){
+  var B = pick(BON)(), box = el('div', 'items'), it = el('div', 'item'); it.appendChild(el('div', 'q', B.q)); var f = line(it, '', B.u || 'nombre', 'num'); box.appendChild(it);
+  return {box: box, max: 1, fill: function(){ f.value = num(B.r); }, check: function(){ var v = val(f.value), ok = v !== null && eq(v, B.r); lock([f]); mark(f, ok); itemState(it, ok ? 1 : 0, 1); corr(it, ok ? 1 : 0, 1, {why: ['La réponse est ' + num(B.r) + (B.u ? ' ' + B.u : '') + '.'], sol: [B.s]}); return ok ? 1 : 0; }};
+}
+
+/* ============ Pour comprendre (non noté dans l'évaluation blanche) ============ */
+var VARS = [
+  function(){ var a = rnd(2, 6), b = a * rnd(2, 5), c = a * rnd(3, 7); return {n: 11, q: a + ' objets coûtent ' + b + ' €. Combien coûtent ' + c + ' objets ?', opts: [num(c * b / a) + ' €', num(c + b - a) + ' €', num(c * a / b) + ' €'], good: num(c * b / a) + ' €', sol: [c + ' × ' + b + ' ÷ ' + a + ' = ' + num(c * b / a) + ' €'], tip: 'on multiplie en diagonale puis on divise.'}; },
+  function(){ var k = rnd(2, 6), x = rnd(2, 5); return {n: 12, q: 'Une droite passe par l’origine et par le point (' + x + ' ; ' + x * k + '). Quel est le coefficient de proportionnalité ?', opts: [String(k), String(x * k), String(x)], good: String(k), sol: [x * k + ' ÷ ' + x + ' = ' + k + ' : c’est la valeur qui correspond à 1.'], tip: 'le coefficient est la valeur lue pour 1.'}; },
+  function(){ var f = rnd(2, 5), u = rnd(2, 4); return {n: 12, q: 'Un taxi coûte ' + f + ' € de prise en charge, puis ' + u + ' € par km. Le prix est-il proportionnel à la distance ?', opts: ['non', 'oui'], good: 'non', sol: ['Pour 0 km, on paie déjà ' + f + ' € : la droite ne passe pas par l’origine.'], tip: 'un prix fixe au départ empêche la proportionnalité.'}; },
+  function(){ var m = rnd(2, 4); return {n: 11, q: 'Dans une situation de proportionnalité, si la quantité est multipliée par ' + m + ', le prix est…', opts: ['multiplié par ' + m, 'augmenté de ' + m, 'inchangé'], good: 'multiplié par ' + m, sol: ['Les valeurs d’une grandeur s’obtiennent en multipliant celles de l’autre par un même nombre.'], tip: 'proportionnel : on multiplie, on n’ajoute pas.'}; },
+  function(){ return {n: 12, q: 'Des points sont alignés, mais leur droite ne passe pas par l’origine. La situation est-elle proportionnelle ?', opts: ['non', 'oui'], good: 'non', sol: ['Il faut les deux : points alignés ET droite passant par l’origine.'], tip: 'alignés ET avec l’origine.'}; },
+  function(){ var a = rnd(2, 5), b = rnd(6, 12); return {n: 11, q: 'Dans le tableau ' + a + ' | ' + b + ' / ? | ' + (2 * b) + ', quel calcul donne le nombre manquant ?', opts: [a + ' × ' + 2 * b + ' ÷ ' + b, b + ' × ' + 2 * b + ' ÷ ' + a, a + ' × ' + b + ' ÷ ' + 2 * b], good: a + ' × ' + 2 * b + ' ÷ ' + b, sol: ['? = ' + a + ' × ' + 2 * b + ' ÷ ' + b + ' = ' + 2 * a], tip: 'je multiplie les deux nombres en diagonale, je divise par le troisième.'}; }
+];
+function exVar(only){
+  var pool = VARS.map(function(f, k){ return k; }).filter(function(k){ return !only || VARS[k]().n === only; });
+  var idx = shuffle(pool).slice(0, 2), box = el('div', 'items two'), qs = [];
+  idx.forEach(function(k, n){
+    var V = VARS[k](), it = el('div', 'item'), s = sel(shuffle(V.opts.slice()));
+    it.appendChild(el('div', 'q', (n + 1) + '. ' + V.q)); var ln = el('div', 'ln'); ln.appendChild(s); it.appendChild(ln); qs.push({V: V, s: s, it: it}); box.appendChild(it);
+  });
+  return {box: box, max: 2, fill: function(){ qs.forEach(function(x){ x.s.value = x.V.good; }); }, check: function(){
+    var got = 0;
+    qs.forEach(function(x){ var ok = x.s.value === x.V.good; lock([x.s]); mark(x.s, ok); if (ok) got++; itemState(x.it, ok ? 1 : 0, 1);
+      corr(x.it, ok ? 1 : 0, 1, {why: ['La bonne réponse : « ' + x.V.good + ' ».'], sol: x.V.sol, solTitle: 'Explication', noHl: true, tip: x.V.tip, always: true}); });
+    return got;
+  }};
+}
+// N11 seule : quatrièmes proportionnelles en contexte (deux petits problèmes rédigés)
+function exPb11(){ return exPb([2, 3, 4]); }
+// N12 seule : reconnaître sur un graphique et lire
+function exPb12(){ return exPb([1]); }
+
+/* ============ menu, entraînement, évaluation blanche ============ */
+var EX = [
+  {id: 'cours', n: 'Exercice 1', t: 'Question de cours', ic: '📖', d: 'Produits en croix et quatrième proportionnelle, ou graphique et origine.', max: 1.5, make: function(){ return exCours(); }},
+  {id: 'croix', n: 'Exercice 2', t: 'Tableaux de proportionnalité ?', ic: '✖️', d: 'Calculer les produits en croix, puis conclure.', max: 2, make: function(){ return exCroix(2); }},
+  {id: 'q4', n: 'Exercice 3', t: 'Quatrième proportionnelle', ic: '🧮', d: 'Trouver le nombre manquant avec un produit en croix.', max: 3, make: function(){ return exQ4(3); }},
+  {id: 'graphes', n: 'Exercice 4', t: 'Proportionnel ou pas ?', ic: '📈', d: 'Reconnaître la proportionnalité sur un graphique, et justifier.', max: 2, make: function(){ return exGraphes(2); }},
+  {id: 'lire', n: 'Exercice 5', t: 'Lire un graphique', ic: '👀', d: 'Lectures, coefficient, calcul hors du graphique.', max: 3, make: exLire},
+  {id: 'pb', n: 'Exercice 6', t: 'Problème : deux tarifs', ic: '🎟️', d: 'Reconnaître le tarif proportionnel, calculer, comparer.', max: 7.5, make: function(){ return exPb(); }},
+  {id: 'bonus', n: 'Bonus', t: 'Pour aller plus loin', ic: '⭐', d: 'Échelle, droite par l’origine, conversion, maquette.', max: 1, make: exBonus},
+  {id: 'var', n: 'Pour comprendre', t: 'Questions autrement', ic: '🧠', d: 'Des questions posées autrement que dans l’évaluation, pour vérifier que tu as vraiment compris.', max: 2, make: function(){ return exVar(); }, extra: true}
+];
+function byId(id){ return EX.filter(function(e){ return e.id === id; })[0]; }
+// Évaluations par notion : même durée que l'évaluation blanche (35 min), notées sur 20 au prorata des points
+var NOT = {
+  n11: {num: 11, t: 'Calculer une quatrième proportionnelle', ic: '🧮', parts: [
+    {id: 'cours', n: 'Exercice 1', t: 'Question de cours', ic: '📖', max: 1.5, make: function(){ return exCours(11); }},
+    {id: 'croix', n: 'Exercice 2', t: 'Tableaux de proportionnalité ?', ic: '✖️', max: 3, make: function(){ return exCroix(3); }},
+    {id: 'q4', n: 'Exercice 3', t: 'Quatrième proportionnelle', ic: '🧮', max: 4, make: function(){ return exQ4(4); }},
+    {id: 'pb11', train: 'pb', n: 'Exercice 4', t: 'Problème : un tarif proportionnel', ic: '🎟️', max: 5, make: exPb11},
+    {id: 'pb11', train: 'pb', n: 'Exercice 5', t: 'Problème : un tarif proportionnel', ic: '🎟️', max: 5, make: exPb11},
+    {id: 'var', train: 'var', n: 'Exercice 6', t: 'Pour comprendre', ic: '🧠', max: 2, make: function(){ return exVar(11); }}]},
+  n12: {num: 12, t: 'Reconnaître la proportionnalité sur un graphique', ic: '📈', parts: [
+    {id: 'cours', n: 'Exercice 1', t: 'Question de cours', ic: '📖', max: 1.5, make: function(){ return exCours(12); }},
+    {id: 'graphes', n: 'Exercice 2', t: 'Proportionnel ou pas ?', ic: '📈', max: 4, make: function(){ return exGraphes(4); }},
+    {id: 'lire', n: 'Exercice 3', t: 'Lire un graphique', ic: '👀', max: 3, make: exLire},
+    {id: 'lire', n: 'Exercice 4', t: 'Lire un graphique', ic: '👀', max: 3, make: exLire},
+    {id: 'pb12', train: 'pb', n: 'Exercice 5', t: 'Quel tarif est proportionnel ?', ic: '🎟️', max: 1, make: exPb12},
+    {id: 'pb12', train: 'pb', n: 'Exercice 6', t: 'Quel tarif est proportionnel ?', ic: '🎟️', max: 1, make: exPb12},
+    {id: 'var', train: 'var', n: 'Exercice 7', t: 'Pour comprendre', ic: '🧠', max: 2, make: function(){ return exVar(12); }}]}
+};
+function cls(got, max){ return eq(got, max) ? 'ok' : got >= max * .6 ? 'mid' : 'ko'; }
+function stat(p, t){ if (window.stat) window.stat(p, t); }
+
+function menu(){
+  tomenu.hidden = true; kbar.hidden = true; main.innerHTML = '';
+  var best = store(KEY + 'best');
+  main.appendChild(el('h2', 'cat', 'Le jour J'));
+  var g0 = el('div', 'grid'), t0 = el('button', 'tile big'); t0.type = 'button';
+  t0.appendChild(el('span', 'ic', '📝'));
+  var s0 = el('span'); s0.appendChild(el('b', null, 'Évaluation blanche')); s0.appendChild(el('span', 'd', 'Un sujet complet comme le jour J, noté sur 20 avec le vrai barème, sans limite de temps. Un nouveau sujet à chaque fois (jamais les questions de ton vrai sujet) : recommence autant de fois que tu veux !'));
+  if (best) s0.appendChild(el('span', 'rec', 'Ta meilleure note : ' + best + '/20'));
+  t0.appendChild(s0); t0.onclick = function(){ location.hash = 'blanc'; }; g0.appendChild(t0); main.appendChild(g0);
+  // Les évaluations par notion sont proposées sur le site élèves (liens #n11, #n12), pas dans ce menu
+  main.appendChild(el('h2', 'cat', 'S’entraîner exercice par exercice'));
+  var g = el('div', 'grid');
+  EX.forEach(function(x){
+    var b = el('button', 'tile'); b.type = 'button'; b.appendChild(el('span', 'ic', x.ic));
+    var s = el('span'); s.appendChild(el('b', null, x.n + ' · ' + x.t)); s.appendChild(el('span', 'd', x.d + (x.extra ? ' (non noté)' : ' (' + pts(x.max) + ' pt' + (x.max > 1 ? 's' : '') + ')')));
+    var rec = store(KEY + x.id); if (rec) s.appendChild(el('span', 'rec', 'Dernier essai : ' + rec + '/' + pts(x.max)));
+    b.appendChild(s); b.onclick = function(){ location.hash = x.id; }; g.appendChild(b);
+  });
+  main.appendChild(g);
+}
+
+function exPanel(x, inst){
+  var p = el('section', 'panel'), h = el('div', 'ph');
+  h.appendChild(el('h2', null, x.ic + ' ' + x.n + ' · ' + x.t)); var sc = el('span', 'pts', pts(x.max) + ' pt' + (x.max > 1 ? 's' : '')); h.appendChild(sc);
+  p.appendChild(h);
+  var c = {cours: 'Le jour J, tu rédiges toi-même (0,5 point par élément juste).', croix: 'Pour chaque tableau : les deux produits en croix avec leur résultat (0,5 point), la conclusion (0,5 point). Écris par exemple 3 × 7 = 21.',
+    q4: 'Pour chaque tableau : le calcul (0,5 point), puis le nombre manquant (0,5 point). Écris les divisions avec ÷.', graphes: 'Pour chaque graphique : la réponse (0,5 point) et la justification (0,5 point).',
+    lire: 'Chaque lecture : 0,5 point ; « coefficient de proportionnalité » : 0,5 point ; le calcul et son résultat : 0,5 point chacun.',
+    pb: 'Écris les divisions avec ÷. Chaque réponse se termine par une phrase sur ta copie.', pb11: 'Écris les divisions avec ÷. Chaque réponse se termine par une phrase sur ta copie.', pb12: 'La réponse (0,5 point) et la justification (0,5 point).',
+    bonus: 'Ce point s’ajoute à la note (sans dépasser 20).', var: x.counted ? 'Des questions posées autrement, pour vérifier que tu as compris (1 point chacune).' : 'Ces questions ne sont pas comptées dans la note sur 20 : elles servent à vérifier que tu as compris, au-delà des exercices types.'}[x.id];
+  if (c) p.appendChild(el('p', 'consigne', c));
+  p.appendChild(inst.box); if (inst.note) p.appendChild(el('p', 'consigne', inst.note));
+  return {p: p, sc: sc};
+}
+
+function train(id){
+  var x = byId(id); if (!x){ menu(); return; }
+  stat(PATH + id, 'Préparer l’évaluation 4e E02 · ' + x.t);
+  tomenu.hidden = false; main.innerHTML = '';
+  var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p);
+  if (/[?&]test\b/.test(location.search)) window.__parts = [{x: x, inst: inst, P: P}];
+  var row = el('div', 'row'), bv = el('button', 'btn main', 'Corriger'); bv.type = 'button'; row.appendChild(bv); P.p.appendChild(row);
+  bv.onclick = function(){
+    var got = inst.check(); bv.remove(); kbar.hidden = true;
+    P.sc.textContent = pts(got) + ' / ' + pts(x.max); P.sc.className = 'pts ' + cls(got, x.max);
+    store(KEY + id, pts(got));
+    var r = el('div', 'res ' + cls(got, x.max), pts(got) + ' / ' + pts(x.max) + (eq(got, x.max) ? ' : parfait !' : ''));
+    r.appendChild(el('small', null, eq(got, x.max) ? 'Tu es prêt(e) pour cet exercice. Essaie l’évaluation blanche !' : 'Lis la correction sous chaque question, puis recommence : les nombres changent à chaque fois.'));
+    P.p.appendChild(r);
+    var r2 = el('div', 'row'), b1 = el('button', 'btn main', '🔁 Recommencer (nouveaux nombres)'), b2 = el('button', 'btn', 'Menu');
+    b1.onclick = function(){ train(id); window.scrollTo(0, 0); }; b2.onclick = function(){ location.hash = ''; };
+    r2.appendChild(b1); r2.appendChild(b2); P.p.appendChild(r2);
+  };
+  window.scrollTo(0, 0);
+}
+
+function blanc(mode){
+  mode = mode || 'blanc';
+  var N = NOT[mode], key = N ? KEY + mode + ':' : KEY, list = N ? N.parts.map(function(x){ var y = {}; for (var k in x) y[k] = x[k]; y.counted = true; return y; }) : EX;
+  stat(PATH + mode, 'Préparer l’évaluation 4e E02 · ' + (N ? 'évaluation N' + N.num : 'évaluation blanche'));
+  tomenu.hidden = false; main.innerHTML = '';
+  if (N) main.appendChild(el('h2', 'cat', 'Évaluation N' + N.num + ' · ' + N.t + ' · 35 min'));
+  var essai = parseInt(store(key + 'essais') || '0', 10) + 1;
+  var bar = el('div', 'timerbar'), tm = el('span', 'timer', 'Sujet n° ' + essai), bend = el('button', 'btn main', 'Rendre ma copie'); bend.type = 'button';
+  bar.appendChild(tm); bar.appendChild(bend); main.appendChild(bar);
+  main.appendChild(el('p', 'consigne', 'Calculatrice autorisée. Prends ton temps : il n’y a pas de limite. Rédige comme sur ta copie, puis touche « Rendre ma copie ».'));
+  var parts = list.map(function(x){ var inst = x.make(), P = exPanel(x, inst); main.appendChild(P.p); return {x: x, inst: inst, P: P}; });
+  if (/[?&]test\b/.test(location.search)) window.__parts = parts;   // tests automatiques (copie parfaite)
+  var done = false, t0 = Date.now();
+  bend.onclick = function(){ finish(); };
+  function finish(){
+    if (done) return; done = true; kbar.hidden = true;
+    var total = 0, bonus = 0, res = [];
+    parts.forEach(function(o){
+      var got = o.inst.check(); o.P.sc.textContent = pts(got) + ' / ' + pts(o.x.max); o.P.sc.className = 'pts ' + cls(got, o.x.max);
+      if (o.x.extra){} else if (o.x.id === 'bonus') bonus = got; else total += got; res.push({x: o.x, got: got});
+    });
+    // le jour J, 1 point sur 20 récompense le soin de la copie : ici, les 19 autres points sont ramenés sur 20
+    var maxN = list.reduce(function(s, x){ return s + (x.extra || x.id === 'bonus' ? 0 : x.max); }, 0);
+    var note = Math.min(20, total / maxN * 20 + bonus);
+    note = Math.round(note * 4) / 4;
+    var best = parseFloat((store(key + 'best') || '0').replace(',', '.'));
+    if (note > best) store(key + 'best', pts(note));
+    store(key + 'essais', String(essai));
+    var hist = (store(key + 'notes') || '').split(';').filter(Boolean).concat([pts(note)]).slice(-6); store(key + 'notes', hist.join(';'));
+    bar.remove();
+    var sum = el('section', 'panel');
+    sum.appendChild(el('div', 'note', pts(note) + '/20'));
+    var used = Math.max(1, Math.round((Date.now() - t0) / 60000));
+    sum.appendChild(el('p', 'consigne', '⏱️ Tu as mis ' + used + ' min' + (used > 35 ? ' : le jour J, tu auras 35 min, entraîne-toi à aller un peu plus vite.' : ' : le jour J, tu auras 35 min, c’est bon !')));
+    sum.lastChild.style.textAlign = 'center';
+    sum.appendChild(el('p', 'consigne', 'Sujet n° ' + essai + '. ' + (note > best && essai > 1 ? '🏆 Ta meilleure note !' : best ? 'Ta meilleure note : ' + pts(Math.max(best, note)) + '/20.' : '') + (hist.length > 1 ? ' Tes dernières notes : ' + hist.join(' → ') + '.' : '')));
+    sum.lastChild.style.textAlign = 'center';
+    var again = el('div', 'row'), ba = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'); ba.type = 'button'; ba.onclick = function(){ blanc(mode); }; again.appendChild(ba); sum.appendChild(again);
+    var bl = el('div', 'bilan');
+    res.forEach(function(r){
+      var ln = el('div', 'bl'), left = el('span'); left.appendChild(el('b', null, r.x.n + ' · ' + r.x.t + ' : '));
+      left.appendChild(el('span', 'pts ' + cls(r.got, r.x.max), pts(r.got) + '/' + pts(r.x.max) + (r.x.extra ? ' (non noté)' : '')));
+      ln.appendChild(left);
+      if (!eq(r.got, r.x.max) && r.x.id !== 'bonus' && !r.x.extra){ var b = el('button', 'btn', 'À retravailler →'); b.type = 'button'; b.onclick = function(){ location.hash = r.x.train || r.x.id; }; ln.appendChild(b); }
+      bl.appendChild(ln);
+    });
+    sum.appendChild(bl);
+    sum.appendChild(el('p', 'consigne', (N ? 'Note ramenée sur 20 : ' + pts(total) + ' points sur ' + pts(maxN) + '. ' : 'Le jour J, 1 point sur 20 récompense le soin de ta copie : ici, tes ' + pts(total) + ' points sur 19 sont ramenés sur 20. ') + 'Sur ta vraie copie, termine chaque réponse par une phrase. Les corrections détaillées sont sous chaque exercice.'));
+    var r2 = el('div', 'row'), b2 = el('button', 'btn', 'Menu'); b2.onclick = function(){ location.hash = ''; }; r2.appendChild(b2); sum.appendChild(r2);
+    main.insertBefore(sum, main.firstChild);
+    var foot = el('section', 'panel'); foot.appendChild(el('p', 'consigne', 'Tu as lu toutes les corrections ? Entraîne-toi encore : un nouveau sujet est tiré à chaque fois, tu peux recommencer autant de fois que tu veux.'));
+    var fr = el('div', 'row'), fb1 = el('button', 'btn main', '🔁 Recommencer avec un nouveau sujet'), fb2 = el('button', 'btn', 'Menu');
+    fb1.onclick = function(){ blanc(mode); }; fb2.onclick = function(){ location.hash = ''; }; fr.appendChild(fb1); fr.appendChild(fb2); foot.appendChild(fr); main.appendChild(foot);
+    window.scrollTo(0, 0);
+    stat(PATH + mode + '/note', (N ? 'Évaluation N' + N.num : 'Évaluation blanche') + ' 4e E02 rendue');
+  }
+  window.scrollTo(0, 0);
+}
+
+function route(){
+  var id = location.hash.slice(1);
+  if (id === 'blanc' || NOT[id]) blanc(id); else if (id) train(id); else menu();
+}
+tomenu.onclick = function(){ location.hash = ''; };
+try { if (document.referrer && new URL(document.referrer).pathname.replace(/index\.html$/, '') === new URL('../', location.href).pathname) document.getElementById('home').href = document.referrer; } catch(e){}
+window.addEventListener('hashchange', route);
+route();
+})();
+</script>
+<script>
+// « ← Retour » : revient à l'onglet Évaluations de la page de la classe
+(function(){ var a = document.getElementById('home'); if (!a) return;
+  a.textContent = '← Retour';
+  var u = ''; try { u = localStorage.getItem('mp:retour') || ''; } catch(e){}
+  if (u.indexOf(location.origin) !== 0) u = '../';
+  var i = u.indexOf('#'), base = (i < 0 ? u : u.slice(0, i)).split('?')[0], hash = i < 0 ? '' : u.slice(i);
+  a.href = base + '?vue=evals' + hash;
+})();
+</script>
+<script src="../stats.js"></script>
+</body>
+</html>
