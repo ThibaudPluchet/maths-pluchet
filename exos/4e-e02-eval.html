@@ -63,7 +63,8 @@ h2.cat{font-size:15px;color:var(--muted);text-transform:uppercase;letter-spacing
 input.w{font:700 19px "Bricolage Grotesque",system-ui,sans-serif;flex:1 1 0;width:100%;min-width:0;max-width:340px;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
 input.w.num{max-width:150px;flex:0 1 150px}
 input.w:focus{outline:none;border-color:var(--accent)}
-input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.midF{border-color:var(--mid);background:var(--mids)} input.w.koF{border-color:var(--ko);background:var(--kos)}
+input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.koF{border-color:var(--ko);background:var(--kos)} input.w.midF{border-color:var(--mid);background:var(--mids)} select.s.midF{border-color:var(--mid);background:var(--mids)}
+.crv{margin:8px 0;padding:8px 12px;border-radius:10px;background:var(--card,#fff);border:1px dashed var(--line,#ccc)} .crv .cl{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--muted,#666);margin-bottom:4px} .crv em{font-style:normal;color:var(--mid)}
 .corr{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.4}
 .corr.ok{background:var(--oks)} .corr.mid{background:var(--mids)} .corr.ko{background:var(--kos)}
 .cv{font-weight:700;font-size:16px}
@@ -169,7 +170,44 @@ function field(cls, ph){
   };
   kbar.appendChild(b);
 });
-function mark(input, ok){ input.classList.remove('okF', 'koF'); input.classList.add(ok ? 'okF' : 'koF'); }
+// ok : true (juste), false (faux) ou 'mid' (en partie juste : case orange)
+function mark(input, ok){ input.classList.remove('okF', 'koF', 'midF'); input.classList.add(ok === 'mid' ? 'midF' : ok ? 'okF' : 'koF'); }
+/* ---------- retour détaillé sur chaque case fausse ou incomplète ----------
+   corr() liste sous « Tes réponses à revoir » chaque case rouge ou orange de la question :
+   son intitulé, ce que l'élève a écrit et, si on le repère, ce qui ne va pas dans la forme de la réponse. */
+var NUMRE = /^[+-]?\d+(?:[.,]\d+)?\s*(?:[a-zA-Zéè€²³%°]+\.?)?$/;
+function fieldLabel(i){
+  var ln = i.closest('.ln'), l = ln && ln.querySelector('.lab');
+  if (l) return l.textContent.replace(/\s*:\s*$/, '').trim();
+  if (i.closest('td, th')) return 'Case du tableau';
+  return i.tagName === 'SELECT' ? 'Choix' : 'Réponse';
+}
+function fieldNote(i){
+  var v = String(i.value || '').trim(), ph = i.getAttribute('placeholder') || '';
+  if (i.tagName === 'SELECT') return v ? '' : 'Tu n’as rien choisi.';
+  if (!v) return 'Tu n’as rien écrit : une réponse, même incomplète, peut rapporter des points.';
+  var op = /[×x*÷:\/+\-−]\s*\d/.test(v.replace(/^[+-]/, '')), wantCalc = /calcul|[×÷]/.test(ph) && !/^ex\. a²/.test(ph);
+  if (wantCalc && !op) return 'Il manque le calcul : écris le calcul, puis « = » et le résultat.';
+  if (/=/.test(ph) && op && v.indexOf('=') < 0) return 'Il manque le résultat : termine par « = … ».';
+  if (v.indexOf('=') > -1 && !String(v.split('=').pop()).trim()) return 'Il manque le résultat après « = ».';
+  if (/\d\.\d/.test(v) && !/\d,\d/.test(v)) return 'Pense à la virgule : en France, on écrit 12,5 et non 12.5 (la réponse est quand même lue).';
+  if (i.classList.contains('num') && !NUMRE.test(v)) return 'Écris seulement un nombre (par exemple 12,5), sans calcul ni phrase.';
+  return '';
+}
+function reviewList(parent){
+  var L = [].slice.call(parent.querySelectorAll('input.w.koF, input.w.midF, select.s.koF, select.s.midF'));
+  if (!L.length) return null;
+  var box = el('div', 'crv'); box.appendChild(el('span', 'cl', 'Tes réponses à revoir'));
+  var ul = el('ul', 'cw');
+  L.forEach(function(i){
+    var li = el('li'), v = String(i.value || '').trim();
+    li.appendChild(el('b', null, fieldLabel(i) + ' : '));
+    li.appendChild(document.createTextNode(v ? 'tu as écrit « ' + v + ' »' + (i.classList.contains('midF') ? ' (en partie juste)' : '') : 'pas de réponse'));
+    var n = fieldNote(i); if (n){ li.appendChild(document.createTextNode(' — ')); li.appendChild(el('em', null, n)); }
+    ul.appendChild(li);
+  });
+  box.appendChild(ul); return box;
+}
 function lock(list){ list.forEach(function(x){ x.disabled = true; }); }
 function sel(opts, ph){ var s = el('select', 's'), o0 = el('option', null, ph || '…'); o0.value = ''; s.appendChild(o0); opts.forEach(function(o){ var op = el('option', null, o); op.value = o; s.appendChild(op); }); return s; }
 // Correction d'une question : verdict + ce qui ne va pas + bonne rédaction ligne par ligne + rappel du cours
@@ -178,6 +216,7 @@ function corr(parent, got, max, o){
   var c = el('div', 'corr ' + k);
   c.appendChild(el('div', 'cv', (full ? '✓ Bravo ! ' : got > 0 ? 'Presque ! ' : '✗ ') + pts(got) + ' / ' + pts(max) + ' point' + (max > 1 ? 's' : '')));
   if (!full && o.why && o.why.length){ var ul = el('ul', 'cw'); o.why.forEach(function(w){ ul.appendChild(el('li', null, w)); }); c.appendChild(ul); }
+  if (!full && !o.noReview){ var rv = reviewList(parent); if (rv) c.appendChild(rv); }
   if (o.sol && (!full || o.always)){
     var s = el('div', 'cs'); s.appendChild(el('span', 'cl', o.solTitle || 'La bonne rédaction'));
     o.sol.forEach(function(l, i){ s.appendChild(el('div', 'sl' + (i === o.sol.length - 1 && !o.noHl ? ' hl' : ''), l)); });
@@ -425,7 +464,7 @@ function exLire(){
   return {box: box, max: 3, fill: function(){ fa.value = num(A); fb.value = num(Bv); fc.value = num(G.k); sc.value = 'le coefficient de proportionnalité'; fd.value = num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D); }, check: function(){
     var va = val(fa.value), vb = val(fb.value), vc = val(fc.value), oa = va !== null && eq(va, A), ob = vb !== null && eq(vb, Bv), oc = vc !== null && eq(vc, G.k), os = sc.value === 'le coefficient de proportionnalité';
     var c = calc(fd.value), r = String(fd.value).split('='), vr = r.length > 1 ? val(r[r.length - 1]) : (c ? c.v : null), od1 = !!c && eq(c.v, D) && c.nums.length >= 2, od2 = vr !== null && eq(vr, D);
-    lock([fa, fb, fc, sc, fd]); mark(fa, oa); mark(fb, ob); mark(fc, oc); mark(sc, os); mark(fd, od1 && od2); if (od1 !== od2){ fd.classList.remove('koF'); fd.classList.add('midF'); }
+    lock([fa, fb, fc, sc, fd]); mark(fa, oa); mark(fb, ob); mark(fc, oc); mark(sc, os); mark(fd, od1 && od2 ? true : od1 || od2 ? 'mid' : false);
     var g = (oa ? .5 : 0) + (ob ? .5 : 0) + (oc ? .5 : 0) + (os ? .5 : 0) + (od1 ? .5 : 0) + (od2 ? .5 : 0); itemState(it, g, 3);
     corr(it, g, 3, {why: [].concat(oa ? [] : ['a) On part de ' + num(G.xa) + ' sur l’axe horizontal, on monte jusqu’à la droite, on lit ' + num(A) + ' ' + C.uy + '.']).concat(ob ? [] : ['b) On part de ' + num(G.yb) + ' sur l’axe vertical, on va jusqu’à la droite, on lit ' + num(Bv) + ' ' + C.ux + '.']).concat(oc ? [] : ['c) Pour 1, on lit ' + num(G.k) + ' ' + C.uy + '.']).concat(os ? [] : ['La valeur pour 1 est le coefficient de proportionnalité.']).concat(od1 && od2 ? [] : [!od1 && od2 ? 'd) Le résultat est juste (0,5 point), mais le calcul manque (0,5 point) : écris ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + '.' : od1 && !od2 ? 'd) Le calcul est juste (0,5 point), mais il manque le bon résultat : ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + '.' : 'd) On multiplie par le coefficient : ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + '.']),
       sol: ['a) ' + num(A) + ' ' + C.uy, 'b) ' + num(Bv) + ' ' + C.ux, 'c) ' + num(G.k) + ' ' + C.uy + ' : c’est le coefficient de proportionnalité', 'd) ' + num(G.xd) + ' × ' + num(G.k) + ' = ' + num(D) + ' ' + C.uy], noHl: true, tip: 'je lis la graduation (pas le nombre de carreaux) ; hors du graphique, je calcule avec le coefficient.'});
@@ -496,9 +535,10 @@ function exPb(parts){
       lock([Q[3].c, Q[3].r]); mark(Q[3].c, ok3); mark(Q[3].r, r3); var g3 = (ok3 ? .5 : 0) + (r3 ? 1 : 0); got += g3; itemState(Q[3].it, g3, 1.5);
       corr(Q[3].it, g3, 1.5, {why: [].concat(ok3 ? [] : ['Produit en croix : ' + eur(V.budget) + ' × ' + V.n0 + ' ÷ ' + eur(V.p0) + '.']).concat(r3 ? [] : ['La réponse est ' + num(V.t) + ' ' + (V.t > 1 ? C.u2 : C.u1) + ' (ce sont des ' + C.u2 + ', pas des euros).']),
         sol: [eur(V.budget) + ' × ' + V.n0 + ' ÷ ' + eur(V.p0) + ' = ' + num(V.t), 'Avec ' + eur(V.budget) + ' €, on peut avoir ' + num(V.t) + ' ' + (V.t > 1 ? C.u2 : C.u1) + ' au tarif Liberté.'], tip: 'le nombre cherché est cette fois dans la ligne des ' + C.u2 + '.'}); }
-    if (Q[4]){ var pa = prod(Q[4].a.value), pb = prod(Q[4].b.value), want = [[V.n1, V.c2], [V.c1, V.n2]], ok = [false, false];
-      [pa, pb].forEach(function(p){ if (!p || p.res === null || !eq(p.res, p.v)) return; want.forEach(function(w, j){ if (!ok[j] && ((eq(p.nums[0], w[0]) && eq(p.nums[1], w[1])) || (eq(p.nums[0], w[1]) && eq(p.nums[1], w[0])))) ok[j] = true; }); });
-      var o4 = Q[4].s.value === 'les produits sont différents : pas proportionnel'; lock([Q[4].a, Q[4].b, Q[4].s]); mark(Q[4].a, ok[0] || ok[1]); mark(Q[4].b, ok[0] && ok[1]); mark(Q[4].s, o4);
+    if (Q[4]){ var pa = prod(Q[4].a.value), pb = prod(Q[4].b.value), want = [[V.n1, V.c2], [V.c1, V.n2]], ok = [false, false], fOk4 = [false, false];
+      // chaque produit est corrigé séparément : un produit juste reste vert même si l'autre est faux
+      [pa, pb].forEach(function(p, i){ if (!p || p.res === null || !eq(p.res, p.v)) return; want.forEach(function(w, j){ if (!ok[j] && !fOk4[i] && ((eq(p.nums[0], w[0]) && eq(p.nums[1], w[1])) || (eq(p.nums[0], w[1]) && eq(p.nums[1], w[0])))){ ok[j] = true; fOk4[i] = true; } }); });
+      var o4 = Q[4].s.value === 'les produits sont différents : pas proportionnel'; lock([Q[4].a, Q[4].b, Q[4].s]); mark(Q[4].a, fOk4[0]); mark(Q[4].b, fOk4[1]); mark(Q[4].s, o4);
       var g4 = (ok[0] ? .5 : 0) + (ok[1] ? .5 : 0) + (o4 ? .5 : 0); got += g4; itemState(Q[4].it, g4, 1.5);
       corr(Q[4].it, g4, 1.5, {why: [].concat(ok[0] && ok[1] ? [] : ['Les produits en croix : ' + V.n1 + ' × ' + eur(V.c2) + ' et ' + eur(V.c1) + ' × ' + V.n2 + '.']).concat(o4 ? [] : ['Les produits sont différents : le tarif n’est pas proportionnel.']),
         sol: [V.n1 + ' × ' + eur(V.c2) + ' = ' + num(V.n1 * V.c2) + ' et ' + eur(V.c1) + ' × ' + V.n2 + ' = ' + num(V.c1 * V.n2), 'Les produits en croix sont différents : le tarif Abonné n’est pas proportionnel.'], tip: 'des produits en croix différents prouvent que ce n’est pas proportionnel.'}); }

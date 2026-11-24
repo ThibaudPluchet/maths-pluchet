@@ -63,7 +63,8 @@ h2.cat{font-size:15px;color:var(--muted);text-transform:uppercase;letter-spacing
 input.w{font:700 19px "Bricolage Grotesque",system-ui,sans-serif;flex:1 1 0;width:100%;min-width:0;max-width:340px;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
 input.w.num{max-width:150px;flex:0 1 150px}
 input.w:focus{outline:none;border-color:var(--accent)}
-input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.koF{border-color:var(--ko);background:var(--kos)}
+input.w.okF{border-color:var(--ok);background:var(--oks)} input.w.koF{border-color:var(--ko);background:var(--kos)} input.w.midF{border-color:var(--mid);background:var(--mids)} select.s.midF{border-color:var(--mid);background:var(--mids)}
+.crv{margin:8px 0;padding:8px 12px;border-radius:10px;background:var(--card,#fff);border:1px dashed var(--line,#ccc)} .crv .cl{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--muted,#666);margin-bottom:4px} .crv em{font-style:normal;color:var(--mid)}
 .corr{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.4}
 .corr.ok{background:var(--oks)} .corr.mid{background:var(--mids)} .corr.ko{background:var(--kos)}
 .cv{font-weight:700;font-size:16px}
@@ -164,7 +165,44 @@ function field(cls, ph){
   };
   kbar.appendChild(b);
 });
-function mark(input, ok){ input.classList.remove('okF', 'koF'); input.classList.add(ok ? 'okF' : 'koF'); }
+// ok : true (juste), false (faux) ou 'mid' (en partie juste : case orange)
+function mark(input, ok){ input.classList.remove('okF', 'koF', 'midF'); input.classList.add(ok === 'mid' ? 'midF' : ok ? 'okF' : 'koF'); }
+/* ---------- retour détaillé sur chaque case fausse ou incomplète ----------
+   corr() liste sous « Tes réponses à revoir » chaque case rouge ou orange de la question :
+   son intitulé, ce que l'élève a écrit et, si on le repère, ce qui ne va pas dans la forme de la réponse. */
+var NUMRE = /^[+-]?\d+(?:[.,]\d+)?\s*(?:[a-zA-Zéè€²³%°]+\.?)?$/;
+function fieldLabel(i){
+  var ln = i.closest('.ln'), l = ln && ln.querySelector('.lab');
+  if (l) return l.textContent.replace(/\s*:\s*$/, '').trim();
+  if (i.closest('td, th')) return 'Case du tableau';
+  return i.tagName === 'SELECT' ? 'Choix' : 'Réponse';
+}
+function fieldNote(i){
+  var v = String(i.value || '').trim(), ph = i.getAttribute('placeholder') || '';
+  if (i.tagName === 'SELECT') return v ? '' : 'Tu n’as rien choisi.';
+  if (!v) return 'Tu n’as rien écrit : une réponse, même incomplète, peut rapporter des points.';
+  var op = /[×x*÷:\/+\-−]\s*\d/.test(v.replace(/^[+-]/, '')), wantCalc = /calcul|[×÷]/.test(ph) && !/^ex\. a²/.test(ph);
+  if (wantCalc && !op) return 'Il manque le calcul : écris le calcul, puis « = » et le résultat.';
+  if (/=/.test(ph) && op && v.indexOf('=') < 0) return 'Il manque le résultat : termine par « = … ».';
+  if (v.indexOf('=') > -1 && !String(v.split('=').pop()).trim()) return 'Il manque le résultat après « = ».';
+  if (/\d\.\d/.test(v) && !/\d,\d/.test(v)) return 'Pense à la virgule : en France, on écrit 12,5 et non 12.5 (la réponse est quand même lue).';
+  if (i.classList.contains('num') && !NUMRE.test(v)) return 'Écris seulement un nombre (par exemple 12,5), sans calcul ni phrase.';
+  return '';
+}
+function reviewList(parent){
+  var L = [].slice.call(parent.querySelectorAll('input.w.koF, input.w.midF, select.s.koF, select.s.midF'));
+  if (!L.length) return null;
+  var box = el('div', 'crv'); box.appendChild(el('span', 'cl', 'Tes réponses à revoir'));
+  var ul = el('ul', 'cw');
+  L.forEach(function(i){
+    var li = el('li'), v = String(i.value || '').trim();
+    li.appendChild(el('b', null, fieldLabel(i) + ' : '));
+    li.appendChild(document.createTextNode(v ? 'tu as écrit « ' + v + ' »' + (i.classList.contains('midF') ? ' (en partie juste)' : '') : 'pas de réponse'));
+    var n = fieldNote(i); if (n){ li.appendChild(document.createTextNode(' — ')); li.appendChild(el('em', null, n)); }
+    ul.appendChild(li);
+  });
+  box.appendChild(ul); return box;
+}
 function lock(list){ list.forEach(function(x){ x.disabled = true; }); }
 function sel(opts, ph){ var s = el('select', 's'), o0 = el('option', null, ph || '…'); o0.value = ''; s.appendChild(o0); opts.forEach(function(o){ var op = el('option', null, o); op.value = o; s.appendChild(op); }); return s; }
 // Correction d'une question : verdict + ce qui ne va pas + bonne rédaction ligne par ligne + rappel du cours
@@ -173,6 +211,7 @@ function corr(parent, got, max, o){
   var c = el('div', 'corr ' + k);
   c.appendChild(el('div', 'cv', (full ? '✓ Bravo ! ' : got > 0 ? 'Presque ! ' : '✗ ') + pts(got) + ' / ' + pts(max) + ' point' + (max > 1 ? 's' : '')));
   if (!full && o.why && o.why.length){ var ul = el('ul', 'cw'); o.why.forEach(function(w){ ul.appendChild(el('li', null, w)); }); c.appendChild(ul); }
+  if (!full && !o.noReview){ var rv = reviewList(parent); if (rv) c.appendChild(rv); }
   if (o.sol && (!full || o.always)){
     var s = el('div', 'cs'); s.appendChild(el('span', 'cl', o.solTitle || 'La bonne rédaction'));
     o.sol.forEach(function(l, i){ s.appendChild(el('div', 'sl' + (i === o.sol.length - 1 && !o.noHl ? ' hl' : ''), l)); });
