@@ -53,15 +53,17 @@ main.wrap{padding-top:22px;padding-bottom:56px;display:flex;flex-direction:colum
 .doc{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);background:var(--cs);
   border:1px solid transparent;border-radius:10px;padding:10px 12px;min-height:46px;font-weight:700;font-size:16px}
 .doc:hover{border-color:var(--c)}
-.mrow{display:flex;align-items:center;gap:10px}
-.mrow .mt{display:flex;align-items:center;gap:10px;flex:1 1 auto;min-width:0;font-weight:600}
+/* intitulé sur une ligne ; les boutons N.. passent dessous (à droite) s'ils ne tiennent pas à côté */
+.mrow{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap}
+.mrow .mt{display:flex;align-items:center;gap:10px;flex:1 0 auto;max-width:100%;min-width:0;font-weight:600}
+.mrow:not(.wide) .chips{margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
 .mrow .mt .ic{width:26px;height:26px;border-radius:7px;background:var(--c);color:var(--card);display:grid;place-items:center;font-size:13px;flex:none}
 .mrow .chips{display:flex;gap:6px;flex:none}
 .doc.chip{padding:6px 8px;min-width:50px;justify-content:center;font-weight:700}
 @media (max-width:420px){.mrow .chips{gap:4px}.doc.chip{min-width:44px;padding:6px}.mrow{gap:8px}.mrow .mt{gap:8px}}
 @media (max-width:340px){.mrow{flex-wrap:wrap}}
 .doc.chip .t{flex:none}
-.mrow.wide{align-items:flex-start}
+.mrow.wide{align-items:flex-start;flex-wrap:nowrap}
 .mrow.wide .mt{flex:none;width:72px;min-height:40px}
 .mrow.wide .chips{flex:1 1 auto;flex-wrap:wrap}
 .mrow.wide .doc.chip{min-height:40px}
@@ -270,6 +272,8 @@ details.notion[open] .fcount{display:none}
   .mrow{flex-wrap:wrap}
   .mrow .chips{width:100%;padding-left:36px;flex-wrap:wrap}
   .mrow.wide .mt{width:auto}
+  .mrow.wide{flex-wrap:wrap}
+  .mrow:not(.wide) .chips{justify-content:flex-start;margin-left:0}
 }
 </style>
 </head>
