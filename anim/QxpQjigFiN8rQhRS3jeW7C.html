@@ -1,0 +1,360 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Statistiques animées</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Mise en page : graphique en grand à gauche (à projeter), commandes et calculs à droite ; une colonne sur téléphone */
+:root{
+  --bg:#eef1f6; --paper:#ffffff; --ink:#17202c; --muted:#596476; --line:#d5dbe5; --grid:#e8ecf3;
+  --accent:#2350c2; --accent-ink:#ffffff; --accent-soft:#e3eafb;
+  --c1:#2f6fd6; --c2:#e08a1e; --c3:#1f9e74; --c4:#b9459c; --mean:#c46a00; --med:#0a8587; --tok:#2f6fd6; --far:#c9334d; --plank:#b98a54;
+  --ok:#1b7f45; --ok-soft:#e1f3e8;
+  --font-d:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-b:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --paper:#171e28; --ink:#e7ecf3; --muted:#9ba7b8; --line:#2c3746; --grid:#1f2935;
+  --accent:#86a6ff; --accent-ink:#0f141b; --accent-soft:#1f2b47;
+  --c1:#78a2ff; --c2:#f0ad35; --c3:#4cc79a; --c4:#e07ccb; --mean:#f0ad35; --med:#3cc3c5; --tok:#78a2ff; --far:#ff6f84; --plank:#8a6a45;
+  --ok:#5fd18f; --ok-soft:#163323; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font-b);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.brand{display:flex;flex-direction:column;margin-right:auto}
+.eyebrow{margin:0;font:600 12px/1.2 var(--font-d);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font:700 clamp(24px,3vw,32px)/1.15 var(--font-d);text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;flex-wrap:wrap}
+.tab{font:600 15px/1 var(--font-d);border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tab:hover:not([aria-selected="true"]){color:var(--ink);background:var(--accent-soft)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.ghost:hover{border-color:var(--accent)}
+.view{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.view{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--paper);border:1px solid var(--line);border-radius:16px;min-width:0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:80vh;touch-action:none;user-select:none;-webkit-user-select:none;}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel h2{margin:0;font:700 20px/1.25 var(--font-d);text-wrap:balance}
+.panel p{margin:0}
+.hint{color:var(--muted);font-size:15px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.lbl{font:600 14px/1.2 var(--font-d)}
+.val{font:700 18px/1 var(--font-d);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:9px 11px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 14px/1 var(--font-d);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:9px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.eq{border-radius:12px;background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font:600 17px/1.4 var(--font-d);font-variant-numeric:tabular-nums}
+.eq small{font:600 13px/1.2 var(--font-d);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.vocab{border-radius:12px;padding:12px 14px;font-size:15px;background:var(--ok-soft);box-shadow:inset 4px 0 0 var(--ok);display:flex;flex-direction:column;gap:4px}
+.vocab b{font-family:var(--font-d)}
+.counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cnt{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.cnt span{font:600 13px/1.2 var(--font-d);color:var(--muted)}
+.cnt b{font:700 24px/1 var(--font-d);font-variant-numeric:tabular-nums}
+
+/* Tableau d'effectifs */
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tbl th{font:600 13px/1.2 var(--font-d);color:var(--muted);text-align:left;padding:4px 4px 8px}
+.tbl td{padding:6px 4px;border-top:1px solid var(--line);font:600 15px/1.2 var(--font-d);vertical-align:middle}
+.tbl tr.sel td{background:var(--accent-soft)}
+.tbl tfoot td{font-weight:700}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.stp{display:inline-flex;align-items:center;gap:4px}
+.stp button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:700 16px/1 var(--font-d);cursor:pointer;padding:0}
+.stp button:hover{border-color:var(--accent)}
+.stp b{min-width:24px;text-align:center}
+.num{text-align:right}
+.good{color:var(--ok)}
+
+/* SVG */
+.lab{font:700 16px var(--font-d)}
+.sm{font:600 13px var(--font-d)}
+.f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)} .f-mean{fill:var(--mean)} .f-med{fill:var(--med)} .f-far{fill:var(--far)} .f-ok{fill:var(--ok)}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.tip{font:600 14px var(--font-b);fill:var(--muted)}
+.grid{stroke:var(--grid);stroke-width:1}
+.axisl{stroke:var(--ink);stroke-width:1.6}
+.drag{cursor:grab}
+.drag:active{cursor:grabbing}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <p class="eyebrow">4e et 3e · Statistiques</p>
+      <h1>Représenter, moyenne et médiane</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Animations">
+      <button class="tab" role="tab" id="tab-diagrammes" data-view="diagrammes" aria-selected="true">1. Diagrammes</button>
+      <button class="tab" role="tab" id="tab-moyenne" data-view="moyenne" aria-selected="false">2. La moyenne</button>
+      <button class="tab" role="tab" id="tab-mediane" data-view="mediane" aria-selected="false">3. La médiane</button>
+    </nav>
+    <button class="ghost" id="fs" type="button">Plein écran</button>
+  </header>
+
+  <!-- 1. DIAGRAMMES -->
+  <section class="view" id="v-diagrammes" role="tabpanel" aria-labelledby="tab-diagrammes">
+    <div class="stage"><svg id="svg1" viewBox="0 0 640 560" role="img" aria-label="Diagramme en barres et diagramme circulaire des mêmes données"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Comment viens-tu au collège ?</h2>
+        <p class="hint">Change les effectifs avec + et − : les deux diagrammes suivent. Clique sur une ligne pour voir le calcul de son angle.</p>
+      </div>
+      <table class="tbl" id="tbl1">
+        <thead><tr><th>Moyen</th><th>Effectif</th><th class="num">Fréquence</th><th class="num">Angle</th></tr></thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
+      </table>
+      <div class="row"><button class="btn primary" type="button" id="build1">▶ Construire le diagramme circulaire</button></div>
+      <div class="eq" id="eq1"></div>
+    </div>
+  </section>
+
+  <!-- 2. MOYENNE -->
+  <section class="view" id="v-moyenne" role="tabpanel" aria-labelledby="tab-moyenne" hidden>
+    <div class="stage"><svg id="svg2" viewBox="0 0 640 560" role="img" aria-label="Notes posées sur une règle en équilibre sur un pivot"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>La moyenne, point d'équilibre</h2>
+        <p class="hint">Chaque jeton est une note sur 20, posée sur une règle. Fais glisser les jetons ou le pivot : la règle est en équilibre quand le pivot est sur la moyenne.</p>
+      </div>
+      <div class="row">
+        <button class="btn primary" type="button" id="eq2b">▶ Trouver l'équilibre</button>
+        <button class="btn" type="button" id="add2">+ Ajouter une note</button>
+        <button class="btn" type="button" id="rem2">− Retirer une note</button>
+      </div>
+      <label class="check"><input type="checkbox" id="show2"> Afficher la moyenne</label>
+      <div class="eq" id="eq2"></div>
+      <div class="vocab" id="def2"></div>
+    </div>
+  </section>
+
+  <!-- 3. MÉDIANE -->
+  <section class="view" id="v-mediane" role="tabpanel" aria-labelledby="tab-mediane" hidden>
+    <div class="stage"><svg id="svg3" viewBox="0 0 640 560" role="img" aria-label="Temps de trajet rangés, médiane, moyenne et étendue"></svg></div>
+    <div class="panel">
+      <div>
+        <h2>Médiane, moyenne et étendue</h2>
+        <p class="hint">Temps de trajet jusqu'au collège, en minutes. Range les valeurs, puis fais varier le temps de l'élève qui habite le plus loin.</p>
+      </div>
+      <div class="row">
+        <button class="btn primary" type="button" id="sort3">Ranger dans l'ordre croissant</button>
+        <button class="btn" type="button" id="mix3">Mélanger</button>
+      </div>
+      <div class="ctl">
+        <div class="ctl-head"><label for="x3">Temps de l'élève qui habite le plus loin</label><span class="val" id="x3v"></span></div>
+        <input type="range" id="x3" min="25" max="90" step="1" value="30">
+        <div class="row"><button class="btn" type="button" id="play3">▶ Faire varier cette valeur</button></div>
+      </div>
+      <label class="check"><input type="checkbox" id="even3"> Ajouter un 10e élève (effectif pair)</label>
+      <div class="eq" id="eq3"></div>
+      <div class="vocab" id="def3"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const r2=x=>Math.round(x*100)/100;
+function fr(x,d=2){const k=Math.pow(10,d);let v=Math.round(x*k)/k;if(Object.is(v,-0))v=0;return v.toLocaleString('fr-FR',{maximumFractionDigits:d});}
+const exact=(x,d=2)=>Math.abs(Math.round(x*Math.pow(10,d))-x*Math.pow(10,d))<1e-6;
+const eqs=(x,d=2)=>(exact(x,d)?' = ':' ≈ ')+fr(x,d);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+function svgPt(svg,e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const m=svg.getScreenCTM();return m?p.matrixTransform(m.inverse()):{x:0,y:0};}
+
+/* ---------- 1. Diagrammes ---------- */
+const CAT=[['Car scolaire','Car','--c1'],['Voiture','Voiture','--c2'],['À pied','À pied','--c3'],['Vélo','Vélo','--c4']];
+const S1={n:[12,7,5,2],d:[12,7,5,2],sel:0,build:null,anim:false};// d : valeurs affichées (suivent n en douceur)
+function niceMax(m){for(const s of [2,4,5,10,20,25,50]){if(m<=s*6)return {step:s,max:Math.max(s,Math.ceil(m/s)*s)};}return {step:100,max:Math.ceil(m/100)*100};}
+function render1(){
+  const N=S1.n.reduce((a,b)=>a+b,0),D=S1.d,ND=D.reduce((a,b)=>a+b,0);let o='';
+  // diagramme en barres
+  const bx=60,bw=250,by=460,bh=300;const {step,max}=niceMax(Math.max(...S1.n,1)+1);const Y=v=>by-v/max*bh;
+  o+=`<text class="lab f-ink" x="${bx-10}" y="60">Diagramme en barres</text><text class="sm f-muted" x="${bx-30}" y="${Y(max)-14}">Effectif</text>`;
+  for(let v=0;v<=max;v+=step){o+=`<line class="grid" x1="${bx}" y1="${r2(Y(v))}" x2="${bx+bw}" y2="${r2(Y(v))}"/><text class="sm f-muted" x="${bx-8}" y="${r2(Y(v)+4)}" text-anchor="end">${v}</text>`;}
+  const w=bw/CAT.length;
+  CAT.forEach((c,i)=>{const x=bx+i*w+w*0.18,ww=w*0.64,v=Math.min(D[i],max*1.05);
+    o+=`<rect x="${r2(x)}" y="${r2(Y(v))}" width="${r2(ww)}" height="${r2(by-Y(v))}" rx="3" style="fill:var(${c[2]});${S1.sel===i?'stroke:var(--ink);stroke-width:2.5':''}"/>`;
+    o+=`<text class="lab f-ink" x="${r2(x+ww/2)}" y="${r2(Y(v)-8)}" text-anchor="middle">${S1.n[i]}</text>`;
+    o+=`<text class="sm f-ink" x="${r2(x+ww/2)}" y="${by+20}" text-anchor="middle">${c[1]}</text>`;});
+  o+=`<line class="axisl" x1="${bx}" y1="${by}" x2="${bx+bw}" y2="${by}"/><line class="axisl" x1="${bx}" y1="${by}" x2="${bx}" y2="${Y(max)-4}"/>`;
+  // diagramme circulaire
+  const cx=478,cy=285,R=125;o+=`<text class="lab f-ink" x="${cx}" y="60" text-anchor="middle">Diagramme circulaire</text>`;
+  if(ND<=0.0001){o+=`<circle cx="${cx}" cy="${cy}" r="${R}" style="fill:none;stroke:var(--line);stroke-width:2;stroke-dasharray:6 5"/><text class="sm f-muted" x="${cx}" y="${cy}" text-anchor="middle">Aucune donnée</text>`;}
+  else{
+    const lim=S1.build===null?Infinity:S1.build;let a=-90;
+    o+=`<circle cx="${cx}" cy="${cy}" r="${R}" style="fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:5 5"/>`;
+    const pt=(deg,rr)=>[cx+rr*Math.cos(deg*Math.PI/180),cy+rr*Math.sin(deg*Math.PI/180)];
+    CAT.forEach((c,i)=>{const full=D[i]/ND*360,k=clamp(lim-i,0,1),ang=full*k;if(ang<0.05){a+=full;return;}
+      const p0=pt(a,R),p1=pt(a+ang,R);
+      const path=ang>=359.99?`M${cx-R},${cy}A${R},${R} 0 1 1 ${cx+R},${cy}A${R},${R} 0 1 1 ${cx-R},${cy}Z`:`M${cx},${cy}L${r2(p0[0])},${r2(p0[1])}A${R},${R} 0 ${ang>180?1:0} 1 ${r2(p1[0])},${r2(p1[1])}Z`;
+      o+=`<path d="${path}" style="fill:var(${c[2]});stroke:var(--paper);stroke-width:2;${S1.sel===i?'stroke:var(--ink);stroke-width:2.5':''}"/>`;
+      if(k>=1&&full>=14){const m=pt(a+full/2,R*0.64);o+=`<text class="lab halo f-ink" x="${r2(m[0])}" y="${r2(m[1]+6)}" text-anchor="middle">${Math.round(S1.n[i]/N*360)}°</text>`;}
+      if(S1.build!==null&&k>0&&i===Math.ceil(lim)-1){// rapporteur : arc et rayon du secteur en cours (reste affiché pendant la pause)
+        const m=pt(a+ang/2,R*0.32);o+=`<path d="M${r2(pt(a,R*0.25)[0])},${r2(pt(a,R*0.25)[1])}A${R*0.25},${R*0.25} 0 ${ang>180?1:0} 1 ${r2(pt(a+ang,R*0.25)[0])},${r2(pt(a+ang,R*0.25)[1])}" style="fill:none;stroke:var(--ink);stroke-width:2"/>`;
+        o+=`<line x1="${cx}" y1="${cy}" x2="${r2(p1[0])}" y2="${r2(p1[1])}" style="stroke:var(--ink);stroke-width:2"/>`;
+        o+=`<text class="lab halo f-ink" x="${cx}" y="${cy-R-22}" text-anchor="middle">${c[0]} : ${S1.n[i]} ÷ ${N} × 360°${eqs(S1.n[i]/N*360,0)}°</text>`;}
+      a+=full;});
+  }
+  // légende
+  CAT.forEach((c,i)=>{const x=372+(i%2)*130,y=452+Math.floor(i/2)*26;o+=`<rect x="${x}" y="${y-11}" width="14" height="14" rx="3" style="fill:var(${c[2]})"/><text class="sm f-ink" x="${x+20}" y="${y+1}">${c[0]}</text>`;});
+  o+=`<text class="tip" x="20" y="545">${S1.build!==null?(S1.build>=CAT.length?'Diagramme terminé : la somme des angles fait 360°.':'Clique (ou appuie sur « Secteur suivant ») pour tracer le secteur suivant.'):'Effectif total : '+N+' élèves. Les deux diagrammes représentent les mêmes données.'}</text>`;
+  $('svg1').innerHTML=o;
+}
+function table1(){const N=S1.n.reduce((a,b)=>a+b,0);
+  $('tbl1').querySelector('tbody').innerHTML=CAT.map((c,i)=>`<tr data-i="${i}" class="${S1.sel===i?'sel':''}" style="cursor:pointer"><td><span class="sw" style="background:var(${c[2]})"></span>${c[0]}</td><td><span class="stp"><button type="button" data-d="-1" data-i="${i}" aria-label="Diminuer ${c[0]}">−</button><b>${S1.n[i]}</b><button type="button" data-d="1" data-i="${i}" aria-label="Augmenter ${c[0]}">+</button></span></td><td class="num">${N?fr(S1.n[i]/N*100,1)+' %':'—'}</td><td class="num">${N?fr(Math.round(S1.n[i]/N*360),0)+'°':'—'}</td></tr>`).join('');
+  $('tbl1').querySelector('tfoot').innerHTML=`<tr><td>Total</td><td><span class="stp"><b style="min-width:auto;padding-left:32px">${N}</b></span></td><td class="num">${N?'100 %':'—'}</td><td class="num">${N?'360°':'—'}</td></tr>`;
+  const i=S1.sel,c=CAT[i];
+  $('eq1').innerHTML=N?`<small>${c[0]}</small><div>Fréquence : ${S1.n[i]} ÷ ${N}${eqs(S1.n[i]/N,3)}, soit ${fr(S1.n[i]/N*100,1)} %</div><div>Angle : ${S1.n[i]} ÷ ${N} × 360°${eqs(S1.n[i]/N*360,1)}°</div><div style="font-size:14px;color:var(--muted)">L'angle est proportionnel à l'effectif : ${N} élèves ↔ 360°.</div>`:'<div>Ajoute des élèves pour construire les diagrammes.</div>';
+}
+$('tbl1').addEventListener('click',e=>{const b=e.target.closest('button[data-d]');if(b){const i=+b.dataset.i;S1.n[i]=clamp(S1.n[i]+(+b.dataset.d),0,40);S1.sel=i;if(!S1.anim){S1.build=null;label1();}table1();return;}
+  const tr=e.target.closest('tr[data-i]');if(tr){S1.sel=+tr.dataset.i;table1();render1();}});
+// construction pas à pas : chaque secteur se trace puis on attend un clic
+const BTN1='▶ Construire le diagramme circulaire';
+function next1(){if(S1.anim)return;
+  if(S1.build===null||S1.build>=CAT.length){S1.d=S1.n.slice();S1.build=0;}
+  let i=Math.round(S1.build);while(i<CAT.length&&S1.n[i]===0)i++;// on saute les effectifs nuls
+  if(i>=CAT.length){S1.build=CAT.length;label1();render1();return;}
+  S1.sel=i;table1();const from=i,t0=performance.now(),dur=reduce?1:1400;S1.anim=true;
+  const st=now=>{const k=clamp((now-t0)/dur,0,1);S1.build=from+k*k*(3-2*k);render1();if(k<1)requestAnimationFrame(st);else{S1.build=from+1;S1.anim=false;label1();render1();}};requestAnimationFrame(st);label1();}
+function label1(){const b=$('build1');if(S1.build===null)b.textContent=BTN1;else if(S1.build>=CAT.length)b.textContent='↺ Recommencer la construction';else b.textContent=`Secteur suivant ▶ (${Math.min(CAT.length,Math.round(S1.build)+1)}/${CAT.length})`;}
+$('build1').onclick=next1;
+$('svg1').addEventListener('click',()=>{if(S1.build!==null&&S1.build<CAT.length)next1();});
+function step1(){let moved=false;for(let i=0;i<4;i++){const t=S1.n[i],d=S1.d[i];if(Math.abs(t-d)>0.005){S1.d[i]=reduce?t:d+(t-d)*0.2;moved=true;}else S1.d[i]=t;}if(moved&&S1.build===null)render1();}
+
+/* ---------- 2. Moyenne ---------- */
+const X2=v=>60+v*26,PY=330,GY=PY+58;// règle : 0 → x=60, 20 → x=580 ; dessus de la règle à y=352
+const S2={v:[8,12,15,11,14],f:6,th:0,drag:null,show:false,stop:null};
+const mean2=()=>S2.v.reduce((a,b)=>a+b,0)/S2.v.length;
+function target2(){const m=mean2();const s=S2.v.reduce((a,v)=>a+(v-S2.f),0);if(Math.abs(m-S2.f)<0.02)return 0;return clamp(s*0.012,-0.13,0.13);}
+function render2(){
+  const m=mean2(),pv=[X2(S2.f),PY+6],deg=S2.th*180/Math.PI,bal=Math.abs(m-S2.f)<0.02;let o='';
+  o+=`<line x1="${X2(S2.f)-70}" y1="${GY}" x2="${X2(S2.f)+70}" y2="${GY}" style="stroke:var(--muted);stroke-width:3;stroke-linecap:round"/>`;
+  o+=`<g transform="rotate(${r2(deg)} ${r2(pv[0])} ${r2(pv[1])})">`;
+  o+=`<rect x="40" y="${PY}" width="560" height="12" rx="3" style="fill:var(--plank)"/>`;
+  for(let v=0;v<=20;v++)o+=`<line x1="${X2(v)}" y1="${PY+12}" x2="${X2(v)}" y2="${PY+(v%5?18:24)}" style="stroke:var(--ink);stroke-width:${v%5?1:1.6}"/>${v%5===0||v===S2.v[S2.drag]?`<text class="sm f-ink" x="${X2(v)}" y="${PY+40}" text-anchor="middle">${v}</text>`:''}`;
+  const cnt={};S2.v.forEach(v=>cnt[v]=(cnt[v]||0)+1);
+  if(S2.show){const top=PY-16-30*Math.max(...Object.values(cnt))-14;o+=`<line x1="${r2(X2(m))}" y1="${PY}" x2="${r2(X2(m))}" y2="${top}" style="stroke:var(--mean);stroke-width:2.5;stroke-dasharray:6 5"/><text class="lab halo f-mean" x="${r2(X2(m))}" y="${top-8}" text-anchor="middle">moyenne${eqs(m)}</text>`;}
+  const c2={};S2.v.forEach((v,i)=>{const k=c2[v]=(c2[v]||0)+1;const y=PY-16-(k-1)*30;
+    o+=`<g class="drag" data-i="${i}"><circle cx="${X2(v)}" cy="${y}" r="15" style="fill:var(--tok);stroke:var(--paper);stroke-width:2${S2.drag===i?';stroke:var(--ink);stroke-width:3':''}"/><text x="${X2(v)}" y="${y+5.5}" text-anchor="middle" style="font:700 15px var(--font-d);fill:#fff;pointer-events:none">${v}</text></g>`;});
+  o+=`</g>`;
+  o+=`<g class="drag" data-f="1"><path d="M${r2(X2(S2.f))},${PY+12}L${r2(X2(S2.f)-24)},${GY}L${r2(X2(S2.f)+24)},${GY}Z" style="fill:${bal?'var(--ok)':'var(--ink)'}"/><rect x="${r2(X2(S2.f)-30)}" y="${PY+8}" width="60" height="60" style="fill:transparent"/></g>`;
+  o+=`<text class="lab halo ${bal?'f-ok':'f-ink'}" x="${r2(X2(S2.f))}" y="${GY+30}" text-anchor="middle">pivot : ${fr(S2.f,1)}</text>`;
+  const msg=bal?'Équilibre ! Le pivot est exactement sur la moyenne.':(S2.th>0.001?'La règle penche à droite : le pivot est trop à gauche.':'La règle penche à gauche : le pivot est trop à droite.');
+  o+=`<text class="lab ${bal?'f-ok':'f-ink'}" x="320" y="70" text-anchor="middle">${msg}</text>`;
+  o+=`<text class="tip" x="20" y="545">Fais glisser un jeton pour changer une note, ou le pivot pour le déplacer.</text>`;
+  $('svg2').innerHTML=o;
+  const s=S2.v.reduce((a,b)=>a+b,0);
+  $('eq2').innerHTML=`<small>Calcul de la moyenne</small><div>Somme : ${S2.v.join(' + ')} = ${s}</div><div>Nombre de notes : ${S2.v.length}</div><div>Moyenne : ${s} ÷ ${S2.v.length}${eqs(m)}</div>`;
+  $('def2').innerHTML=bal?`<div><b>Pourquoi ça tient ?</b> Les écarts à la moyenne se compensent : ${S2.v.map(v=>{const e=v-m;return Math.abs(e)<1e-9?'0':e>0?fr(e):'(−'+fr(-e)+')'}).join(' + ')} = 0.</div>`:`<div><b>La moyenne</b> est la valeur où il faudrait placer le pivot pour que la règle tienne en équilibre : les notes au-dessus compensent celles en dessous.</div>`;
+  $('rem2').disabled=S2.v.length<=2;$('add2').disabled=S2.v.length>=12;
+}
+function step2(){const t=target2();if(Math.abs(t-S2.th)>0.0005){S2.th=reduce?t:S2.th+(t-S2.th)*0.12;render2();}else if(S2.th!==t){S2.th=t;render2();}}
+(function(){const svg=$('svg2');
+  svg.addEventListener('pointerdown',e=>{const g=e.target.closest('.drag');if(!g)return;e.preventDefault();if(S2.stop){S2.stop();S2.stop=null;}
+    S2.drag=g.dataset.f?'f':+g.dataset.i;svg.setPointerCapture(e.pointerId);render2();});
+  svg.addEventListener('pointermove',e=>{if(S2.drag===null)return;const p=svgPt(svg,e);
+    if(S2.drag==='f'){let f=clamp((p.x-60)/26,0,20);const m=mean2();f=Math.abs(f-m)<0.25?m:Math.round(f*10)/10;S2.f=f;}
+    else{// position dans le repère de la règle (on annule l'inclinaison)
+      const c=Math.cos(-S2.th),s=Math.sin(-S2.th),px=X2(S2.f),py=PY+6,dx=p.x-px,dy=p.y-py;const x=px+dx*c-dy*s;S2.v[S2.drag]=clamp(Math.round((x-60)/26),0,20);}
+    render2();});
+  const up=()=>{if(S2.drag!==null){S2.drag=null;render2();}};svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);})();
+$('eq2b').onclick=()=>{if(S2.stop)S2.stop();const f0=S2.f,m=mean2(),t0=performance.now(),dur=reduce?1:1200;let raf;
+  const st=now=>{const k=clamp((now-t0)/dur,0,1),e=k*k*(3-2*k);S2.f=f0+(m-f0)*e;render2();if(k<1)raf=requestAnimationFrame(st);else S2.stop=null;};raf=requestAnimationFrame(st);S2.stop=()=>cancelAnimationFrame(raf);};
+$('add2').onclick=()=>{S2.v.push(10);render2();};
+$('rem2').onclick=()=>{if(S2.v.length>2)S2.v.pop();render2();};
+$('show2').onchange=e=>{S2.show=e.target.checked;render2();};
+
+/* ---------- 3. Médiane ---------- */
+const BASE3=[12,25,5,18,null,8,15,20,10];// null : l'élève qui habite loin ; ordre de collecte
+const S3={x:30,even:false,sorted:false,pos:{},play:null};
+const L3=v=>40+v*5.6;// axe 0 → 100 min
+function items3(){const it=BASE3.map((v,i)=>({id:i,v:v===null?S3.x:v,far:v===null}));if(S3.even)it.push({id:9,v:14,far:false});return it;}
+function order3(it){return S3.sorted?it.slice().sort((a,b)=>a.v-b.v||a.id-b.id):it;}
+function stats3(){const it=items3(),v=it.map(o=>o.v).sort((a,b)=>a-b),n=v.length;const s=v.reduce((a,b)=>a+b,0);
+  const med=n%2?v[(n-1)/2]:(v[n/2-1]+v[n/2])/2;return {it,v,n,s,mean:s/n,med,min:v[0],max:v[n-1]};}
+function cardX(k,n){const w=52,g=8,tot=n*w+(n-1)*g;return 320-tot/2+k*(w+g);}
+function render3(){
+  const st=stats3(),{n}=st,ord=order3(st.it);let o='';
+  o+=`<text class="lab f-ink" x="320" y="44" text-anchor="middle">Temps de trajet (en minutes) de ${n} élèves${S3.sorted?' — rangés':''}</text>`;
+  const ranks={};ord.forEach((c,k)=>ranks[c.id]=k);
+  const midK=n%2?[(n-1)/2]:[n/2-1,n/2];
+  st.it.forEach(c=>{const tx=cardX(ranks[c.id],n);if(S3.pos[c.id]===undefined)S3.pos[c.id]=tx;const x=S3.pos[c.id];
+    const isMed=S3.sorted&&midK.includes(ranks[c.id])&&Math.abs(x-tx)<1;
+    o+=`<rect x="${r2(x)}" y="70" width="52" height="60" rx="9" style="fill:${isMed?'var(--med)':'var(--paper)'};stroke:${c.far?'var(--far)':isMed?'var(--med)':'var(--line)'};stroke-width:${c.far?3:2}"/>`;
+    o+=`<text x="${r2(x+26)}" y="108" text-anchor="middle" style="font:700 22px var(--font-d);fill:${isMed?'#fff':c.far?'var(--far)':'var(--ink)'}">${c.v}</text>`;});
+  const settled=st.it.every(c=>Math.abs(S3.pos[c.id]-cardX(ranks[c.id],n))<1);
+  if(S3.sorted&&settled){const h=Math.floor(n/2)-(n%2?0:1)+(n%2?0:1);// valeurs de chaque côté
+    const nl=n%2?(n-1)/2:n/2-1;const xL0=cardX(0,n),xL1=cardX(nl-1,n)+52,xR0=cardX(n-nl,n),xR1=cardX(n-1,n)+52;
+    const br=(a,b)=>`<path d="M${a},142v8h${b-a}v-8" style="fill:none;stroke:var(--muted);stroke-width:2"/>`;
+    o+=br(xL0,xL1)+br(xR0,xR1);
+    o+=`<text class="sm f-muted" x="${(xL0+xL1)/2}" y="170" text-anchor="middle">${nl} valeurs</text><text class="sm f-muted" x="${(xR0+xR1)/2}" y="170" text-anchor="middle">${nl} valeurs</text>`;
+    const mx=n%2?cardX(midK[0],n)+26:(cardX(midK[0],n)+cardX(midK[1],n)+52)/2;
+    o+=`<text class="lab f-med" x="${mx}" y="205" text-anchor="middle">médiane${n%2?' = '+fr(st.med):' = ('+st.v[midK[0]]+' + '+st.v[midK[1]]+') ÷ 2 = '+fr(st.med)}</text>`;
+  }else if(!S3.sorted){o+=`<text class="lab f-muted" x="320" y="185" text-anchor="middle">Pour trouver la médiane, il faut d'abord ranger les valeurs.</text>`;}
+  // axe gradué
+  const y=420;o+=`<line class="axisl" x1="${L3(0)}" y1="${y}" x2="${L3(100)}" y2="${y}"/>`;
+  for(let v=0;v<=100;v+=10)o+=`<line x1="${L3(v)}" y1="${y}" x2="${L3(v)}" y2="${y+7}" style="stroke:var(--ink);stroke-width:1.4"/><text class="sm f-muted" x="${L3(v)}" y="${y+22}" text-anchor="middle">${v}</text>`;
+  o+=`<text class="sm f-muted" x="${L3(100)}" y="${y-10}" text-anchor="end">min</text>`;
+  const cnt={};st.it.forEach(c=>{const k=cnt[c.v]=(cnt[c.v]||0)+1;o+=`<circle cx="${r2(L3(c.v))}" cy="${y-9-(k-1)*15}" r="6.5" style="fill:${c.far?'var(--far)':'var(--tok)'}"/>`;});
+  // médiane (au-dessus) et moyenne (en dessous)
+  if(S3.sorted){const mx=L3(st.med);o+=`<line x1="${r2(mx)}" y1="${y-70}" x2="${r2(mx)}" y2="${y}" style="stroke:var(--med);stroke-width:2.5;stroke-dasharray:6 4"/><text class="lab halo f-med" x="${r2(mx)}" y="${y-78}" text-anchor="middle">médiane ${fr(st.med)}</text>`;}
+  const ax=L3(st.mean);o+=`<path d="M${r2(ax)},${y+30}l-9,15h18z" style="fill:var(--mean)"/><text class="lab halo f-mean" x="${r2(ax)}" y="${y+64}" text-anchor="middle">moyenne${eqs(st.mean,1)}</text>`;
+  // étendue
+  const ey=y+86;o+=`<path d="M${r2(L3(st.min))},${ey-6}v12M${r2(L3(st.min))},${ey}H${r2(L3(st.max))}M${r2(L3(st.max))},${ey-6}v12" style="stroke:var(--muted);stroke-width:2;fill:none"/><text class="sm f-muted" x="${r2((L3(st.min)+L3(st.max))/2)}" y="${ey+20}" text-anchor="middle">étendue = ${st.max} − ${st.min} = ${st.max-st.min}</text>`;
+  o+=`<text class="lab f-ink" x="320" y="300" text-anchor="middle">${S3.sorted?'Quand la valeur en rouge augmente, la moyenne bouge,':''}</text><text class="lab f-ink" x="320" y="324" text-anchor="middle">${S3.sorted?'mais la médiane reste la même.':''}</text>`;
+  $('svg3').innerHTML=o;
+  $('x3v').textContent=S3.x+' min';$('x3').value=S3.x;
+  $('eq3').innerHTML=`<small>Calculs</small><div>Moyenne : ${st.s} ÷ ${n}${eqs(st.mean,1)} min</div><div>Médiane : ${S3.sorted?fr(st.med)+' min':'ranger d\'abord !'}</div><div>Étendue : ${st.max} − ${st.min} = ${st.max-st.min} min</div>`;
+  $('def3').innerHTML=n%2?`<div><b>La médiane</b> partage la série rangée en deux groupes de même effectif. Ici ${n} valeurs : c'est la ${(n+1)/2}e valeur.</div><div>Elle ne dépend pas des valeurs extrêmes, contrairement à la moyenne.</div><div><b>L'étendue</b> = plus grande valeur − plus petite valeur : elle mesure la dispersion.</div>`:`<div><b>Effectif pair (${n})</b> : il y a deux valeurs au milieu, la ${n/2}e et la ${n/2+1}e. On prend souvent leur moyenne comme médiane.</div><div><b>L'étendue</b> = plus grande valeur − plus petite valeur : elle mesure la dispersion.</div>`;
+  $('sort3').setAttribute('aria-pressed',S3.sorted);
+}
+function step3(){const st=stats3(),ord=order3(st.it);let moved=false;ord.forEach((c,k)=>{const tx=cardX(k,st.n),x=S3.pos[c.id];if(x===undefined||reduce){S3.pos[c.id]=tx;return;}if(Math.abs(tx-x)>0.5){S3.pos[c.id]=x+(tx-x)*0.14;moved=true;}else if(x!==tx){S3.pos[c.id]=tx;moved=true;}});if(moved)render3();}
+$('sort3').onclick=()=>{S3.sorted=true;render3();};
+$('mix3').onclick=()=>{S3.sorted=false;render3();};
+$('x3').oninput=e=>{if(S3.play)S3.play();S3.x=+e.target.value;render3();};
+$('even3').onchange=e=>{S3.even=e.target.checked;render3();};
+$('play3').onclick=()=>{if(S3.play){S3.play();S3.play=null;return;}if(!S3.sorted)S3.sorted=true;const t0=performance.now(),dur=reduce?1:6000;let raf;
+  const st=now=>{const k=clamp((now-t0)/dur,0,1);S3.x=Math.round(25+65*(0.5-0.5*Math.cos(2*Math.PI*k)));render3();if(k<1)raf=requestAnimationFrame(st);else{S3.play=null;$('play3').textContent='▶ Faire varier cette valeur';}};
+  raf=requestAnimationFrame(st);$('play3').textContent='■ Arrêter';S3.play=()=>{cancelAnimationFrame(raf);S3.play=null;$('play3').textContent='▶ Faire varier cette valeur';};};
+
+/* ---------- Onglets ---------- */
+let current='diagrammes';
+const views=['diagrammes','moyenne','mediane'];
+function show(v){if(!views.includes(v))v='diagrammes';current=v;
+  views.forEach(n=>{$('v-'+n).hidden=n!==v;$('tab-'+n).setAttribute('aria-selected',n===v?'true':'false');});}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.view;if(location.hash!=='#'+v)location.hash=v;else show(v);}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+$('fs').onclick=()=>{try{if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}else{const p=$('app').requestFullscreen?$('app').requestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}}catch(e){}};
+document.addEventListener('fullscreenchange',()=>{const f=!!document.fullscreenElement;$('fs').textContent=f?'Quitter le plein écran':'Plein écran';$('app').style.background=f?'var(--bg)':'';$('app').style.padding=f?'16px':'';$('app').style.overflow=f?'auto':'';});
+(function loop(){try{if(!document.hidden){if(current==='diagrammes')step1();else if(current==='moyenne')step2();else step3();}}catch(e){console.error(e);}requestAnimationFrame(loop);})();
+
+table1();render1();render2();render3();show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>
