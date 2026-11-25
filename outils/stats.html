@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Statistiques – M. Pluchet</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Tableau de bord des visites du site élèves (GoatCounter), réservé à l'enseignant.
+   La clé d'API (lecture seule) est gardée dans le navigateur de l'enseignant, jamais dans le dépôt. */
+:root{
+  --bg:#f6f4ee; --card:#fff; --ink:#1b2333; --muted:#596277; --line:#e2ded3; --soft:#e8eefc;
+  --pages:#2f5bd3; --docs:#e08a1e; --up:#1f7a4d; --down:#b3261e; --heat:47,91,211;
+}
+@media (prefers-color-scheme:dark){
+  :root{ --bg:#13161d; --card:#1b1f28; --ink:#eaedf3; --muted:#a3abbc; --line:#2b313e; --soft:#222a3e;
+    --pages:#86a4ff; --docs:#f0a050; --up:#5fd39a; --down:#ff8a80; --heat:134,164,255; }
+}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header{padding:26px 0 8px}
+h1{font:700 clamp(26px,5vw,36px)/1.1 "Atkinson Hyperlegible",sans-serif;margin:0 0 4px;text-wrap:balance}
+h2{font:700 21px/1.2 "Atkinson Hyperlegible",sans-serif;margin:0 0 4px}
+.muted{color:var(--muted)} .small{font-size:14px}
+a{color:var(--pages)}
+.bar-top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:700 15px "Atkinson Hyperlegible",sans-serif;cursor:pointer;min-height:42px}
+.pill:hover{border-color:var(--pages)}
+.pill[aria-pressed="true"]{background:var(--pages);color:var(--card);border-color:var(--pages)}
+.sep{width:1px;height:28px;background:var(--line);margin:0 4px}
+input[type=date],input[type=password]{font:16px "Atkinson Hyperlegible",sans-serif;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);min-height:42px}
+button.act{font:700 15px "Atkinson Hyperlegible",sans-serif;border:0;border-radius:10px;padding:10px 16px;background:var(--pages);color:var(--card);cursor:pointer;min-height:42px}
+button.ghost{font:700 14px "Atkinson Hyperlegible",sans-serif;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:transparent;color:var(--muted);cursor:pointer;min-height:40px}
+:focus-visible{outline:3px solid var(--pages);outline-offset:2px}
+main{padding:18px 0 60px;display:grid;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.grid2{display:grid;gap:18px}
+@media(min-width:860px){.grid2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kpi b{display:block;font-size:clamp(26px,4vw,34px);line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--muted);font-size:14px}
+.delta{font-weight:700;font-size:13px;white-space:nowrap}
+.delta.up{color:var(--up)} .delta.down{color:var(--down)} .delta.eq{color:var(--muted)}
+.insights{margin:0;padding-left:20px;display:grid;gap:4px}
+.fig{position:relative;height:260px;margin-top:10px}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.hrow{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) 3.2em 4.6em;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
+.hrow:last-child{border-bottom:0}
+.hrow .lab{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hrow .n{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.hrow .d{text-align:right}
+.track{height:12px;background:var(--soft);border-radius:6px;overflow:hidden;position:relative}
+.track>div{height:100%;background:var(--pages);border-radius:6px}
+.docs .track>div{background:var(--docs)}
+.docrow{display:grid;grid-template-columns:auto minmax(0,1fr) 3em;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.docrow:last-child{border-bottom:0}
+.docrow .t{font-weight:700;line-height:1.3}
+.docrow .track{margin-top:5px;height:8px}
+.chip{font:700 12px "Atkinson Hyperlegible",sans-serif;border-radius:6px;padding:2px 7px;background:var(--soft);color:var(--pages);white-space:nowrap}
+.docrow .n{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.heat{display:grid;grid-template-columns:2.6em repeat(18,minmax(0,1fr));gap:3px;margin-top:10px;font-size:12px}
+.heat .h{color:var(--muted);text-align:center}
+.heat .dlab{color:var(--muted);font-weight:700;align-self:center}
+.heat .c{aspect-ratio:1/1;border-radius:4px;background:rgba(var(--heat),.06);display:grid;place-items:center;font-size:11px;font-weight:700;color:transparent}
+.heat .c:hover{color:var(--ink);outline:1px solid var(--pages)}
+.moments{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin-top:14px}
+.moments div{background:var(--soft);border-radius:12px;padding:10px 12px}
+.moments b{font-size:22px;display:block}
+.moments span{font-size:13px;color:var(--muted)}
+.state{padding:40px 18px;text-align:center}
+.setup{max-width:640px;margin:20px auto}
+.setup ol{padding-left:20px}
+.setup form{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.setup input{flex:1 1 280px}
+.err{color:var(--down);font-weight:700}
+.spark{width:100%;height:28px;display:block}
+@media(max-width:600px){ .hrow{grid-template-columns:minmax(0,6.5em) minmax(0,1fr) 2.8em 4.2em;gap:6px} .heat{grid-template-columns:2.2em repeat(18,minmax(0,1fr));gap:2px} .heat .h:nth-child(odd){visibility:hidden} }
+@media(prefers-reduced-motion:no-preference){ .track>div{transition:width .5s ease} }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <p class="muted small" style="margin:0"><a href="../index.html">← Site élèves</a> · réservé à l'enseignant</p>
+  <h1 id="title">Visites du site élèves</h1>
+  <p class="muted small" id="subtitle" style="margin:0">Chargement…</p>
+</header>
+<div class="bar-top" id="controls" hidden>
+  <div class="wrap row">
+    <div class="row" id="periods" role="group" aria-label="Période"></div>
+    <span class="row" id="custom" hidden><input type="date" id="d1" aria-label="Du"> <input type="date" id="d2" aria-label="Au"></span>
+    <span class="sep"></span>
+    <div class="row" id="classes" role="group" aria-label="Classe"></div>
+    <span style="margin-left:auto" class="row"><button class="ghost" id="reload">Actualiser</button><button class="ghost" id="forget">Oublier la clé</button></span>
+  </div>
+</div>
+<main class="wrap" id="main"><div class="state muted">Chargement…</div></main>
+
+<script>
+{
+const SITE = 'https://thibaudpluchet.goatcounter.com', RENTREE = '2026-09-01';
+const main = document.getElementById('main');
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => Number(n || 0).toLocaleString('fr-FR');
+const get = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
+const set = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch(e){} };
+const JOURS = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const H0 = 6; // colonnes de 6 h à 23 h
+
+// Page réservée au navigateur de l'enseignant (lien #prof=… déjà ouvert) ; la vraie protection est la clé d'API.
+const isProf = get('skipgc') === 't' || get('mp:prof') === '1' || /prof=/.test(location.hash);
+if (!isProf){ main.innerHTML = '<div class="card state">Cette page est réservée à l’enseignant.</div>'; $('subtitle').textContent = ''; }
+
+let CLASSES = {}, period = get('mp:stats:period') || '7', cls = 'all', docLevel = 'all', docKind = 'all', DATA = null;
+
+// ---------- dates ----------
+const iso = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+function range(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  let a, b = today;
+  if (period === 'rentree') a = parse(RENTREE);
+  else if (period === 'custom'){ a = parse($('d1').value || iso(addDays(today,-6))); b = parse($('d2').value || iso(today)); if (b < a) [a, b] = [b, a]; }
+  else a = addDays(today, -(Number(period) - 1));
+  const n = Math.round((b - a) / 864e5) + 1;
+  return { a, b, n, pa: addDays(a, -n), pb: addDays(a, -1) };
+}
+const hourIso = d => new Date(Math.floor(d.getTime() / 36e5) * 36e5).toISOString().replace('.000', '');
+const span = (a, b) => ({ start: hourIso(a), end: hourIso(new Date(Math.min(addDays(b, 1).getTime(), Date.now() + 36e5))) });
+
+// ---------- API GoatCounter (4 requêtes par seconde au plus) ----------
+let last = 0;
+async function api(path, params){
+  const wait = last + 300 - Date.now(); if (wait > 0) await new Promise(r => setTimeout(r, wait)); last = Date.now();
+  const r = await fetch(SITE + '/api/v0' + path + '?' + new URLSearchParams(params), { headers: { Authorization: 'Bearer ' + get('mp:gctoken'), 'Content-Type': 'application/json' }, cache: 'no-store' });
+  if (r.status === 401 || r.status === 403) throw new Error('cle');
+  if (r.status === 429){ await new Promise(r2 => setTimeout(r2, 1500)); return api(path, params); }
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+async function allHits(sp, extra){
+  let out = [], ids = [];
+  for (let i = 0; i < 8; i++){
+    const p = Object.assign({}, sp, { limit: 100 }, extra || {}); if (ids.length) p.exclude_paths = ids.join(',');
+    const j = await api('/stats/hits', p);
+    out = out.concat(j.hits || []); ids = ids.concat((j.hits || []).map(h => h.path_id));
+    if (!j.more) break;
+  }
+  return out;
+}
+
+// ---------- classement des chemins ----------
+const allCls = () => Object.values(CLASSES).flat();
+function classify(h){
+  const p = h.path || '';
+  if (h.event){
+    if (/vacances/i.test(p)) return { kind: 'Cahier de vacances', lv: /4e/.test(p) ? '4e' : '', doc: true };
+    const lv = (p.match(/^(\d)e\b/) || [])[1];
+    const k = /correction/i.test(p) ? 'Corrections' : /évaluation|evaluation/i.test(p) ? 'Évaluations' : /cours/i.test(p) ? 'Cours' : /vidéo|video/i.test(p) ? 'Vidéos' : /exercice/i.test(p) ? 'Exercices' : /carte|révision|revision/i.test(p) ? 'Révision' : /activité/i.test(p) ? 'Activités' : /dnb|brevet|sujet/i.test(p) ? 'Brevet' : 'Autres';
+    return { kind: k, lv: lv ? lv + 'e' : '', doc: true };
+  }
+  const m = p.match(/^\/([^/]+)$/);
+  if (m && allCls().includes(m[1])) return { cls: m[1], section: 'Page de la classe' };
+  const s = p.match(/^\/(automatismes|curiosites|animations)(?:\/([^/]+))?/);
+  if (s) return { cls: s[2] && allCls().includes(s[2]) ? s[2] : '', section: { automatismes: 'Automatismes', curiosites: 'Curiosités', animations: 'Animations' }[s[1]] };
+  if (/^\/exos\//.test(p)) return { section: /\/note$/.test(p) ? 'Évaluations blanches rendues' : 'Préparer l’évaluation (en ligne)', lv: (p.match(/\/exos\/(\d)e/) || [])[1] ? p.match(/\/exos\/(\d)e/)[1] + 'e' : '' };
+  if (/cahier-vacances/.test(p)) return { section: 'Cahier de vacances' };
+  if (p === '/') return { section: 'Accueil sans classe' };
+  return { section: 'Autres pages' };
+}
+const lvOf = c => Object.keys(CLASSES).find(l => CLASSES[l].includes(c)) || '';
+
+// ---------- chargement ----------
+async function load(){
+  if (!isProf) return;
+  if (!get('mp:gctoken')) return setup();
+  $('controls').hidden = false;
+  main.innerHTML = '<div class="card state muted">Lecture des statistiques GoatCounter…</div>';
+  const R = range(), cur = span(R.a, R.b), prev = span(R.pa, R.pb);
+  try {
+    const hits = await allHits(cur);
+    const prevTot = await api('/stats/total', prev);
+    const prevCls = await allHits(prev, { path_by_name: true, include_paths: allCls().map(c => '/' + c).join(',') });
+    const sizes = await api('/stats/sizes', cur), systems = await api('/stats/systems', cur), browsers = await api('/stats/browsers', cur);
+    DATA = { R, hits, prevTot, prevCls, sizes: sizes.stats || [], systems: systems.stats || [], browsers: browsers.stats || [], at: new Date() };
+    render();
+  } catch(e){
+    if (e.message === 'cle') return setup('La clé n’est plus acceptée par GoatCounter (supprimée ou sans le droit « Read statistics »). Collez une nouvelle clé.');
+    main.innerHTML = '<div class="card state"><p class="err">Impossible de lire les statistiques (' + esc(e.message) + ').</p><button class="act" id="retry">Réessayer</button></div>';
+    $('retry').onclick = load;
+  }
+}
+function setup(msg){
+  $('controls').hidden = true; $('subtitle').textContent = 'Première utilisation : reliez la page à GoatCounter.';
+  main.innerHTML = '<div class="card setup"><h2>Clé d’accès GoatCounter</h2>' + (msg ? '<p class="err">' + esc(msg) + '</p>' : '') +
+    '<ol><li>Sur <a href="' + SITE + '/user/api" target="_blank" rel="noopener">GoatCounter → Settings → API</a>, cliquez sur <b>New API token</b>.</li><li>Cochez seulement <b>Read statistics</b>, puis enregistrez.</li><li>Copiez la clé et collez-la ci-dessous.</li></ol>' +
+    '<p class="muted small">La clé reste dans ce navigateur (rien n’est envoyé sur le site ni sur GitHub). À refaire une fois par navigateur : maison, collège.</p>' +
+    '<form id="tf"><input type="password" id="tok" autocomplete="off" placeholder="Clé d’API" aria-label="Clé d’API GoatCounter" required><button class="act">Enregistrer</button></form></div>';
+  $('tf').onsubmit = e => { e.preventDefault(); const v = $('tok').value.trim(); if (v){ set('mp:gctoken', v); load(); } };
+}
+
+// ---------- rendu ----------
+const pct = (a, b) => b ? Math.round((a - b) / b * 100) : null;
+const delta = (a, b) => { const p = pct(a, b); if (p == null) return a ? '<span class="delta up">nouveau</span>' : '<span class="delta eq">–</span>'; return '<span class="delta ' + (p > 0 ? 'up' : p < 0 ? 'down' : 'eq') + '">' + (p > 0 ? '+' : '') + p + ' %</span>'; };
+const sum = (a, f) => a.reduce((s, x) => s + (f ? f(x) : x), 0);
+function render(){
+  const { R, hits } = DATA;
+  const days = []; for (let d = new Date(R.a); d <= R.b; d = addDays(d, 1)) days.push(iso(d));
+  const H = hits.map(h => Object.assign({ c: classify(h) }, h));
+  const inCls = h => cls === 'all' || h.c.cls === cls;
+  const pages = H.filter(h => !h.event), docs = H.filter(h => h.event);
+  const sel = cls === 'all' ? H : H.filter(inCls);
+  // séries par jour
+  const perDay = (list) => { const m = {}; list.forEach(h => (h.stats || []).forEach(s => m[s.day] = (m[s.day] || 0) + (s.daily || 0))); return days.map(d => m[d] || 0); };
+  const sPages = perDay(cls === 'all' ? pages : sel.filter(h => h.c.section === 'Page de la classe')), sDocs = cls === 'all' ? perDay(docs) : days.map(() => 0);
+  const totPages = sum(sPages), totDocs = sum(sDocs);
+  const prevPages = cls === 'all' ? (DATA.prevTot.total || 0) - (DATA.prevTot.total_events || 0) : sum(DATA.prevCls.filter(h => h.path === '/' + cls), h => h.count);
+  const prevDocs = DATA.prevTot.total_events || 0;
+  // classes
+  const clsRows = allCls().map(c => {
+    const own = H.filter(h => h.c.cls === c), main0 = own.filter(h => h.c.section === 'Page de la classe');
+    const n = sum(main0, h => h.count), other = sum(own.filter(h => h.c.section !== 'Page de la classe'), h => h.count);
+    const p = sum(DATA.prevCls.filter(h => h.path === '/' + c), h => h.count);
+    return { c, n, other, p, serie: perDay(main0) };
+  }).sort((x, y) => y.n - x.n);
+  // moments (heure × jour)
+  const heat = Array.from({ length: 7 }, () => Array(24).fill(0));
+  (cls === 'all' ? H : sel).forEach(h => (h.stats || []).forEach(s => { if (!s.hourly) return; const wd = (parse(s.day).getDay() + 6) % 7; s.hourly.forEach((v, i) => heat[wd][i] += v || 0); }));
+  const totHeat = sum(heat.flat()) || 1;
+  const band = (d0, d1, h0, h1) => { let t = 0; for (let d = d0; d <= d1; d++) for (let h = 0; h < 24; h++) if (h1 > h0 ? (h >= h0 && h < h1) : (h >= h0 || h < h1)) t += heat[d][h]; return t; };
+  const mom = [
+    ['En journée', 'lun.–ven., 8 h–17 h', band(0, 4, 8, 17)],
+    ['Le soir', 'lun.–ven., 17 h–22 h', band(0, 4, 17, 22)],
+    ['Tard ou très tôt', '22 h–8 h', band(0, 4, 22, 8) + band(5, 6, 22, 8)],
+    ['Le week-end', 'sam.–dim., 8 h–22 h', band(5, 6, 8, 22)],
+    ['Mercredi après-midi', '12 h–18 h', band(2, 2, 12, 18)]
+  ];
+  // phrases clés
+  const best = clsRows[0], peak = sPages.map((v, i) => [v + sDocs[i], days[i]]).sort((x, y) => y[0] - x[0])[0];
+  const fmtDay = s => parse(s).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const topDoc = docs.slice().sort((x, y) => y.count - x.count)[0];
+  const devTot = sum(DATA.sizes, s => s.count) || 1, devTop = DATA.sizes.slice().sort((x, y) => y.count - x.count)[0];
+  const ins = [];
+  if (cls === 'all' && best && best.n) ins.push('<b>' + esc(best.c) + '</b> est la classe la plus active : ' + fmt(best.n) + ' visite' + (best.n > 1 ? 's' : '') + ' de sa page.');
+  if (peak && peak[0]) ins.push('Jour le plus chargé : <b>' + esc(fmtDay(peak[1])) + '</b> (' + fmt(peak[0]) + ').');
+  const soir = mom[1][2] + mom[2][2];
+  if (sum(heat.flat())) ins.push('<b>' + Math.round(soir / totHeat * 100) + ' %</b> des connexions ont lieu le soir ou la nuit, <b>' + Math.round(mom[3][2] / totHeat * 100) + ' %</b> le week-end.');
+  if (cls === 'all' && topDoc) ins.push('Document le plus ouvert : <b>' + esc(topDoc.path) + '</b> (' + fmt(topDoc.count) + ' fois).');
+  if (devTop && devTop.count) ins.push('Appareil le plus utilisé : <b>' + esc(sizeName(devTop)) + '</b> (' + Math.round(devTop.count / devTot * 100) + ' %).');
+  // titre
+  const lab = { '7': '7 derniers jours', '30': '30 derniers jours', 'rentree': 'depuis la rentrée', 'custom': 'du ' + R.a.toLocaleDateString('fr-FR') + ' au ' + R.b.toLocaleDateString('fr-FR') }[period];
+  $('title').textContent = (cls === 'all' ? 'Visites du site élèves' : 'Visites de la ' + cls) + ' · ' + lab;
+  $('subtitle').textContent = 'Comparaison avec les ' + R.n + ' jours précédents · données GoatCounter lues à ' + DATA.at.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' (vos propres visites ne sont pas comptées)';
+
+  const avg = (totPages + totDocs) / days.length;
+  let html = '<section class="kpis">' +
+    kpi(fmt(totPages), cls === 'all' ? 'visites de pages' : 'visites de la page ' + cls, delta(totPages, prevPages)) +
+    (cls === 'all' ? kpi(fmt(totDocs), 'documents ouverts', delta(totDocs, prevDocs)) : kpi(fmt(sum(H.filter(h => h.c.cls === cls && h.c.section !== 'Page de la classe'), h => h.count)), 'visites Automatismes, Curiosités, Animations', '')) +
+    kpi(avg.toLocaleString('fr-FR', { maximumFractionDigits: 1 }), 'par jour en moyenne', '') +
+    (cls === 'all' ? kpi(esc(best && best.n ? best.c : '–'), 'classe la plus active', best && best.n ? delta(best.n, best.p) : '') : kpi(fmt(clsRows.findIndex(r => r.c === cls) + 1) + '<small style="font-size:16px"> / ' + clsRows.length + '</small>', 'rang parmi les classes', '')) +
+    '</section>';
+  if (ins.length) html += '<section class="card"><h2>À retenir</h2><ul class="insights">' + ins.map(x => '<li>' + x + '</li>').join('') + '</ul></section>';
+  html += '<section class="card"><h2>Jour par jour</h2><div class="legend"><span><i style="background:var(--pages)"></i>Visites de pages</span>' + (cls === 'all' ? '<span><i style="background:var(--docs)"></i>Documents ouverts</span>' : '') + '</div><div class="fig"><svg id="daily" role="img" aria-label="Visites par jour"></svg></div></section>';
+  html += '<div class="grid2">';
+  // classes
+  const maxC = Math.max(1, ...clsRows.map(r => r.n));
+  html += '<section class="card"><h2>Par classe</h2><p class="muted small" style="margin:0 0 8px">Visites de la page de la classe (adresse #classe) et évolution par rapport à la période précédente. Cliquez sur une classe pour filtrer.</p>' +
+    clsRows.map(r => '<div class="hrow"><button class="pill" data-cls="' + esc(r.c) + '" style="min-height:36px;padding:4px 10px" aria-pressed="' + (cls === r.c) + '">' + esc(r.c) + '</button><div><div class="track"><div style="width:' + (r.n / maxC * 100) + '%"></div></div>' + spark(r.serie) + '</div><span class="n">' + fmt(r.n) + '</span><span class="d">' + delta(r.n, r.p) + '</span></div>').join('') +
+    '<p class="muted small" style="margin:8px 0 0">Autres pages par classe (Automatismes, Curiosités, Animations) : ' + clsRows.filter(r => r.other).map(r => esc(r.c) + ' ' + fmt(r.other)).join(' · ') + (clsRows.some(r => r.other) ? '' : 'aucune visite') + '.</p></section>';
+  // moments
+  const maxH = Math.max(1, ...heat.flat());
+  html += '<section class="card"><h2>Moments de connexion</h2><p class="muted small" style="margin:0">Chaque case = une heure ; plus elle est foncée, plus il y a de visites. Survolez une case pour le nombre.</p><div class="heat"><span></span>' +
+    Array.from({ length: 18 }, (_, i) => '<span class="h">' + (H0 + i) + '</span>').join('') +
+    heat.map((row, d) => '<span class="dlab">' + JOURS[d] + '</span>' + Array.from({ length: 18 }, (_, i) => { const h = H0 + i, v = row[h] + (h === H0 ? sum(row.slice(0, H0)) : 0); return '<span class="c" title="' + JOURS[d] + ' ' + h + ' h : ' + v + '" style="background:rgba(var(--heat),' + (v ? 0.12 + 0.88 * v / maxH : 0.06) + ')">' + (v || '') + '</span>'; }).join('')).join('') +
+    '</div><p class="muted small" style="margin:6px 0 0">La colonne « 6 » regroupe aussi la nuit (0 h–6 h).</p><div class="moments">' +
+    mom.map(m => '<div><b>' + Math.round(m[2] / totHeat * 100) + ' %</b>' + esc(m[0]) + '<br><span>' + esc(m[1]) + '</span></div>').join('') + '</div></section>';
+  html += '</div>';
+  // documents
+  const lvs = ['all'].concat(Object.keys(CLASSES));
+  const kinds = ['all'].concat([...new Set(docs.map(h => h.c.kind))].sort());
+  const dl = cls !== 'all' ? lvOf(cls) : docLevel;
+  const shown = docs.filter(h => (dl === 'all' || h.c.lv === dl) && (docKind === 'all' || h.c.kind === docKind)).sort((x, y) => y.count - x.count);
+  const maxD = Math.max(1, ...shown.map(h => h.count));
+  html += '<section class="card docs"><h2>Documents les plus consultés</h2><p class="muted small" style="margin:0 0 8px">Ouvertures de PDF, vidéos et corrections depuis le site' + (cls !== 'all' ? ' — tous les élèves de ' + esc(dl) + ' (GoatCounter ne sépare pas les documents par classe)' : '') + '.</p>' +
+    '<div class="row" style="margin-bottom:6px">' + (cls === 'all' ? lvs.map(l => '<button class="pill" data-lv="' + esc(l) + '" aria-pressed="' + (docLevel === l) + '">' + (l === 'all' ? 'Tous niveaux' : esc(l)) + '</button>').join('') + '<span class="sep"></span>' : '') +
+    kinds.map(k => '<button class="pill" data-kind="' + esc(k) + '" aria-pressed="' + (docKind === k) + '">' + (k === 'all' ? 'Tous types' : esc(k)) + '</button>').join('') + '</div>' +
+    (shown.length ? shown.slice(0, 20).map(h => '<div class="docrow"><span class="chip">' + esc(h.c.kind) + '</span><div><div class="t">' + esc(h.path) + '</div><div class="track"><div style="width:' + (h.count / maxD * 100) + '%"></div></div></div><span class="n">' + fmt(h.count) + '</span></div>').join('') + (shown.length > 20 ? '<p class="muted small">… et ' + (shown.length - 20) + ' autres documents.</p>' : '')
+      : '<p class="muted">Aucun document ouvert sur cette période.</p>') + '</section>';
+  html += '<div class="grid2">';
+  // autres pages
+  const secs = {}; pages.filter(h => !h.c.cls || h.c.section !== 'Page de la classe').filter(inCls).forEach(h => { const k = h.c.section; secs[k] = (secs[k] || 0) + h.count; });
+  const exos = pages.filter(h => /^\/exos\//.test(h.path) && (cls === 'all' || h.c.lv === lvOf(cls))).sort((x, y) => y.count - x.count);
+  html += '<section class="card"><h2>Autres rubriques</h2>' + bars(Object.entries(secs).sort((x, y) => y[1] - x[1])) +
+    (exos.length ? '<h2 style="margin-top:16px;font-size:17px">Préparation des évaluations en ligne</h2>' + bars(exos.slice(0, 10).map(h => [h.title || h.path, h.count])) : '') + '</section>';
+  // appareils
+  html += '<section class="card"><h2>Appareils</h2><p class="muted small" style="margin:0 0 6px">Taille d’écran</p>' + bars(DATA.sizes.map(s => [sizeName(s), s.count]), true) +
+    '<p class="muted small" style="margin:14px 0 6px">Système</p>' + bars(DATA.systems.slice(0, 6).map(s => [s.name || 'inconnu', s.count]), true) +
+    '<p class="muted small" style="margin:14px 0 6px">Navigateur</p>' + bars(DATA.browsers.slice(0, 6).map(s => [s.name || 'inconnu', s.count]), true) + '</section>';
+  html += '</div><p class="muted small">Les compteurs de GoatCounter sont des visites (une même personne qui recharge la page n’est comptée qu’une fois par jour). Tableau de bord complet : <a href="' + SITE + '" target="_blank" rel="noopener">thibaudpluchet.goatcounter.com</a>.</p>';
+  main.innerHTML = html;
+  drawDaily(days, sPages, cls === 'all' ? sDocs : null);
+  main.querySelectorAll('[data-cls]').forEach(b => b.onclick = () => { cls = cls === b.dataset.cls ? 'all' : b.dataset.cls; pills(); render(); scrollTo({ top: 0 }); });
+  main.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { docLevel = b.dataset.lv; render(); });
+  main.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => { docKind = b.dataset.kind; render(); });
+}
+function sizeName(s){ return { phone: 'Téléphone', largephone: 'Grand téléphone', tablet: 'Tablette', desktop: 'Ordinateur', desktophd: 'Grand écran', unknown: 'Inconnu' }[s.id] || s.name || 'Inconnu'; }
+function kpi(v, l, d){ return '<div class="kpi"><b>' + v + '</b><span>' + esc(l) + '</span> ' + d + '</div>'; }
+function bars(list, percent){
+  list = list.filter(x => x[1]); if (!list.length) return '<p class="muted small">Aucune donnée.</p>';
+  const max = Math.max(...list.map(x => x[1])), tot = sum(list, x => x[1]);
+  return list.map(x => '<div class="hrow" style="grid-template-columns:minmax(0,11em) minmax(0,1fr) 3.2em"><span class="lab" title="' + esc(x[0]) + '">' + esc(x[0]) + '</span><div class="track"><div style="width:' + (x[1] / max * 100) + '%"></div></div><span class="n">' + (percent ? Math.round(x[1] / tot * 100) + ' %' : fmt(x[1])) + '</span></div>').join('');
+}
+function spark(s){
+  const m = Math.max(1, ...s), n = s.length; if (n < 2) return '';
+  const pts = s.map((v, i) => (i / (n - 1) * 100).toFixed(1) + ',' + (26 - v / m * 22).toFixed(1)).join(' ');
+  return '<svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><polyline points="' + pts + '" fill="none" stroke="var(--pages)" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>';
+}
+let ro = null;
+function drawDaily(days, a, b){
+  const s = $('daily'); if (!s) return;
+  const draw = () => {
+    const W = s.clientWidth, H = s.clientHeight, L = 34, B = 26, T = 10;
+    const tot = days.map((_, i) => a[i] + (b ? b[i] : 0)), max = Math.max(4, ...tot);
+    const step = Math.pow(10, Math.floor(Math.log10(max))) * (max / Math.pow(10, Math.floor(Math.log10(max))) > 5 ? 2 : 1), top = Math.ceil(max / step) * step;
+    const y = v => T + (H - T - B) * (1 - v / top), bw = (W - L) / days.length, gap = Math.min(4, bw * 0.25);
+    let g = '';
+    for (let v = 0; v <= top; v += step) g += '<line x1="' + L + '" x2="' + W + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="var(--line)"/><text x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end" font-size="11" fill="var(--muted)">' + v + '</text>';
+    const every = Math.ceil(days.length / Math.max(2, Math.floor((W - L) / 64)));
+    days.forEach((d, i) => {
+      const x = L + i * bw + gap / 2, w = Math.max(1, bw - gap), we = [0, 6].includes(parse(d).getDay());
+      if (we) g += '<rect x="' + (L + i * bw) + '" y="' + T + '" width="' + bw + '" height="' + (H - T - B) + '" fill="var(--soft)" opacity=".6"/>';
+      g += '<rect x="' + x + '" y="' + y(a[i]) + '" width="' + w + '" height="' + (y(0) - y(a[i])) + '" fill="var(--pages)" rx="2"><title>' + d + ' : ' + a[i] + ' visites' + (b ? ', ' + b[i] + ' documents' : '') + '</title></rect>';
+      if (b && b[i]) g += '<rect x="' + x + '" y="' + y(a[i] + b[i]) + '" width="' + w + '" height="' + (y(a[i]) - y(a[i] + b[i])) + '" fill="var(--docs)" rx="2"><title>' + d + ' : ' + b[i] + ' documents</title></rect>';
+      if (i % every === 0) g += '<text x="' + (L + i * bw + bw / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11" fill="var(--muted)">' + parse(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) + '</text>';
+    });
+    s.innerHTML = g;
+  };
+  if (ro) ro.disconnect(); ro = new ResizeObserver(draw); ro.observe(s); draw();
+}
+
+// ---------- commandes ----------
+function pills(){
+  const P = [['7', '7 jours'], ['30', '30 jours'], ['rentree', 'Depuis la rentrée'], ['custom', 'Dates…']];
+  $('periods').innerHTML = P.map(p => '<button class="pill" data-p="' + p[0] + '" aria-pressed="' + (period === p[0]) + '">' + p[1] + '</button>').join('');
+  $('custom').hidden = period !== 'custom';
+  $('classes').innerHTML = '<button class="pill" data-c="all" aria-pressed="' + (cls === 'all') + '">Toutes</button>' + allCls().map(c => '<button class="pill" data-c="' + esc(c) + '" aria-pressed="' + (cls === c) + '">' + esc(c) + '</button>').join('');
+  $('periods').querySelectorAll('button').forEach(b => b.onclick = () => { period = b.dataset.p; set('mp:stats:period', period); pills(); if (period !== 'custom') load(); });
+  $('classes').querySelectorAll('button').forEach(b => b.onclick = () => { cls = b.dataset.c; pills(); if (DATA) render(); });
+}
+$('d1').onchange = $('d2').onchange = () => { if ($('d1').value && $('d2').value) load(); };
+$('reload').onclick = load;
+$('forget').onclick = () => { set('mp:gctoken', null); DATA = null; setup(); };
+if (isProf){
+  const t = new Date(); $('d2').value = iso(t); $('d1').value = iso(addDays(t, -13));
+  fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(d => d.classes || {}).catch(() => ({})).then(c => { CLASSES = c; pills(); load(); });
+}
+}
+</script>
+</body>
+</html>
