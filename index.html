@@ -366,6 +366,14 @@ function start(D){
     try { localStorage.setItem('mp:prof', '1'); } catch(e){}
     var ol = el('a', 'profnote', '⏱ Minuteur de classe (fenêtre flottante) ↗'); ol.href = 'outils/minuteur.html'; ol.target = '_blank'; ol.rel = 'noopener'; ol.style.display = 'inline-block'; ol.style.fontWeight = '700';
     picker.insertBefore(ol, pn.nextSibling);
+    // compteur de visites global (GoatCounter), réservé à l'adresse enseignant ; la lecture du compteur n'est pas comptée comme visite
+    var vc = el('a', 'profnote', '📊 Visites du site : chargement…'); vc.href = 'https://thibaudpluchet.goatcounter.com'; vc.target = '_blank'; vc.rel = 'noopener'; vc.style.display = 'inline-block';
+    picker.insertBefore(vc, ol.nextSibling);
+    var GC = 'https://thibaudpluchet.goatcounter.com/counter/TOTAL.json';
+    function gc(q){ return fetch(GC + q, {cache:'no-store'}).then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); }).then(function(j){ return String(j.count).replace(/,/g, ' '); }); }
+    Promise.all([gc(''), gc('?start=week'), gc('?start=' + new Date().toISOString().slice(0, 10))])
+      .then(function(n){ vc.textContent = '📊 Visites du site : ' + n[0] + ' au total · ' + n[1] + ' sur 7 jours · ' + n[2] + ' aujourd’hui ↗'; })
+      .catch(function(){ vc.textContent = '📊 Compteur de visites indisponible : activer « Allow adding visitor counts on your website » dans les réglages GoatCounter ↗'; });
   }
   // Adresse de la page (avec la classe) gardée pour le bouton « Retour » des exerciseurs
   try { localStorage.setItem('mp:retour', location.href); } catch(e){}
