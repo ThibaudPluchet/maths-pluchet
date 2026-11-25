@@ -20,6 +20,7 @@
     --pages:#86a4ff; --docs:#f0a050; --up:#5fd39a; --down:#ff8a80; --heat:134,164,255; }
 }
 *{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
 .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
 header{padding:26px 0 8px}
@@ -130,6 +131,8 @@ function range(){
   let a, b = today;
   if (period === 'rentree') a = parse(RENTREE);
   else if (period === 'custom'){ a = parse($('d1').value || iso(addDays(today,-6))); b = parse($('d2').value || iso(today)); if (b < a) [a, b] = [b, a]; }
+  else if (period === 'today') a = today;
+  else if (period === 'yesterday') a = b = addDays(today, -1);
   else a = addDays(today, -(Number(period) - 1));
   const n = Math.round((b - a) / 864e5) + 1;
   return { a, b, n, pa: addDays(a, -n), pb: addDays(a, -1) };
@@ -261,25 +264,30 @@ function render(){
   const devTot = sum(DATA.sizes, s => s.count) || 1, devTop = DATA.sizes.slice().sort((x, y) => y.count - x.count)[0];
   const ins = [];
   if (cls === 'all' && best && best.n) ins.push('<b>' + esc(best.c) + '</b> est la classe la plus active : ' + fmt(best.n) + ' visite' + (best.n > 1 ? 's' : '') + ' de sa page.');
-  if (peak && peak[0]) ins.push('Jour le plus chargé : <b>' + esc(fmtDay(peak[1])) + '</b> (' + fmt(peak[0]) + ').');
+  if (days.length > 1 && peak && peak[0]) ins.push('Jour le plus chargé : <b>' + esc(fmtDay(peak[1])) + '</b> (' + fmt(peak[0]) + ').');
   const soir = mom[1][2] + mom[2][2];
   if (sum(heat.flat())) ins.push('<b>' + Math.round(soir / totHeat * 100) + ' %</b> des connexions ont lieu le soir ou la nuit, <b>' + Math.round(mom[3][2] / totHeat * 100) + ' %</b> le week-end.');
   if (cls === 'all' && topDoc) ins.push('Document le plus ouvert : <b>' + esc(topDoc.path) + '</b> (' + fmt(topDoc.count) + ' fois).');
   if (devTop && devTop.count) ins.push('Appareil le plus utilisé : <b>' + esc(sizeName(devTop)) + '</b> (' + Math.round(devTop.count / devTot * 100) + ' %).');
   // titre
-  const lab = { '7': '7 derniers jours', '30': '30 derniers jours', 'rentree': 'depuis la rentrée', 'custom': 'du ' + R.a.toLocaleDateString('fr-FR') + ' au ' + R.b.toLocaleDateString('fr-FR') }[period];
+  const lab = { 'today': 'aujourd’hui', 'yesterday': 'hier', '7': '7 derniers jours', '30': '30 derniers jours', 'rentree': 'depuis la rentrée', 'custom': 'du ' + R.a.toLocaleDateString('fr-FR') + ' au ' + R.b.toLocaleDateString('fr-FR') }[period];
   $('title').textContent = (cls === 'all' ? 'Visites du site élèves' : 'Visites de la ' + cls) + ' · ' + lab;
-  $('subtitle').textContent = 'Comparaison avec les ' + R.n + ' jours précédents · données GoatCounter lues à ' + DATA.at.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' · actualisation automatique toutes les heures (vos propres visites ne sont pas comptées)';
+  $('subtitle').textContent = (R.n === 1 ? 'Comparaison avec la veille' : 'Comparaison avec les ' + R.n + ' jours précédents') + ' · données GoatCounter lues à ' + DATA.at.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' · actualisation automatique toutes les heures (vos propres visites ne sont pas comptées)';
 
   const avg = (totPages + totDocs) / days.length;
+  // une seule journée : graphique heure par heure
+  const one = days.length === 1;
+  const perHour = list => { const a = Array(24).fill(0); list.forEach(h => (h.stats || []).forEach(st => (st.hourly || []).forEach((v, i) => a[i] += v || 0))); return a; };
+  const hP = one ? perHour(cls === 'all' ? pages : sel.filter(h => h.c.section === 'Page de la classe')) : null, hD = one && cls === 'all' ? perHour(docs) : null;
+  const peakH = one ? hP.map((v, i) => [v + (hD ? hD[i] : 0), i]).sort((x, y) => y[0] - x[0])[0] : null;
   let html = '<section class="kpis">' +
     kpi(fmt(totPages), cls === 'all' ? 'visites de pages' : 'visites de la page ' + cls, delta(totPages, prevPages)) +
     (cls === 'all' ? kpi(fmt(totDocs), 'documents ouverts', delta(totDocs, prevDocs)) : kpi(fmt(sum(H.filter(h => h.c.cls === cls && h.c.section !== 'Page de la classe'), h => h.count)), 'visites Automatismes, Curiosités, Animations', '')) +
-    kpi(avg.toLocaleString('fr-FR', { maximumFractionDigits: 1 }), 'par jour en moyenne', '') +
+    (one ? kpi(peakH && peakH[0] ? peakH[1] + ' h' : '–', 'heure la plus chargée', peakH && peakH[0] ? '<span class="delta eq">' + fmt(peakH[0]) + ' visites</span>' : '') : kpi(avg.toLocaleString('fr-FR', { maximumFractionDigits: 1 }), 'par jour en moyenne', '')) +
     (cls === 'all' ? kpi(esc(best && best.n ? best.c : '–'), 'classe la plus active', best && best.n ? delta(best.n, best.p) : '') : kpi(fmt(clsRows.findIndex(r => r.c === cls) + 1) + '<small style="font-size:16px"> / ' + clsRows.length + '</small>', 'rang parmi les classes', '')) +
     '</section>';
   if (ins.length) html += '<section class="card"><h2>À retenir</h2><ul class="insights">' + ins.map(x => '<li>' + x + '</li>').join('') + '</ul></section>';
-  html += '<section class="card"><h2>Jour par jour</h2><div class="legend"><span><i style="background:var(--pages)"></i>Visites de pages</span>' + (cls === 'all' ? '<span><i style="background:var(--docs)"></i>Documents ouverts</span>' : '') + '</div><div class="fig"><svg id="daily" role="img" aria-label="Visites par jour"></svg></div></section>';
+  html += '<section class="card"><h2>' + (one ? 'Heure par heure' : 'Jour par jour') + '</h2><div class="legend"><span><i style="background:var(--pages)"></i>Visites de pages</span>' + (cls === 'all' ? '<span><i style="background:var(--docs)"></i>Documents ouverts</span>' : '') + '</div><div class="fig"><svg id="daily" role="img" aria-label="Visites par jour"></svg></div></section>';
   html += '<div class="grid2">';
   // classes
   const maxC = Math.max(1, ...clsRows.map(r => r.n));
@@ -317,7 +325,8 @@ function render(){
     '<p class="muted small" style="margin:14px 0 6px">Navigateur</p>' + bars(DATA.browsers.slice(0, 6).map(s => [s.name || 'inconnu', s.count]), true) + '</section>';
   html += '</div><p class="muted small">Les compteurs de GoatCounter sont des visites (une même personne qui recharge la page n’est comptée qu’une fois par jour). Tableau de bord complet : <a href="' + SITE + '" target="_blank" rel="noopener">thibaudpluchet.goatcounter.com</a>.</p>';
   main.innerHTML = html;
-  drawDaily(days, sPages, cls === 'all' ? sDocs : null);
+  if (one) drawDaily(hP.map((_, i) => ({ k: i + ' h', lab: i + ' h', we: false })), hP, hD);
+  else drawDaily(days.map(d => ({ k: d, lab: parse(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }), we: [0, 6].includes(parse(d).getDay()) })), sPages, cls === 'all' ? sDocs : null);
   main.querySelectorAll('[data-cls]').forEach(b => b.onclick = () => { cls = cls === b.dataset.cls ? 'all' : b.dataset.cls; pills(); render(); scrollTo({ top: 0 }); });
   main.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { docLevel = b.dataset.lv; render(); });
   main.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => { docKind = b.dataset.kind; render(); });
@@ -344,13 +353,13 @@ function drawDaily(days, a, b){
     const y = v => T + (H - T - B) * (1 - v / top), bw = (W - L) / days.length, gap = Math.min(4, bw * 0.25);
     let g = '';
     for (let v = 0; v <= top; v += step) g += '<line x1="' + L + '" x2="' + W + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="var(--line)"/><text x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end" font-size="11" fill="var(--muted)">' + v + '</text>';
-    const every = Math.ceil(days.length / Math.max(2, Math.floor((W - L) / 64)));
+    const every = Math.ceil(days.length / Math.max(2, Math.floor((W - L) / 48)));
     days.forEach((d, i) => {
-      const x = L + i * bw + gap / 2, w = Math.max(1, bw - gap), we = [0, 6].includes(parse(d).getDay());
+      const x = L + i * bw + gap / 2, w = Math.max(1, bw - gap), we = d.we;
       if (we) g += '<rect x="' + (L + i * bw) + '" y="' + T + '" width="' + bw + '" height="' + (H - T - B) + '" fill="var(--soft)" opacity=".6"/>';
-      g += '<rect x="' + x + '" y="' + y(a[i]) + '" width="' + w + '" height="' + (y(0) - y(a[i])) + '" fill="var(--pages)" rx="2"><title>' + d + ' : ' + a[i] + ' visites' + (b ? ', ' + b[i] + ' documents' : '') + '</title></rect>';
-      if (b && b[i]) g += '<rect x="' + x + '" y="' + y(a[i] + b[i]) + '" width="' + w + '" height="' + (y(a[i]) - y(a[i] + b[i])) + '" fill="var(--docs)" rx="2"><title>' + d + ' : ' + b[i] + ' documents</title></rect>';
-      if (i % every === 0) g += '<text x="' + (L + i * bw + bw / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11" fill="var(--muted)">' + parse(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) + '</text>';
+      g += '<rect x="' + x + '" y="' + y(a[i]) + '" width="' + w + '" height="' + (y(0) - y(a[i])) + '" fill="var(--pages)" rx="2"><title>' + d.k + ' : ' + a[i] + ' visites' + (b ? ', ' + b[i] + ' documents' : '') + '</title></rect>';
+      if (b && b[i]) g += '<rect x="' + x + '" y="' + y(a[i] + b[i]) + '" width="' + w + '" height="' + (y(a[i]) - y(a[i] + b[i])) + '" fill="var(--docs)" rx="2"><title>' + d.k + ' : ' + b[i] + ' documents</title></rect>';
+      if (i % every === 0) g += '<text x="' + (L + i * bw + bw / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11" fill="var(--muted)">' + d.lab + '</text>';
     });
     s.innerHTML = g;
   };
@@ -359,7 +368,7 @@ function drawDaily(days, a, b){
 
 // ---------- commandes ----------
 function pills(){
-  const P = [['7', '7 jours'], ['30', '30 jours'], ['rentree', 'Depuis la rentrée'], ['custom', 'Dates…']];
+  const P = [['today', 'Aujourd’hui'], ['yesterday', 'Hier'], ['7', '7 jours'], ['30', '30 jours'], ['rentree', 'Depuis la rentrée'], ['custom', 'Dates…']];
   $('periods').innerHTML = P.map(p => '<button class="pill" data-p="' + p[0] + '" aria-pressed="' + (period === p[0]) + '">' + p[1] + '</button>').join('');
   $('custom').hidden = period !== 'custom';
   $('classes').innerHTML = '<button class="pill" data-c="all" aria-pressed="' + (cls === 'all') + '">Toutes</button>' + allCls().map(c => '<button class="pill" data-c="' + esc(c) + '" aria-pressed="' + (cls === c) + '">' + esc(c) + '</button>').join('');
