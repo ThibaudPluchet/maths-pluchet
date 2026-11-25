@@ -137,14 +137,20 @@ function range(){
 const hourIso = d => new Date(Math.floor(d.getTime() / 36e5) * 36e5).toISOString().replace('.000', '');
 const span = (a, b) => ({ start: hourIso(a), end: hourIso(new Date(Math.min(addDays(b, 1).getTime(), Date.now() + 36e5))) });
 
-// ---------- API GoatCounter (4 requêtes par seconde au plus) ----------
-let last = 0;
-async function api(path, params){
-  const wait = last + 300 - Date.now(); if (wait > 0) await new Promise(r => setTimeout(r, wait)); last = Date.now();
-  const r = await fetch(SITE + '/api/v0' + path + '?' + new URLSearchParams(params), { headers: { Authorization: 'Bearer ' + get('mp:gctoken'), 'Content-Type': 'application/json' }, cache: 'no-store' });
+// ---------- API GoatCounter ----------
+// GoatCounter limite fortement le débit : une requête par seconde environ. Une requête refusée pour excès
+// arrive sans en-tête CORS (« Failed to fetch ») : on attend puis on recommence.
+let last = 0, nreq = 0;
+async function api(path, params, tries){
+  tries = tries || 0;
+  const wait = last + 1100 - Date.now(); if (wait > 0) await new Promise(r => setTimeout(r, wait)); last = Date.now();
+  const msg = document.getElementById('progress'); if (msg) msg.textContent = 'Lecture des statistiques GoatCounter… (' + (++nreq) + ')';
+  let r;
+  try { r = await fetch(SITE + '/api/v0' + path + '?' + new URLSearchParams(params), { headers: { Authorization: 'Bearer ' + get('mp:gctoken'), 'Content-Type': 'application/json' }, cache: 'no-store' }); }
+  catch(e){ if (tries < 4){ await new Promise(r2 => setTimeout(r2, 2000 * (tries + 1))); return api(path, params, tries + 1); } throw new Error('GoatCounter ne répond pas, réessayez dans une minute'); }
   if (r.status === 401 || r.status === 403) throw new Error('cle');
-  if (r.status === 429){ await new Promise(r2 => setTimeout(r2, 1500)); return api(path, params); }
-  if (!r.ok) throw new Error('HTTP ' + r.status);
+  if (r.status === 429 && tries < 4){ await new Promise(r2 => setTimeout(r2, 2000 * (tries + 1))); return api(path, params, tries + 1); }
+  if (!r.ok) throw new Error('erreur ' + r.status);
   return r.json();
 }
 async function allHits(sp, extra){
@@ -180,20 +186,24 @@ function classify(h){
 const lvOf = c => Object.keys(CLASSES).find(l => CLASSES[l].includes(c)) || '';
 
 // ---------- chargement ----------
+let loadId = 0;
 async function load(){
   if (!isProf) return;
+  const me = ++loadId;
   if (!get('mp:gctoken')) return setup();
   $('controls').hidden = false;
-  main.innerHTML = '<div class="card state muted">Lecture des statistiques GoatCounter…</div>';
+  nreq = 0; main.innerHTML = '<div class="card state muted" id="progress">Lecture des statistiques GoatCounter…</div>';
   const R = range(), cur = span(R.a, R.b), prev = span(R.pa, R.pb);
   try {
     const hits = await allHits(cur);
     const prevTot = await api('/stats/total', prev);
     const prevCls = await allHits(prev, { path_by_name: true, include_paths: allCls().map(c => '/' + c).join(',') });
     const sizes = await api('/stats/sizes', cur), systems = await api('/stats/systems', cur), browsers = await api('/stats/browsers', cur);
+    if (me !== loadId) return;
     DATA = { R, hits, prevTot, prevCls, sizes: sizes.stats || [], systems: systems.stats || [], browsers: browsers.stats || [], at: new Date() };
     render();
   } catch(e){
+    if (me !== loadId) return;
     if (e.message === 'cle') return setup('La clé n’est plus acceptée par GoatCounter (supprimée ou sans le droit « Read statistics »). Collez une nouvelle clé.');
     main.innerHTML = '<div class="card state"><p class="err">Impossible de lire les statistiques (' + esc(e.message) + ').</p><button class="act" id="retry">Réessayer</button></div>';
     $('retry').onclick = load;
