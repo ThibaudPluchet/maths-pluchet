@@ -154,7 +154,28 @@ EX.push(
      ['Une roue a ' + N + ' secteurs égaux, gagnants ou perdants. Sur ' + E + ' essais, on a gagné ' + obs + ' fois. Combien de secteurs gagnants y a-t-il probablement ?', 'secteurs']][k % 3];
     if (k >= 6){ var D2 = pick([600, 1200, 3000]); q = 'Sur ' + E + ' lancers d’une punaise, elle est tombée ' + obs + ' fois sur la pointe. Combien de fois peut-on s’attendre à ce qu’elle tombe sur la pointe sur ' + D2 + ' lancers ?'; v = cl(D2 * p); st = ['Fréquence observée : ' + obs + ' ÷ ' + E + ' = ' + fr(p) + '.', fr(p) + ' × ' + D2 + ' = ' + fr(v) + '.']; u = 'fois'; }
     else { q = S[0]; v = cnt; u = S[1]; st = ['Fréquence observée : ' + obs + ' ÷ ' + E + ' = ' + fr(p) + ', proche de la probabilité.', fr(p) + ' × ' + N + ' = ' + fr(v) + '.']; }
-    return {type: 'num', q: q, v: v, unit: u, steps: st, key: 'k' + k + q}; }}
+    return {type: 'num', q: q, v: v, unit: u, steps: st, key: 'k' + k + q}; }},
+ {id: 'n48e', lv: 3, n: 'N48', nq: 3, t: 'Le dé est-il truqué ?', d: 'Comparer fréquence et probabilité.', c: 'Lis les résultats et choisis la bonne conclusion.', a: 'Calcule la probabilité si l’objet est équilibré, puis la fréquence observée. Sur peu d’essais, on ne peut rien conclure ; sur beaucoup d’essais, une fréquence proche de la probabilité est normale, une fréquence très éloignée fait penser à un objet truqué.',
+  g: function(k){ if (k === undefined) k = rnd(0, 20);
+    var O = [['un dé à 6 faces', 'le 6', 6, 'Le dé', ''], ['une pièce', 'Pile', 2, 'La pièce', 'e'], ['une roue à 4 secteurs égaux', 'le secteur bleu', 4, 'La roue', 'e'], ['un dé à 8 faces', 'le 8', 8, 'Le dé', ''],
+      ['un dé à 12 faces', 'le 1', 12, 'Le dé', ''], ['une roue à 5 secteurs égaux', 'le secteur rouge', 5, 'La roue', 'e'], ['un dé à 10 faces', 'le 10', 10, 'Le dé', '']][k % 7], V = Math.floor(k / 7);
+    var nom = pick(['Lina', 'Hugo', 'Inès', 'Malo', 'Zoé', 'Noé', 'Léa', 'Tom', 'Jade', 'Nathan']), p = 1 / O[2], N, obs, sd, f;
+    var t = 0;
+    if (V === 0){ // peu d'essais : écart tentant, mais pas invraisemblable
+      do { N = pick([10, 12, 15, 20, 24, 30]); sd = Math.sqrt(N * p * (1 - p)); obs = rnd(0, N); t++; }
+      while ((Math.abs(obs / N - p) < Math.max(0.6 * p, 0.12) || Math.abs(obs - N * p) > 2.5 * sd) && t < 500); }
+    else { N = pick([1000, 1200, 2000, 2400, 3000, 5000, 6000]); sd = Math.sqrt(N * p * (1 - p));
+      if (V === 1) obs = Math.round(N * p + (Math.random() * 2 - 1) * sd);
+      else do { obs = Math.round(N * p * pick([0.4, 0.5, 1.6, 1.8, 2, 2.5])); t++; } while ((Math.abs(obs - N * p) < 6 * sd || obs > N) && t < 500); }
+    f = Math.round(obs / N * 1000) / 1000;
+    var ch = [O[3] + ' semble équilibré' + O[4], O[3] + ' semble truqué' + O[4], 'Trop peu d’essais pour conclure'];
+    var pr = Math.round(p * 1000) / 1000, eq = (Math.abs(obs / N - f) < 1e-12 ? ' = ' : ' ≈ '), peq = (Math.abs(p - pr) < 1e-12 ? ' = ' : ' ≈ ');
+    var st = ['Si ' + O[3].toLowerCase() + ' est équilibré' + O[4] + ', la probabilité d’obtenir ' + O[1] + ' est 1/' + O[2] + peq + fr(pr) + '.',
+      'Fréquence observée : ' + fr(obs) + ' ÷ ' + fr(N) + eq + fr(f) + '.',
+      V === 0 ? fr(N) + ' essais, c’est trop peu : sur peu d’essais, la fréquence fluctue beaucoup. On ne peut pas conclure.'
+      : V === 1 ? 'Sur ' + fr(N) + ' essais, la fréquence est proche de la probabilité : l’écart est normal. ' + O[3] + ' semble équilibré' + O[4] + '.'
+      : 'Sur ' + fr(N) + ' essais, la fréquence est très loin de la probabilité. ' + O[3] + ' semble truqué' + O[4] + ' (on n’en est jamais absolument sûr).'];
+    return {type: 'ch', q: nom + ' lance ' + fr(N) + ' fois ' + O[0] + ' et obtient ' + fr(obs) + ' fois ' + O[1] + '. Que peut-on dire ?', ch: ch, ans: V === 0 ? 2 : V === 1 ? 0 : 1, steps: st, key: 'k' + k}; }}
 );
 var NOTIONS = [
  {n: 'N47', t: 'Utiliser le vocabulaire et calculer une probabilité', r: 'quand les issues ont toutes la même chance, P = nombre d’issues favorables ÷ nombre total d’issues ; P(non A) = 1 − P(A).'},
