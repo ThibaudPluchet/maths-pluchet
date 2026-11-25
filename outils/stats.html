@@ -269,7 +269,7 @@ function render(){
   // titre
   const lab = { '7': '7 derniers jours', '30': '30 derniers jours', 'rentree': 'depuis la rentrée', 'custom': 'du ' + R.a.toLocaleDateString('fr-FR') + ' au ' + R.b.toLocaleDateString('fr-FR') }[period];
   $('title').textContent = (cls === 'all' ? 'Visites du site élèves' : 'Visites de la ' + cls) + ' · ' + lab;
-  $('subtitle').textContent = 'Comparaison avec les ' + R.n + ' jours précédents · données GoatCounter lues à ' + DATA.at.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' (vos propres visites ne sont pas comptées)';
+  $('subtitle').textContent = 'Comparaison avec les ' + R.n + ' jours précédents · données GoatCounter lues à ' + DATA.at.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' · actualisation automatique toutes les heures (vos propres visites ne sont pas comptées)';
 
   const avg = (totPages + totDocs) / days.length;
   let html = '<section class="kpis">' +
@@ -368,6 +368,10 @@ function pills(){
 }
 $('d1').onchange = $('d2').onchange = () => { if ($('d1').value && $('d2').value) load(); };
 $('reload').onclick = load;
+// actualisation automatique toutes les heures (dès le retour sur l'onglet s'il était caché)
+const HOUR = 36e5;
+setInterval(() => { if (DATA && !document.hidden && Date.now() - DATA.at > HOUR) load(); }, 60e3);
+document.addEventListener('visibilitychange', () => { if (DATA && !document.hidden && Date.now() - DATA.at > HOUR) load(); });
 $('forget').onclick = () => { set('mp:gctoken', null); DATA = null; setup(); };
 if (isProf){
   const t = new Date(); $('d2').value = iso(t); $('d1').value = iso(addDays(t, -13));
