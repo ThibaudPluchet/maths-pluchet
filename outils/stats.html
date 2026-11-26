@@ -49,7 +49,9 @@ main{padding:18px 0 60px;display:grid;gap:18px}
 .delta{font-weight:700;font-size:13px;white-space:nowrap}
 .delta.up{color:var(--up)} .delta.down{color:var(--down)} .delta.eq{color:var(--muted)}
 .insights{margin:0;padding-left:20px;display:grid;gap:4px}
-.fig{position:relative;height:260px;margin-top:10px}
+.fig{position:relative;height:200px;margin-top:4px}
+.figt{display:flex;align-items:center;gap:8px;margin:14px 0 0;font-size:15px}
+.figt i{width:12px;height:12px;border-radius:3px;display:inline-block}
 .fig>svg{position:absolute;inset:0;width:100%;height:100%}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
@@ -287,7 +289,10 @@ function render(){
     (cls === 'all' ? kpi(esc(best && best.n ? best.c : '–'), 'classe la plus active', best && best.n ? delta(best.n, best.p) : '') : kpi(fmt(clsRows.findIndex(r => r.c === cls) + 1) + '<small style="font-size:16px"> / ' + clsRows.length + '</small>', 'rang parmi les classes', '')) +
     '</section>';
   if (ins.length) html += '<section class="card"><h2>À retenir</h2><ul class="insights">' + ins.map(x => '<li>' + x + '</li>').join('') + '</ul></section>';
-  html += '<section class="card"><h2>' + (one ? 'Heure par heure' : 'Jour par jour') + '</h2><div class="legend"><span><i style="background:var(--pages)"></i>Visites de pages</span>' + (cls === 'all' ? '<span><i style="background:var(--docs)"></i>Documents ouverts</span>' : '') + '</div><div class="fig"><svg id="daily" role="img" aria-label="Visites par jour"></svg></div></section>';
+  // deux graphiques séparés, chacun à sa propre échelle : pages ouvertes, puis documents ouverts
+  html += '<section class="card"><h2>' + (one ? 'Heure par heure' : 'Jour par jour') + '</h2>' +
+    '<h3 class="figt"><i style="background:var(--pages)"></i>Pages ouvertes</h3><div class="fig"><svg id="daily" role="img" aria-label="Pages ouvertes ' + (one ? 'par heure' : 'par jour') + '"></svg></div>' +
+    (cls === 'all' ? '<h3 class="figt"><i style="background:var(--docs)"></i>Documents ouverts</h3><div class="fig"><svg id="daily-docs" role="img" aria-label="Documents ouverts ' + (one ? 'par heure' : 'par jour') + '"></svg></div>' : '') + '</section>';
   html += '<div class="grid2">';
   // classes
   const maxC = Math.max(1, ...clsRows.map(r => r.n));
@@ -343,12 +348,17 @@ function spark(s){
   const pts = s.map((v, i) => (i / (n - 1) * 100).toFixed(1) + ',' + (26 - v / m * 22).toFixed(1)).join(' ');
   return '<svg class="spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><polyline points="' + pts + '" fill="none" stroke="var(--pages)" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>';
 }
-let ro = null;
+let ro = [];
 function drawDaily(days, a, b){
-  const s = $('daily'); if (!s) return;
+  ro.forEach(o => o.disconnect()); ro = [];
+  drawBars('daily', days, a, 'var(--pages)', 'page');
+  if (b) drawBars('daily-docs', days, b, 'var(--docs)', 'document');
+}
+function drawBars(id, days, a, col, what){
+  const s = $(id); if (!s) return;
   const draw = () => {
     const W = s.clientWidth, H = s.clientHeight, L = 34, B = 26, T = 10;
-    const tot = days.map((_, i) => a[i] + (b ? b[i] : 0)), max = Math.max(4, ...tot);
+    const max = Math.max(4, ...a);
     const step = Math.pow(10, Math.floor(Math.log10(max))) * (max / Math.pow(10, Math.floor(Math.log10(max))) > 5 ? 2 : 1), top = Math.ceil(max / step) * step;
     const y = v => T + (H - T - B) * (1 - v / top), bw = (W - L) / days.length, gap = Math.min(4, bw * 0.25);
     let g = '';
@@ -357,13 +367,12 @@ function drawDaily(days, a, b){
     days.forEach((d, i) => {
       const x = L + i * bw + gap / 2, w = Math.max(1, bw - gap), we = d.we;
       if (we) g += '<rect x="' + (L + i * bw) + '" y="' + T + '" width="' + bw + '" height="' + (H - T - B) + '" fill="var(--soft)" opacity=".6"/>';
-      g += '<rect x="' + x + '" y="' + y(a[i]) + '" width="' + w + '" height="' + (y(0) - y(a[i])) + '" fill="var(--pages)" rx="2"><title>' + d.k + ' : ' + a[i] + ' visites' + (b ? ', ' + b[i] + ' documents' : '') + '</title></rect>';
-      if (b && b[i]) g += '<rect x="' + x + '" y="' + y(a[i] + b[i]) + '" width="' + w + '" height="' + (y(a[i]) - y(a[i] + b[i])) + '" fill="var(--docs)" rx="2"><title>' + d.k + ' : ' + b[i] + ' documents</title></rect>';
+      if (a[i]) g += '<rect x="' + x + '" y="' + y(a[i]) + '" width="' + w + '" height="' + (y(0) - y(a[i])) + '" fill="' + col + '" rx="2"><title>' + d.k + ' : ' + a[i] + ' ' + what + (a[i] > 1 ? 's' : '') + ' ouvert' + (what === 'page' ? 'e' : '') + (a[i] > 1 ? 's' : '') + '</title></rect>';
       if (i % every === 0) g += '<text x="' + (L + i * bw + bw / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11" fill="var(--muted)">' + d.lab + '</text>';
     });
     s.innerHTML = g;
   };
-  if (ro) ro.disconnect(); ro = new ResizeObserver(draw); ro.observe(s); draw();
+  const o = new ResizeObserver(draw); o.observe(s); ro.push(o); draw();
 }
 
 // ---------- commandes ----------
